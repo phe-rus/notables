@@ -2,6 +2,12 @@ import { z } from "zod";
 
 export const Id = z.uuid();
 
+/**
+ * Account identifiers are issued by the identity provider (the OIDC `sub`
+ * claim), so they are opaque strings rather than Notables ids.
+ */
+export const AccountId = z.string().min(1).max(255);
+
 /** Milliseconds since the Unix epoch. */
 export const Timestamp = z.number().int().nonnegative();
 
@@ -24,7 +30,7 @@ export const Role = z.enum(["viewer", "commenter", "editor"]);
 export type Role = z.infer<typeof Role>;
 
 export const Grant = z.object({
-  accountId: Id,
+  accountId: AccountId,
   role: Role,
 });
 export type Grant = z.infer<typeof Grant>;
@@ -40,7 +46,7 @@ export type Access = z.infer<typeof Access>;
 /** Metadata kept in the local database and mirrored into the Yjs document. */
 export const NoteMeta = z.object({
   id: Id,
-  ownerId: Id,
+  ownerId: AccountId,
   kind: NoteKind,
   title: z.string().max(300),
   surfaces: z.array(SurfaceKind).min(1),
@@ -54,16 +60,16 @@ export type NoteMeta = z.infer<typeof NoteMeta>;
 /** A named group of accounts, e.g. "Family" or "Close friends". */
 export const Circle = z.object({
   id: Id,
-  ownerId: Id,
+  ownerId: AccountId,
   name: z.string().min(1).max(80),
-  memberIds: z.array(Id),
+  memberIds: z.array(AccountId),
 });
 export type Circle = z.infer<typeof Circle>;
 
 /** Notebooks, series and manga volumes. */
 export const Collection = z.object({
   id: Id,
-  ownerId: Id,
+  ownerId: AccountId,
   name: z.string().min(1).max(120),
   kind: z.enum(["notebook", "series", "volume"]),
   createdAt: Timestamp,
@@ -73,7 +79,7 @@ export type Collection = z.infer<typeof Collection>;
 /** An ordered compilation of notes, exportable as EPUB or PDF. */
 export const Book = z.object({
   id: Id,
-  ownerId: Id,
+  ownerId: AccountId,
   title: z.string().min(1).max(200),
   subtitle: z.string().max(200).optional(),
   coverMediaId: Id.optional(),
@@ -96,7 +102,7 @@ export type TranscriptSegment = z.infer<typeof TranscriptSegment>;
 export const Publication = z.object({
   id: Id,
   noteId: Id,
-  authorId: Id,
+  authorId: AccountId,
   kind: NoteKind,
   title: z.string(),
   excerpt: z.string().max(500),
