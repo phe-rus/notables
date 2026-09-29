@@ -33,6 +33,19 @@ importers:
         specifier: 6.0.3
         version: 6.0.3
 
+  packages/auth:
+    dependencies:
+      jose:
+        specifier: 6.2.12
+        version: 6.2.12
+    devDependencies:
+      typescript:
+        specifier: 'catalog:'
+        version: 6.0.3
+      vitest:
+        specifier: 'catalog:'
+        version: 5.0.2(@types/node@22.20.4)(vite@8.3.1(@types/node@22.20.4))
+
   packages/core:
     dependencies:
       yjs:
@@ -326,6 +339,9 @@ packages:
 
   isomorphic.js@0.2.5:
     resolution: {integrity: sha512-PIeMbHqMt4DnUP3MA/Flc0HElYjMXArsw1qwJZcm9sqR8mq3l8NYizFMty0pWwE/tzIGH3EKK5+jes5mAr85yw==}
+
+  jose@6.2.12:
+    resolution: {integrity: sha512-9NiFmJEex0sy2Dk58j2UGBSHgUs2ypF9eZSu4L6vjOX3Dp96Sw1F3uL+H+D1sx02jZZdzUT0HgvCy59CuvXcWw==}
 
   lib0@0.2.119:
     resolution: {integrity: sha512-vh+TiejVy8Xm+hCdnRfn9BthGNvNUZdEXltNjVZL3TzRIKP3s1lnQh8pWd/Q0wCgY0FPAGVVjFF4ZiHUV3LFgA==}
@@ -720,6 +736,8 @@ snapshots:
     optional: true
 
   isomorphic.js@0.2.5: {}
+
+  jose@6.2.12: {}
 
   lib0@0.2.119:
     dependencies:

@@ -40,6 +40,7 @@ apps/
   mobile/         Expo app for iOS and Android
   desktop/        Tauri 2 desktop shell
 packages/
+  auth/           OIDC access-token verification for Workers
   core/           Domain model, schemas, Yjs document structure
   sync/           Client sync engine (Yjs providers, auth tokens, retry)
   design-tokens/  Colors, typography, spacing, radii, motion curves
