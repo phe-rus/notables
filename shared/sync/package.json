@@ -1,0 +1,24 @@
+{
+  "name": "@notables/sync",
+  "version": "0.0.0",
+  "private": true,
+  "description": "Local-first sync engine: on-device persistence and live sync for note documents.",
+  "type": "module",
+  "exports": {
+    ".": "./src/index.ts"
+  },
+  "scripts": {
+    "typecheck": "tsc -p tsconfig.json",
+    "test": "bun test"
+  },
+  "dependencies": {
+    "y-indexeddb": "9.0.12",
+    "y-partyserver": "2.2.0",
+    "y-protocols": "1.0.7",
+    "yjs": "catalog:"
+  },
+  "devDependencies": {
+    "@types/bun": "catalog:",
+    "typescript": "catalog:"
+  }
+}
