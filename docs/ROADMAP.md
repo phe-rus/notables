@@ -12,20 +12,21 @@ platform from the same `www` codebase.
 - Publishing: server-rendered public pages, hearts, likes, ratings, view
   and read counts, update and unpublish at any time — recordings and
   photos are published with the note
-- Books: compile notes into books and read them with real page turns
+- Books: compile notes into books, read them with real page turns,
+  narrate chapters straight into them and export them as EPUB 3
 - Recording: voice notes with a live waveform and live transcription,
   stored on the device and inserted into notes
+- On-device Whisper in the native apps: transcribe any recording without
+  it leaving the device (the model downloads once, on first use)
 - Design system v2: Liquid Glass materials, motion/react transitions,
   Hugeicons dual-tone
 - Tauri shell for iOS, Android, macOS, Windows and Linux
 
 ## Next
 
-- **On-device Whisper** — transcription in the Rust core on every
-  platform, and transcribing existing recordings
-- **Narrate into a book** — turn a recording's transcript into a chapter
 - **Native storage** — SQLite and media files through the Rust core
-- **EPUB export** for books
+- **Whisper while recording** — replace the platform recogniser with
+  streaming Whisper in the native apps
 
 ## Later
 
