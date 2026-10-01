@@ -1,13 +1,17 @@
 import { useLexicalComposerContext } from "@lexical/react/LexicalComposerContext";
 import { $getRoot } from "lexical";
 import { useEffect, useRef } from "react";
+import type { DocumentSnapshot } from "../../hooks/use-document-snapshot";
 
-/** Reports the document's plain text after edits (for titles, excerpts and search). */
-export function TextChangePlugin({
+/**
+ * Reports the serialized document and its plain text after edits,
+ * debounced — for titles, excerpts, search and assembling books.
+ */
+export function DocumentChangePlugin({
   onChange,
   delayMs = 400,
 }: {
-  onChange: (text: string) => void;
+  onChange: (snapshot: DocumentSnapshot) => void;
   delayMs?: number;
 }) {
   const [editor] = useLexicalComposerContext();
@@ -21,7 +25,10 @@ export function TextChangePlugin({
         if (dirtyElements.size === 0 && dirtyLeaves.size === 0) return;
         clearTimeout(timer);
         timer = setTimeout(() => {
-          callback.current(editorState.read(() => $getRoot().getTextContent()));
+          callback.current({
+            document: editorState.toJSON(),
+            text: editorState.read(() => $getRoot().getTextContent()),
+          });
         }, delayMs);
       },
     );

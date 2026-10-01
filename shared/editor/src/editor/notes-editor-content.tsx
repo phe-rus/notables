@@ -2,14 +2,15 @@ import { ContentEditable } from "@lexical/react/LexicalContentEditable";
 import { LexicalErrorBoundary } from "@lexical/react/LexicalErrorBoundary";
 import { RichTextPlugin } from "@lexical/react/LexicalRichTextPlugin";
 import { cn } from "@notables/ui";
+import type { DocumentSnapshot } from "../hooks/use-document-snapshot";
+import { DocumentChangePlugin } from "../plugins/document-change/document-change-plugin";
 import { FloatingToolbarPlugin } from "../plugins/floating-toolbar/floating-toolbar-plugin";
-import { TextChangePlugin } from "../plugins/text-change/text-change-plugin";
 
 export interface NotesEditorContentProps {
   placeholder?: string;
   className?: string;
-  /** Receives the document's plain text, debounced, after each edit. */
-  onTextChange?: (text: string) => void;
+  /** Receives the document and its plain text, debounced, after each edit. */
+  onDocumentChange?: (snapshot: DocumentSnapshot) => void;
   /** Accessible name for the writing area. */
   label?: string;
   /** Size the placeholder like the document's first block. */
@@ -20,7 +21,7 @@ export interface NotesEditorContentProps {
 export function NotesEditorContent({
   placeholder = "Start writing…",
   className,
-  onTextChange,
+  onDocumentChange,
   label = "Note",
   placeholderStyle = "title",
 }: NotesEditorContentProps) {
@@ -42,7 +43,7 @@ export function NotesEditorContent({
         ErrorBoundary={LexicalErrorBoundary}
       />
       <FloatingToolbarPlugin />
-      {onTextChange && <TextChangePlugin onChange={onTextChange} />}
+      {onDocumentChange && <DocumentChangePlugin onChange={onDocumentChange} />}
     </>
   );
 }

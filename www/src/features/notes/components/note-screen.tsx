@@ -1,5 +1,10 @@
 import { noteDoc } from "@notables/core";
-import { BlockToolbar, NotesEditor, NotesEditorContent } from "@notables/editor";
+import {
+  BlockToolbar,
+  type DocumentSnapshot,
+  NotesEditor,
+  NotesEditorContent,
+} from "@notables/editor";
 import type { SyncStatus } from "@notables/sync";
 import {
   Button,
@@ -49,8 +54,8 @@ function NoteEditorScreen({ entry, viewId }: { entry: LibraryEntry; viewId?: str
   const navigate = useNavigate();
   const view = getView(viewId);
 
-  const onTextChange = useCallback(
-    (text: string) => {
+  const onDocumentChange = useCallback(
+    ({ text }: DocumentSnapshot) => {
       const { title, excerpt } = summarize(text);
       if (provider && noteDoc.title(provider.doc) !== title) noteDoc.setTitle(provider.doc, title);
       getLibrary().update(entry.id, { title, excerpt, updatedAt: Date.now() });
@@ -124,7 +129,7 @@ function NoteEditorScreen({ entry, viewId }: { entry: LibraryEntry; viewId?: str
               <NotesEditorContent
                 label={entry.title || "New note"}
                 placeholder="Title"
-                onTextChange={onTextChange}
+                onDocumentChange={onDocumentChange}
               />
             </div>
           </div>
