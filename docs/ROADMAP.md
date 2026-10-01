@@ -10,22 +10,25 @@ platform from the same `www` codebase.
 - Custom Lexical editor: titles, headings, quotes, lists, checklists,
   highlights, links, photos, audio clips, Markdown shortcuts
 - Publishing: server-rendered public pages, hearts, likes, ratings, view
-  and read counts, update and unpublish at any time
+  and read counts, update and unpublish at any time — recordings and
+  photos are published with the note
+- Books: compile notes into books and read them with real page turns
+- Recording: voice notes with a live waveform and live transcription,
+  stored on the device and inserted into notes
+- Design system v2: Liquid Glass materials, motion/react transitions,
+  Hugeicons dual-tone
+- Tauri shell for iOS, Android, macOS, Windows and Linux
 
 ## Next
 
-- **Design system v2** — Liquid Glass materials, motion/react transitions,
-  Hugeicons dual-tone
-- **Books** — compile notes into books with chapters and covers; a reader
-  with real page turns (two-page spreads on large screens, single pages on
-  phones); EPUB export
-- **Tauri** — iOS, Android, macOS, Windows and Linux builds; SQLite and
-  audio through the Rust core
+- **On-device Whisper** — transcription in the Rust core on every
+  platform, and transcribing existing recordings
+- **Narrate into a book** — turn a recording's transcript into a chapter
+- **Native storage** — SQLite and media files through the Rust core
+- **EPUB export** for books
 
 ## Later
 
-- **Record & transcribe** — on-device Whisper, transcript-linked audio,
-  narrate a story straight into a book chapter
 - **Freeform canvas** — ink, shapes, stickies and images for planning,
   manga panels and teaching
 - **Peer-to-peer sharing** — share with family, friends or specific people
