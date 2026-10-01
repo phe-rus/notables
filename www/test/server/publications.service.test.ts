@@ -28,6 +28,13 @@ beforeAll(async () => {
 
 afterAll(() => proxy?.dispose());
 
+async function noteIdOf(publicationId: string): Promise<string> {
+  const row = await proxy.env.DB.prepare("SELECT note_id FROM publications WHERE id = ?")
+    .bind(publicationId)
+    .first<{ note_id: string }>();
+  return row?.note_id ?? "";
+}
+
 const doc = (text: string) => ({
   root: { children: [{ type: "paragraph", children: [{ type: "text", text, format: 0 }] }] },
 });
@@ -105,6 +112,49 @@ describe("publications", () => {
       .bind(publication.id)
       .first<{ n: number }>();
     expect(left?.n).toBe(0);
+  });
+
+  it("publishes device media and points the document at public URLs", async () => {
+    const mediaId = createId();
+    const document = {
+      root: {
+        children: [
+          { type: "audio-clip", src: `media:${mediaId}`, durationMs: 4000, transcript: "hello" },
+        ],
+      },
+    };
+    const { publication, key } = await pubs.publish(
+      input({
+        document,
+        media: [{ id: mediaId, contentType: "audio/webm", data: btoa("0123456789") }],
+      }),
+    );
+
+    const published = JSON.parse((await pubs.get(publication.id)).document);
+    expect(published.root.children[0].src).toBe(`/media/${publication.id}/${mediaId}`);
+
+    const whole = await pubs.media(publication.id, mediaId);
+    expect(await whole?.text()).toBe("0123456789");
+    expect(whole?.httpMetadata?.contentType).toBe("audio/webm");
+    const slice = await pubs.media(publication.id, mediaId, { offset: 2, length: 3 });
+    expect(await slice?.text()).toBe("234");
+
+    // Re-publishing without the clip removes its file; unpublishing removes everything.
+    await pubs.publish({ ...input({ noteId: await noteIdOf(publication.id) }), key });
+    expect(await pubs.media(publication.id, mediaId)).toBeNull();
+
+    const again = await pubs.publish(
+      input({ document, media: [{ id: mediaId, contentType: "audio/webm", data: btoa("x") }] }),
+    );
+    await pubs.unpublish(again.publication.id, again.key);
+    expect(await pubs.media(again.publication.id, mediaId)).toBeNull();
+  });
+
+  it("rejects oversized media", async () => {
+    const big = btoa("x".repeat(26 * 1024 * 1024));
+    await expect(
+      pubs.publish(input({ media: [{ id: createId(), contentType: "audio/webm", data: big }] })),
+    ).rejects.toMatchObject({ status: 413 });
   });
 
   it("rejects oversized documents", async () => {

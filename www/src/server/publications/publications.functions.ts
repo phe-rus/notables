@@ -38,6 +38,16 @@ export const publishNote = createServerFn({ method: "POST" })
       authorName: z.string().trim().min(1).max(80),
       readingMinutes: z.number().int().min(1).max(600),
       document: z.object({ root: z.object({ children: z.array(z.unknown()) }) }).loose(),
+      media: z
+        .array(
+          z.object({
+            id: Id,
+            contentType: z.string().regex(/^(audio|image)\/[\w.+-]+(;.*)?$/),
+            data: z.base64(),
+          }),
+        )
+        .max(100)
+        .optional(),
       key: z.string().max(100).optional(),
     }),
   )
