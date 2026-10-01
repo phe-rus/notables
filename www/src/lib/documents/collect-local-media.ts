@@ -1,4 +1,4 @@
-import { localMediaId } from "@notables/editor";
+import { localMediaId } from "@notables/core";
 
 interface SerializedNode {
   src?: unknown;

@@ -7,14 +7,7 @@ export { type DocumentSnapshot, useDocumentSnapshot } from "./hooks/use-document
 export { useEditorCommands } from "./hooks/use-editor-commands";
 export { type SelectionState, useSelectionState } from "./hooks/use-selection-state";
 export { sanitizeUrl } from "./lib/sanitize-url";
-export {
-  LOCAL_MEDIA_SCHEME,
-  localMediaId,
-  localMediaSrc,
-  type MediaResolver,
-  MediaResolverProvider,
-  useMediaSource,
-} from "./media/media-source";
+export { type MediaResolver, MediaResolverProvider, useMediaSource } from "./media/media-source";
 export * from "./nodes/node-registry";
 export { markdownTransformers } from "./plugins/markdown/markdown-transformers";
 export { INSERT_AUDIO_CLIP_COMMAND, INSERT_IMAGE_COMMAND } from "./plugins/media/media-plugin";

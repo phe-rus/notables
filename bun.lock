@@ -35,6 +35,7 @@
         "@lexical/selection": "catalog:",
         "@lexical/utils": "catalog:",
         "@lexical/yjs": "catalog:",
+        "@notables/core": "workspace:*",
         "@notables/ui": "workspace:*",
         "lexical": "catalog:",
         "motion": "catalog:",

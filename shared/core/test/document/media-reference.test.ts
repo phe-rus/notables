@@ -1,5 +1,5 @@
 import { describe, expect, it } from "bun:test";
-import { localMediaId, localMediaSrc } from "../../src/media/media-source";
+import { localMediaId, localMediaSrc } from "../../src/document/media-reference";
 
 describe("local media sources", () => {
   it("round-trips media ids", () => {

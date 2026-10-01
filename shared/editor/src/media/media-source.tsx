@@ -1,12 +1,7 @@
+import { localMediaId } from "@notables/core";
 import { createContext, type ReactNode, useContext, useEffect, useState } from "react";
 
-/**
- * Media stored on the device is referenced as `media:<id>` inside documents.
- * Apps resolve those ids to playable URLs (blob URLs, the native file
- * system…) by providing a MediaResolver.
- */
-export const LOCAL_MEDIA_SCHEME = "media:";
-
+/** Resolves a device media id (see `media:<id>` in @notables/core) to a playable URL. */
 export type MediaResolver = (mediaId: string) => Promise<string | null>;
 
 const MediaResolverContext = createContext<MediaResolver | null>(null);
@@ -19,15 +14,6 @@ export function MediaResolverProvider({
   children: ReactNode;
 }) {
   return <MediaResolverContext.Provider value={resolve}>{children}</MediaResolverContext.Provider>;
-}
-
-export function localMediaSrc(mediaId: string): string {
-  return `${LOCAL_MEDIA_SCHEME}${mediaId}`;
-}
-
-/** The media id of a local `media:` source, or null for any other URL. */
-export function localMediaId(src: string): string | null {
-  return src.startsWith(LOCAL_MEDIA_SCHEME) ? src.slice(LOCAL_MEDIA_SCHEME.length) || null : null;
 }
 
 /** A playable URL for `src`, resolving local media through the provider. */

@@ -1,4 +1,5 @@
-import { localMediaSrc, useEditorCommands } from "@notables/editor";
+import { localMediaSrc } from "@notables/core";
+import { useEditorCommands } from "@notables/editor";
 import { saveMedia } from "../../../platform/media-store";
 import { type FinishedRecording, RecorderSheet } from "./recorder-sheet";
 
