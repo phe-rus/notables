@@ -1,6 +1,7 @@
-import type { ReactNode } from "react";
+import { Fragment, type ReactNode } from "react";
 import { editorTheme } from "../editor/editor-theme";
 import { sanitizeUrl } from "../lib/sanitize-url";
+import { MediaImage } from "../media/media-image";
 import { AudioClip } from "../nodes/audio-clip/audio-clip-player";
 
 /**
@@ -24,9 +25,44 @@ const FORMAT = {
   highlight: 1 << 7,
 } as const;
 
-/** https, same-origin paths (published media) and image/audio data URLs. */
+/**
+ * https, same-origin paths (published media), device media (`media:<id>`,
+ * resolved by the app) and image/audio data URLs.
+ */
 const SAFE_MEDIA =
-  /^(https?:|\/(?!\/)|data:(image\/(png|jpe?g|gif|webp|avif)|audio\/[\w.+-]+);base64,)/i;
+  /^(https?:|\/(?!\/)|media:|data:(image\/(png|jpe?g|gif|webp|avif)|audio\/[\w.+-]+);base64,)/i;
+
+export interface ImageRenderProps {
+  src: string;
+  alt: string;
+  caption: string;
+}
+
+export interface AudioClipRenderProps {
+  src: string;
+  durationMs: number;
+  transcript: string;
+}
+
+/** Override how media renders, e.g. plain elements for EPUB export. */
+export interface MediaRenderers {
+  image?: (props: ImageRenderProps) => ReactNode;
+  audioClip?: (props: AudioClipRenderProps) => ReactNode;
+}
+
+const defaultRenderers: Required<MediaRenderers> = {
+  image: ({ src, alt, caption }) => (
+    <figure className="nt-figure">
+      <MediaImage src={src} alt={alt} />
+      {caption && <figcaption className="nt-caption">{caption}</figcaption>}
+    </figure>
+  ),
+  audioClip: (props) => (
+    <div className="nt-audio-block">
+      <AudioClip {...props} />
+    </div>
+  ),
+};
 
 const text = editorTheme.text ?? {};
 
@@ -51,133 +87,143 @@ function renderText(node: SerializedNode, key: number): ReactNode {
   return <span key={key}>{out}</span>;
 }
 
-function renderChildren(node: SerializedNode): ReactNode[] {
-  return children(node).map(renderNode);
-}
+function createRenderer(media: Required<MediaRenderers>) {
+  const renderChildren = (node: SerializedNode): ReactNode[] => children(node).map(renderNode);
 
-function renderNode(node: SerializedNode, key: number): ReactNode {
-  switch (node.type) {
-    case "text":
-    case "code-highlight":
-      return renderText(node, key);
-    case "linebreak":
-      return <br key={key} />;
-    case "tab":
-      return <span key={key}>{"\t"}</span>;
-    case "paragraph":
-      return (
-        <p key={key} className={editorTheme.paragraph}>
-          {renderChildren(node)}
-        </p>
-      );
-    case "heading": {
-      const tag = node.tag === "h1" || node.tag === "h2" || node.tag === "h3" ? node.tag : "h2";
-      const Tag = tag;
-      return (
-        <Tag key={key} className={editorTheme.heading?.[tag]}>
-          {renderChildren(node)}
-        </Tag>
-      );
-    }
-    case "quote":
-      return (
-        <blockquote key={key} className={editorTheme.quote}>
-          {renderChildren(node)}
-        </blockquote>
-      );
-    case "code":
-      return (
-        <pre key={key} className={editorTheme.code}>
-          <code>{renderChildren(node)}</code>
-        </pre>
-      );
-    case "list": {
-      const list = editorTheme.list;
-      if (node.listType === "check") {
+  function renderNode(node: SerializedNode, key: number): ReactNode {
+    switch (node.type) {
+      case "text":
+      case "code-highlight":
+        return renderText(node, key);
+      case "linebreak":
+        return <br key={key} />;
+      case "tab":
+        return <span key={key}>{"\t"}</span>;
+      case "paragraph":
         return (
-          <ul key={key} className={list?.checklist}>
-            {renderChildren({
-              ...node,
-              children: children(node).map((c) => ({ ...c, __check: true })),
-            })}
+          <p key={key} className={editorTheme.paragraph}>
+            {renderChildren(node)}
+          </p>
+        );
+      case "heading": {
+        const tag = node.tag === "h1" || node.tag === "h2" || node.tag === "h3" ? node.tag : "h2";
+        const Tag = tag;
+        return (
+          <Tag key={key} className={editorTheme.heading?.[tag]}>
+            {renderChildren(node)}
+          </Tag>
+        );
+      }
+      case "quote":
+        return (
+          <blockquote key={key} className={editorTheme.quote}>
+            {renderChildren(node)}
+          </blockquote>
+        );
+      case "code":
+        return (
+          <pre key={key} className={editorTheme.code}>
+            <code>{renderChildren(node)}</code>
+          </pre>
+        );
+      case "list": {
+        const list = editorTheme.list;
+        if (node.listType === "check") {
+          return (
+            <ul key={key} className={list?.checklist}>
+              {renderChildren({
+                ...node,
+                children: children(node).map((c) => ({ ...c, __check: true })),
+              })}
+            </ul>
+          );
+        }
+        return node.listType === "number" ? (
+          <ol key={key} className={list?.ol}>
+            {renderChildren(node)}
+          </ol>
+        ) : (
+          <ul key={key} className={list?.ul}>
+            {renderChildren(node)}
           </ul>
         );
       }
-      return node.listType === "number" ? (
-        <ol key={key} className={list?.ol}>
-          {renderChildren(node)}
-        </ol>
-      ) : (
-        <ul key={key} className={list?.ul}>
-          {renderChildren(node)}
-        </ul>
-      );
+      case "listitem": {
+        const list = editorTheme.list;
+        const nested = children(node).some((c) => c.type === "list");
+        const className = node.__check
+          ? node.checked
+            ? list?.listitemChecked
+            : list?.listitemUnchecked
+          : nested
+            ? list?.nested?.listitem
+            : list?.listitem;
+        return (
+          <li key={key} className={className}>
+            {renderChildren(node)}
+          </li>
+        );
+      }
+      case "link":
+      case "autolink": {
+        const href = sanitizeUrl(str(node.url));
+        return href ? (
+          <a
+            key={key}
+            className={editorTheme.link}
+            href={href}
+            rel="noopener noreferrer nofollow"
+            target="_blank"
+          >
+            {renderChildren(node)}
+          </a>
+        ) : (
+          <span key={key}>{renderChildren(node)}</span>
+        );
+      }
+      case "horizontalrule":
+        return <hr key={key} className={editorTheme.hr} />;
+      case "image": {
+        const src = str(node.src);
+        if (!SAFE_MEDIA.test(src)) return null;
+        return (
+          <Fragment key={key}>
+            {media.image({ src, alt: str(node.alt), caption: str(node.caption) })}
+          </Fragment>
+        );
+      }
+      case "audio-clip": {
+        const src = str(node.src);
+        if (!SAFE_MEDIA.test(src)) return null;
+        return (
+          <Fragment key={key}>
+            {media.audioClip({
+              src,
+              durationMs: typeof node.durationMs === "number" ? node.durationMs : 0,
+              transcript: str(node.transcript),
+            })}
+          </Fragment>
+        );
+      }
+      default:
+        return null;
     }
-    case "listitem": {
-      const list = editorTheme.list;
-      const nested = children(node).some((c) => c.type === "list");
-      const className = node.__check
-        ? node.checked
-          ? list?.listitemChecked
-          : list?.listitemUnchecked
-        : nested
-          ? list?.nested?.listitem
-          : list?.listitem;
-      return (
-        <li key={key} className={className}>
-          {renderChildren(node)}
-        </li>
-      );
-    }
-    case "link":
-    case "autolink": {
-      const href = sanitizeUrl(str(node.url));
-      return href ? (
-        <a
-          key={key}
-          className={editorTheme.link}
-          href={href}
-          rel="noopener noreferrer nofollow"
-          target="_blank"
-        >
-          {renderChildren(node)}
-        </a>
-      ) : (
-        <span key={key}>{renderChildren(node)}</span>
-      );
-    }
-    case "horizontalrule":
-      return <hr key={key} className={editorTheme.hr} />;
-    case "image": {
-      const src = str(node.src);
-      if (!SAFE_MEDIA.test(src)) return null;
-      return (
-        <figure key={key} className="nt-figure">
-          <img className="nt-image" src={src} alt={str(node.alt)} loading="lazy" />
-          {str(node.caption) && <figcaption className="nt-caption">{str(node.caption)}</figcaption>}
-        </figure>
-      );
-    }
-    case "audio-clip": {
-      const src = str(node.src);
-      if (!SAFE_MEDIA.test(src)) return null;
-      return (
-        <div key={key} className="nt-audio-block">
-          <AudioClip
-            src={src}
-            durationMs={typeof node.durationMs === "number" ? node.durationMs : 0}
-            transcript={str(node.transcript)}
-          />
-        </div>
-      );
-    }
-    default:
-      return null;
   }
+
+  return renderChildren;
 }
 
-export function DocumentView({ document, className }: { document: unknown; className?: string }) {
+export function DocumentView({
+  document,
+  className,
+  media,
+}: {
+  document: unknown;
+  className?: string;
+  media?: MediaRenderers;
+}) {
   const root = (document as { root?: SerializedNode } | null)?.root;
+  const renderChildren = createRenderer({ ...defaultRenderers, ...media });
   return (
     <div className={["nt-content", "nt-readonly", className].filter(Boolean).join(" ")}>
       {root ? renderChildren(root) : null}

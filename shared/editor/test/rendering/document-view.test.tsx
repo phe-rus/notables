@@ -79,6 +79,37 @@ describe("DocumentView", () => {
     expect(html).not.toContain("evil.test");
   });
 
+  it("renders device media instead of dropping it", () => {
+    const html = renderToStaticMarkup(
+      <DocumentView
+        document={{
+          root: {
+            children: [
+              { type: "image", src: "media:photo-1", alt: "Market" },
+              { type: "audio-clip", src: "media:clip-1", durationMs: 2000, transcript: "Hello" },
+            ],
+          },
+        }}
+      />,
+    );
+    expect(html).toContain('aria-label="Market"');
+    expect(html).toContain("Hello");
+  });
+
+  it("uses custom media renderers when given", () => {
+    const html = renderToStaticMarkup(
+      <DocumentView
+        document={{
+          root: {
+            children: [{ type: "audio-clip", src: "media:a", durationMs: 1, transcript: "t" }],
+          },
+        }}
+        media={{ audioClip: ({ src }) => <audio controls src={src} /> }}
+      />,
+    );
+    expect(html).toContain('<audio controls="" src="media:a"></audio>');
+  });
+
   it("tolerates malformed input", () => {
     expect(renderToStaticMarkup(<DocumentView document={null} />)).toBe(
       '<div class="nt-content nt-readonly"></div>',
