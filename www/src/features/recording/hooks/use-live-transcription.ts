@@ -22,6 +22,15 @@ interface SpeechRecognitionLike {
 }
 type SpeechRecognitionConstructor = new () => SpeechRecognitionLike;
 
+/**
+ * Recognisers report a phrase only when it ends, so estimate when it began
+ * from its length (about 150 words a minute). Silences then show up as
+ * gaps between segments, which become paragraph breaks.
+ */
+function speakingTime(text: string): number {
+  return text.split(/\s+/).filter(Boolean).length * 400;
+}
+
 function recognitionConstructor(): SpeechRecognitionConstructor | null {
   if (typeof window === "undefined") return null;
   const scope = window as unknown as {
@@ -44,7 +53,7 @@ export function useLiveTranscription(elapsed: () => number, language = navigator
   const [failed, setFailed] = useState(false);
   const recognition = useRef<SpeechRecognitionLike | null>(null);
   const listening = useRef(false);
-  const segmentStart = useRef(0);
+  const lastSegmentEnd = useRef(0);
 
   const stop = useCallback(() => {
     listening.current = false;
@@ -59,7 +68,7 @@ export function useLiveTranscription(elapsed: () => number, language = navigator
     instance.lang = language;
     instance.continuous = true;
     instance.interimResults = true;
-    segmentStart.current = elapsed();
+    lastSegmentEnd.current = elapsed();
 
     instance.onresult = (event) => {
       let pending = "";
@@ -70,10 +79,12 @@ export function useLiveTranscription(elapsed: () => number, language = navigator
         if (result.isFinal) {
           if (text) {
             const endMs = Math.round(elapsed());
-            const startMs = Math.round(segmentStart.current);
+            const startMs = Math.round(
+              Math.max(lastSegmentEnd.current, endMs - speakingTime(text)),
+            );
             setSegments((previous) => [...previous, { startMs, endMs, text }]);
+            lastSegmentEnd.current = endMs;
           }
-          segmentStart.current = elapsed();
         } else {
           pending += `${text} `;
         }

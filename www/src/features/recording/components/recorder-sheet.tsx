@@ -1,7 +1,8 @@
 import type { TranscriptSegment } from "@notables/core";
 import { cn, PauseIcon, PlayIcon, spring } from "@notables/ui";
 import { AnimatePresence, motion } from "motion/react";
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useSyncExternalStore } from "react";
+import { createPortal } from "react-dom";
 import { useAudioRecorder } from "../hooks/use-audio-recorder";
 import { useLiveTranscription } from "../hooks/use-live-transcription";
 import { formatDuration } from "../lib/format-duration";
@@ -20,9 +21,21 @@ export interface RecorderSheetProps {
   onFinish: (recording: FinishedRecording) => void | Promise<void>;
 }
 
-/** Full-screen recorder: waveform, clock, live transcript, pause and finish. */
+const subscribeNoop = () => () => {};
+
+/**
+ * Full-screen recorder: waveform, clock, live transcript, pause and finish.
+ * Rendered in a portal so it covers the screen wherever it is opened from
+ * (glass bars use backdrop filters, which would otherwise contain it).
+ */
 export function RecorderSheet({ open, ...props }: RecorderSheetProps) {
-  return (
+  const isClient = useSyncExternalStore(
+    subscribeNoop,
+    () => true,
+    () => false,
+  );
+  if (!isClient) return null;
+  return createPortal(
     <AnimatePresence>
       {open && (
         <motion.div
@@ -45,7 +58,8 @@ export function RecorderSheet({ open, ...props }: RecorderSheetProps) {
           </motion.section>
         </motion.div>
       )}
-    </AnimatePresence>
+    </AnimatePresence>,
+    document.body,
   );
 }
 
