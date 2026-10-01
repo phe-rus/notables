@@ -104,7 +104,10 @@ describe("DocumentView", () => {
             children: [{ type: "audio-clip", src: "media:a", durationMs: 1, transcript: "t" }],
           },
         }}
-        media={{ audioClip: ({ src }) => <audio controls src={src} /> }}
+        media={{
+          // biome-ignore lint/a11y/useMediaCaption: fixture; the transcript is the caption
+          audioClip: ({ src }) => <audio controls src={src} />,
+        }}
       />,
     );
     expect(html).toContain('<audio controls="" src="media:a"></audio>');
