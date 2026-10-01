@@ -141,13 +141,19 @@ multi-device sync and collaboration share one code path.
 4. Store segments with timestamps so text and audio stay linked; a narrated
    story becomes a book chapter with one action.
 
-## Identity
+## Identity, sharing and backup
 
-There is no sign-in yet. The app runs with a local identity per device.
-Authentication will come from Pherus infrastructure
-([ADR-0005](./adr/0005-identity-via-pherus-later.md)); until then, cloud
-sync is disabled by default and publishing is attributed to the device's
-local identity.
+Notables never requires an account
+([ADR-0006](./adr/0006-device-first-peer-sharing-optional-backup.md)):
+
+- Everything works on the device alone, with a local identity per device.
+- Sharing with specific people is **peer-to-peer**: devices exchange Yjs
+  updates directly, torrent-style.
+- Signing in with **Pherus PassID** (later,
+  [ADR-0005](./adr/0005-identity-via-pherus-later.md)) is optional and
+  turns on cloud sync as a **backup and fallback relay**.
+- Publishing works without an account; each publication is controlled by
+  a secret key held by the publishing device.
 
 ## Quality bar
 

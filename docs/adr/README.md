@@ -11,5 +11,6 @@ instead of editing.
 | 0003 | [Local-first private content, server-authoritative social data](./0003-local-first-private-server-authoritative-social.md) | Accepted |
 | 0004 | [A custom editor on Lexical](./0004-custom-lexical-editor.md)                           | Accepted |
 | 0005 | [Identity via Pherus, later](./0005-identity-via-pherus-later.md)                       | Accepted |
+| 0006 | [Device-first, peer-to-peer sharing, optional cloud backup](./0006-device-first-peer-sharing-optional-backup.md) | Accepted |
 
 New ADRs use [`template.md`](./template.md).
