@@ -1,3 +1,4 @@
+import { PauseIcon, PlayIcon } from "@notables/ui";
 import { useCallback, useEffect, useRef, useState } from "react";
 
 const BARS = 48;
@@ -79,14 +80,9 @@ export function AudioClip({ src, durationMs, transcript, peaks }: AudioClipProps
           onClick={toggle}
         >
           {playing ? (
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
-              <rect x="6" y="5" width="4" height="14" rx="1" />
-              <rect x="14" y="5" width="4" height="14" rx="1" />
-            </svg>
+            <PauseIcon size={16} strokeWidth={2} />
           ) : (
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
-              <path d="M7 4l14 8-14 8z" />
-            </svg>
+            <PlayIcon size={16} strokeWidth={2} />
           )}
         </button>
         <button type="button" className="nt-audio-wave" aria-label="Seek" onClick={seek}>

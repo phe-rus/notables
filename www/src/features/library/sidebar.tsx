@@ -1,15 +1,16 @@
 import type { NoteKind } from "@notables/core";
 import {
-  BookIcon,
+  ArticleIcon,
   CanvasIcon,
-  ChecklistIcon,
   cn,
   GlobeIcon,
   JournalIcon,
+  LessonIcon,
   NoteIcon,
-  PenIcon,
+  PlanIcon,
   SidebarItemContent,
   SidebarSection,
+  StoryIcon,
   sidebarItemClass,
   TrafficLights,
 } from "@notables/ui";
@@ -22,11 +23,11 @@ import { type ViewId, views } from "./views";
 const icons: Record<ViewId, ReactNode> = {
   all: <NoteIcon size={17} />,
   journal: <JournalIcon size={17} />,
-  story: <PenIcon size={17} />,
-  article: <BookIcon size={17} />,
+  story: <StoryIcon size={17} />,
+  article: <ArticleIcon size={17} />,
   manga: <CanvasIcon size={17} />,
-  lesson: <BookIcon size={17} />,
-  plan: <ChecklistIcon size={17} />,
+  lesson: <LessonIcon size={17} />,
+  plan: <PlanIcon size={17} />,
   note: <NoteIcon size={17} />,
   published: <GlobeIcon size={17} />,
 };

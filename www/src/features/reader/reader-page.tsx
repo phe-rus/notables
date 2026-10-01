@@ -1,5 +1,5 @@
 import { DocumentView } from "@notables/editor";
-import { Chip, cn, HeartIcon, StarIcon } from "@notables/ui";
+import { Chip, cn, HeartIcon, StarIcon, ThumbsUpIcon } from "@notables/ui";
 import { Link } from "@tanstack/react-router";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { getDeviceId } from "../../platform/identity";
@@ -208,19 +208,7 @@ export function ReaderPage({
               : "text-label hover:bg-fill",
           )}
         >
-          <svg
-            width="20"
-            height="20"
-            viewBox="0 0 24 24"
-            fill="none"
-            stroke="currentColor"
-            strokeWidth="1.8"
-            strokeLinecap="round"
-            strokeLinejoin="round"
-            aria-hidden="true"
-          >
-            <path d="M7 11v9H4v-9zM7 11l4-8a2 2 0 0 1 3 2l-1 5h6a2 2 0 0 1 2 2.3l-1.4 7A2 2 0 0 1 17.6 21H7" />
-          </svg>
+          <ThumbsUpIcon filled={mine.reactions.includes("like")} />
           <span aria-hidden="true">{stats.likes}</span>
         </button>
         <fieldset className="flex items-center gap-0.5" aria-label="Rate this">
