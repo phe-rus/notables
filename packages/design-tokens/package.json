@@ -1,0 +1,21 @@
+{
+  "name": "@notables/design-tokens",
+  "version": "0.0.0",
+  "private": true,
+  "description": "Notables design language: color, typography, spacing, radii and motion for every platform.",
+  "type": "module",
+  "exports": {
+    ".": "./src/index.ts",
+    "./theme.css": "./theme.css"
+  },
+  "scripts": {
+    "build": "node scripts/generate-css.ts",
+    "typecheck": "tsc -p tsconfig.json",
+    "test": "vitest run"
+  },
+  "devDependencies": {
+    "@types/node": "^22.0.0",
+    "typescript": "catalog:",
+    "vitest": "catalog:"
+  }
+}
