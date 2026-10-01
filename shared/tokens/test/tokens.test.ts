@@ -1,6 +1,6 @@
 import { describe, expect, it } from "bun:test";
 import { readFileSync } from "node:fs";
-import { dark, light, renderThemeCss } from "../src";
+import { dark, light, renderThemeCss } from "../src/index";
 
 /** WCAG relative luminance contrast ratio between two hex colors. */
 function contrast(a: string, b: string): number {

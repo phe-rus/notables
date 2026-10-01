@@ -1,9 +1,9 @@
 import { cn } from "@notables/ui";
 import { createFileRoute, Outlet, useMatch } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
-import { NotesList } from "../features/library/notes-list";
-import { Sidebar } from "../features/library/sidebar";
-import { getView } from "../features/library/views";
+import { Sidebar } from "../features/library/components/library-sidebar";
+import { NotesList } from "../features/library/components/notes-list";
+import { getView } from "../features/library/model/library-views";
 
 export const Route = createFileRoute("/_app")({
   // Private notes live on the device, so the app shell renders client-side.

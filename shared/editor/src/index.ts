@@ -1,17 +1,13 @@
-export { BlockToolbar, type BlockToolbarProps } from "./block-toolbar";
-export { type BlockType, blockLabels, setBlockType } from "./blocks";
-export { DocumentView } from "./document-view";
-export {
-  type DocumentProvider,
-  NotesEditor,
-  NotesEditorContent,
-  type NotesEditorContentProps,
-  type NotesEditorProps,
-} from "./editor";
-export * from "./nodes";
-export { transformers } from "./plugins/markdown";
-export { INSERT_AUDIO_CLIP_COMMAND, INSERT_IMAGE_COMMAND } from "./plugins/media-plugin";
-export { type DocumentSnapshot, useDocumentSnapshot } from "./snapshot";
-export { theme } from "./theme";
-export { sanitizeUrl } from "./url";
-export { type SelectionState, useSelectionState } from "./use-selection-state";
+export { type BlockType, blockLabels, setBlockType } from "./blocks/block-types";
+export type { DocumentProvider } from "./collaboration/document-provider";
+export { editorTheme } from "./editor/editor-theme";
+export { NotesEditor, type NotesEditorProps } from "./editor/notes-editor";
+export { NotesEditorContent, type NotesEditorContentProps } from "./editor/notes-editor-content";
+export { type DocumentSnapshot, useDocumentSnapshot } from "./hooks/use-document-snapshot";
+export { type SelectionState, useSelectionState } from "./hooks/use-selection-state";
+export { sanitizeUrl } from "./lib/sanitize-url";
+export * from "./nodes/node-registry";
+export { markdownTransformers } from "./plugins/markdown/markdown-transformers";
+export { INSERT_AUDIO_CLIP_COMMAND, INSERT_IMAGE_COMMAND } from "./plugins/media/media-plugin";
+export { DocumentView } from "./rendering/document-view";
+export { BlockToolbar, type BlockToolbarProps } from "./toolbar/block-toolbar";

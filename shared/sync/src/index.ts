@@ -1,2 +1,4 @@
-export * from "./note-provider";
-export * from "./persistence";
+export * from "./persistence/indexeddb-persistence";
+export * from "./persistence/memory-persistence";
+export * from "./persistence/persistence";
+export * from "./provider/note-provider";

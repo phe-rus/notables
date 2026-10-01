@@ -1,7 +1,7 @@
 import { Id } from "@notables/core";
 import { createFileRoute, notFound } from "@tanstack/react-router";
-import { ReaderPage } from "../../features/reader/reader-page";
-import { getPublication } from "../../server/functions";
+import { ReaderPage } from "../../features/reader/components/reader-page";
+import { getPublication } from "../../server/publications/publications.functions";
 
 export const Route = createFileRoute("/p/$publicationId")({
   loader: async ({ params }) => {

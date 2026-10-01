@@ -6,7 +6,7 @@
   "type": "module",
   "exports": {
     ".": "./src/index.ts",
-    "./editor.css": "./src/editor.css"
+    "./editor.css": "./src/styles/editor.css"
   },
   "scripts": {
     "typecheck": "tsc -p tsconfig.json",
