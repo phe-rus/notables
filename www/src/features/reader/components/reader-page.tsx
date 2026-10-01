@@ -3,10 +3,10 @@ import { Chip } from "@notables/ui";
 import { Link } from "@tanstack/react-router";
 import { useMemo, useRef } from "react";
 import { AppMark } from "../../../components/brand/app-mark";
+import { stripLeadingTitle } from "../../../lib/documents/strip-leading-title";
 import type { Publication } from "../../../server/publications/publications.service";
 import { noteKindLabels } from "../../library/model/note-kind-labels";
 import { usePublicationEngagement } from "../hooks/use-publication-engagement";
-import { stripLeadingTitle } from "../lib/strip-leading-title";
 import { ReactionsBar } from "./reactions-bar";
 
 const publishedDate = new Intl.DateTimeFormat("en", {

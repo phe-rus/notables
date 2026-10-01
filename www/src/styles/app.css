@@ -3,6 +3,7 @@
 @import "@notables/ui/utilities.css";
 @import "@notables/ui/base.css";
 @import "@notables/editor/editor.css";
+@import "./book.css";
 @import "@fontsource-variable/newsreader";
 
 @source "../../../shared/ui/src";

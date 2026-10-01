@@ -1,0 +1,143 @@
+/* The book reader: desk, paper, endpapers and book typography. */
+
+.book-desk {
+  background:
+    radial-gradient(120% 80% at 50% 40%, transparent 55%, rgb(60 40 10 / 0.08)),
+    var(--color-sidebar);
+}
+
+.book-paper {
+  background-color: #fffdf8;
+  color: #24221f;
+}
+
+/* Gutter shading: pages curve into the spine. */
+.book-paper.is-left {
+  border-radius: 14px 3px 3px 14px;
+  box-shadow: inset -26px 0 30px -26px rgb(60 40 10 / 0.35);
+}
+
+.book-paper.is-right {
+  border-radius: 3px 14px 14px 3px;
+  box-shadow: inset 26px 0 30px -26px rgb(60 40 10 / 0.35);
+}
+
+.book-endpaper {
+  background-color: #e9dfc7;
+  background-image:
+    radial-gradient(circle at 25% 30%, rgb(255 255 255 / 0.35) 0 2px, transparent 3px),
+    radial-gradient(circle at 75% 70%, rgb(138 90 0 / 0.12) 0 2px, transparent 3px);
+  background-size: 22px 22px;
+}
+
+@media (prefers-color-scheme: dark) {
+  .book-paper {
+    background-color: #f4efe4;
+  }
+}
+
+/* Typography inside the page flow. */
+
+.book-flow {
+  font-family: var(--font-serif);
+  font-size: 17px;
+  line-height: 1.6;
+  color: #24221f;
+  hyphens: auto;
+  text-align: justify;
+}
+
+.book-flow .nt-content {
+  font-size: inherit;
+  line-height: inherit;
+  color: inherit;
+}
+
+.book-flow .nt-content > * + * {
+  margin-top: 0.7em;
+}
+
+.book-flow img,
+.book-flow .nt-audio,
+.book-flow pre,
+.book-flow blockquote {
+  break-inside: avoid;
+  -webkit-column-break-inside: avoid;
+}
+
+.book-flow .nt-image {
+  max-height: 260px;
+}
+
+.book-flow h1,
+.book-flow h2,
+.book-flow h3 {
+  text-align: left;
+  break-after: avoid;
+  -webkit-column-break-after: avoid;
+}
+
+.book-title-page {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  height: 100%;
+  text-align: center;
+  break-after: column;
+  -webkit-column-break-after: always;
+}
+
+.book-title-page h1 {
+  margin: 0;
+  font-size: 34px;
+  line-height: 1.1;
+  font-weight: 600;
+  text-align: center;
+}
+
+.book-subtitle {
+  margin: 12px 0 0;
+  font-style: italic;
+  color: #6b6458;
+}
+
+.book-author {
+  margin: 40px 0 0;
+  font-family: var(--font-sans);
+  font-size: 12px;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: #6b6458;
+}
+
+.book-chapter {
+  break-before: column;
+  -webkit-column-break-before: always;
+  padding-top: 18%;
+}
+
+.book-chapter-number {
+  margin: 0;
+  font-family: var(--font-sans);
+  font-size: 11px;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: #8a5a00;
+  text-align: left;
+}
+
+.book-chapter-title {
+  margin: 8px 0 28px;
+  font-size: 28px;
+  line-height: 1.15;
+  font-weight: 600;
+}
+
+.book-missing {
+  font-style: italic;
+  color: #8b8478;
+}
+
+.book-scrubber {
+  accent-color: var(--color-accent-text);
+}
