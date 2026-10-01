@@ -1,5 +1,6 @@
 import { PauseIcon, PlayIcon } from "@notables/ui";
 import { useCallback, useEffect, useRef, useState } from "react";
+import { useMediaSource } from "../../media/media-source";
 
 const BARS = 48;
 
@@ -29,6 +30,7 @@ export interface AudioClipProps {
 /** Player shown inside the editor: play/pause, waveform scrubbing and transcript. */
 export function AudioClip({ src, durationMs, transcript, peaks }: AudioClipProps) {
   const audio = useRef<HTMLAudioElement>(null);
+  const playableSrc = useMediaSource(src);
   const [playing, setPlaying] = useState(false);
   const [position, setPosition] = useState(0);
   const duration = durationMs / 1000;
@@ -71,7 +73,7 @@ export function AudioClip({ src, durationMs, transcript, peaks }: AudioClipProps
   return (
     <div className="nt-audio" contentEditable={false}>
       {/* biome-ignore lint/a11y/useMediaCaption: the transcript below is the caption */}
-      <audio ref={audio} src={src} preload="metadata" />
+      <audio ref={audio} src={playableSrc ?? undefined} preload="metadata" />
       <div className="nt-audio-row">
         <button
           type="button"

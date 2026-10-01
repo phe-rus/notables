@@ -8,6 +8,7 @@ import {
   type Spread,
 } from "lexical";
 import type { JSX } from "react";
+import { useMediaSource } from "../../media/media-source";
 
 export type SerializedImageNode = Spread<
   { src: string; alt: string; caption: string },
@@ -74,7 +75,7 @@ export class ImageNode extends DecoratorNode<JSX.Element> {
   override decorate(): JSX.Element {
     return (
       <>
-        <img className="nt-image" src={this.__src} alt={this.__alt} draggable={false} />
+        <ImageView src={this.__src} alt={this.__alt} />
         {this.__caption && <figcaption className="nt-caption">{this.__caption}</figcaption>}
       </>
     );
@@ -91,4 +92,13 @@ export function $createImageNode(input: {
 
 export function $isImageNode(node: LexicalNode | null | undefined): node is ImageNode {
   return node instanceof ImageNode;
+}
+
+function ImageView({ src, alt }: { src: string; alt: string }) {
+  const playableSrc = useMediaSource(src);
+  return playableSrc ? (
+    <img className="nt-image" src={playableSrc} alt={alt} draggable={false} />
+  ) : (
+    <div className="nt-image nt-image-pending" role="img" aria-label={alt || "Photo"} />
+  );
 }

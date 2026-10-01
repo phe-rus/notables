@@ -234,6 +234,11 @@
   border-radius: var(--radius-lg);
 }
 
+.nt-image-pending {
+  aspect-ratio: 4 / 3;
+  background: var(--color-fill);
+}
+
 .nt-caption {
   margin-top: 8px;
   font-family: var(--font-sans);

@@ -62,6 +62,23 @@ describe("DocumentView", () => {
     expect(html).not.toContain("<script");
   });
 
+  it("allows same-origin media paths but not protocol-relative URLs", () => {
+    const html = renderToStaticMarkup(
+      <DocumentView
+        document={{
+          root: {
+            children: [
+              { type: "image", src: "/media/p1/m1", alt: "kept" },
+              { type: "image", src: "//evil.test/x.png", alt: "dropped" },
+            ],
+          },
+        }}
+      />,
+    );
+    expect(html).toContain('src="/media/p1/m1"');
+    expect(html).not.toContain("evil.test");
+  });
+
   it("tolerates malformed input", () => {
     expect(renderToStaticMarkup(<DocumentView document={null} />)).toBe(
       '<div class="nt-content nt-readonly"></div>',

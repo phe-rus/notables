@@ -24,7 +24,9 @@ const FORMAT = {
   highlight: 1 << 7,
 } as const;
 
-const SAFE_MEDIA = /^(https?:|data:(image\/(png|jpe?g|gif|webp|avif)|audio\/[\w.+-]+);base64,)/i;
+/** https, same-origin paths (published media) and image/audio data URLs. */
+const SAFE_MEDIA =
+  /^(https?:|\/(?!\/)|data:(image\/(png|jpe?g|gif|webp|avif)|audio\/[\w.+-]+);base64,)/i;
 
 const text = editorTheme.text ?? {};
 
