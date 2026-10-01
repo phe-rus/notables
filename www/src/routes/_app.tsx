@@ -1,11 +1,13 @@
+import { TranscriptionProvider } from "@notables/editor";
 import { cn, spring, useMediaQuery } from "@notables/ui";
 import { createFileRoute, Outlet, useLocation, useMatch } from "@tanstack/react-router";
 import { AnimatePresence, motion } from "motion/react";
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { BooksList } from "../features/books/components/books-list";
 import { Sidebar } from "../features/library/components/library-sidebar";
 import { NotesList } from "../features/library/components/notes-list";
 import { getView } from "../features/library/model/library-views";
+import { createNativeTranscription } from "../platform/native-transcription";
 
 export const Route = createFileRoute("/_app")({
   // Private notes live on the device, so the app shell renders client-side.
@@ -27,6 +29,7 @@ function AppShell() {
   const detailOpen = Boolean(note || book);
   const isPhone = useMediaQuery("(max-width: 767px)");
   const [sidebarOpen, setSidebarOpen] = useState(false);
+  const transcription = useMemo(createNativeTranscription, []);
 
   useEffect(() => setSidebarOpen(false), [viewId, noteId, bookId, inBooks]);
 
@@ -84,15 +87,17 @@ function AppShell() {
         )}
       >
         {/* Screens push in from the right on phones and settle into place on larger displays. */}
-        <motion.div
-          key={noteId ?? bookId ?? (inBooks ? "books" : "notes")}
-          className="flex min-h-0 grow flex-col"
-          initial={isPhone ? { x: 56, opacity: 0.6 } : { y: 10, opacity: 0 }}
-          animate={{ x: 0, y: 0, opacity: 1 }}
-          transition={spring.smooth}
-        >
-          <Outlet />
-        </motion.div>
+        <TranscriptionProvider service={transcription}>
+          <motion.div
+            key={noteId ?? bookId ?? (inBooks ? "books" : "notes")}
+            className="flex min-h-0 grow flex-col"
+            initial={isPhone ? { x: 56, opacity: 0.6 } : { y: 10, opacity: 0 }}
+            animate={{ x: 0, y: 0, opacity: 1 }}
+            transition={spring.smooth}
+          >
+            <Outlet />
+          </motion.div>
+        </TranscriptionProvider>
       </main>
     </div>
   );
