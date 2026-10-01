@@ -26,11 +26,12 @@ const FORMAT = {
 } as const;
 
 /**
- * https, same-origin paths (published media), device media (`media:<id>`,
- * resolved by the app) and image/audio data URLs.
+ * https, same-origin absolute or relative paths (published media, packaged
+ * e-book files), device media (`media:<id>`, resolved by the app) and
+ * image/audio data URLs.
  */
 const SAFE_MEDIA =
-  /^(https?:|\/(?!\/)|media:|data:(image\/(png|jpe?g|gif|webp|avif)|audio\/[\w.+-]+);base64,)/i;
+  /^(https?:|\/(?!\/)|[\w-]+(\/[\w.-]+)*\.\w+$|media:|data:(image\/(png|jpe?g|gif|webp|avif)|audio\/[\w.+-]+);base64,)/i;
 
 export interface ImageRenderProps {
   src: string;

@@ -62,7 +62,7 @@ describe("DocumentView", () => {
     expect(html).not.toContain("<script");
   });
 
-  it("allows same-origin media paths but not protocol-relative URLs", () => {
+  it("allows same-origin and relative media paths but not other origins or scripts", () => {
     const html = renderToStaticMarkup(
       <DocumentView
         document={{
@@ -70,13 +70,17 @@ describe("DocumentView", () => {
             children: [
               { type: "image", src: "/media/p1/m1", alt: "kept" },
               { type: "image", src: "//evil.test/x.png", alt: "dropped" },
+              { type: "image", src: "media/file-1.png", alt: "relative" },
+              { type: "image", src: "javascript:alert(1)//x.png", alt: "script" },
             ],
           },
         }}
       />,
     );
     expect(html).toContain('src="/media/p1/m1"');
+    expect(html).toContain('src="media/file-1.png"');
     expect(html).not.toContain("evil.test");
+    expect(html).not.toContain("javascript:");
   });
 
   it("renders device media instead of dropping it", () => {
