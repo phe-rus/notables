@@ -1,0 +1,7 @@
+[install]
+# Exact versions keep every platform build reproducible.
+exact = true
+
+[test]
+# Tests are run per package through Turborepo (`bun run test`).
+root = "./"

@@ -1,0 +1,39 @@
+# Dependencies
+node_modules/
+
+# Build output
+dist/
+.output/
+.tanstack/
+.turbo/
+*.tsbuildinfo
+
+# Cloudflare
+.wrangler/
+.dev.vars*
+!.dev.vars.example
+
+# Tauri / Rust
+target/
+www/src-tauri/gen/
+
+# Signing material
+*.jks
+*.keystore
+*.p8
+*.p12
+*.key
+*.mobileprovision
+
+# Environment
+.env
+.env.*
+!.env.example
+
+# OS / editors
+.DS_Store
+*.log
+.idea/
+.vscode/*
+!.vscode/extensions.json
+!.vscode/settings.json
