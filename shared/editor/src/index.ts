@@ -1,3 +1,4 @@
+export type { AudioClipInput, ComposedContent } from "./blocks/append-content";
 export { type BlockType, blockLabels, setBlockType } from "./blocks/block-types";
 export type { DocumentProvider } from "./collaboration/document-provider";
 export { editorTheme } from "./editor/editor-theme";
