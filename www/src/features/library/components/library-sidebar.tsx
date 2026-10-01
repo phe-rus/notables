@@ -13,7 +13,6 @@ import {
   SidebarSection,
   StoryIcon,
   sidebarItemClass,
-  WindowControls,
 } from "@notables/ui";
 import { Link } from "@tanstack/react-router";
 import type { ReactNode } from "react";
@@ -54,7 +53,12 @@ export function Sidebar({ active, className }: { active: ViewId | "books"; class
         className,
       )}
     >
-      {isTauri() && navigator.userAgent.includes("Mac") ? <WindowControls /> : <Wordmark />}
+      {isTauri() && navigator.userAgent.includes("Mac") ? (
+        // The native traffic lights sit here; the strip lets the window be dragged.
+        <div data-tauri-drag-region className="-mt-[18px] h-[34px] shrink-0" />
+      ) : (
+        <Wordmark />
+      )}
       <SidebarSection title="Library">
         {libraryViews.map((view) => (
           <Link

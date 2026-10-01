@@ -1,7 +1,9 @@
 import { createRouter } from "@tanstack/react-router";
+import { installServerBridge } from "./platform/server-bridge";
 import { routeTree } from "./routeTree.gen";
 
 export function getRouter() {
+  if (typeof window !== "undefined") installServerBridge();
   return createRouter({
     routeTree,
     scrollRestoration: true,

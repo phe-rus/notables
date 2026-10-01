@@ -5,7 +5,6 @@ export * from "./components/popover/popover";
 export * from "./components/search-field/search-field";
 export * from "./components/sidebar/sidebar";
 export * from "./components/status-indicator/status-indicator";
-export * from "./components/window-controls/window-controls";
 export * from "./hooks/use-dismiss";
 export * from "./hooks/use-media-query";
 export * from "./icons/icons";
