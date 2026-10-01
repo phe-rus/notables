@@ -117,6 +117,20 @@ describe("DocumentView", () => {
     expect(html).toContain('<audio controls="" src="media:a"></audio>');
   });
 
+  it("passes media without a source to custom renderers only", () => {
+    const document = {
+      root: { children: [{ type: "audio-clip", src: "", durationMs: 1, transcript: "kept" }] },
+    };
+    expect(renderToStaticMarkup(<DocumentView document={document} />)).not.toContain("kept");
+    const custom = renderToStaticMarkup(
+      <DocumentView
+        document={document}
+        media={{ audioClip: ({ transcript }) => <p>{transcript}</p> }}
+      />,
+    );
+    expect(custom).toContain("<p>kept</p>");
+  });
+
   it("tolerates malformed input", () => {
     expect(renderToStaticMarkup(<DocumentView document={null} />)).toBe(
       '<div class="nt-content nt-readonly"></div>',

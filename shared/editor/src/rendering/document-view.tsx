@@ -45,24 +45,30 @@ export interface AudioClipRenderProps {
   transcript: string;
 }
 
-/** Override how media renders, e.g. plain elements for EPUB export. */
+/**
+ * Override how media renders, e.g. plain elements for EPUB export. Sources
+ * are already checked; an empty `src` means the file isn't available, and
+ * the default renderers skip such nodes.
+ */
 export interface MediaRenderers {
   image?: (props: ImageRenderProps) => ReactNode;
   audioClip?: (props: AudioClipRenderProps) => ReactNode;
 }
 
 const defaultRenderers: Required<MediaRenderers> = {
-  image: ({ src, alt, caption }) => (
-    <figure className="nt-figure">
-      <MediaImage src={src} alt={alt} />
-      {caption && <figcaption className="nt-caption">{caption}</figcaption>}
-    </figure>
-  ),
-  audioClip: (props) => (
-    <div className="nt-audio-block">
-      <AudioClip {...props} />
-    </div>
-  ),
+  image: ({ src, alt, caption }) =>
+    src ? (
+      <figure className="nt-figure">
+        <MediaImage src={src} alt={alt} />
+        {caption && <figcaption className="nt-caption">{caption}</figcaption>}
+      </figure>
+    ) : null,
+  audioClip: (props) =>
+    props.src ? (
+      <div className="nt-audio-block">
+        <AudioClip {...props} />
+      </div>
+    ) : null,
 };
 
 const text = editorTheme.text ?? {};
@@ -186,7 +192,7 @@ function createRenderer(media: Required<MediaRenderers>) {
         return <hr key={key} className={editorTheme.hr} />;
       case "image": {
         const src = str(node.src);
-        if (!SAFE_MEDIA.test(src)) return null;
+        if (src && !SAFE_MEDIA.test(src)) return null;
         return (
           <Fragment key={key}>
             {media.image({ src, alt: str(node.alt), caption: str(node.caption) })}
@@ -195,7 +201,7 @@ function createRenderer(media: Required<MediaRenderers>) {
       }
       case "audio-clip": {
         const src = str(node.src);
-        if (!SAFE_MEDIA.test(src)) return null;
+        if (src && !SAFE_MEDIA.test(src)) return null;
         return (
           <Fragment key={key}>
             {media.audioClip({
