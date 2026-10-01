@@ -1,7 +1,8 @@
 import { cn, spring, useMediaQuery } from "@notables/ui";
-import { createFileRoute, Outlet, useMatch } from "@tanstack/react-router";
+import { createFileRoute, Outlet, useLocation, useMatch } from "@tanstack/react-router";
 import { AnimatePresence, motion } from "motion/react";
 import { useEffect, useState } from "react";
+import { BooksList } from "../features/books/components/books-list";
 import { Sidebar } from "../features/library/components/library-sidebar";
 import { NotesList } from "../features/library/components/notes-list";
 import { getView } from "../features/library/model/library-views";
@@ -19,15 +20,19 @@ function AppShell() {
   const { view: viewId } = Route.useSearch();
   const view = getView(viewId);
   const note = useMatch({ from: "/_app/notes/$noteId", shouldThrow: false });
+  const book = useMatch({ from: "/_app/books/$bookId", shouldThrow: false });
+  const inBooks = useLocation({ select: (location) => location.pathname.startsWith("/books") });
   const noteId = note?.params.noteId;
+  const bookId = book?.params.bookId;
+  const detailOpen = Boolean(note || book);
   const isPhone = useMediaQuery("(max-width: 767px)");
   const [sidebarOpen, setSidebarOpen] = useState(false);
 
-  useEffect(() => setSidebarOpen(false), [viewId, noteId]);
+  useEffect(() => setSidebarOpen(false), [viewId, noteId, bookId, inBooks]);
 
   return (
     <div className="flex h-dvh overflow-hidden bg-background">
-      <Sidebar active={view.id} className="hidden lg:flex" />
+      <Sidebar active={inBooks ? "books" : view.id} className="hidden lg:flex" />
 
       <AnimatePresence>
         {sidebarOpen && (
@@ -40,7 +45,7 @@ function AppShell() {
               transition={spring.smooth}
             >
               <Sidebar
-                active={view.id}
+                active={inBooks ? "books" : view.id}
                 className="pt-[max(18px,env(safe-area-inset-top))] shadow-2xl"
               />
             </motion.div>
@@ -57,19 +62,30 @@ function AppShell() {
         )}
       </AnimatePresence>
 
-      <NotesList
-        view={view}
-        activeId={noteId}
-        onOpenSidebar={() => setSidebarOpen(true)}
-        className={cn(note ? "hidden md:flex" : "flex")}
-      />
+      {inBooks ? (
+        <BooksList
+          activeId={bookId}
+          onOpenSidebar={() => setSidebarOpen(true)}
+          className={cn(detailOpen ? "hidden md:flex" : "flex")}
+        />
+      ) : (
+        <NotesList
+          view={view}
+          activeId={noteId}
+          onOpenSidebar={() => setSidebarOpen(true)}
+          className={cn(detailOpen ? "hidden md:flex" : "flex")}
+        />
+      )}
 
       <main
-        className={cn("relative min-w-0 grow flex-col bg-paper", note ? "flex" : "hidden md:flex")}
+        className={cn(
+          "relative min-w-0 grow flex-col bg-paper",
+          detailOpen ? "flex" : "hidden md:flex",
+        )}
       >
         {/* Screens push in from the right on phones and settle into place on larger displays. */}
         <motion.div
-          key={noteId ?? "empty"}
+          key={noteId ?? bookId ?? (inBooks ? "books" : "notes")}
           className="flex min-h-0 grow flex-col"
           initial={isPhone ? { x: 56, opacity: 0.6 } : { y: 10, opacity: 0 }}
           animate={{ x: 0, y: 0, opacity: 1 }}

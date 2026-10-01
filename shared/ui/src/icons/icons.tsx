@@ -1,7 +1,12 @@
 import {
+  Add01Icon,
+  ArrowDown01Icon,
   ArrowLeft01Icon,
+  ArrowRight01Icon,
+  ArrowUp01Icon,
   Book02Icon,
   BookOpen01Icon,
+  Cancel01Icon,
   CheckListIcon,
   CheckmarkCircle02Icon,
   Comment01Icon,
@@ -72,6 +77,11 @@ export const DrawIcon = icon(PencilIcon, "DrawIcon");
 export const ShareIcon = icon(Share08Icon, "ShareIcon");
 export const SearchIcon = icon(Search01Icon, "SearchIcon");
 export const ChevronLeftIcon = icon(ArrowLeft01Icon, "ChevronLeftIcon");
+export const ChevronRightIcon = icon(ArrowRight01Icon, "ChevronRightIcon");
+export const ChevronUpIcon = icon(ArrowUp01Icon, "ChevronUpIcon");
+export const ChevronDownIcon = icon(ArrowDown01Icon, "ChevronDownIcon");
+export const CloseIcon = icon(Cancel01Icon, "CloseIcon");
+export const PlusIcon = icon(Add01Icon, "PlusIcon");
 export const LinkIcon = icon(Link01Icon, "LinkIcon");
 export const CommentIcon = icon(Comment01Icon, "CommentIcon");
 export const TrashIcon = icon(Delete02Icon, "TrashIcon");

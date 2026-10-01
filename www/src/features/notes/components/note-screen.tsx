@@ -20,6 +20,7 @@ import { Link, useNavigate } from "@tanstack/react-router";
 import { motion } from "motion/react";
 import { useCallback } from "react";
 import { getDeviceId } from "../../../platform/device-identity";
+import { saveNoteContent } from "../../../platform/note-content-cache";
 import { formatFull } from "../../library/lib/date-format";
 import { getView, summarize } from "../../library/model/library-views";
 import {
@@ -29,6 +30,7 @@ import {
   useLibraryReady,
 } from "../../library/store/library-store";
 import { PublishControl } from "../../publishing/components/publish-control";
+import { deleteNote } from "../actions/delete-note";
 import { useNoteProvider } from "../hooks/use-note-provider";
 
 const statusLabel: Record<SyncStatus, string> = {
@@ -55,8 +57,9 @@ function NoteEditorScreen({ entry, viewId }: { entry: LibraryEntry; viewId?: str
   const view = getView(viewId);
 
   const onDocumentChange = useCallback(
-    ({ text }: DocumentSnapshot) => {
+    ({ document, text }: DocumentSnapshot) => {
       const { title, excerpt } = summarize(text);
+      void saveNoteContent(entry.id, document);
       if (provider && noteDoc.title(provider.doc) !== title) noteDoc.setTitle(provider.doc, title);
       getLibrary().update(entry.id, { title, excerpt, updatedAt: Date.now() });
     },
@@ -67,7 +70,7 @@ function NoteEditorScreen({ entry, viewId }: { entry: LibraryEntry; viewId?: str
 
   const remove = async () => {
     if (!window.confirm("Delete this note from this device?")) return;
-    await getLibrary().remove(entry.id);
+    await deleteNote(entry.id);
     void navigate({ to: "/", search: (s) => s });
   };
 

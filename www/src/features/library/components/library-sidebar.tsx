@@ -1,6 +1,7 @@
 import type { NoteKind } from "@notables/core";
 import {
   ArticleIcon,
+  BookIcon,
   CanvasIcon,
   cn,
   GlobeIcon,
@@ -18,6 +19,7 @@ import { Link } from "@tanstack/react-router";
 import type { ReactNode } from "react";
 import { AppMark } from "../../../components/brand/app-mark";
 import { isTauri } from "../../../platform/runtime";
+import { useBooks } from "../../books/store/book-store";
 import { type ViewId, views } from "../model/library-views";
 import { useLibrary } from "../store/library-store";
 
@@ -36,7 +38,8 @@ const icons: Record<ViewId, ReactNode> = {
 const libraryViews = views.filter((v) => v.id !== "published");
 const published = views.find((v) => v.id === "published");
 
-export function Sidebar({ active, className }: { active: ViewId; className?: string }) {
+export function Sidebar({ active, className }: { active: ViewId | "books"; className?: string }) {
+  const books = useBooks();
   const entries = useLibrary();
   const count = (id: ViewId) =>
     entries.filter((e) =>
@@ -69,6 +72,17 @@ export function Sidebar({ active, className }: { active: ViewId; className?: str
             </SidebarItemContent>
           </Link>
         ))}
+      </SidebarSection>
+      <SidebarSection title="Shelf">
+        <Link to="/books" className={sidebarItemClass(active === "books")}>
+          <SidebarItemContent
+            icon={<BookIcon size={17} />}
+            count={books.length}
+            active={active === "books"}
+          >
+            Books
+          </SidebarItemContent>
+        </Link>
       </SidebarSection>
       {published && (
         <SidebarSection title="Public">
