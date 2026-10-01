@@ -14,6 +14,8 @@ export interface LibraryEntry {
   origin: string;
   /** Set while the note is published. */
   publicationId: string | null;
+  /** Secret that lets this device update or unpublish the publication. */
+  publishKey: string | null;
   createdAt: number;
   updatedAt: number;
 }
@@ -69,6 +71,7 @@ class Library {
       pinned: false,
       origin: getDeviceId(),
       publicationId: null,
+      publishKey: null,
       createdAt: now,
       updatedAt: now,
     };

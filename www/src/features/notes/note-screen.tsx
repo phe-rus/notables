@@ -18,6 +18,7 @@ import { getPersistence, getRemoteSync } from "../../platform/storage";
 import { formatFull } from "../library/format";
 import { getLibrary, type LibraryEntry, useEntry, useLibraryReady } from "../library/library";
 import { getView, summarize } from "../library/views";
+import { PublishControl } from "../publish/publish-control";
 
 const statusLabel: Record<SyncStatus, string> = {
   loading: "Opening…",
@@ -121,6 +122,7 @@ function NoteEditorScreen({ entry, viewId }: { entry: LibraryEntry; viewId?: str
             <ShareIcon size={16} />
             Share
           </Button>
+          <PublishControl entry={entry} doc={provider.doc} />
         </div>
       </header>
 

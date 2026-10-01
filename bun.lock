@@ -107,6 +107,7 @@
         "@cloudflare/vite-plugin": "1.62.4",
         "@cloudflare/workers-types": "4.20260702.1",
         "@tailwindcss/vite": "4.3.3",
+        "@types/bun": "catalog:",
         "@types/react": "catalog:",
         "@types/react-dom": "catalog:",
         "@vitejs/plugin-react": "6.1.1",
