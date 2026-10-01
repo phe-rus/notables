@@ -1,0 +1,40 @@
+{
+  "name": "@notables/www",
+  "version": "0.0.0",
+  "private": true,
+  "description": "Notables — the app. TanStack Start on Cloudflare Workers, and the frontend of every Tauri target.",
+  "type": "module",
+  "scripts": {
+    "dev": "vite dev --port 3000",
+    "build": "vite build",
+    "preview": "vite preview",
+    "deploy": "vite build && wrangler deploy",
+    "typecheck": "tsc -p tsconfig.json"
+  },
+  "dependencies": {
+    "@fontsource-variable/newsreader": "5.3.0",
+    "@notables/core": "workspace:*",
+    "@notables/editor": "workspace:*",
+    "@notables/sync": "workspace:*",
+    "@notables/tokens": "workspace:*",
+    "@notables/ui": "workspace:*",
+    "@tanstack/react-router": "1.170.41",
+    "@tanstack/react-start": "1.168.60",
+    "react": "catalog:",
+    "react-dom": "catalog:",
+    "yjs": "catalog:",
+    "zod": "catalog:"
+  },
+  "devDependencies": {
+    "@cloudflare/vite-plugin": "1.62.4",
+    "@cloudflare/workers-types": "4.20260702.1",
+    "@tailwindcss/vite": "4.3.3",
+    "@types/react": "catalog:",
+    "@types/react-dom": "catalog:",
+    "@vitejs/plugin-react": "6.1.1",
+    "tailwindcss": "4.3.3",
+    "typescript": "catalog:",
+    "vite": "8.3.2",
+    "wrangler": "4.146.0"
+  }
+}
