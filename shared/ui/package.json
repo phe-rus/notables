@@ -5,7 +5,9 @@
   "description": "Notables design-system components: buttons, chips, navigation, fields and icons.",
   "type": "module",
   "exports": {
-    ".": "./src/index.ts"
+    ".": "./src/index.ts",
+    "./base.css": "./src/styles/base.css",
+    "./utilities.css": "./src/styles/utilities.css"
   },
   "scripts": {
     "typecheck": "tsc -p tsconfig.json"

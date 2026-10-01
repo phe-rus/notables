@@ -1,0 +1,80 @@
+/*
+ * Notables base layer: global element defaults shared by every app.
+ * Import after the design tokens: `@import "@notables/ui/base.css";`
+ */
+
+@layer base {
+  * {
+    @apply border-separator outline-accent/50;
+    transition:
+      background-color 0.3s ease,
+      color 0.3s ease,
+      border-color 0.3s ease;
+    scrollbar-width: none;
+    scrollbar-color: var(--color-separator) transparent;
+  }
+
+  html {
+    @apply font-sans;
+    height: 100%;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    text-rendering: optimizeLegibility;
+    -webkit-tap-highlight-color: transparent;
+  }
+
+  body {
+    @apply bg-background text-label [&_svg:not([data-brand])]:dualTone;
+    height: 100%;
+    overscroll-behavior: none;
+    transition:
+      background-color 0.3s ease,
+      color 0.3s ease;
+  }
+
+  input:-webkit-autofill,
+  input:-webkit-autofill:hover,
+  input:-webkit-autofill:focus,
+  textarea:-webkit-autofill,
+  textarea:-webkit-autofill:hover,
+  textarea:-webkit-autofill:focus {
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: var(--color-label);
+    caret-color: var(--color-label);
+    transition: background-color 999999s ease-in-out 0s;
+  }
+
+  button:not(:disabled),
+  [role="button"]:not(:disabled) {
+    cursor: pointer;
+  }
+
+  :focus-visible {
+    outline: 2px solid var(--color-accent-text);
+    outline-offset: 2px;
+  }
+
+  ::selection {
+    background: color-mix(in srgb, var(--color-accent) 40%, transparent);
+  }
+
+  input[type="number"]::-webkit-outer-spin-button,
+  input[type="number"]::-webkit-inner-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+  }
+
+  input[type="number"] {
+    -moz-appearance: textfield;
+    appearance: textfield;
+  }
+}
+
+body::-webkit-scrollbar {
+  @apply hidden;
+}
+
+div {
+  @apply no-scrollbar;
+}

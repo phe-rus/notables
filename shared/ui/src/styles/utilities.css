@@ -1,0 +1,96 @@
+/*
+ * Notables utilities. Import after Tailwind so `@utility` definitions are
+ * picked up: `@import "@notables/ui/utilities.css";`
+ */
+
+/** Centered page container with comfortable gutters. */
+@utility container {
+  margin-inline: auto;
+  padding-inline: 1.5rem;
+
+  @media (width >= --theme(--breakpoint-sm)) {
+    max-width: none;
+  }
+
+  @media (width >= 1440px) {
+    padding-inline: 2rem;
+    max-width: 1440px;
+  }
+}
+
+/** Scrollable without a visible scrollbar. */
+@utility no-scrollbar {
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+
+  &::-webkit-scrollbar {
+    display: none;
+  }
+}
+
+/**
+ * Two-tone icons: the first path is the primary stroke, the rest are
+ * secondary. Hovering a `.group` brings both to full strength with a
+ * slight tilt in opposite directions.
+ */
+@utility dualTone {
+  cursor: pointer;
+  color: currentcolor;
+  stroke-width: 2;
+
+  & path {
+    transform-box: fill-box;
+    transition:
+      opacity 200ms ease,
+      transform 200ms var(--ease-emphasized);
+  }
+
+  & path:first-child {
+    opacity: 80%;
+    transform-origin: 0% 100%;
+  }
+
+  & path:not(:first-child) {
+    opacity: 40%;
+    transform-origin: 100% 100%;
+  }
+
+  .group:hover & path:first-child {
+    opacity: 100%;
+    transform: rotate(-3deg);
+  }
+
+  .group:hover & path:not(:first-child) {
+    opacity: 100%;
+    transform: rotate(3deg);
+  }
+}
+
+/**
+ * Liquid Glass: a translucent, refracting material for bars, sidebars and
+ * floating controls, in the spirit of Apple's current design language.
+ */
+@utility glass {
+  background-color: color-mix(in srgb, var(--color-elevated) 68%, transparent);
+  backdrop-filter: blur(24px) saturate(180%);
+  -webkit-backdrop-filter: blur(24px) saturate(180%);
+  box-shadow:
+    inset 0 1px 0 0 color-mix(in srgb, white 55%, transparent),
+    inset 0 0 0 1px color-mix(in srgb, var(--color-separator) 70%, transparent),
+    0 12px 32px -12px rgb(40 30 0 / 0.18);
+
+  @media (prefers-color-scheme: dark) {
+    background-color: color-mix(in srgb, var(--color-elevated) 62%, transparent);
+    box-shadow:
+      inset 0 1px 0 0 color-mix(in srgb, white 10%, transparent),
+      inset 0 0 0 1px color-mix(in srgb, white 8%, transparent),
+      0 12px 32px -12px rgb(0 0 0 / 0.5);
+  }
+}
+
+/** A quieter glass for large panes such as the sidebar. */
+@utility glass-pane {
+  background-color: color-mix(in srgb, var(--color-sidebar) 78%, transparent);
+  backdrop-filter: blur(30px) saturate(160%);
+  -webkit-backdrop-filter: blur(30px) saturate(160%);
+}
