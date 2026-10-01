@@ -9,7 +9,8 @@ export interface Recording {
 
 /** Number of recent input levels kept for the live waveform. */
 const LEVEL_HISTORY = 40;
-const PREFERRED_TYPES = ["audio/webm;codecs=opus", "audio/mp4", "audio/webm"];
+// MP4 first: it plays everywhere and is an EPUB core media type; WebM is the fallback.
+const PREFERRED_TYPES = ["audio/mp4", "audio/webm;codecs=opus", "audio/webm"];
 
 function pickMimeType(): string | undefined {
   if (typeof MediaRecorder === "undefined") return undefined;
