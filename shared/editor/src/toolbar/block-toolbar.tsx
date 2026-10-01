@@ -6,6 +6,7 @@ import {
   IconButton,
   MicIcon,
   PhotoIcon,
+  Popover,
   useDismiss,
 } from "@notables/ui";
 import { useCallback, useId, useRef, useState } from "react";
@@ -42,11 +43,19 @@ export interface BlockToolbarProps {
   resolvePhoto?: (file: File) => Promise<string>;
   onRecord?: () => void;
   onDraw?: () => void;
+  /** Open the text-style menu below the toolbar, or above it for bottom bars. */
+  menuPlacement?: "below" | "above";
   className?: string;
 }
 
 /** The editor's top toolbar: text styles, checklist, photo, record, draw. */
-export function BlockToolbar({ resolvePhoto, onRecord, onDraw, className }: BlockToolbarProps) {
+export function BlockToolbar({
+  resolvePhoto,
+  onRecord,
+  onDraw,
+  menuPlacement = "below",
+  className,
+}: BlockToolbarProps) {
   const [editor] = useLexicalComposerContext();
   const state = useSelectionState();
   const [menuOpen, setMenuOpen] = useState(false);
@@ -88,22 +97,29 @@ export function BlockToolbar({ resolvePhoto, onRecord, onDraw, className }: Bloc
         >
           Aa
         </button>
-        {menuOpen && (
-          <div id={menuId} role="menu" className="nt-menu">
-            {BLOCK_MENU_ORDER.map((type) => (
-              <button
-                key={type}
-                type="button"
-                role="menuitemradio"
-                aria-checked={state.block === type}
-                className={cn("nt-menu-item", `nt-menu-${type}`)}
-                onClick={() => choose(type)}
-              >
-                {blockLabels[type]}
-              </button>
-            ))}
-          </div>
-        )}
+        <Popover
+          open={menuOpen}
+          id={menuId}
+          role="menu"
+          origin="top-left"
+          className={cn(
+            "nt-menu",
+            menuPlacement === "above" ? "bottom-[calc(100%+10px)]" : "top-[calc(100%+8px)]",
+          )}
+        >
+          {BLOCK_MENU_ORDER.map((type) => (
+            <button
+              key={type}
+              type="button"
+              role="menuitemradio"
+              aria-checked={state.block === type}
+              className={cn("nt-menu-item", `nt-menu-${type}`)}
+              onClick={() => choose(type)}
+            >
+              {blockLabels[type]}
+            </button>
+          ))}
+        </Popover>
       </div>
       <IconButton
         label="Checklist"

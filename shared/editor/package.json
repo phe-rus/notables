@@ -24,6 +24,7 @@
     "@lexical/yjs": "catalog:",
     "@notables/ui": "workspace:*",
     "lexical": "catalog:",
+    "motion": "catalog:",
     "yjs": "catalog:"
   },
   "peerDependencies": {

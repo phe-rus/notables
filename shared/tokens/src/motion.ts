@@ -1,6 +1,6 @@
 /**
- * Spring presets shared by Reanimated (mobile) and CSS/Motion (web) so
- * interactions feel identical everywhere. Values follow SwiftUI's defaults.
+ * Spring presets shared by motion/react and CSS so interactions feel the
+ * same on every platform. Values follow SwiftUI's defaults.
  */
 export interface Spring {
   damping: number;

@@ -1,7 +1,7 @@
 import { TOGGLE_LINK_COMMAND } from "@lexical/link";
 import { useLexicalComposerContext } from "@lexical/react/LexicalComposerContext";
 import { mergeRegister } from "@lexical/utils";
-import { cn, LinkIcon } from "@notables/ui";
+import { cn, LinkIcon, spring } from "@notables/ui";
 import {
   $getSelection,
   $isRangeSelection,
@@ -11,6 +11,7 @@ import {
   SELECTION_CHANGE_COMMAND,
   type TextFormatType,
 } from "lexical";
+import { motion } from "motion/react";
 import { useCallback, useEffect, useLayoutEffect, useRef, useState } from "react";
 import { createPortal } from "react-dom";
 import { useSelectionState } from "../../hooks/use-selection-state";
@@ -111,10 +112,13 @@ export function FloatingToolbarPlugin() {
   if (!open || !position) return null;
 
   return createPortal(
-    <div
+    <motion.div
       ref={toolbar}
       role="toolbar"
       aria-label="Text formatting"
+      initial={{ opacity: 0, y: 6, scale: 0.94 }}
+      animate={{ opacity: 1, y: 0, scale: 1 }}
+      transition={spring.snappy}
       className="nt-floating"
       style={{ top: position.top, left: position.left }}
       onMouseDown={(event) => {
@@ -180,7 +184,7 @@ export function FloatingToolbarPlugin() {
           <button type="submit">Add</button>
         </form>
       )}
-    </div>,
+    </motion.div>,
     document.body,
   );
 }

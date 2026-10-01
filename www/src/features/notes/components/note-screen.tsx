@@ -6,11 +6,13 @@ import {
   ChevronLeftIcon,
   IconButton,
   PinIcon,
+  riseMotion,
   ShareIcon,
   StatusIndicator,
   TrashIcon,
 } from "@notables/ui";
 import { Link, useNavigate } from "@tanstack/react-router";
+import { motion } from "motion/react";
 import { useCallback } from "react";
 import { getDeviceId } from "../../../platform/device-identity";
 import { formatFull } from "../../library/lib/date-format";
@@ -66,70 +68,75 @@ function NoteEditorScreen({ entry, viewId }: { entry: LibraryEntry; viewId?: str
 
   return (
     <NotesEditor id={entry.id} provider={provider} bootstrap={entry.origin === getDeviceId()}>
-      <header className="flex h-14 shrink-0 items-center justify-between gap-2 border-b border-separator/60 px-3 pt-[env(safe-area-inset-top)] md:px-5">
-        <Link
-          to="/"
-          search={(s) => s}
-          className="flex min-h-11 items-center gap-0.5 px-1 text-[17px] text-accent-text no-underline md:hidden"
-        >
-          <ChevronLeftIcon size={22} strokeWidth={2.2} />
-          {view.title}
-        </Link>
-        <BlockToolbar className="hidden md:flex" />
-        <div className="flex items-center gap-1.5 md:gap-2.5">
-          <StatusIndicator
-            state={
-              status === "connecting" || status === "loading"
-                ? "syncing"
-                : status === "offline"
-                  ? "offline"
-                  : "saved"
-            }
-            className="hidden lg:flex"
+      <div className="relative flex min-h-0 grow flex-col overflow-y-auto">
+        <header className="glass-bar sticky top-0 z-20 flex h-14 shrink-0 items-center justify-between gap-2 px-3 pt-[env(safe-area-inset-top)] md:px-5">
+          <Link
+            to="/"
+            search={(s) => s}
+            className="flex min-h-11 items-center gap-0.5 px-1 text-[17px] text-accent-text no-underline md:hidden"
           >
-            {statusLabel[status]}
-          </StatusIndicator>
-          <IconButton
-            label={entry.pinned ? "Unpin" : "Pin"}
-            tone={entry.pinned ? "accent" : "default"}
-            onClick={() => getLibrary().update(entry.id, { pinned: !entry.pinned })}
-          >
-            <PinIcon size={19} />
-          </IconButton>
-          <IconButton label="Delete note" onClick={remove}>
-            <TrashIcon size={19} />
-          </IconButton>
-          <Button
-            variant="secondary"
-            className="max-md:hidden"
-            disabled
-            title="Sharing with people arrives with Pherus accounts"
-          >
-            <ShareIcon size={16} />
-            Share
-          </Button>
-          <PublishControl entry={entry} doc={provider.doc} />
-        </div>
-      </header>
-
-      <article className="flex grow justify-center overflow-y-auto px-6 pt-6 pb-32 md:pt-11">
-        <div className="flex w-full max-w-[640px] flex-col gap-4">
-          <p className="text-center font-sans text-[12px] text-label-tertiary md:text-left md:text-[13px]">
-            {formatFull(entry.createdAt)}
-          </p>
-          <div className="relative">
-            <NotesEditorContent
-              label={entry.title || "New note"}
-              placeholder="Title"
-              onTextChange={onTextChange}
-            />
+            <ChevronLeftIcon size={22} strokeWidth={2.2} />
+            {view.title}
+          </Link>
+          <BlockToolbar className="hidden md:flex" />
+          <div className="flex items-center gap-1.5 md:gap-2.5">
+            <StatusIndicator
+              state={
+                status === "connecting" || status === "loading"
+                  ? "syncing"
+                  : status === "offline"
+                    ? "offline"
+                    : "saved"
+              }
+              className="hidden lg:flex"
+            >
+              {statusLabel[status]}
+            </StatusIndicator>
+            <IconButton
+              label={entry.pinned ? "Unpin" : "Pin"}
+              tone={entry.pinned ? "accent" : "default"}
+              onClick={() => getLibrary().update(entry.id, { pinned: !entry.pinned })}
+            >
+              <PinIcon size={19} />
+            </IconButton>
+            <IconButton label="Delete note" onClick={remove}>
+              <TrashIcon size={19} />
+            </IconButton>
+            <Button
+              variant="secondary"
+              className="max-md:hidden"
+              disabled
+              title="Device-to-device sharing is coming soon"
+            >
+              <ShareIcon size={16} />
+              Share
+            </Button>
+            <PublishControl entry={entry} doc={provider.doc} />
           </div>
-        </div>
-      </article>
+        </header>
 
-      <footer className="flex justify-center border-t border-separator bg-sidebar px-2.5 pt-1.5 pb-[max(10px,env(safe-area-inset-bottom))] md:hidden">
-        <BlockToolbar className="w-full justify-around" />
-      </footer>
+        <article className="flex grow justify-center px-6 pt-6 pb-36 md:pt-11">
+          <div className="flex w-full max-w-[640px] flex-col gap-4">
+            <p className="text-center font-sans text-[12px] text-label-tertiary md:text-left md:text-[13px]">
+              {formatFull(entry.createdAt)}
+            </p>
+            <div className="relative">
+              <NotesEditorContent
+                label={entry.title || "New note"}
+                placeholder="Title"
+                onTextChange={onTextChange}
+              />
+            </div>
+          </div>
+        </article>
+      </div>
+
+      <motion.footer
+        {...riseMotion}
+        className="glass fixed inset-x-3 bottom-[max(12px,env(safe-area-inset-bottom))] z-20 flex rounded-full px-2 py-1 md:hidden"
+      >
+        <BlockToolbar menuPlacement="above" className="w-full justify-around" />
+      </motion.footer>
     </NotesEditor>
   );
 }

@@ -331,16 +331,10 @@
   border-radius: 12px;
   background: var(--color-inverse);
   color: var(--color-on-inverse);
-  box-shadow: 0 10px 30px rgb(0 0 0 / 0.18);
+  box-shadow:
+    inset 0 1px 0 0 color-mix(in srgb, white 14%, transparent),
+    0 12px 32px rgb(0 0 0 / 0.22);
   font-family: var(--font-sans);
-  animation: nt-pop var(--duration-fast) var(--ease-emphasized);
-}
-
-@keyframes nt-pop {
-  from {
-    opacity: 0;
-    transform: translateY(4px) scale(0.96);
-  }
 }
 
 .nt-floating-btn {
@@ -404,26 +398,17 @@
 /* Text style menu */
 
 .nt-menu {
-  position: absolute;
-  top: calc(100% + 6px);
   left: 0;
-  z-index: 40;
   display: flex;
   flex-direction: column;
-  min-width: 200px;
+  min-width: 210px;
   padding: 6px;
-  border-radius: 14px;
-  background: var(--color-elevated);
-  box-shadow:
-    0 0 0 1px var(--color-separator),
-    0 16px 40px rgb(40 30 0 / 0.14);
-  animation: nt-pop var(--duration-fast) var(--ease-emphasized);
 }
 
 .nt-menu-item {
-  padding: 8px 12px;
+  padding: 9px 14px;
   border: none;
-  border-radius: 8px;
+  border-radius: 16px;
   background: none;
   color: var(--color-label);
   font-family: var(--font-sans);
@@ -458,11 +443,4 @@
 .nt-menu-code {
   font-family: var(--font-mono);
   font-size: 14px;
-}
-
-@media (prefers-reduced-motion: reduce) {
-  .nt-floating,
-  .nt-menu {
-    animation: none;
-  }
 }

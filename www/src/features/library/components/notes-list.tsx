@@ -1,5 +1,15 @@
-import { Chip, cn, IconButton, PenIcon, PinIcon, SearchField, SidebarIcon } from "@notables/ui";
+import {
+  Chip,
+  cn,
+  IconButton,
+  PenIcon,
+  PinIcon,
+  SearchField,
+  SidebarIcon,
+  spring,
+} from "@notables/ui";
 import { Link, useNavigate } from "@tanstack/react-router";
+import { AnimatePresence, motion } from "motion/react";
 import { useDeferredValue, useMemo, useState } from "react";
 import { bucket, formatUpdated } from "../lib/date-format";
 import type { View } from "../model/library-views";
@@ -77,9 +87,20 @@ export function NotesList({
             <h2 className="px-2.5 pt-3 pb-1 text-[12px] font-semibold text-label-tertiary">
               {group.label}
             </h2>
-            {group.items.map((entry) => (
-              <NoteRow key={entry.id} entry={entry} active={entry.id === activeId} />
-            ))}
+            <AnimatePresence initial={false}>
+              {group.items.map((entry) => (
+                <motion.div
+                  key={entry.id}
+                  layout="position"
+                  initial={{ opacity: 0, scale: 0.97 }}
+                  animate={{ opacity: 1, scale: 1 }}
+                  exit={{ opacity: 0, scale: 0.97 }}
+                  transition={spring.smooth}
+                >
+                  <NoteRow entry={entry} active={entry.id === activeId} />
+                </motion.div>
+              ))}
+            </AnimatePresence>
           </div>
         ))}
       </div>
@@ -95,7 +116,7 @@ function NoteRow({ entry, active }: { entry: LibraryEntry; active: boolean }) {
       params={{ noteId: entry.id }}
       search={(s) => s}
       className={cn(
-        "group relative flex flex-col gap-[3px] rounded-[10px] px-3 py-3 no-underline transition-colors duration-fast",
+        "group relative flex flex-col gap-[3px] rounded-[14px] px-3 py-3 no-underline transition-colors duration-fast",
         active ? "bg-accent-soft" : "hover:bg-fill/60",
       )}
     >

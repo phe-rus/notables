@@ -1,5 +1,6 @@
 import type { Reaction } from "@notables/core";
-import { cn, HeartIcon, StarIcon, ThumbsUpIcon } from "@notables/ui";
+import { cn, HeartIcon, riseMotion, StarIcon, ThumbsUpIcon } from "@notables/ui";
+import { motion } from "motion/react";
 import type { PublicationStats } from "../../../server/publications/publications.service";
 
 const STARS = [1, 2, 3, 4, 5] as const;
@@ -25,9 +26,10 @@ export function ReactionsBar({
   const shownRating = rating ?? Math.round(stats.rating ?? 0);
 
   return (
-    <nav
+    <motion.nav
+      {...riseMotion}
       aria-label="Reactions"
-      className="fixed inset-x-3 bottom-[max(16px,env(safe-area-inset-bottom))] mx-auto flex max-w-[460px] items-center justify-between rounded-[22px] bg-elevated px-2.5 py-2 shadow-[0_10px_30px_rgb(60_40_0/0.14),0_0_0_1px_var(--color-separator)]"
+      className="glass fixed inset-x-3 bottom-[max(16px,env(safe-area-inset-bottom))] mx-auto flex max-w-[460px] items-center justify-between rounded-full px-2 py-1.5"
     >
       <button
         type="button"
@@ -35,7 +37,7 @@ export function ReactionsBar({
         aria-label={`Heart · ${stats.hearts}`}
         onClick={() => onToggleReaction("heart")}
         className={cn(
-          "group flex h-11 min-w-16 items-center justify-center gap-1.5 rounded-[14px] px-3 text-[15px] font-semibold transition-[background-color,transform] active:scale-95",
+          "group flex h-11 min-w-16 items-center justify-center gap-1.5 rounded-full px-3 text-[15px] font-semibold transition-[background-color,transform] active:scale-95",
           hearted
             ? "bg-[#ffe7ec] text-[#c4123a] dark:bg-[#3d1720] dark:text-[#ff8fa6]"
             : "text-label hover:bg-fill",
@@ -50,7 +52,7 @@ export function ReactionsBar({
         aria-label={`Like · ${stats.likes}`}
         onClick={() => onToggleReaction("like")}
         className={cn(
-          "group flex h-11 min-w-14 items-center justify-center gap-1.5 rounded-[14px] px-3 text-[15px] transition-[background-color,transform] active:scale-95",
+          "group flex h-11 min-w-14 items-center justify-center gap-1.5 rounded-full px-3 text-[15px] transition-[background-color,transform] active:scale-95",
           liked ? "bg-accent-soft font-semibold text-accent-text" : "text-label hover:bg-fill",
         )}
       >
@@ -65,12 +67,12 @@ export function ReactionsBar({
             aria-label={`${star} star${star > 1 ? "s" : ""}`}
             aria-pressed={rating === star}
             onClick={() => onRate(star)}
-            className="group flex size-8 items-center justify-center rounded-lg text-[#b37a00] transition-transform hover:bg-fill active:scale-90 dark:text-accent"
+            className="group flex size-8 items-center justify-center rounded-full text-[#b37a00] transition-transform hover:bg-fill active:scale-90 dark:text-accent"
           >
             <StarIcon filled={shownRating >= star} />
           </button>
         ))}
       </fieldset>
-    </nav>
+    </motion.nav>
   );
 }

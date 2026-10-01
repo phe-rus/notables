@@ -7,8 +7,8 @@ import {
   Comment01Icon,
   Delete02Icon,
   FavouriteIcon,
+  Globe02Icon,
   CanvasIcon as HugeCanvasIcon,
-  GlobeIcon as HugeGlobeIcon,
   PauseIcon as HugePauseIcon,
   PlayIcon as HugePlayIcon,
   StarIcon as HugeStarIcon,
@@ -19,8 +19,8 @@ import {
   Mortarboard01Icon,
   Note01Icon,
   NotebookIcon,
-  PaintBoardIcon,
   PencilEdit02Icon,
+  PencilIcon,
   Pin02Icon,
   QuillWrite02Icon,
   Search01Icon,
@@ -65,10 +65,10 @@ export const CanvasIcon = icon(HugeCanvasIcon, "CanvasIcon");
 export const LessonIcon = icon(Mortarboard01Icon, "LessonIcon");
 export const PlanIcon = icon(CheckListIcon, "PlanIcon");
 export const MicIcon = icon(Mic01Icon, "MicIcon");
-export const GlobeIcon = icon(HugeGlobeIcon, "GlobeIcon");
+export const GlobeIcon = icon(Globe02Icon, "GlobeIcon");
 export const ChecklistIcon = icon(CheckmarkCircle02Icon, "ChecklistIcon");
 export const PhotoIcon = icon(Image01Icon, "PhotoIcon");
-export const DrawIcon = icon(PaintBoardIcon, "DrawIcon");
+export const DrawIcon = icon(PencilIcon, "DrawIcon");
 export const ShareIcon = icon(Share08Icon, "ShareIcon");
 export const SearchIcon = icon(Search01Icon, "SearchIcon");
 export const ChevronLeftIcon = icon(ArrowLeft01Icon, "ChevronLeftIcon");

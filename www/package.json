@@ -22,6 +22,7 @@
     "@notables/ui": "workspace:*",
     "@tanstack/react-router": "1.170.41",
     "@tanstack/react-start": "1.168.60",
+    "motion": "catalog:",
     "react": "catalog:",
     "react-dom": "catalog:",
     "yjs": "catalog:",

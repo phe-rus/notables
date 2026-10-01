@@ -47,7 +47,7 @@ export function Sidebar({ active, className }: { active: ViewId; className?: str
     <nav
       aria-label="Library"
       className={cn(
-        "flex w-[248px] shrink-0 flex-col gap-[22px] overflow-y-auto border-r border-separator bg-sidebar px-3 pt-[18px] pb-6",
+        "flex w-[248px] shrink-0 flex-col gap-[22px] overflow-y-auto glass-pane border-r border-separator/70 px-3 pt-[18px] pb-6",
         className,
       )}
     >
@@ -89,7 +89,7 @@ export function Sidebar({ active, className }: { active: ViewId; className?: str
       )}
       <SidebarSection title="Shared">
         <p className="px-2.5 text-[13px] leading-snug text-label-tertiary">
-          Share with family and friends once Pherus accounts arrive.
+          Share directly with family and friends, device to device — coming soon.
         </p>
       </SidebarSection>
     </nav>
