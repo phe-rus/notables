@@ -1,5 +1,5 @@
 import { PauseIcon, PlayIcon } from "@notables/ui";
-import { useCallback, useEffect, useRef, useState } from "react";
+import { type ReactNode, useCallback, useEffect, useRef, useState } from "react";
 import { useMediaSource } from "../../media/media-source";
 
 const BARS = 48;
@@ -25,10 +25,12 @@ export interface AudioClipProps {
   durationMs: number;
   transcript: string;
   peaks?: number[];
+  /** Extra controls shown under the player, e.g. a transcribe button. */
+  action?: ReactNode;
 }
 
 /** Player shown inside the editor: play/pause, waveform scrubbing and transcript. */
-export function AudioClip({ src, durationMs, transcript, peaks }: AudioClipProps) {
+export function AudioClip({ src, durationMs, transcript, peaks, action }: AudioClipProps) {
   const audio = useRef<HTMLAudioElement>(null);
   const playableSrc = useMediaSource(src);
   const [playing, setPlaying] = useState(false);
@@ -105,6 +107,7 @@ export function AudioClip({ src, durationMs, transcript, peaks }: AudioClipProps
           <b>Transcript</b> · “{transcript}”
         </p>
       )}
+      {action}
     </div>
   );
 }

@@ -7,7 +7,7 @@ import {
   type Spread,
 } from "lexical";
 import type { JSX } from "react";
-import { AudioClip } from "./audio-clip-player";
+import { AudioClipBlock } from "./audio-clip-block";
 
 export type SerializedAudioClipNode = Spread<
   { src: string; durationMs: number; transcript: string },
@@ -76,7 +76,12 @@ export class AudioClipNode extends DecoratorNode<JSX.Element> {
 
   override decorate(): JSX.Element {
     return (
-      <AudioClip src={this.__src} durationMs={this.__durationMs} transcript={this.__transcript} />
+      <AudioClipBlock
+        nodeKey={this.getKey()}
+        src={this.__src}
+        durationMs={this.__durationMs}
+        transcript={this.__transcript}
+      />
     );
   }
 }

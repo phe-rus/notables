@@ -10,6 +10,11 @@ export { type SelectionState, useSelectionState } from "./hooks/use-selection-st
 export { sanitizeUrl } from "./lib/sanitize-url";
 export { MediaImage } from "./media/media-image";
 export { type MediaResolver, MediaResolverProvider, useMediaSource } from "./media/media-source";
+export {
+  TranscriptionProvider,
+  type TranscriptionService,
+  useTranscriptionService,
+} from "./media/transcription-service";
 export * from "./nodes/node-registry";
 export { markdownTransformers } from "./plugins/markdown/markdown-transformers";
 export { INSERT_AUDIO_CLIP_COMMAND, INSERT_IMAGE_COMMAND } from "./plugins/media/media-plugin";
