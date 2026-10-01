@@ -1,6 +1,8 @@
+import { MediaResolverProvider } from "@notables/editor";
 import { createRootRoute, HeadContent, Outlet, Scripts } from "@tanstack/react-router";
 import { MotionConfig } from "motion/react";
 import type { ReactNode } from "react";
+import { resolveMediaUrl } from "../platform/media-store";
 import styles from "../styles/app.css?url";
 
 export const Route = createRootRoute({
@@ -42,7 +44,10 @@ function RootDocument({ children }: { children: ReactNode }) {
       </head>
       <body>
         {/* Respect the system's Reduce Motion setting everywhere. */}
-        <MotionConfig reducedMotion="user">{children}</MotionConfig>
+        <MotionConfig reducedMotion="user">
+          {/* Recordings and photos stored on this device play from local URLs. */}
+          <MediaResolverProvider resolve={resolveMediaUrl}>{children}</MediaResolverProvider>
+        </MotionConfig>
         <Scripts />
       </body>
     </html>

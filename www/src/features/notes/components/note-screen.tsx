@@ -18,7 +18,7 @@ import {
 } from "@notables/ui";
 import { Link, useNavigate } from "@tanstack/react-router";
 import { motion } from "motion/react";
-import { useCallback } from "react";
+import { useCallback, useState } from "react";
 import { getDeviceId } from "../../../platform/device-identity";
 import { saveNoteContent } from "../../../platform/note-content-cache";
 import { formatFull } from "../../library/lib/date-format";
@@ -30,6 +30,7 @@ import {
   useLibraryReady,
 } from "../../library/store/library-store";
 import { PublishControl } from "../../publishing/components/publish-control";
+import { NoteRecorder } from "../../recording/components/note-recorder";
 import { deleteNote } from "../actions/delete-note";
 import { useNoteProvider } from "../hooks/use-note-provider";
 
@@ -55,6 +56,8 @@ function NoteEditorScreen({ entry, viewId }: { entry: LibraryEntry; viewId?: str
   const { provider, status } = useNoteProvider(entry.id);
   const navigate = useNavigate();
   const view = getView(viewId);
+  const [recording, setRecording] = useState(false);
+  const startRecording = useCallback(() => setRecording(true), []);
 
   const onDocumentChange = useCallback(
     ({ document, text }: DocumentSnapshot) => {
@@ -86,7 +89,7 @@ function NoteEditorScreen({ entry, viewId }: { entry: LibraryEntry; viewId?: str
             <ChevronLeftIcon size={22} strokeWidth={2.2} />
             {view.title}
           </Link>
-          <BlockToolbar className="hidden md:flex" />
+          <BlockToolbar onRecord={startRecording} className="hidden md:flex" />
           <div className="flex items-center gap-1.5 md:gap-2.5">
             <StatusIndicator
               state={
@@ -143,8 +146,14 @@ function NoteEditorScreen({ entry, viewId }: { entry: LibraryEntry; viewId?: str
         {...riseMotion}
         className="glass fixed inset-x-3 bottom-[max(12px,env(safe-area-inset-bottom))] z-20 flex rounded-full px-2 py-1 md:hidden"
       >
-        <BlockToolbar menuPlacement="above" className="w-full justify-around" />
+        <BlockToolbar
+          onRecord={startRecording}
+          menuPlacement="above"
+          className="w-full justify-around"
+        />
       </motion.footer>
+
+      <NoteRecorder open={recording} title={entry.title} onClose={() => setRecording(false)} />
     </NotesEditor>
   );
 }
