@@ -44,6 +44,8 @@ jobs:
         with:
           node-version: 22
       - uses: dtolnay/rust-toolchain@stable
+        with:
+          components: rustfmt, clippy
       - uses: swatinem/rust-cache@v2
         with:
           workspaces: www/src-tauri -> target
@@ -56,3 +58,10 @@ jobs:
       - name: Build the app (debug, no installer)
         working-directory: www
         run: bun run tauri build --debug --no-bundle
+      - name: Check Rust formatting, lints and tests
+        if: runner.os == 'Linux'
+        working-directory: www/src-tauri
+        run: |
+          cargo fmt --check
+          cargo clippy --all-targets -- -D warnings
+          cargo test
