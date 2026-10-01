@@ -1,6 +1,7 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { BookScreen } from "../../../features/books/components/book-screen";
 import { ExportBookButton } from "../../../features/books/export/export-book-button";
+import { NarrateChapterButton } from "../../../features/books/narration/components/narrate-chapter-button";
 import { useBook } from "../../../features/books/store/book-store";
 
 export const Route = createFileRoute("/_app/books/$bookId")({
@@ -16,6 +17,7 @@ function BookRoute() {
       bookId={bookId}
       actions={
         <>
+          {book && <NarrateChapterButton book={book} />}
           {book && <ExportBookButton book={book} />}
           <Link
             to="/read/$bookId"
