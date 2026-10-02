@@ -100,7 +100,7 @@ A premium sounding voice you download once that reads offline and privately on e
 **Done when:** after one download, read aloud uses a natural voice with no connection and no key, on desktop and phones, and starts speaking within about a second.
 - [x] Design it (spec): `/architect natural voice on the device`
 - [ ] Build it: `/develop natural voice on the device`
-  - [ ] Models served from R2 and downloaded, checksummed and resumable in Rust, with the bucket and database renamed (AC-7, AC-11, AC-14)
+  - [x] Models served from R2 and downloaded, checksummed and resumable in Rust, with the bucket and database renamed (AC-7, AC-11, AC-14)
   - [x] Supertonic speaking in read aloud on desktop: Rust synthesis, the natural voice engine, ranking and content language (AC-3, AC-4, AC-5, AC-6, AC-12, AC-13)
   - [x] Automatic, manageable and updatable packs in Settings > Listening (AC-1, AC-2, AC-8, AC-9, AC-15)
   - [ ] Whisper moved onto the same packs, every string in six languages (AC-10, AC-16)
