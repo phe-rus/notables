@@ -1,7 +1,9 @@
 //! The Notables native shell: hosts the `www` app on iOS, Android, macOS,
 //! Windows and Linux, and provides device capabilities the WebView lacks:
-//! durable on-device storage and on-device transcription.
+//! durable on-device storage, on-device transcription, and native saving
+//! and printing.
 
+mod export;
 mod storage;
 mod transcription;
 
@@ -13,12 +15,15 @@ use transcription::Transcriber;
 #[cfg_attr(mobile, tauri::mobile_entry_point)]
 pub fn run() {
     tauri::Builder::default()
+        .plugin(tauri_plugin_dialog::init())
         .manage(Transcriber::default())
         .register_asynchronous_uri_scheme_protocol(
             storage::protocol::SCHEME,
             storage::protocol::handle,
         )
         .invoke_handler(tauri::generate_handler![
+            export::export_save_file,
+            export::export_print,
             storage::commands::storage_document_load,
             storage::commands::storage_document_append,
             storage::commands::storage_document_replace,

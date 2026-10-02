@@ -30,6 +30,8 @@ tokio = { version = "1", features = ["fs", "io-util", "sync"] }
 thiserror = "2"
 # On-device storage: documents and metadata in SQLite, media as files.
 rusqlite = { version = "0.40.2", features = ["bundled"] }
+# Native save dialogs for exported files.
+tauri-plugin-dialog = "2"
 
 [profile.release]
 codegen-units = 1
