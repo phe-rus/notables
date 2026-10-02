@@ -1,3 +1,4 @@
+export * from "./accent";
 export * from "./color";
 export * from "./layout";
 export * from "./motion";

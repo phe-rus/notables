@@ -1,3 +1,5 @@
+import { accents } from "./accent";
+
 /**
  * Semantic color roles. Warm "paper" neutrals with a honey accent: the feel
  * of a well-made notebook, tuned to sit naturally beside Apple's system UI.
@@ -51,10 +53,7 @@ export const light: ColorScheme = {
   labelSecondary: "#6b6458",
   labelTertiary: "#8b8478",
   ink: "#24221f",
-  accent: "#ffc53d",
-  onAccent: "#1c1c1e",
-  accentText: "#8a5a00",
-  accentSoft: "#fff1c7",
+  ...accents.honey.light,
   highlight: "#ffe58a",
   heart: "#ff375f",
   inverse: "#1c1c1e",
@@ -76,10 +75,7 @@ export const dark: ColorScheme = {
   labelSecondary: "#b5aea2",
   labelTertiary: "#8f887b",
   ink: "#ece6da",
-  accent: "#ffc53d",
-  onAccent: "#1c1c1e",
-  accentText: "#ffc53d",
-  accentSoft: "#3a2f12",
+  ...accents.honey.dark,
   highlight: "#7a5c00",
   heart: "#ff375f",
   inverse: "#f5f2ec",

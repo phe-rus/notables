@@ -1,3 +1,4 @@
+import { type AccentColors, accents } from "./accent";
 import { type ColorScheme, dark, light } from "./color";
 import { radius, space } from "./layout";
 import { duration, easing } from "./motion";
@@ -5,7 +6,7 @@ import { fontFamily } from "./typography";
 
 const kebab = (key: string) => key.replace(/[A-Z]/g, (c) => `-${c.toLowerCase()}`);
 
-function colorVars(scheme: ColorScheme): string {
+function colorVars(scheme: ColorScheme | AccentColors): string {
   return Object.entries(scheme)
     .map(([key, value]) => `  --color-${kebab(key)}: ${value};`)
     .join("\n");
@@ -14,7 +15,8 @@ function colorVars(scheme: ColorScheme): string {
 /**
  * Renders the tokens as a Tailwind v4 compatible stylesheet. Light values
  * live in `@theme`; dark values override them via `prefers-color-scheme`
- * or an explicit `data-theme="dark"` on the root element.
+ * or an explicit `data-theme="dark"` on the root element. Accents other
+ * than the default apply through `data-accent` on the root element.
  */
 export function renderThemeCss(): string {
   const lines = [
@@ -38,6 +40,25 @@ export function renderThemeCss(): string {
     colorVars(dark),
     "}",
     "",
+    ...Object.values(accents)
+      .filter((accent) => accent.id !== "honey")
+      .flatMap((accent) => {
+        const selector = `:root[data-accent="${accent.id}"]`;
+        return [
+          `${selector} {`,
+          colorVars(accent.light),
+          "}",
+          "@media (prefers-color-scheme: dark) {",
+          `  ${selector}:not([data-theme="light"]) {`,
+          colorVars(accent.dark).replace(/^/gm, "  "),
+          "  }",
+          "}",
+          `:root[data-theme="dark"][data-accent="${accent.id}"] {`,
+          colorVars(accent.dark),
+          "}",
+          "",
+        ];
+      }),
   ];
   return lines.join("\n");
 }

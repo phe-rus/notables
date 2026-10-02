@@ -1,6 +1,6 @@
 import { describe, expect, it } from "bun:test";
 import { readFileSync } from "node:fs";
-import { dark, light, renderThemeCss } from "../src/index";
+import { accents, dark, light, renderThemeCss } from "../src/index";
 
 /** WCAG relative luminance contrast ratio between two hex colors. */
 function contrast(a: string, b: string): number {
@@ -29,6 +29,21 @@ describe("design tokens", () => {
       }
       expect(contrast(scheme.onAccent, scheme.accent)).toBeGreaterThanOrEqual(4.5);
       expect(contrast(scheme.onInverse, scheme.inverse)).toBeGreaterThanOrEqual(4.5);
+    });
+  }
+
+  for (const accent of Object.values(accents)) {
+    it(`keeps the ${accent.name} accent readable (WCAG AA)`, () => {
+      for (const [scheme, colors] of [
+        [light, accent.light],
+        [dark, accent.dark],
+      ] as const) {
+        for (const ground of [scheme.background, scheme.surface, scheme.paper, scheme.sidebar]) {
+          expect(contrast(colors.accentText, ground)).toBeGreaterThanOrEqual(4.5);
+        }
+        expect(contrast(colors.accentText, colors.accentSoft)).toBeGreaterThanOrEqual(4.5);
+        expect(contrast(colors.onAccent, colors.accent)).toBeGreaterThanOrEqual(4.5);
+      }
     });
   }
 
