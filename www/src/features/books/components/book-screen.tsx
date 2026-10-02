@@ -13,6 +13,7 @@ import {
   spring,
   TrashIcon,
   toast,
+  useContextMenu,
 } from "@notables/ui";
 import { Link, useNavigate } from "@tanstack/react-router";
 import { AnimatePresence, motion } from "motion/react";
@@ -25,12 +26,14 @@ import { isListedNote, type LibraryEntry, useLibrary } from "../../library/store
 import { queueRecording } from "../../recording/lib/pending-recording";
 import { queueDrawing } from "../../studio/lib/pending-drawing";
 import { moveBooksToBin, moveNotesToBin } from "../../trash/lib/recycle-bin";
+import { addPart, PART_TITLE_MAX, removePart, renamePart } from "../actions/parts";
 import { chapterKind, startChapter } from "../actions/start-chapter";
 import { switchComicKind } from "../actions/switch-kind";
 import { syncBookFormat } from "../actions/sync-book-format";
 import { useBookKind } from "../lib/book-kind";
+import { partOpenings } from "../lib/chapter-outline";
 import { hasAction, otherDrawnKind, switchKindLabel } from "../lib/kind-actions";
-import { type BookEntry, getBookStore, useBook } from "../store/book-store";
+import { type BookEntry, getBookStore, type Part, useBook } from "../store/book-store";
 import { BookCover } from "./book-cover";
 
 export function BookScreen({ bookId, actions }: { bookId: string; actions?: ReactNode }) {
@@ -128,6 +131,9 @@ function ChapterList({ book, chapters }: { book: BookEntry; chapters: LibraryEnt
   const filesInput = useRef<HTMLInputElement>(null);
   const kind = chapterKind(book);
   const mediaKind = useBookKind(book);
+  const [newPart, setNewPart] = useState<string | null>(null);
+  const live = new Set(chapters.map((note) => note.id));
+  const openings = partOpenings(book, (id) => live.has(id));
   const drawn = hasAction(mediaKind, "drawPage");
   // An audiobook grows by recording or adding audio, not by writing chapters.
   const audio = hasAction(mediaKind, "addAudio");
@@ -223,50 +229,49 @@ function ChapterList({ book, chapters }: { book: BookEntry; chapters: LibraryEnt
       )}
       <ol className="flex flex-col gap-1.5">
         <AnimatePresence initial={false}>
-          {chapters.map((note, index) => (
-            <motion.li
-              key={note.id}
-              layout
-              initial={{ opacity: 0, y: 8 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, scale: 0.97 }}
-              transition={spring.smooth}
-              className="group flex items-center gap-1 rounded-[16px] bg-elevated pr-2 shadow-[inset_0_0_0_1px_var(--color-separator)] transition-colors hover:bg-fill/40"
-            >
-              <Link
-                to="/notes/$noteId"
-                params={{ noteId: note.id }}
-                className="flex min-w-0 grow items-center gap-3 py-2.5 pl-3 no-underline"
-              >
-                <span className="flex size-7 shrink-0 items-center justify-center rounded-full bg-fill text-[13px] font-semibold text-label-secondary">
-                  {index + 1}
-                </span>
-                <span className="grow truncate font-serif text-[17px] text-label">
-                  {note.title || "Untitled"}
-                </span>
-              </Link>
-              <ChapterButton
-                label="Move up"
-                disabled={index === 0}
-                onClick={() => store.moveChapter(book.id, index, index - 1)}
-              >
-                <ChevronUpIcon size={18} />
-              </ChapterButton>
-              <ChapterButton
-                label="Move down"
-                disabled={index === chapters.length - 1}
-                onClick={() => store.moveChapter(book.id, index, index + 1)}
-              >
-                <ChevronDownIcon size={18} />
-              </ChapterButton>
-              <ChapterButton
-                label={note.bookId === book.id ? "Delete chapter" : "Remove from book"}
-                onClick={() => remove(note)}
-              >
-                <CloseIcon size={17} />
-              </ChapterButton>
-            </motion.li>
-          ))}
+          {chapters.flatMap((note, index) => {
+            const part = openings.get(note.id);
+            const row = (
+              <ChapterRow
+                key={note.id}
+                book={book}
+                note={note}
+                index={index}
+                opensPart={Boolean(part)}
+                // Moves swap with the neighbouring chapter still in the book.
+                onMove={(step) => {
+                  const neighbour = chapters[index + step];
+                  if (!neighbour) return;
+                  store.moveChapter(
+                    book.id,
+                    book.chapterIds.indexOf(note.id),
+                    book.chapterIds.indexOf(neighbour.id),
+                  );
+                }}
+                isLast={index === chapters.length - 1}
+                onRemove={() => remove(note)}
+                onStartPart={() => {
+                  const created = addPart(
+                    book.id,
+                    note.id,
+                    t("books.part.defaultTitle", { number: openings.size + 1 }),
+                  );
+                  if (created) setNewPart(created.id);
+                }}
+              />
+            );
+            return part
+              ? [
+                  <PartHeading
+                    key={part.id}
+                    book={book}
+                    part={part}
+                    autoFocus={part.id === newPart}
+                  />,
+                  row,
+                ]
+              : [row];
+          })}
         </AnimatePresence>
       </ol>
       <div className="flex flex-wrap gap-2 pt-1">
@@ -351,6 +356,116 @@ function ChapterList({ book, chapters }: { book: BookEntry; chapters: LibraryEnt
         )}
       </AnimatePresence>
     </section>
+  );
+}
+
+function ChapterRow({
+  book,
+  note,
+  index,
+  isLast,
+  opensPart,
+  onMove,
+  onRemove,
+  onStartPart,
+}: {
+  book: BookEntry;
+  note: LibraryEntry;
+  index: number;
+  isLast: boolean;
+  opensPart: boolean;
+  onMove: (step: 1 | -1) => void;
+  onRemove: () => void;
+  onStartPart: () => void;
+}) {
+  const menu = useContextMenu(() => [
+    { label: t("books.part.startHere"), disabled: opensPart, onSelect: onStartPart },
+  ]);
+  return (
+    <motion.li
+      layout
+      initial={{ opacity: 0, y: 8 }}
+      animate={{ opacity: 1, y: 0 }}
+      exit={{ opacity: 0, scale: 0.97 }}
+      transition={spring.smooth}
+      {...menu}
+      className="group flex touch-manipulation items-center gap-1 rounded-[16px] bg-elevated pe-2 shadow-[inset_0_0_0_1px_var(--color-separator)] transition-colors [-webkit-touch-callout:none] hover:bg-fill/40"
+    >
+      <Link
+        to="/notes/$noteId"
+        params={{ noteId: note.id }}
+        className="flex min-w-0 grow items-center gap-3 py-2.5 ps-3 no-underline"
+      >
+        <span className="flex size-7 shrink-0 items-center justify-center rounded-full bg-fill text-[13px] font-semibold text-label-secondary">
+          {index + 1}
+        </span>
+        <span className="grow truncate font-serif text-[17px] text-label">
+          {note.title || "Untitled"}
+        </span>
+      </Link>
+      <ChapterButton label="Move up" disabled={index === 0} onClick={() => onMove(-1)}>
+        <ChevronUpIcon size={18} />
+      </ChapterButton>
+      <ChapterButton label="Move down" disabled={isLast} onClick={() => onMove(1)}>
+        <ChevronDownIcon size={18} />
+      </ChapterButton>
+      <ChapterButton
+        label={note.bookId === book.id ? "Delete chapter" : "Remove from book"}
+        onClick={onRemove}
+      >
+        <CloseIcon size={17} />
+      </ChapterButton>
+    </motion.li>
+  );
+}
+
+/** A part's title above its first chapter: edited in place, removed with its button. */
+function PartHeading({
+  book,
+  part,
+  autoFocus,
+}: {
+  book: BookEntry;
+  part: Part;
+  autoFocus: boolean;
+}) {
+  const [title, setTitle] = useState(part.title);
+  useEffect(() => setTitle(part.title), [part.title]);
+  const save = () => {
+    if (title.trim()) renamePart(book.id, part.id, title);
+    else setTitle(part.title);
+  };
+  return (
+    <motion.li
+      layout
+      initial={{ opacity: 0, y: 8 }}
+      animate={{ opacity: 1, y: 0 }}
+      exit={{ opacity: 0, scale: 0.97 }}
+      transition={spring.smooth}
+      className="flex items-center gap-1 pt-3 ps-1"
+    >
+      <input
+        aria-label={t("books.part.title")}
+        value={title}
+        maxLength={PART_TITLE_MAX}
+        // biome-ignore lint/a11y/noAutofocus: a part just started is named straight away
+        autoFocus={autoFocus}
+        onFocus={(event) => autoFocus && event.currentTarget.select()}
+        onChange={(event) => setTitle(event.target.value)}
+        onBlur={save}
+        onKeyDown={(event) => {
+          if (event.key === "Enter") event.currentTarget.blur();
+          if (event.key === "Escape") {
+            setTitle(part.title);
+            requestAnimationFrame(() => (event.target as HTMLInputElement).blur());
+          }
+        }}
+        className="min-w-0 grow bg-transparent font-serif text-[20px] font-semibold tracking-tight outline-none"
+      />
+      <ChapterButton label={t("books.part.remove")} onClick={() => removePart(book.id, part.id)}>
+        <CloseIcon size={17} />
+      </ChapterButton>
+    </motion.li>
   );
 }
 

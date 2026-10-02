@@ -7,6 +7,8 @@ import type { BookChapter } from "../use-book-content";
 export interface Track extends ChapterRecording {
   title: string;
   chapter: number;
+  /** The part this track opens, if it opens one. */
+  part?: string;
 }
 
 export const SPEEDS = [0.75, 1, 1.25, 1.5, 1.75, 2] as const;
@@ -52,10 +54,12 @@ export function useAudiobook(
   const tracks = useMemo<Track[]>(
     () =>
       (chapters ?? []).flatMap((chapter, index) =>
-        chapterRecordings(chapter.document).map((recording) => ({
+        chapterRecordings(chapter.document).map((recording, position) => ({
           ...recording,
           title: chapter.title,
           chapter: index,
+          // The first track of a part carries its title for the chapter list.
+          ...(position === 0 && chapter.part ? { part: chapter.part.title } : {}),
         })),
       ),
     [chapters],

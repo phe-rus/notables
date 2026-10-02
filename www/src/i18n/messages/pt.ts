@@ -373,6 +373,12 @@ export const pt: Messages = {
     placeSystem: "as definições do sistema",
   },
   books: {
+    part: {
+      defaultTitle: "Parte {number}",
+      startHere: "Começar uma parte aqui",
+      title: "Título da parte",
+      remove: "Remover a parte",
+    },
     franchise: {
       add: "Adicionar a uma franquia…",
       addTitle: "Adicionar «{title}» a uma franquia",

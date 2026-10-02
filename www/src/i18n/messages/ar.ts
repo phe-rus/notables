@@ -392,6 +392,12 @@ export const ar: Messages = {
     placeSystem: "إعدادات نظامك",
   },
   books: {
+    part: {
+      defaultTitle: "الجزء {number}",
+      startHere: "ابدأ جزءًا هنا",
+      title: "عنوان الجزء",
+      remove: "إزالة الجزء",
+    },
     franchise: {
       add: "إضافة إلى سلسلة عالم…",
       addTitle: "إضافة «{title}» إلى سلسلة عالم",

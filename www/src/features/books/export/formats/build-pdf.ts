@@ -437,6 +437,15 @@ async function buildProsePdf(material: BookMaterial): Promise<Uint8Array> {
   const frontMatter = 1;
 
   for (const [index, chapter] of material.chapters.entries()) {
+    if (chapter.part) {
+      // A part has a page of its own, its title a little above the middle.
+      set.newPage();
+      set.y = PAGE.height * 0.58;
+      set.paragraph(wordsOf([{ text: chapter.part.title }], fonts, 24, fonts.regular), {
+        size: 24,
+        align: "center",
+      });
+    }
     set.newPage();
     // Chapters start a third of the way down, like a printed book.
     set.y = PAGE.height - MARGIN.top - 70;

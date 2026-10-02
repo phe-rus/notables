@@ -77,6 +77,10 @@ export async function buildDocx(material: BookMaterial): Promise<Uint8Array> {
   if (material.author) body.push(paragraph([{ text: material.author }], "Author"));
 
   for (const chapter of material.chapters) {
+    // A part opens on a page of its own, like a printed book.
+    if (chapter.part) {
+      body.push(paragraph([{ text: chapter.part.title }], "Title", "<w:pageBreakBefore/>"));
+    }
     body.push(paragraph([{ text: chapter.title }], "Heading1", "<w:pageBreakBefore/>"));
     for (const block of chapter.blocks) body.push(await blockXml(block));
   }

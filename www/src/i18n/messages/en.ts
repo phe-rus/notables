@@ -370,6 +370,12 @@ export const en = {
     placeSystem: "your system settings",
   },
   books: {
+    part: {
+      defaultTitle: "Part {number}",
+      startHere: "Start Part Here",
+      title: "Part title",
+      remove: "Remove part",
+    },
     franchise: {
       add: "Add to Franchise…",
       addTitle: "Add “{title}” to a franchise",

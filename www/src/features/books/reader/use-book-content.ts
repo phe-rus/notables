@@ -1,20 +1,25 @@
 import { useEffect, useState } from "react";
 import { loadNoteContent } from "../../../platform/storage/note-content-cache";
 import { useLibrary } from "../../library/store/library-store";
-import type { BookEntry } from "../store/book-store";
+import { partOpenings } from "../lib/chapter-outline";
+import type { BookEntry, Part } from "../store/book-store";
 
 export interface BookChapter {
   noteId: string;
   title: string;
   /** Serialized note document, or null if this device has no copy yet. */
   document: unknown | null;
+  /** Set on the first chapter of a part. */
+  part?: Part;
 }
 
 /** Loads every chapter's document for reading, in book order. */
 export function useBookContent(book: BookEntry | undefined): BookChapter[] | null {
   const notes = useLibrary();
   const [chapters, setChapters] = useState<BookChapter[] | null>(null);
-  const chapterKey = book?.chapterIds.join(",") ?? "";
+  const chapterKey = book
+    ? `${book.chapterIds.join(",")}|${(book.parts ?? []).map((p) => `${p.startsAt}:${p.title}`).join(",")}`
+    : "";
 
   useEffect(() => {
     if (!book) return;
@@ -22,6 +27,7 @@ export function useBookContent(book: BookEntry | undefined): BookChapter[] | nul
     const titles = new Map(notes.map((n) => [n.id, n.title]));
     // Chapters in Recently Deleted are left out until they're restored.
     const trashed = new Set(notes.filter((n) => n.trashedAt).map((n) => n.id));
+    const openings = partOpenings(book, (noteId) => !trashed.has(noteId));
     Promise.all(
       book.chapterIds
         .filter((noteId) => !trashed.has(noteId))
@@ -29,6 +35,7 @@ export function useBookContent(book: BookEntry | undefined): BookChapter[] | nul
           noteId,
           title: titles.get(noteId) || "Untitled",
           document: (await loadNoteContent(noteId).catch(() => undefined)) ?? null,
+          ...(openings.has(noteId) ? { part: openings.get(noteId) } : {}),
         })),
     ).then((loaded) => {
       if (!cancelled) setChapters(loaded);

@@ -250,7 +250,15 @@ function PlayerScreen({ book, player }: { book: BookEntry; player: AudiobookPlay
               <ol className="flex flex-col">
                 {player.tracks.map((entry, index) => {
                   const current = index === player.index;
-                  return (
+                  return [
+                    entry.part && (
+                      <li
+                        key={`part-${entry.chapter}`}
+                        className="px-3 pt-4 pb-1 text-[13px] font-semibold text-label-secondary"
+                      >
+                        {entry.part}
+                      </li>
+                    ),
                     <li key={`${entry.chapter}-${entry.src}`}>
                       <button
                         type="button"
@@ -281,8 +289,8 @@ function PlayerScreen({ book, player }: { book: BookEntry; player: AudiobookPlay
                           {entry.durationMs ? clock(entry.durationMs / 1000) : ""}
                         </span>
                       </button>
-                    </li>
-                  );
+                    </li>,
+                  ];
                 })}
               </ol>
             </>

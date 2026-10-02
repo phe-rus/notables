@@ -37,7 +37,12 @@ export const BookFlow = memo(function BookFlow({
         {book.subtitle && <p className="book-subtitle">{book.subtitle}</p>}
         {book.author && <p className="book-author">{book.author}</p>}
       </section>
-      {chapters.map((chapter, index) => (
+      {chapters.map((chapter, index) => [
+        chapter.part && (
+          <section key={chapter.part.id} className="book-part">
+            <h2>{chapter.part.title}</h2>
+          </section>
+        ),
         <section key={chapter.noteId} className="book-chapter" data-chapter={chapter.noteId}>
           <p className="book-chapter-number">Chapter {index + 1}</p>
           <h2 className="book-chapter-title">{chapter.title}</h2>
@@ -46,8 +51,8 @@ export const BookFlow = memo(function BookFlow({
           ) : (
             <p className="book-missing">Open this note once on this device to include it.</p>
           )}
-        </section>
-      ))}
+        </section>,
+      ])}
     </div>
   );
 });

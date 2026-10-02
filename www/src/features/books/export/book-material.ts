@@ -2,8 +2,9 @@ import { stripLeadingTitle } from "../../../lib/documents/strip-leading-title";
 import { loadNoteContent } from "../../../platform/storage/note-content-cache";
 import { getLibrary } from "../../library/store/library-store";
 import { kindOfBook } from "../lib/book-kind";
+import { partOpenings } from "../lib/chapter-outline";
 import { isDrawnKind, type MediaKind } from "../model/media-kind";
-import type { BookEntry } from "../store/book-store";
+import type { BookEntry, Part } from "../store/book-store";
 import { type Block, documentBlocks } from "./document-blocks";
 
 export interface MaterialChapter {
@@ -12,6 +13,8 @@ export interface MaterialChapter {
   /** The stored document without its title line, or null if not on this device. */
   document: unknown | null;
   blocks: Block[];
+  /** Set on the first chapter of a part: its title is printed before the chapter. */
+  part?: Part;
 }
 
 /** Everything an export needs: the book's details and each chapter's content. */
@@ -26,6 +29,7 @@ export interface BookMaterial {
 
 export async function loadBookMaterial(book: BookEntry): Promise<BookMaterial> {
   const library = getLibrary();
+  const openings = partOpenings(book, (noteId) => !library.get(noteId)?.trashedAt);
   const chapters = await Promise.all(
     book.chapterIds
       .filter((noteId) => !library.get(noteId)?.trashedAt)
@@ -33,7 +37,14 @@ export async function loadBookMaterial(book: BookEntry): Promise<BookMaterial> {
         const title = library.get(noteId)?.title || "Untitled";
         const stored = (await loadNoteContent(noteId).catch(() => undefined)) ?? null;
         const document = stored ? stripLeadingTitle(stored, title) : null;
-        return { noteId, title, document, blocks: document ? documentBlocks(document) : [] };
+        const part = openings.get(noteId);
+        return {
+          noteId,
+          title,
+          document,
+          blocks: document ? documentBlocks(document) : [],
+          ...(part ? { part } : {}),
+        };
       }),
   );
   return {

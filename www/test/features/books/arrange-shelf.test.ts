@@ -47,6 +47,23 @@ describe("arrangeShelf", () => {
     ).toEqual(["Embers", ["Tidewater Volume 1", "Tidewater Volume 2"], "Field Notes"]);
   });
 
+  it("lists unnumbered items after numbered volumes, oldest first", () => {
+    const items = arrangeShelf(
+      [
+        book("newer loose", { seriesId: "s1", volume: null, createdAt: 9 }),
+        book("Volume 2", { seriesId: "s1", volume: 2 }),
+        book("older loose", { seriesId: "s1", volume: null, createdAt: 3 }),
+      ],
+      [tidewater],
+    );
+    const group = items[0];
+    expect(group?.type === "series" ? group.books.map((entry) => entry.id) : []).toEqual([
+      "Volume 2",
+      "older loose",
+      "newer loose",
+    ]);
+  });
+
   it("shows a lone volume as a book", () => {
     const items = arrangeShelf(
       [book("Tidewater Volume 1", { seriesId: "s1", volume: 1 })],

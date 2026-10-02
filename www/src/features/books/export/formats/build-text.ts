@@ -30,7 +30,7 @@ export async function buildMarkdown(
     frontMatter(material),
     ...material.chapters.map(
       (chapter) =>
-        `## ${chapter.title}\n\n${blocksToMarkdown(chapter.blocks, (src) => media.get(src)?.path ?? null)}`,
+        `${chapter.part ? `# ${chapter.part.title}\n\n` : ""}## ${chapter.title}\n\n${blocksToMarkdown(chapter.blocks, (src) => media.get(src)?.path ?? null)}`,
     ),
   ].join("\n\n");
   if (media.files.length === 0) return { bytes: strToU8(`${text}\n`), zipped: false };
@@ -46,7 +46,7 @@ export function buildText(material: BookMaterial): Uint8Array {
     material.author && `by ${material.author}`,
     ...material.chapters.map(
       (chapter, index) =>
-        `\n\nCHAPTER ${index + 1}\n${chapter.title}\n\n${blocksToText(chapter.blocks)}`,
+        `${chapter.part ? `\n\n\n${chapter.part.title.toUpperCase()}` : ""}\n\nCHAPTER ${index + 1}\n${chapter.title}\n\n${blocksToText(chapter.blocks)}`,
     ),
   ].filter(Boolean);
   return strToU8(`${parts.join("\n")}\n`);

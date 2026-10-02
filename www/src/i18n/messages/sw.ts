@@ -380,6 +380,12 @@ export const sw: Messages = {
     placeSystem: "mipangilio ya mfumo wako",
   },
   books: {
+    part: {
+      defaultTitle: "Sehemu ya {number}",
+      startHere: "Anza sehemu hapa",
+      title: "Jina la sehemu",
+      remove: "Ondoa sehemu",
+    },
     franchise: {
       add: "Ongeza kwenye franchise…",
       addTitle: "Ongeza “{title}” kwenye franchise",

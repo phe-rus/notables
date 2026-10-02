@@ -3,7 +3,8 @@ import { strToU8, type Zippable, zipSync } from "fflate";
 import { renderToStaticMarkup } from "react-dom/server";
 import { stripLeadingTitle } from "../../../lib/documents/strip-leading-title";
 import type { BookChapter } from "../reader/use-book-content";
-import type { BookEntry } from "../store/book-store";
+import type { BookEntry, Part } from "../store/book-store";
+import { contentsList } from "./contents-list";
 import { type LoadMedia, packageDocumentMedia } from "./epub-assets";
 import { epubStylesheet } from "./epub-stylesheet";
 import { escapeXml } from "./xml";
@@ -100,7 +101,8 @@ export function renderChapterBody(document: unknown): string {
 
 export interface BuildEpubOptions {
   book: BookEntry;
-  chapters: BookChapter[];
+  /** In reading order; a chapter that opens a part carries it, for the nested contents. */
+  chapters: Array<BookChapter & { part?: Part }>;
   loadMedia: LoadMedia;
   language?: string;
   /** For reproducible output in tests. */
@@ -160,7 +162,6 @@ export async function buildEpub({
     true,
   );
 
-  const tocEntries: string[] = [];
   chapters.forEach((chapter, index) => {
     const href = `chapter-${index + 1}.xhtml`;
     const packaged = documents[index];
@@ -181,7 +182,6 @@ export async function buildEpub({
       ),
       true,
     );
-    tocEntries.push(`<li><a href="${href}">${escapeXml(chapter.title)}</a></li>`);
   });
 
   add(
@@ -189,7 +189,7 @@ export async function buildEpub({
     xhtmlDocument(
       "Contents",
       language,
-      `<nav epub:type="toc" id="toc"><h1>Contents</h1><ol>${tocEntries.join("")}</ol></nav>`,
+      `<nav epub:type="toc" id="toc"><h1>Contents</h1>${contentsList(chapters, (index) => `chapter-${index + 1}.xhtml`)}</nav>`,
     ),
   );
   assets.forEach((asset, index) => {

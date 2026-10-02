@@ -374,6 +374,12 @@ export const fr: Messages = {
     placeSystem: "les réglages de votre système",
   },
   books: {
+    part: {
+      defaultTitle: "Partie {number}",
+      startHere: "Commencer une partie ici",
+      title: "Titre de la partie",
+      remove: "Retirer la partie",
+    },
     franchise: {
       add: "Ajouter à une franchise…",
       addTitle: "Ajouter « {title} » à une franchise",

@@ -17,8 +17,10 @@ export interface ShelfOptions {
   kindOf?: (book: BookEntry) => MediaKind;
 }
 
+/** Numbered volumes in order, then unnumbered ones (loose chapters), oldest first. */
 const byVolume = (a: BookEntry, b: BookEntry) =>
-  (a.volume ?? Number.MAX_SAFE_INTEGER) - (b.volume ?? Number.MAX_SAFE_INTEGER);
+  (a.volume ?? Number.MAX_SAFE_INTEGER) - (b.volume ?? Number.MAX_SAFE_INTEGER) ||
+  (a.volume == null && b.volume == null ? a.createdAt - b.createdAt : 0);
 
 /**
  * Lays books out for a shelf: the volumes of a series sit together, in

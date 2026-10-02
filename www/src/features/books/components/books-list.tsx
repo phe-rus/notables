@@ -31,7 +31,7 @@ import { arrangeShelf, type SeriesOrBook, titleInSeries } from "../lib/arrange-s
 import { kindOfBook } from "../lib/book-kind";
 import { hasAction, otherDrawnKind, switchKindLabel } from "../lib/kind-actions";
 import { kindLabel, partCountLabel, shelfLabel } from "../model/kind-labels";
-import { type MediaKind, mediaKinds } from "../model/media-kind";
+import { isDrawnKind, type MediaKind, mediaKinds } from "../model/media-kind";
 import { type BookEntry, getBookStore, useBooks } from "../store/book-store";
 import { type FranchiseEntry, getFranchiseStore, useFranchises } from "../store/franchise-store";
 import { type SeriesEntry, useSeries } from "../store/series-store";
@@ -568,7 +568,7 @@ function BookRow({
       <BookCover title={book.title} author={book.author} image={book.cover} className="w-12" />
       <span className="flex min-w-0 flex-col gap-0.5">
         <span className="truncate text-[15px] font-semibold text-label">
-          {(series ? titleInSeries(book, series) : book.title) || "Untitled book"}
+          {(series ? volumeTitle(book, series, mediaKind) : book.title) || "Untitled book"}
         </span>
         <span className="text-[13px] text-label-secondary">
           {[franchise, kind, count].filter(Boolean).join(" · ")}
@@ -613,4 +613,10 @@ function BookRow({
       {body}
     </Link>
   );
+}
+
+/** A volume's title in its series; a comic or manga item with no number holds loose chapters. */
+function volumeTitle(book: BookEntry, series: SeriesEntry, kind: MediaKind): string {
+  if (book.volume == null && isDrawnKind(kind)) return t("books.chapters");
+  return titleInSeries(book, series);
 }

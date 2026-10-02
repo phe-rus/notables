@@ -116,6 +116,24 @@
   color: #6b6458;
 }
 
+/* A part has a page of its own before its first chapter, as in print. */
+.book-part {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+  break-before: column;
+  -webkit-column-break-before: always;
+}
+
+.book-part h2 {
+  margin: 0;
+  font-size: 30px;
+  line-height: 1.15;
+  font-weight: 600;
+  text-align: center;
+}
+
 .book-chapter {
   break-before: column;
   -webkit-column-break-before: always;

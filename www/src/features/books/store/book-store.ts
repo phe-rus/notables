@@ -2,6 +2,7 @@ import { createId } from "@notables/core";
 import { useSyncExternalStore } from "react";
 import type * as Y from "yjs";
 import { getLibrary } from "../../library/store/library-store";
+import { partsWithout, validParts } from "../lib/chapter-outline";
 import { itemKind, kindFields, type MediaKind } from "../model/media-kind";
 import type { SeriesEntry } from "./series-store";
 
@@ -30,10 +31,20 @@ export interface BookEntry {
   volume?: number | null;
   /** `media:<id>` of a cover image. */
   cover?: string | null;
+  /** Parts over the chapters, in chapter order; reading order ignores them. */
+  parts?: Part[];
   /** When it went to Recently Deleted; cleared on restore. */
   trashedAt?: number | null;
   /** The series delete that took it, while it waits in Recently Deleted with its series. */
   trashBatch?: string | null;
+}
+
+/** A run of chapters printed under one title, from `startsAt` to the next part. */
+export interface Part {
+  id: string;
+  title: string;
+  /** The chapter the part opens with; must be in `chapterIds`. */
+  startsAt: string;
 }
 
 /**
@@ -107,7 +118,9 @@ class BookStore {
     if (!current) return;
     const next = { ...current, ...patch };
     const kind = patch.kind ?? this.kindOf(next);
-    this.books.set(id, { ...next, ...kindFields(kind), updatedAt: Date.now() });
+    // Markers left pointing at a chapter that is gone are dropped here.
+    const parts = next.parts ? { parts: validParts(next) } : {};
+    this.books.set(id, { ...next, ...parts, ...kindFields(kind), updatedAt: Date.now() });
   }
 
   addChapter(id: string, noteId: string) {
@@ -119,7 +132,11 @@ class BookStore {
 
   removeChapter(id: string, noteId: string) {
     const book = this.books.get(id);
-    if (book) this.update(id, { chapterIds: book.chapterIds.filter((c) => c !== noteId) });
+    if (!book) return;
+    this.update(id, {
+      chapterIds: book.chapterIds.filter((c) => c !== noteId),
+      ...(book.parts ? { parts: partsWithout(book, noteId) } : {}),
+    });
   }
 
   moveChapter(id: string, from: number, to: number) {
