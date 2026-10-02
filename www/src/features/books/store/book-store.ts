@@ -24,6 +24,8 @@ export interface BookEntry {
   volume?: number | null;
   /** `media:<id>` of a cover image. */
   cover?: string | null;
+  /** When it went to Recently Deleted; cleared on restore. */
+  trashedAt?: number | null;
 }
 
 export const bookFormat = (book: BookEntry): BookFormat => book.format ?? "prose";
@@ -50,6 +52,7 @@ export function bookKindLabel(book: BookEntry): string | null {
 class BookStore {
   readonly books: Y.Map<BookEntry>;
   #snapshot: BookEntry[] = [];
+  #trashed: BookEntry[] = [];
   #listeners = new Set<() => void>();
 
   constructor(doc: Y.Doc) {
@@ -59,7 +62,9 @@ class BookStore {
   }
 
   #refresh() {
-    this.#snapshot = [...this.books.values()].sort((a, b) => b.updatedAt - a.updatedAt);
+    const all = [...this.books.values()].sort((a, b) => b.updatedAt - a.updatedAt);
+    this.#snapshot = all.filter((book) => !book.trashedAt);
+    this.#trashed = all.filter((book) => book.trashedAt);
     for (const listener of this.#listeners) listener();
   }
 
@@ -70,7 +75,10 @@ class BookStore {
     };
   };
 
+  /** Books on the shelf; those in Recently Deleted are in `getTrashed`. */
   getSnapshot = () => this.#snapshot;
+
+  getTrashed = () => this.#trashed;
 
   create(): BookEntry {
     const now = Date.now();
@@ -141,4 +149,12 @@ export function useBooks(): BookEntry[] {
 
 export function useBook(id: string): BookEntry | undefined {
   return useBooks().find((book) => book.id === id);
+}
+
+const NO_BOOKS: BookEntry[] = [];
+
+/** Books in Recently Deleted. */
+export function useTrashedBooks(): BookEntry[] {
+  const store = getBookStore();
+  return useSyncExternalStore(store.subscribe, store.getTrashed, () => NO_BOOKS);
 }

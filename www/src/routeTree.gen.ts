@@ -13,6 +13,7 @@ import { Route as AppRouteImport } from './routes/_app'
 import { Route as VerifyRouteImport } from './routes/verify'
 import { Route as AppIndexRouteImport } from './routes/_app/index'
 import { Route as AppSettingsRouteImport } from './routes/_app/settings'
+import { Route as AppTrashRouteImport } from './routes/_app/trash'
 import { Route as PPublicationIdRouteImport } from './routes/p/$publicationId'
 import { Route as ReadBookIdRouteImport } from './routes/read/$bookId'
 import { Route as AppBooksIndexRouteImport } from './routes/_app/books/index'
@@ -39,6 +40,11 @@ const AppIndexRoute = AppIndexRouteImport.update({
 const AppSettingsRoute = AppSettingsRouteImport.update({
   id: '/settings',
   path: '/settings',
+  getParentRoute: () => AppRoute,
+} as any)
+const AppTrashRoute = AppTrashRouteImport.update({
+  id: '/trash',
+  path: '/trash',
   getParentRoute: () => AppRoute,
 } as any)
 const PPublicationIdRoute = PPublicationIdRouteImport.update({
@@ -87,6 +93,7 @@ export interface FileRoutesByFullPath {
   '/': typeof AppIndexRoute
   '/verify': typeof VerifyRoute
   '/settings': typeof AppSettingsRoute
+  '/trash': typeof AppTrashRoute
   '/p/$publicationId': typeof PPublicationIdRoute
   '/read/$bookId': typeof ReadBookIdRoute
   '/books/$bookId': typeof AppBooksBookIdRoute
@@ -99,6 +106,7 @@ export interface FileRoutesByFullPath {
 export interface FileRoutesByTo {
   '/verify': typeof VerifyRoute
   '/settings': typeof AppSettingsRoute
+  '/trash': typeof AppTrashRoute
   '/p/$publicationId': typeof PPublicationIdRoute
   '/read/$bookId': typeof ReadBookIdRoute
   '/': typeof AppIndexRoute
@@ -114,6 +122,7 @@ export interface FileRoutesById {
   '/_app': typeof AppRouteWithChildren
   '/verify': typeof VerifyRoute
   '/_app/settings': typeof AppSettingsRoute
+  '/_app/trash': typeof AppTrashRoute
   '/p/$publicationId': typeof PPublicationIdRoute
   '/read/$bookId': typeof ReadBookIdRoute
   '/_app/': typeof AppIndexRoute
@@ -130,6 +139,7 @@ export interface FileRouteTypes {
     | '/'
     | '/verify'
     | '/settings'
+    | '/trash'
     | '/p/$publicationId'
     | '/read/$bookId'
     | '/books/$bookId'
@@ -142,6 +152,7 @@ export interface FileRouteTypes {
   to:
     | '/verify'
     | '/settings'
+    | '/trash'
     | '/p/$publicationId'
     | '/read/$bookId'
     | '/'
@@ -156,6 +167,7 @@ export interface FileRouteTypes {
     | '/_app'
     | '/verify'
     | '/_app/settings'
+    | '/_app/trash'
     | '/p/$publicationId'
     | '/read/$bookId'
     | '/_app/'
@@ -203,6 +215,13 @@ declare module '@tanstack/react-router' {
       path: '/settings'
       fullPath: '/settings'
       preLoaderRoute: typeof AppSettingsRouteImport
+      parentRoute: typeof AppRoute
+    }
+    '/_app/trash': {
+      id: '/_app/trash'
+      path: '/trash'
+      fullPath: '/trash'
+      preLoaderRoute: typeof AppTrashRouteImport
       parentRoute: typeof AppRoute
     }
     '/p/$publicationId': {
@@ -266,6 +285,7 @@ declare module '@tanstack/react-router' {
 
 interface AppRouteChildren {
   AppSettingsRoute: typeof AppSettingsRoute
+  AppTrashRoute: typeof AppTrashRoute
   AppIndexRoute: typeof AppIndexRoute
   AppBooksBookIdRoute: typeof AppBooksBookIdRoute
   AppInvoicesInvoiceIdRoute: typeof AppInvoicesInvoiceIdRoute
@@ -276,6 +296,7 @@ interface AppRouteChildren {
 
 const AppRouteChildren: AppRouteChildren = {
   AppSettingsRoute: AppSettingsRoute,
+  AppTrashRoute: AppTrashRoute,
   AppIndexRoute: AppIndexRoute,
   AppBooksBookIdRoute: AppBooksBookIdRoute,
   AppInvoicesInvoiceIdRoute: AppInvoicesInvoiceIdRoute,

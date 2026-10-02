@@ -22,7 +22,7 @@ import { usePreferences } from "../../settings/store/preferences-store";
 import { bucket, formatUpdated } from "../lib/date-format";
 import { type GroupId, groupOf, type View } from "../model/library-views";
 import { noteKindLabels } from "../model/note-kind-labels";
-import { isOwnNote, type LibraryEntry, useLibraryReady } from "../store/library-store";
+import { isListedNote, type LibraryEntry, useLibraryReady } from "../store/library-store";
 import { GroupSwitcher } from "./group-switcher";
 
 interface Group {
@@ -60,7 +60,7 @@ export function NotesList({
   const shelfBooks = !deferredQuery && (view.id === "manga" || view.id === "comic") ? shelf : [];
 
   const groups = useMemo<Group[]>(() => {
-    const inView = notes.filter((note) => isOwnNote(note.entry) && view.matches(note.entry));
+    const inView = notes.filter((note) => isListedNote(note.entry) && view.matches(note.entry));
     // Searching shows the best matches first, with the passage that matched.
     if (deferredQuery) {
       const hits = search(inView, deferredQuery);

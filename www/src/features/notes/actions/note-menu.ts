@@ -1,26 +1,12 @@
 import { NoteKind } from "@notables/core";
-import { type ContextMenuItem, confirmDialog, toast } from "@notables/ui";
+import { type ContextMenuItem, toast } from "@notables/ui";
 import type { useNavigate } from "@tanstack/react-router";
 import { publicUrl } from "../../../platform/public-url";
 import { noteKindLabels } from "../../library/model/note-kind-labels";
 import { getLibrary, type LibraryEntry } from "../../library/store/library-store";
-import { deleteNote } from "./delete-note";
+import { moveNotesToBin } from "../../trash/lib/recycle-bin";
 
 type Navigate = ReturnType<typeof useNavigate>;
-
-/** Asks, then deletes a note and confirms with a toast. */
-export async function confirmDeleteNote(entry: LibraryEntry): Promise<boolean> {
-  const confirmed = await confirmDialog({
-    title: "Delete this note?",
-    message: "It will be removed from this device, with its photos and recordings.",
-    confirmLabel: "Delete",
-    destructive: true,
-  });
-  if (!confirmed) return false;
-  await deleteNote(entry.id);
-  toast("Note deleted", { description: entry.title || undefined });
-  return true;
-}
 
 /** What right-click or long-press on a note offers. */
 export function noteMenu(entry: LibraryEntry, navigate: Navigate): ContextMenuItem[] {
@@ -62,7 +48,7 @@ export function noteMenu(entry: LibraryEntry, navigate: Navigate): ContextMenuIt
       label: "Delete",
       destructive: true,
       onSelect: () => {
-        void confirmDeleteNote(entry);
+        moveNotesToBin([entry]);
       },
     },
   ];

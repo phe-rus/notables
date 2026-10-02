@@ -20,12 +20,16 @@ export function useBookContent(book: BookEntry | undefined): BookChapter[] | nul
     if (!book) return;
     let cancelled = false;
     const titles = new Map(notes.map((n) => [n.id, n.title]));
+    // Chapters in Recently Deleted are left out until they're restored.
+    const trashed = new Set(notes.filter((n) => n.trashedAt).map((n) => n.id));
     Promise.all(
-      book.chapterIds.map(async (noteId) => ({
-        noteId,
-        title: titles.get(noteId) || "Untitled",
-        document: (await loadNoteContent(noteId).catch(() => undefined)) ?? null,
-      })),
+      book.chapterIds
+        .filter((noteId) => !trashed.has(noteId))
+        .map(async (noteId) => ({
+          noteId,
+          title: titles.get(noteId) || "Untitled",
+          document: (await loadNoteContent(noteId).catch(() => undefined)) ?? null,
+        })),
     ).then((loaded) => {
       if (!cancelled) setChapters(loaded);
     });

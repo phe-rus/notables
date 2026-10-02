@@ -13,8 +13,8 @@ import {
 import { Link, useNavigate } from "@tanstack/react-router";
 import { AnimatePresence, motion } from "motion/react";
 import { type ReactNode, useDeferredValue, useMemo, useState } from "react";
-import { isOwnNote, type LibraryEntry, useLibrary } from "../../library/store/library-store";
-import { deleteBook } from "../actions/delete-book";
+import { isListedNote, type LibraryEntry, useLibrary } from "../../library/store/library-store";
+import { moveBooksToBin } from "../../trash/lib/recycle-bin";
 import { type BookEntry, getBookStore, useBook } from "../store/book-store";
 import { BookCover } from "./book-cover";
 
@@ -40,10 +40,11 @@ function BookEditor({ book, actions }: { book: BookEntry; actions?: ReactNode })
   const notesById = useMemo(() => new Map(notes.map((n) => [n.id, n])), [notes]);
   const chapters = book.chapterIds
     .map((id) => notesById.get(id))
-    .filter((note): note is LibraryEntry => Boolean(note));
+    .filter((note): note is LibraryEntry => Boolean(note) && !note?.trashedAt);
 
-  const remove = async () => {
-    if (await deleteBook(book)) void navigate({ to: "/books" });
+  const remove = () => {
+    moveBooksToBin([book]);
+    void navigate({ to: "/books" });
   };
 
   return (
@@ -185,7 +186,7 @@ function ChapterPicker({ book, notes }: { book: BookEntry; notes: LibraryEntry[]
   const deferredQuery = useDeferredValue(query.trim().toLowerCase());
   const available = notes.filter(
     (n) =>
-      isOwnNote(n) &&
+      isListedNote(n) &&
       !book.chapterIds.includes(n.id) &&
       (!deferredQuery || n.title.toLowerCase().includes(deferredQuery)),
   );

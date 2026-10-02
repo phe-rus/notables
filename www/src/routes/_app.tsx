@@ -23,6 +23,7 @@ import { SearchPalette } from "../features/search/components/search-palette";
 import { AppearanceSync } from "../features/settings/components/appearance-sync";
 import { sidebarWidth } from "../features/settings/model/preferences";
 import { updatePreferences, usePreferences } from "../features/settings/store/preferences-store";
+import { eraseExpired } from "../features/trash/lib/recycle-bin";
 import { isShortcut } from "../lib/keyboard/shortcuts";
 import { createNativeTranscription } from "../platform/native-transcription";
 
@@ -46,10 +47,13 @@ function AppShell() {
   const inBooks = pathname.startsWith("/books");
   const inInvoices = pathname.startsWith("/invoices");
   const inSettings = pathname.startsWith("/settings");
+  const inTrash = pathname.startsWith("/trash");
+  // Settings and Recently Deleted fill the content area without a list beside them.
+  const fullPage = inSettings || inTrash;
   const noteId = note?.params.noteId;
   const bookId = book?.params.bookId;
   const invoiceId = invoice?.params.invoiceId;
-  const detailOpen = Boolean(note || book || invoice || inSettings);
+  const detailOpen = Boolean(note || book || invoice || fullPage);
   // On phones Settings is a top-level place, so it keeps the tab bar.
   const showTabBar = !(note || book || invoice);
   const isPhone = useMediaQuery("(max-width: 767px)");
@@ -63,11 +67,13 @@ function AppShell() {
 
   const location: SidebarLocation = inSettings
     ? "settings"
-    : inInvoices
-      ? "invoices"
-      : inBooks
-        ? "books"
-        : (groupOf(view.id) ?? (view.id === "published" ? "published" : "all"));
+    : inTrash
+      ? "trash"
+      : inInvoices
+        ? "invoices"
+        : inBooks
+          ? "books"
+          : (groupOf(view.id) ?? (view.id === "published" ? "published" : "all"));
 
   const createNote = useCallback(() => {
     const entry = getLibrary().create(view.kind);
@@ -88,6 +94,14 @@ function AppShell() {
   // A first visit finds a short guide and a few examples instead of nothing.
   useEffect(() => {
     if (libraryReady) void seedWelcomeLibrary();
+  }, [libraryReady]);
+
+  // Recently Deleted erases what's been there a week: on launch, then hourly.
+  useEffect(() => {
+    if (!libraryReady) return;
+    void eraseExpired();
+    const timer = window.setInterval(() => void eraseExpired(), 60 * 60 * 1000);
+    return () => window.clearInterval(timer);
   }, [libraryReady]);
 
   // Close the drawer whenever the place changes.
@@ -172,7 +186,7 @@ function AppShell() {
         animate={!isDesktop && drawerOpen ? { scale: 0.97, x: 24 } : { scale: 1, x: 0 }}
         transition={spring.smooth}
       >
-        {!inSettings &&
+        {!fullPage &&
           (inInvoices ? (
             <InvoicesList
               activeId={invoiceId}
@@ -208,7 +222,15 @@ function AppShell() {
                 noteId ??
                 bookId ??
                 invoiceId ??
-                (inSettings ? "settings" : inInvoices ? "invoices" : inBooks ? "books" : "notes")
+                (inSettings
+                  ? "settings"
+                  : inTrash
+                    ? "trash"
+                    : inInvoices
+                      ? "invoices"
+                      : inBooks
+                        ? "books"
+                        : "notes")
               }
               className="flex min-h-0 grow flex-col"
               initial={isPhone ? { x: 56, opacity: 0.6 } : { y: 8, opacity: 0 }}

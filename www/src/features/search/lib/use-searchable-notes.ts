@@ -16,7 +16,9 @@ const texts = new Map<string, { updatedAt: number; text: string }>();
  * on-device content cache while `enabled`; until then excerpts stand in.
  */
 export function useSearchableNotes(enabled: boolean): SearchableNote[] {
-  const entries = useLibrary();
+  const all = useLibrary();
+  // Recently Deleted stays out of search.
+  const entries = useMemo(() => all.filter((entry) => !entry.trashedAt), [all]);
   const [version, setVersion] = useState(0);
 
   useEffect(() => {

@@ -15,6 +15,7 @@ import {
   SidebarIcon,
   StoryIcon,
   spring,
+  TrashIcon,
   useContextMenu,
 } from "@notables/ui";
 import { Link, type LinkProps, useNavigate, useRouter } from "@tanstack/react-router";
@@ -26,7 +27,7 @@ import { WindowControls } from "../../../components/window/window-controls";
 import { shortcutLabel } from "../../../lib/keyboard/shortcuts";
 import { useAuthorName } from "../../../platform/author-preferences";
 import { windowChrome } from "../../../platform/window-chrome";
-import { useBooks } from "../../books/store/book-store";
+import { useBooks, useTrashedBooks } from "../../books/store/book-store";
 import { useInvoices } from "../../invoices/store/invoice-store";
 import { noteMenu } from "../../notes/actions/note-menu";
 import { openSearch } from "../../search/store/search-palette";
@@ -38,11 +39,11 @@ import {
 import { formatAge } from "../lib/date-format";
 import { planningKinds, readingKinds, writingKinds } from "../model/library-views";
 import { type SidebarItemId, sidebarItemTitles } from "../model/sidebar-items";
-import { isOwnNote, useLibrary } from "../store/library-store";
+import { isListedNote, useLibrary } from "../store/library-store";
 import { SidebarEditor } from "./sidebar-editor";
 
 /** Where the app is: a view of notes, books or settings. */
-export type SidebarLocation = SidebarItemId | "all" | "settings";
+export type SidebarLocation = SidebarItemId | "all" | "settings" | "trash";
 
 export const sidebarIcons: Record<SidebarItemId, ReactNode> = {
   writing: <StoryIcon size={17} />,
@@ -69,7 +70,10 @@ export function Sidebar({
 }) {
   const books = useBooks();
   const invoices = useInvoices();
-  const entries = useLibrary().filter(isOwnNote);
+  const library = useLibrary();
+  const entries = library.filter(isListedNote);
+  const binCount =
+    library.filter((entry) => entry.trashedAt && !entry.bookId).length + useTrashedBooks().length;
   const { order, hidden, counts } = usePreferences().sidebar;
   const [editing, setEditing] = useState(false);
   const navigate = useNavigate();
@@ -193,6 +197,19 @@ export function Sidebar({
             )}
           </AnimatePresence>
         </section>
+
+        {(binCount > 0 || active === "trash") && (
+          <div className="-mt-3 flex flex-col gap-px">
+            <NavItem
+              to="/trash"
+              active={active === "trash"}
+              icon={<TrashIcon size={17} />}
+              trailing={counts ? binCount : undefined}
+            >
+              Recently Deleted
+            </NavItem>
+          </div>
+        )}
 
         {pinned.length > 0 && (
           <section aria-label="Pinned" className="flex flex-col">

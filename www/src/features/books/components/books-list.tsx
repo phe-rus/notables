@@ -15,7 +15,7 @@ import { CollapsedSidebarControls } from "../../../components/window/collapsed-s
 import { ImportSheet } from "../../imports/components/import-sheet";
 import { GroupSwitcher } from "../../library/components/group-switcher";
 import { usePreferences } from "../../settings/store/preferences-store";
-import { deleteBook } from "../actions/delete-book";
+import { moveBooksToBin } from "../../trash/lib/recycle-bin";
 import { exportBookAsEpub } from "../export/export-book";
 import { arrangeShelf, titleInSeries } from "../lib/arrange-shelf";
 import {
@@ -192,7 +192,7 @@ function BookRow({
     {
       label: "Delete",
       destructive: true,
-      onSelect: () => void deleteBook(book),
+      onSelect: () => moveBooksToBin([book]),
     },
   ]);
   return (

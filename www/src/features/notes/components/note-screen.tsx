@@ -32,7 +32,7 @@ import {
 } from "../../library/store/library-store";
 import { PublishControl } from "../../publishing/components/publish-control";
 import { NoteRecorder } from "../../recording/components/note-recorder";
-import { confirmDeleteNote } from "../actions/note-menu";
+import { moveNotesToBin } from "../../trash/lib/recycle-bin";
 import { useNoteProvider } from "../hooks/use-note-provider";
 
 const statusLabel: Record<SyncStatus, string> = {
@@ -72,8 +72,8 @@ function NoteEditorScreen({ entry, viewId }: { entry: LibraryEntry; viewId?: str
 
   if (!provider) return null;
 
-  const remove = async () => {
-    if (!(await confirmDeleteNote(entry))) return;
+  const remove = () => {
+    moveNotesToBin([entry]);
     void navigate({ to: "/", search: (s) => s });
   };
 

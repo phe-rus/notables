@@ -21,6 +21,8 @@ export interface LibraryEntry {
    * stay out of note lists, but are still found by search.
    */
   bookId?: string | null;
+  /** When it went to Recently Deleted; cleared on restore. */
+  trashedAt?: number | null;
   createdAt: number;
   updatedAt: number;
 }
@@ -123,5 +125,8 @@ export function useEntry(id: string): LibraryEntry | undefined {
   return useLibrary().find((entry) => entry.id === id);
 }
 
-/** Notes people wrote, as opposed to chapters that came in with an imported book. */
-export const isOwnNote = (entry: LibraryEntry) => !entry.bookId;
+/**
+ * Notes that appear in note lists: not chapters that came in with an
+ * imported book, and not in Recently Deleted.
+ */
+export const isListedNote = (entry: LibraryEntry) => !entry.bookId && !entry.trashedAt;
