@@ -25,6 +25,8 @@
   --font-sans: -apple-system, BlinkMacSystemFont, "SF Pro Text", "Inter", "Segoe UI", Roboto, sans-serif;
   --font-display: -apple-system, BlinkMacSystemFont, "SF Pro Display", "Inter", "Segoe UI", Roboto, sans-serif;
   --font-serif: "Newsreader", "New York", "Iowan Old Style", Georgia, serif;
+  --font-script: "Caveat Variable", "Caveat", "Bradley Hand", "Segoe Print", cursive;
+  --font-print: "Patrick Hand", "Chalkboard SE", "Segoe Print", cursive;
   --font-mono: ui-monospace, "SF Mono", "JetBrains Mono", Menlo, monospace;
   --radius-sm: 6px;
   --radius-md: 10px;

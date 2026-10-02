@@ -1,4 +1,5 @@
 import { type AccentId, defaultAccent, isAccentId } from "@notables/tokens";
+import { type NoteFont, noteFonts } from "../../library/model/note-fonts";
 import {
   isSidebarItemId,
   type SidebarItemId,
@@ -10,6 +11,8 @@ export interface Preferences {
   theme: ThemePreference;
   accent: AccentId;
   textSize: TextSize;
+  /** The font notes use unless they choose their own. */
+  noteFont: NoteFont;
   list: ListPreferences;
   sidebar: SidebarPreferences;
 }
@@ -47,6 +50,7 @@ export const defaultPreferences: Preferences = {
   theme: "system",
   accent: defaultAccent,
   textSize: "medium",
+  noteFont: "default",
   list: {
     density: "comfortable",
     preview: true,
@@ -91,6 +95,7 @@ export function normalizePreferences(raw: unknown): Preferences {
     theme: oneOf(input.theme, ["system", "light", "dark"], defaults.theme),
     accent: isAccentId(input.accent) ? input.accent : defaults.accent,
     textSize: oneOf(input.textSize, ["small", "medium", "large"], defaults.textSize),
+    noteFont: oneOf(input.noteFont, noteFonts, defaults.noteFont),
     list: {
       density: oneOf(list.density, ["comfortable", "compact"], defaults.list.density),
       preview: flag(list.preview, defaults.list.preview),

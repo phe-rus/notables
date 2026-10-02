@@ -6,6 +6,7 @@ import { setAuthorName, useAuthorName } from "../../../platform/author-preferenc
 import { isTauri } from "../../../platform/runtime";
 import { sidebarIcons } from "../../library/components/library-sidebar";
 import { SidebarEditor } from "../../library/components/sidebar-editor";
+import { type NoteFont, noteFontLabels, noteFonts } from "../../library/model/note-fonts";
 import {
   type ListPreferences,
   type Preferences,
@@ -80,6 +81,14 @@ export function SettingsScreen({ onOpenSidebar }: { onOpenSidebar: () => void })
                   value: size,
                   label: textSizes[size].label,
                 }))}
+              />
+            </SettingsRow>
+            <SettingsRow label="Note font" description="Notes can also choose their own." wide>
+              <SegmentedControl<NoteFont>
+                label="Note font"
+                value={preferences.noteFont}
+                onChange={(noteFont) => set({ noteFont })}
+                options={noteFonts.map((font) => ({ value: font, label: noteFontLabels[font] }))}
               />
             </SettingsRow>
           </SettingsGroup>

@@ -10,6 +10,7 @@ import {
   Button,
   ChevronLeftIcon,
   IconButton,
+  openContextMenu,
   PinIcon,
   riseMotion,
   ShareIcon,
@@ -33,7 +34,9 @@ import {
 } from "../../library/store/library-store";
 import { PublishControl } from "../../publishing/components/publish-control";
 import { NoteRecorder } from "../../recording/components/note-recorder";
+import { usePreferences } from "../../settings/store/preferences-store";
 import { moveNotesToBin } from "../../trash/lib/recycle-bin";
+import { noteFontItems } from "../actions/note-menu";
 import { useNoteProvider } from "../hooks/use-note-provider";
 
 const statusLabel: Record<SyncStatus, string> = {
@@ -60,6 +63,7 @@ function NoteEditorScreen({ entry, viewId }: { entry: LibraryEntry; viewId?: str
   const view = getView(viewId);
   // Chapters written for a book lead back to it.
   const book = useBook(entry.bookId ?? "");
+  const { noteFont } = usePreferences();
   const [recording, setRecording] = useState(false);
   const startRecording = useCallback(() => setRecording(true), []);
 
@@ -126,6 +130,17 @@ function NoteEditorScreen({ entry, viewId }: { entry: LibraryEntry; viewId?: str
             >
               <PinIcon size={19} />
             </IconButton>
+            <IconButton
+              label="Font"
+              onClick={(event) => {
+                const rect = event.currentTarget.getBoundingClientRect();
+                openContextMenu(rect.left, rect.bottom + 6, noteFontItems(entry));
+              }}
+            >
+              <span className="font-[family-name:var(--font-script)] text-[21px] leading-none font-semibold">
+                Aa
+              </span>
+            </IconButton>
             <IconButton label="Delete note" onClick={remove}>
               <TrashIcon size={19} />
             </IconButton>
@@ -142,7 +157,10 @@ function NoteEditorScreen({ entry, viewId }: { entry: LibraryEntry; viewId?: str
           </div>
         </header>
 
-        <article className="flex grow justify-center px-6 pt-6 pb-36 md:pt-11">
+        <article
+          data-note-font={entry.font ?? noteFont}
+          className="flex grow justify-center px-6 pt-6 pb-36 md:pt-11"
+        >
           <div className="flex w-full max-w-[640px] flex-col gap-4">
             <p className="text-center font-sans text-[12px] text-label-tertiary md:text-left md:text-[13px]">
               {formatFull(entry.createdAt)}

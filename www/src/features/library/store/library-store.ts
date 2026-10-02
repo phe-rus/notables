@@ -3,6 +3,7 @@ import { useSyncExternalStore } from "react";
 import * as Y from "yjs";
 import { getDeviceId } from "../../../platform/device-identity";
 import { getPersistence } from "../../../platform/storage/document-storage";
+import type { NoteFont } from "../model/note-fonts";
 
 export interface LibraryEntry {
   id: string;
@@ -23,6 +24,8 @@ export interface LibraryEntry {
   bookId?: string | null;
   /** When it went to Recently Deleted; cleared on restore. */
   trashedAt?: number | null;
+  /** The note's own font; unset follows the default in Settings. */
+  font?: NoteFont;
   createdAt: number;
   updatedAt: number;
 }

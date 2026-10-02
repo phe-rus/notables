@@ -5,6 +5,9 @@
 @import "@notables/editor/editor.css";
 @import "./book.css";
 @import "@fontsource-variable/newsreader";
+/* Handwriting faces for notes, bundled so they work offline. */
+@import "@fontsource-variable/caveat";
+@import "@fontsource/patrick-hand";
 
 @source "../../../shared/ui/src";
 @source "../../../shared/editor/src";
@@ -56,4 +59,28 @@ html[data-window-frame="rounded"] body::after {
   pointer-events: none;
   border-radius: 10px;
   box-shadow: inset 0 0 0 1px var(--color-separator);
+}
+
+/* A note's own font (see note-fonts.ts). Code stays monospaced. */
+[data-note-font="serif"] .nt-content :where(:not(code, pre, code *, pre *)) {
+  font-family: var(--font-serif);
+}
+[data-note-font="script"] .nt-content :where(:not(code, pre, code *, pre *)) {
+  font-family: var(--font-script);
+}
+[data-note-font="print"] .nt-content :where(:not(code, pre, code *, pre *)) {
+  font-family: var(--font-print);
+}
+/* Hands run small and tight; give them room to breathe. */
+[data-note-font="script"] .nt-content {
+  font-size: 1.3em;
+  line-height: 1.4;
+}
+[data-note-font="print"] .nt-content {
+  font-size: 1.12em;
+}
+/* Handwriting tools keep the app's type in any note font. */
+[data-note-font] .nt-ink-frame,
+[data-note-font] .nt-ink-frame * {
+  font-family: var(--font-sans);
 }

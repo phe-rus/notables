@@ -2,11 +2,30 @@ import { NoteKind } from "@notables/core";
 import { type ContextMenuItem, toast } from "@notables/ui";
 import type { useNavigate } from "@tanstack/react-router";
 import { publicUrl } from "../../../platform/public-url";
+import { noteFontLabels, noteFonts } from "../../library/model/note-fonts";
 import { noteKindLabels } from "../../library/model/note-kind-labels";
 import { getLibrary, type LibraryEntry } from "../../library/store/library-store";
 import { moveNotesToBin } from "../../trash/lib/recycle-bin";
 
 type Navigate = ReturnType<typeof useNavigate>;
+
+/** Choosing a note's font, each option shown in its own type. */
+export function noteFontItems(entry: LibraryEntry): ContextMenuItem[] {
+  const current = entry.font ?? null;
+  return [
+    { heading: "Font" },
+    {
+      label: "Same as Settings",
+      checked: current === null,
+      onSelect: () => getLibrary().update(entry.id, { font: undefined }),
+    },
+    ...noteFonts.map((font) => ({
+      label: noteFontLabels[font],
+      checked: current === font,
+      onSelect: () => getLibrary().update(entry.id, { font }),
+    })),
+  ];
+}
 
 /** What right-click or long-press on a note offers. */
 export function noteMenu(entry: LibraryEntry, navigate: Navigate): ContextMenuItem[] {
@@ -32,6 +51,8 @@ export function noteMenu(entry: LibraryEntry, navigate: Navigate): ContextMenuIt
           },
         ]
       : []),
+    "divider",
+    ...noteFontItems(entry),
     "divider",
     { heading: "Kind" },
     ...NoteKind.options.map((kind) => ({
