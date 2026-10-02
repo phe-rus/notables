@@ -144,7 +144,7 @@ function AppShell() {
               onClick={() => setDrawerOpen(false)}
             />
             <motion.div
-              className="relative flex w-[min(86vw,340px)] rounded-r-[22px] bg-sidebar shadow-[0_20px_60px_rgba(0,0,0,0.25)]"
+              className="relative flex w-[min(86vw,340px)] bg-sidebar shadow-[0_20px_60px_rgba(0,0,0,0.25)]"
               initial={{ x: "-100%" }}
               animate={{ x: 0 }}
               exit={{ x: "-100%" }}

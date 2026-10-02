@@ -149,7 +149,7 @@ export function PublishControl({ entry, doc }: { entry: LibraryEntry; doc: Y.Doc
                 onChange={(event) => setAuthor(event.target.value)}
                 maxLength={80}
                 placeholder="Your name or pen name"
-                className="rounded-[14px] bg-fill px-3.5 py-2.5 text-[15px] text-label outline-none focus:ring-2 focus:ring-accent/60"
+                className="rounded-[14px] control-field px-3.5 py-2.5 text-[15px] text-label"
               />
             </label>
             <Button variant="primary" disabled={busy !== null} onClick={publish}>

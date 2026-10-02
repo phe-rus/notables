@@ -168,7 +168,7 @@ export function SettingsScreen({ onOpenSidebar }: { onOpenSidebar: () => void })
                 maxLength={80}
                 placeholder="Your name or pen name"
                 aria-label="Your name"
-                className="w-full rounded-[10px] bg-fill px-3 py-2 text-[15px] text-label outline-none placeholder:text-label-tertiary focus:ring-2 focus:ring-accent/60"
+                className="w-full rounded-[10px] control-field px-3 py-2 text-[15px] text-label placeholder:text-label-tertiary"
               />
             </SettingsRow>
           </SettingsGroup>

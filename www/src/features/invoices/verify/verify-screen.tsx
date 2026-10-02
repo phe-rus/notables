@@ -130,7 +130,7 @@ export function VerifyScreen() {
                   onChange={(event) => setPasted(event.target.value)}
                   placeholder="Or paste a verification link"
                   aria-label="Verification link"
-                  className="min-w-0 grow rounded-[12px] bg-fill px-3.5 py-2.5 text-[14px] text-label outline-none placeholder:text-label-tertiary focus:ring-2 focus:ring-accent/60"
+                  className="min-w-0 grow rounded-[12px] control-field px-3.5 py-2.5 text-[14px] text-label placeholder:text-label-tertiary"
                 />
                 <button
                   type="submit"

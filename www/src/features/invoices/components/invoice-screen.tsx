@@ -191,7 +191,7 @@ export function InvoiceScreen({ invoice }: { invoice: InvoiceDocument }) {
                   <select
                     value={invoice.currency}
                     onChange={(e) => set({ currency: e.target.value })}
-                    className="w-full rounded-[10px] bg-fill px-3 py-2 text-[14px] text-label outline-none focus:ring-2 focus:ring-accent/60"
+                    className="w-full rounded-[10px] control-field px-3 py-2 text-[14px] text-label"
                   >
                     {[...new Set([invoice.currency, ...currencies])].map((code) => (
                       <option key={code} value={code}>

@@ -2,7 +2,7 @@ import { cn } from "@notables/ui";
 import type { InputHTMLAttributes, ReactNode, TextareaHTMLAttributes } from "react";
 
 export const fieldClass =
-  "w-full min-w-0 rounded-[10px] bg-fill px-3 py-2 text-[14px] text-label outline-none transition-shadow placeholder:text-label-tertiary focus:ring-2 focus:ring-accent/60";
+  "w-full min-w-0 rounded-[10px] control-field px-3 py-2 text-[14px] text-label placeholder:text-label-tertiary";
 
 export function Field({
   label,

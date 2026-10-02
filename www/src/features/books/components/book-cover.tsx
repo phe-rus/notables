@@ -16,7 +16,7 @@ export function BookCover({
   return (
     <div
       className={cn(
-        "@container relative flex aspect-[3/4] shrink-0 flex-col justify-between overflow-hidden rounded-[6px_14px_14px_6px] bg-[#2a3a44] text-white shadow-[0_18px_40px_-14px_rgb(20_30_40/0.55)]",
+        "@container relative flex aspect-[3/4] shrink-0 flex-col justify-between overflow-hidden rounded-[3px_7px_7px_3px] bg-[#2a3a44] text-white shadow-[0_18px_40px_-14px_rgb(20_30_40/0.55)]",
         className,
       )}
     >
