@@ -1,7 +1,10 @@
 import { describe, expect, it } from "bun:test";
 import { Narrator } from "../../../src/features/listening/lib/narrator";
-import type { SpeechEngine } from "../../../src/features/listening/lib/speech-engines";
-import { rankVoices, type Voice } from "../../../src/features/listening/lib/voices";
+import {
+  normalizePeak,
+  type SpeechEngine,
+} from "../../../src/features/listening/lib/speech-engines";
+import { fromSystem, rankVoices, type Voice } from "../../../src/features/listening/lib/voices";
 import { phraseAt, type TimedPhrase } from "../../../src/features/listening/store/transcript-store";
 
 /** Speaks instantly, remembering what it said. */
@@ -77,5 +80,38 @@ describe("voices", () => {
       "en-US",
     );
     expect(ranked.map((v) => v.id)).toEqual(["natural-us", "natural-gb", "plain-us"]);
+  });
+});
+
+describe("voice loudness", () => {
+  it("raises quiet speech to full scale", () => {
+    const channel = new Float32Array([0.1, -0.25, 0.05]);
+    normalizePeak(channel);
+    expect(Math.max(...channel.map(Math.abs))).toBeCloseTo(0.98);
+    expect(channel[0]).toBeCloseTo(0.392);
+  });
+
+  it("leaves silence and loud speech alone", () => {
+    const silent = new Float32Array([0, 0]);
+    normalizePeak(silent);
+    expect([...silent]).toEqual([0, 0]);
+    const loud = new Float32Array([0.99, -0.5]);
+    normalizePeak(loud);
+    expect(loud[0]).toBeCloseTo(0.99);
+  });
+});
+
+describe("device voices", () => {
+  const voice = (name: string, lang: string, voiceURI = "") =>
+    ({ name, lang, voiceURI, localService: true, default: false }) as SpeechSynthesisVoice;
+
+  it("names voices uniquely when the system leaves their URI empty", () => {
+    const ids = [voice("English", "en-US"), voice("English", "en-GB")].map((v) => fromSystem(v).id);
+    expect(new Set(ids).size).toBe(2);
+  });
+
+  it("lists each voice once", () => {
+    const twice = [voice("Alex", "en-US", "alex"), voice("Alex", "en-US", "alex")].map(fromSystem);
+    expect(rankVoices(twice, "en-US")).toHaveLength(1);
   });
 });

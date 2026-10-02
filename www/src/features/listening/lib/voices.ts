@@ -48,9 +48,16 @@ export function friendlyName(voice: SpeechSynthesisVoice): string {
   );
 }
 
+/**
+ * Names a device voice uniquely. Linux webviews leave `voiceURI` empty
+ * for every voice, so fall back to its name and language.
+ */
+export const systemVoiceKey = (voice: SpeechSynthesisVoice) =>
+  voice.voiceURI || `${voice.name}|${voice.lang}`;
+
 export function fromSystem(voice: SpeechSynthesisVoice): Voice {
   return {
-    id: `system:${voice.voiceURI}`,
+    id: `system:${systemVoiceKey(voice)}`,
     provider: "system",
     name: friendlyName(voice),
     lang: voice.lang,
@@ -92,7 +99,9 @@ export function rankVoices(voices: Voice[], lang: string): Voice[] {
     (voice.lang.toLowerCase() === wanted ? 4 : 0) +
     (voice.lang === "*" ? 1 : 0) +
     (voice.offline ? 1 : 0);
+  const seen = new Set<string>();
   return voices
+    .filter((voice) => !seen.has(voice.id) && seen.add(voice.id))
     .filter((voice) => voice.lang === "*" || languageOf(voice.lang) === base)
     .sort((a, b) => score(b) - score(a) || a.name.localeCompare(b.name));
 }

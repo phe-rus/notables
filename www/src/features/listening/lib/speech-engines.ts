@@ -1,4 +1,5 @@
 import { readAiKey } from "../../ai/store/ai-settings";
+import { systemVoiceKey } from "./voices";
 
 /** Something that can say a piece of text out loud. */
 export interface SpeechEngine {
@@ -15,14 +16,15 @@ const cancelled = () => new DOMException("Speech was stopped.", "AbortError");
 export class SystemSpeech implements SpeechEngine {
   #current: SpeechSynthesisUtterance | null = null;
 
-  constructor(private readonly voiceUri: string | null) {}
+  constructor(private readonly voiceKey: string | null) {}
 
   async speak(text: string, { rate, lang }: { rate: number; lang: string }) {
     const voices = speechSynthesis.getVoices();
     const utterance = new SpeechSynthesisUtterance(text);
     utterance.lang = lang;
     utterance.rate = rate;
-    const voice = voices.find((v) => v.voiceURI === this.voiceUri);
+    utterance.volume = 1;
+    const voice = voices.find((v) => systemVoiceKey(v) === this.voiceKey);
     if (voice) utterance.voice = voice;
     this.#current = utterance;
     await new Promise<void>((resolve, reject) => {
@@ -65,7 +67,20 @@ function pcmToBuffer(context: AudioContext, base64: string, rate: number): Audio
   const buffer = context.createBuffer(1, samples.length, rate);
   const channel = buffer.getChannelData(0);
   for (let i = 0; i < samples.length; i++) channel[i] = (samples[i] ?? 0) / 32768;
+  normalizePeak(channel);
   return buffer;
+}
+
+/**
+ * Raises speech to full loudness, so the device's volume alone decides
+ * how loud it is. Generated voices often arrive well below full scale.
+ */
+export function normalizePeak(channel: Float32Array, target = 0.98) {
+  let peak = 0;
+  for (const sample of channel) peak = Math.max(peak, Math.abs(sample));
+  if (peak === 0 || peak >= target) return;
+  const gain = target / peak;
+  for (let i = 0; i < channel.length; i++) channel[i] = (channel[i] ?? 0) * gain;
 }
 
 /** Gemini's natural voices, using the person's own Gemini key. */

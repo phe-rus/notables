@@ -17,7 +17,8 @@ export function playChime() {
       tone.type = "sine";
       tone.frequency.value = frequency;
       level.gain.setValueAtTime(0, at);
-      level.gain.linearRampToValueAtTime(0.18, at + 0.015);
+      // Loud and clear: the device volume, not the chime, sets how loud.
+      level.gain.linearRampToValueAtTime(0.45, at + 0.015);
       level.gain.exponentialRampToValueAtTime(0.0001, at + 0.9);
       tone.connect(level).connect(context.destination);
       tone.start(at);

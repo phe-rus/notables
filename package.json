@@ -41,6 +41,7 @@
   },
   "scripts": {
     "dev": "turbo run dev",
+    "tauri": "bun run --cwd www tauri",
     "build": "turbo run build",
     "typecheck": "turbo run typecheck",
     "test": "turbo run test",
