@@ -1,1 +1,26 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64"><title>Notables</title><rect width="64" height="64" rx="14" fill="#ffc53d"/><path d="M19 45V19l26 26V19" fill="none" stroke="#1c1c1e" stroke-width="6" stroke-linecap="round" stroke-linejoin="round"/></svg>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1024 1024" role="img" aria-label="Notables">
+  <title>Notables</title>
+  <defs>
+    <linearGradient id="m-sheet" x1="0" y1="0" x2="0.35" y2="1"><stop offset="0" stop-color="#FFFEFB"/><stop offset="1" stop-color="#F1E9DA"/></linearGradient>
+    <linearGradient id="m-honey" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#FFC24E"/><stop offset="1" stop-color="#F08A2A"/></linearGradient>
+    <linearGradient id="m-under" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#EEE2D0"/><stop offset="1" stop-color="#DDCDB4"/></linearGradient>
+    <linearGradient id="m-inside" x1="0.15" y1="0.1" x2="0.85" y2="0.9"><stop offset="0" stop-color="#E9762A"/><stop offset="0.35" stop-color="#F7A53A"/><stop offset="0.7" stop-color="#FFC857"/><stop offset="1" stop-color="#F48E2C"/></linearGradient>
+    <linearGradient id="m-back" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#FFF8EE"/><stop offset="1" stop-color="#EBDCCB"/></linearGradient>
+    <filter id="m-drop" x="-20%" y="-20%" width="140%" height="150%"><feDropShadow dx="0" dy="30" stdDeviation="34" flood-color="#6B4400" flood-opacity="0.2"/></filter>
+    <filter id="m-lift" x="-30%" y="-30%" width="160%" height="160%"><feDropShadow dx="-18" dy="26" stdDeviation="22" flood-color="#7A3E00" flood-opacity="0.32"/></filter>
+  </defs>
+  <g filter="url(#m-drop)">
+    <rect x="140" y="196" width="744" height="720" rx="176" fill="url(#m-under)"/>
+    <rect x="134" y="160" width="752" height="728" rx="176" fill="url(#m-honey)"/>
+  </g>
+  <!-- the page, with its top-right corner peeled away -->
+  <path d="M310 126H468C556 126 586 238 646 318C704 396 772 452 886 478V700A176 176 0 0 1 710 876H310A176 176 0 0 1 134 700V302A176 176 0 0 1 310 126Z" fill="url(#m-sheet)"/>
+  <!-- the lifted corner: a rolled band, honey inside, the pale back of the page at its crest -->
+  <g filter="url(#m-lift)">
+    <path d="M468 126C556 126 586 238 646 318C704 396 772 452 886 478C926 446 936 386 916 344C850 352 782 318 724 252C668 188 620 92 468 126Z" fill="url(#m-inside)"/>
+    <path d="M468 126C620 92 668 188 724 252C782 318 850 352 916 344C900 318 872 312 842 306C786 292 748 250 708 200C664 146 592 104 468 126Z" fill="url(#m-back)"/>
+  </g>
+  <!-- ink N with a honey full stop -->
+  <path d="M282 738V420c0-12 15-17 22-7l232 330c7 10 22 5 22-7V520" fill="none" stroke="#2A2520" stroke-width="78" stroke-linecap="round" stroke-linejoin="round"/>
+  <circle cx="660" cy="738" r="40" fill="#EE8A2A"/>
+</svg>
