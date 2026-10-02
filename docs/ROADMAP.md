@@ -16,6 +16,9 @@ platform from the same `www` codebase.
   narrate chapters straight into them and export them as EPUB 3
 - Recording: voice notes with a live waveform and live transcription,
   stored on the device and inserted into notes
+- Native storage: notes in SQLite and media as files through the Rust
+  core, streamed to the app with range support; older WebView data moves
+  across on first launch
 - On-device Whisper in the native apps: transcribe any recording without
   it leaving the device (the model downloads once, on first use)
 - Design system v2: Liquid Glass materials, motion/react transitions,
@@ -24,7 +27,11 @@ platform from the same `www` codebase.
 
 ## Next
 
-- **Native storage** — SQLite and media files through the Rust core
+- **Peer-to-peer sharing** — share with family, friends or specific people
+  without an account (ADR-0006)
+- **Templates** — invoices and receipts with a signature anyone can scan to
+  check they are genuine; quotes and social posts sized for TikTok, X and
+  Instagram
 - **Whisper while recording** — replace the platform recogniser with
   streaming Whisper in the native apps
 
@@ -32,9 +39,5 @@ platform from the same `www` codebase.
 
 - **Freeform canvas** — ink, shapes, stickies and images for planning,
   manga panels and teaching
-- **Peer-to-peer sharing** — share with family, friends or specific people
-  without an account (ADR-0006)
 - **Optional Pherus PassID** — cloud backup and multi-device sync
-- **Templates** — receipts, invoices, quotes, and social posts sized for
-  TikTok, X, Instagram and more, exported as images or PDF
 - **Learning** — lessons, flashcards and tutoring notes
