@@ -136,16 +136,25 @@ Shipped and tested in the browser (Playwright) unless noted:
 - Widgets: floating desktop Today widget (`/widget`, `src-tauri/src/widgets.rs`).
   iOS and Android widget sources are in `www/src-tauri/widgets/` with
   setup steps; never compiled yet (`gen/apple` doesn't exist).
-- Android (`www/src-tauri/gen/android`): debug APK runs on a real phone
-  (TECNO CAMON 19, Android 13): library and saving work. Crashes inside
-  Houdini (ARM translation) on an Intel Chromebook, so ChromeOS needs an
-  x86_64 build, which `ort` blocks. The notification permission check
-  is refused at startup (the WebView still reports `about:blank`).
+- Android (`www/src-tauri/gen/android`, in the repo): tested on a TECNO
+  CAMON 19 (Android 13). Adaptive Notables icon, keyboard-aware layout
+  (MainActivity), solid top bars (`data-os="android"`), system haptics and
+  the Today home-screen widget with Add to Home Screen (`AndroidBridge.kt`,
+  `www/src/platform/android-bridge.ts`). Haptics everywhere go through
+  `haptic()` in shared/ui; menus and popovers keep to `screenEdges()`.
+  Calendar on phones: week strip, back titles, self-scrolling months.
+  Open: read aloud has no voice (the WebView has no speechSynthesis
+  voices; needs Android TextToSpeech through the bridge); the
+  notification permission check is refused at startup (`about:blank`);
+  export through the save dialog is untested (content:// paths); ChromeOS
+  needs an x86_64 build, which `ort` blocks. Debug the live WebView with
+  `adb forward tcp:9333 localabstract:webview_devtools_remote_<pid>`.
 
 ## Next
 
-- Mobile testing: calendar pinch zoom, month and year scrolling, the
-  note top bar and book contents on real phones.
+- Android: read aloud through TextToSpeech, the startup notification
+  check, export to content:// locations, an x86_64 build for ChromeOS.
+- Mobile testing: calendar pinch zoom and book contents on real phones.
 - Translate the remaining screens.
 - Whisper while recording (streaming, native).
 - Pherus PassID: optional sign-in, cloud backup, and a relay for sharing
