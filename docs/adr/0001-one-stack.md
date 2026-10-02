@@ -12,8 +12,7 @@ UI stacks, an API framework and multiple services.
 ## Decision
 
 - **Bun + Turborepo** for the monorepo, package management, scripts and tests.
-- **Tauri 2** for every native target — iOS, Android, macOS, Windows, Linux —
-  with one Rust core for device capabilities (SQLite, audio, files,
+- **Tauri 2** for every native target, iOS, Android, macOS, Windows, Linux, with one Rust core for device capabilities (SQLite, audio, files,
   on-device transcription).
 - **TanStack Router** for the app and **TanStack Start** for server
   functions, API routes and server rendering on **Cloudflare Workers**.

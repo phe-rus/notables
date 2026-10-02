@@ -1,6 +1,6 @@
 # 0006. Device-first, peer-to-peer sharing, optional cloud backup
 
-- **Status:** Accepted — refines [0005](./0005-identity-via-pherus-later.md)
+- **Status:** Accepted, refines [0005](./0005-identity-via-pherus-later.md)
 - **Date:** 2026-10-01
 
 ## Context

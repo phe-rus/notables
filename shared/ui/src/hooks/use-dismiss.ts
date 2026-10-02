@@ -2,7 +2,7 @@ import { type RefObject, useEffect } from "react";
 
 /**
  * Calls `onDismiss` when the user presses Escape or clicks outside `ref`
- * while `active` — for menus, popovers and sheets.
+ * while `active`, for menus, popovers and sheets.
  */
 export function useDismiss(
   ref: RefObject<HTMLElement | null>,

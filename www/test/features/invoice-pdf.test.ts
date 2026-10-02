@@ -20,7 +20,7 @@ const invoice: InvoiceDocument = {
   client: { ...emptyParty(), name: "Lakeside Café" },
   items: Array.from({ length: 30 }, (_, i) => ({
     id: String(i),
-    description: `Item ${i + 1} — design and layout, with a longer description that wraps onto a second line`,
+    description: `Item ${i + 1}: design and layout, with a longer description that wraps onto a second line`,
     quantity: 1 + (i % 3),
     unitPrice: 150_000,
   })),

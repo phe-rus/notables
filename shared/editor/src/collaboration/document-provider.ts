@@ -2,7 +2,7 @@ import type { Provider } from "@lexical/yjs";
 import type * as Y from "yjs";
 
 /**
- * Anything that can keep a note's Yjs document in sync — `NoteProvider`
+ * Anything that can keep a note's Yjs document in sync: `NoteProvider`
  * from `@notables/sync` satisfies this.
  */
 export interface DocumentProvider {

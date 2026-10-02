@@ -26,7 +26,7 @@ export async function streamText(request: TextRequest): Promise<void> {
   return streamOpenRouter(request);
 }
 
-/* ——— Claude ——— */
+/* Claude */
 
 // Current models that take an effort level, and those with refusal fallbacks.
 const takesEffort = (model: string) => /^claude-(opus|sonnet|fable|mythos)-(5|4-[6-9])/.test(model);
@@ -98,7 +98,7 @@ async function streamClaude({
   }
 }
 
-/* ——— Server-sent events, for Gemini and OpenRouter ——— */
+/* Server-sent events, for Gemini and OpenRouter */
 
 async function* serverEvents(response: Response): AsyncGenerator<string> {
   const reader = response.body?.getReader();
@@ -134,7 +134,7 @@ async function failure(response: Response, provider: string): Promise<AiError> {
   );
 }
 
-/* ——— Gemini ——— */
+/* Gemini */
 
 const GEMINI = "https://generativelanguage.googleapis.com/v1beta";
 
@@ -175,7 +175,7 @@ async function streamGemini({
   }
 }
 
-/* ——— OpenRouter ——— */
+/* OpenRouter */
 
 async function streamOpenRouter({
   model,
@@ -220,7 +220,7 @@ async function streamOpenRouter({
   }
 }
 
-/* ——— Models ——— */
+/* Models */
 
 /** The models a key can use, newest first where the provider says. */
 export async function listModels(provider: AiProvider, apiKey: string): Promise<string[]> {

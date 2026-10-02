@@ -6,8 +6,7 @@
 ## Context
 
 Notes, diaries and recordings must work offline and sync between devices.
-Public features — likes, hearts, ratings, comments, view and read counts —
-need one consistent source of truth and moderation.
+Public features, likes, hearts, ratings, comments, view and read counts, need one consistent source of truth and moderation.
 
 ## Decision
 

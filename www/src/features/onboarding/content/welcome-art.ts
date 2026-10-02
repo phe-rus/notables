@@ -98,7 +98,7 @@ const row = (y: number, h: number, widths: number[]): Array<Omit<Panel, "scene">
   });
 };
 
-/* ——— Manga: ink, screentone, right to left ——— */
+/* Manga: ink, screentone, right to left */
 
 const ink: Palette = {
   paper: "#fbfaf6",
@@ -249,7 +249,7 @@ export function mangaPages(chapter: 1 | 2): string[] {
   ];
 }
 
-/* ——— Comic: flat colour, left to right ——— */
+/* Comic: flat colour, left to right */
 
 const colour: Palette = {
   paper: "#fff8ec",

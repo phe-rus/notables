@@ -17,7 +17,7 @@ export function formatUpdated(ms: number, now = Date.now()): string {
   }).format(ms);
 }
 
-/** "1 October 2026 at 9:41" — shown above a note. */
+/** "1 October 2026 at 9:41", shown above a note. */
 export function formatFull(ms: number): string {
   return new Intl.DateTimeFormat(undefined, { dateStyle: "long", timeStyle: "short" }).format(ms);
 }

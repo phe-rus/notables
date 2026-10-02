@@ -1,6 +1,6 @@
 # Notables
 
-Notes, journals, stories and books — written, recorded and read on every
+Notes, journals, stories and books, written, recorded and read on every
 device you own. Private by default, published when you choose.
 
 Notables is one app for **iOS, Android, macOS, Windows, Linux and the web**,
@@ -9,16 +9,16 @@ sharing and cloud backup are optional.
 
 ## Features
 
-- **A writing surface made for words** — a custom editor with titles,
+- **A writing surface made for words**, a custom editor with titles,
   headings, quotes, lists, checklists, highlights, links, photos and audio
   clips, plus Markdown shortcuts and a floating format bar
-- **Your library** — journal, stories, articles, manga, lessons and plans,
+- **Your library**, journal, stories, articles, manga, lessons and plans,
   with search, pinning and Apple Notes–style grouping
-- **Books** — gather notes into books and read them with real page turns:
+- **Books**, gather notes into books and read them with real page turns:
   two-page spreads on large screens, single pages on phones
-- **Publishing** — turn any note into a public page with hearts, likes,
+- **Publishing**, turn any note into a public page with hearts, likes,
   ratings, view and read counts; update or unpublish whenever you like
-- **Local-first** — everything is stored on the device and works offline
+- **Local-first**, everything is stored on the device and works offline
 
 See the [roadmap](docs/ROADMAP.md) for what comes next: recording with
 on-device transcription, the freeform canvas, device-to-device sharing,
@@ -30,7 +30,7 @@ templates (receipts, invoices, social posts) and optional cloud backup.
 | -------- | -------------------------------------------------------------- |
 | Monorepo | Bun workspaces + Turborepo                                     |
 | App      | React, TanStack Router and Start, Tailwind CSS v4, motion      |
-| Native   | Tauri 2 — one Rust core for iOS, Android and desktop           |
+| Native   | Tauri 2, one Rust core for iOS, Android and desktop           |
 | Server   | TanStack Start server functions on Cloudflare Workers, D1, R2  |
 | Editor   | Custom editor on Lexical, synced through Yjs                   |
 | Icons    | Hugeicons                                                      |
@@ -38,7 +38,7 @@ templates (receipts, invoices, social posts) and optional cloud backup.
 ## Repository
 
 ```
-www/              the app — web and every Tauri target
+www/              the app, web and every Tauri target
   src/
     routes/       file routes (app, books reader, public pages)
     features/     library, notes, books, publishing, reader

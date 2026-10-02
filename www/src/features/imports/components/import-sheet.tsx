@@ -183,7 +183,7 @@ function ImportFlow({ onClose }: { onClose: () => void }) {
             </span>
             <p className="text-[16px] font-semibold">Drop books, comics or audiobooks</p>
             <p className="max-w-[380px] text-[14px] leading-snug text-label-secondary">
-              EPUB, PDF, CBZ, folders of pages or audio files. Drop a whole series at once — folders
+              EPUB, PDF, CBZ, folders of pages or audio files. Drop a whole series at once: folders
               like “Volume 2” or names like “Book 3” and “S01E04” are put in order for you.
             </p>
             <div className="mt-1 flex flex-wrap justify-center gap-2">

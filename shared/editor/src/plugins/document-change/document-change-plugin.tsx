@@ -5,7 +5,7 @@ import type { DocumentSnapshot } from "../../hooks/use-document-snapshot";
 
 /**
  * Reports the serialized document and its plain text after edits,
- * debounced — for titles, excerpts, search and assembling books.
+ * debounced, for titles, excerpts, search and assembling books.
  */
 export function DocumentChangePlugin({
   onChange,

@@ -10,7 +10,7 @@ platform from the same `www` codebase.
 - Custom Lexical editor: titles, headings, quotes, lists, checklists,
   highlights, links, photos, audio clips, Markdown shortcuts
 - Publishing: server-rendered public pages, hearts, likes, ratings, view
-  and read counts, update and unpublish at any time — recordings and
+  and read counts, update and unpublish at any time, recordings and
   photos are published with the note
 - Books: compile notes into books, read them with real page turns,
   narrate chapters straight into them and export them as EPUB 3
@@ -31,19 +31,19 @@ platform from the same `www` codebase.
 
 ## Next
 
-- **Toasts and dialogs** — morphing, gooey toasts for progress and results,
+- **Toasts and dialogs**, morphing, gooey toasts for progress and results,
   and spring-animated dialogs in place of browser prompts
-- **Peer-to-peer sharing** — share with family, friends or specific people
+- **Peer-to-peer sharing**, share with family, friends or specific people
   without an account (ADR-0006)
-- **Templates** — invoices and receipts with a signature anyone can scan to
+- **Templates**, invoices and receipts with a signature anyone can scan to
   check they are genuine; quotes and social posts sized for TikTok, X and
   Instagram
-- **Whisper while recording** — replace the platform recogniser with
+- **Whisper while recording**, replace the platform recogniser with
   streaming Whisper in the native apps
 
 ## Later
 
-- **Freeform canvas** — ink, shapes, stickies and images for planning,
+- **Freeform canvas**, ink, shapes, stickies and images for planning,
   manga panels and teaching
-- **Optional Pherus PassID** — cloud backup and multi-device sync
-- **Learning** — lessons, flashcards and tutoring notes
+- **Optional Pherus PassID**, cloud backup and multi-device sync
+- **Learning**, lessons, flashcards and tutoring notes

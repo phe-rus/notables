@@ -1,7 +1,7 @@
 /**
  * Issuers this device has seen, by issuer ID. Remembering them lets the
  * verify page warn when a document claims a familiar name but carries a
- * different issuer ID — the mark of a forgery.
+ * different issuer ID: the mark of a forgery.
  */
 export interface KnownIssuer {
   id: string;

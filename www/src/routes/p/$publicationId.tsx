@@ -17,7 +17,7 @@ export const Route = createFileRoute("/p/$publicationId")({
       ? {
           meta: [
             {
-              title: `${loaderData.publication.title} — ${loaderData.publication.authorName} · Notables`,
+              title: `${loaderData.publication.title} by ${loaderData.publication.authorName} · Notables`,
             },
             { name: "description", content: loaderData.publication.excerpt },
             { property: "og:type", content: "article" },

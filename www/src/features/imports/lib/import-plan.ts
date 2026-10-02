@@ -58,7 +58,8 @@ const VOLUME_MARK = /\b(?:vol(?:ume)?|book|tome|part|season|s)\.?\s*0*(\d{1,3})(
 function splitOnVolume(raw: string): { series: string; title: string; volume: number | null } {
   const name = stripExtension(raw).replace(/_+/g, " ");
   const match = VOLUME_MARK.exec(name);
-  const clean = (text: string) => text.replace(/^[\s\-–—:|.]+|[\s\-–—:|.]+$/g, "").trim();
+  const clean = (text: string) =>
+    text.replace(/^[\s\-\u2013\u2014:|.]+|[\s\-\u2013\u2014:|.]+$/g, "").trim();
   if (!match) {
     const parsed = parseName(name);
     return { series: parsed.title, title: parsed.title, volume: null };

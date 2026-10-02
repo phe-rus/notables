@@ -327,7 +327,7 @@ export function InvoiceScreen({ invoice }: { invoice: InvoiceDocument }) {
               <div className="flex flex-col gap-3 rounded-[16px] bg-fill/60 p-4 text-[13px] leading-snug text-label-secondary">
                 <p>
                   Every {invoice.kind} is signed on this device. The code on the page lets anyone
-                  check it’s genuine and unchanged — and the issuer ID shows it came from you.
+                  check it’s genuine and unchanged, and the issuer ID shows it came from you.
                 </p>
                 <p className="flex items-center justify-between gap-3">
                   <span>Your issuer ID</span>

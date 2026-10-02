@@ -7,7 +7,7 @@ import { INK_DEFAULT_HEIGHT, type InkStroke, inkBottom } from "../nodes/ink/ink-
 import { InkView } from "../nodes/ink/ink-view";
 
 /**
- * Renders a serialized Notables document as plain React elements — no
+ * Renders a serialized Notables document as plain React elements, no
  * Lexical runtime, so it server-renders. Unknown nodes are skipped and every
  * URL is sanitised, so untrusted published content cannot inject markup.
  */

@@ -19,7 +19,7 @@ export const Route = createRootRoute({
       { title: "Notables" },
       {
         name: "description",
-        content: "Write, draw, record and publish — notes, journals, stories and books.",
+        content: "Write, draw, record and publish notes, journals, stories and books.",
       },
     ],
     links: [

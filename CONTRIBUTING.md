@@ -56,4 +56,4 @@ Keep each commit focused on one logical change that builds and passes checks.
 ## Architecture changes
 
 Significant decisions are recorded as ADRs in [`docs/adr`](docs/adr). Add a
-new ADR — don't rewrite an accepted one.
+new ADR, don't rewrite an accepted one.

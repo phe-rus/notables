@@ -30,13 +30,13 @@ export const welcomeNotes: WelcomeNote[] = [
     hoursAgo: 0,
     markdown: `# Welcome to Notables
 
-A quiet place for notes, journals, stories and books. Everything you write stays **on this device** — no account needed.
+A quiet place for notes, journals, stories and books. Everything you write stays **on this device**, no account needed.
 
 ## Try a few things
 
 - [ ] Press **⌘N** (or Ctrl N) to start a new note
 - [ ] Press **⌘K** (or Ctrl K) to search everything you have written
-- [ ] Tap the microphone to record — Notables writes down what you say
+- [ ] Tap the microphone to record and Notables writes down what you say
 - [ ] Open **Books** to read the sample story with real page turns
 - [ ] Choose an accent colour in **Settings**
 - [ ] Hover **Library** in the sidebar and press **Edit** to make it yours
@@ -59,7 +59,7 @@ Publish a note to give it a public link where readers can heart and rate it. Unp
 
 Woke before the alarm. Rain on the iron roof, the kettle, the radio low. I read three chapters before anyone else was up.
 
-Walked to the market when it cleared — mangoes, a blue kitenge, a notebook with a cracked spine that I could not leave behind.
+Walked to the market when it cleared: mangoes, a blue kitenge, a notebook with a cracked spine that I could not leave behind.
 
 ## Small good things
 

@@ -5,8 +5,8 @@ import { computeTotals } from "./totals";
 
 /**
  * A seal proves who issued a document and that it hasn't changed. It is a
- * signed summary — issuer, number, dates, client, totals and a hash of the
- * full contents — small enough for a QR code. Anyone can check it offline
+ * signed summary (issuer, number, dates, client, totals and a hash of the
+ * full contents), small enough for a QR code. Anyone can check it offline
  * with the issuer's public key, which travels inside the seal; the issuer
  * ID derived from that key is what people compare to know who signed.
  *

@@ -40,8 +40,8 @@ export interface InvoicePaperProps {
 }
 
 /**
- * The document as printed: always light, laid out on A4. Three looks —
- * modern, classic and minimal — share one structure; the accent colors
+ * The document as printed: always light, laid out on A4. Three looks
+ * (modern, classic and minimal) share one structure; the accent colors
  * headings, rules and the total.
  */
 export function InvoicePaper({ invoice, verifyLink, issuerId, className }: InvoicePaperProps) {
@@ -108,7 +108,7 @@ export function InvoicePaper({ invoice, verifyLink, issuerId, className }: Invoi
           >
             {label}
           </h1>
-          <span className="mt-1 text-[13px] text-[#77716a]">{invoice.number || "—"}</span>
+          <span className="mt-1 text-[13px] text-[#77716a]">{invoice.number || "-"}</span>
         </div>
         {logo ? (
           <Logo src={logo} />
@@ -168,7 +168,7 @@ export function InvoicePaper({ invoice, verifyLink, issuerId, className }: Invoi
         <tbody>
           {invoice.items.map((item) => (
             <tr key={item.id} className="border-b border-[#efebe4] align-top">
-              <td className="py-3 pr-4 whitespace-pre-wrap">{item.description || "—"}</td>
+              <td className="py-3 pr-4 whitespace-pre-wrap">{item.description || "-"}</td>
               <td className="py-3 pr-4 text-right tabular-nums">{item.quantity}</td>
               <td className="py-3 pr-4 text-right tabular-nums">{money(item.unitPrice)}</td>
               <td className="py-3 text-right tabular-nums">{money(lineAmount(item))}</td>
@@ -285,7 +285,7 @@ function Party({ title, party }: { title: string; party: InvoiceDocument["issuer
   return (
     <div>
       <h2 className="mb-1 text-[12px] font-medium text-[#77716a]">{title}</h2>
-      <p className="font-semibold">{party.name || "—"}</p>
+      <p className="font-semibold">{party.name || "-"}</p>
       {lines.map((line, index) => (
         <p key={index}>{line}</p>
       ))}

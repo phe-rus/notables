@@ -11,7 +11,7 @@ const dateFormat = new Intl.DateTimeFormat(undefined, {
   timeZone: "UTC",
 });
 const formatDate = (date: string | null) =>
-  date ? dateFormat.format(new Date(`${date}T00:00:00Z`)) : "—";
+  date ? dateFormat.format(new Date(`${date}T00:00:00Z`)) : "-";
 
 type Verdict = "genuine" | "impostor" | "invalid";
 
@@ -94,8 +94,8 @@ export function SealResult({
           <Row label="Document">
             {invoiceKindLabels[check.summary.kind]} {check.summary.no}
           </Row>
-          <Row label="From">{check.summary.from || "—"}</Row>
-          <Row label="To">{check.summary.to || "—"}</Row>
+          <Row label="From">{check.summary.from || "-"}</Row>
+          <Row label="To">{check.summary.to || "-"}</Row>
           <Row label={check.summary.kind === "receipt" ? "Paid on" : "Issued"}>
             {formatDate(check.summary.on)}
           </Row>

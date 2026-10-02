@@ -10,7 +10,7 @@ export const welcomeArticle = `# Why we still write by hand
 
 A keyboard is faster. It is also forgetful: the words arrive, get tidied, and the thinking that made them disappears behind them.
 
-Writing by hand is slower in a useful way. You can't type ahead of yourself, so you decide what matters before the pen moves. Studies of students taking notes keep finding the same thing — the ones who write by hand remember more, because they had to choose.
+Writing by hand is slower in a useful way. You can't type ahead of yourself, so you decide what matters before the pen moves. Studies of students taking notes keep finding the same thing: the ones who write by hand remember more, because they had to choose.
 
 ## Try it in Notables
 

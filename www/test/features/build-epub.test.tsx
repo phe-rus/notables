@@ -34,7 +34,7 @@ const chapters = [
             tag: "h1",
             children: [{ type: "text", text: "The fog came in at dusk", format: 0 }],
           },
-          paragraph("Nobody remembered the last time the lamp had failed — “never”, they said."),
+          paragraph("Nobody remembered the last time the lamp had failed. “Never”, they said."),
           {
             type: "image",
             src: `data:image/png;base64,${PNG_PIXEL}`,

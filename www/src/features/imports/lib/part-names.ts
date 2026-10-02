@@ -30,8 +30,8 @@ export function parseName(raw: string): NameParts {
     .replace(CHAPTER, " ")
     .replace(LEADING_NUMBER, " ")
     .replace(/[[(][^\])]*[\])]/g, " ")
-    .replace(/\s*[-–—:|]\s*$/g, "")
-    .replace(/^\s*[-–—:|]\s*/g, "")
+    .replace(/\s*[-\u2013\u2014:|]\s*$/g, "")
+    .replace(/^\s*[-\u2013\u2014:|]\s*/g, "")
     .replace(/\s{2,}/g, " ")
     .trim();
   return {

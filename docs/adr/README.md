@@ -1,7 +1,7 @@
 # Architecture Decision Records
 
 Each ADR captures one significant decision: its context, the decision and its
-consequences. ADRs are immutable once accepted — supersede them with a new ADR
+consequences. ADRs are immutable once accepted, supersede them with a new ADR
 instead of editing.
 
 | #    | Title                                                                                   | Status   |
