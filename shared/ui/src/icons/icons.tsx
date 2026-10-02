@@ -16,6 +16,7 @@ import {
   CheckListIcon,
   CheckmarkBadge01Icon,
   CheckmarkCircle02Icon,
+  Clock01Icon,
   Comment01Icon,
   Cursor01Icon,
   Delete02Icon,
@@ -23,6 +24,7 @@ import {
   DragDropVerticalIcon,
   Eraser01Icon,
   FavouriteIcon,
+  Folder01Icon,
   FullScreenIcon,
   Globe02Icon,
   GoBackward15SecIcon,
@@ -42,8 +44,10 @@ import {
   LayoutGridIcon,
   LeftToRightListBulletIcon,
   Link01Icon,
+  Location01Icon,
   Mic01Icon,
   Moon02Icon,
+  MoreHorizontalIcon,
   Mortarboard01Icon,
   NextIcon,
   Note01Icon,
@@ -64,7 +68,12 @@ import {
   Share08Icon,
   SidebarLeftIcon,
   Store01Icon,
+  Task01Icon,
   Tick02Icon,
+  Time04Icon,
+  UnfoldMoreIcon,
+  UserAdd01Icon,
+  UserMultipleIcon,
   ViewIcon,
   ViewOffSlashIcon,
 } from "@hugeicons/core-free-icons";
@@ -161,6 +170,15 @@ export const BubbleIcon = icon(BubbleChatIcon, "BubbleIcon");
 export const BrushIcon = icon(PaintBrush02Icon, "BrushIcon");
 export const LayoutIcon = icon(LayoutGridIcon, "LayoutIcon");
 export const ZoomIcon = icon(SearchAddIcon, "ZoomIcon");
+export const SelectorIcon = icon(UnfoldMoreIcon, "SelectorIcon");
+export const MoreIcon = icon(MoreHorizontalIcon, "MoreIcon");
+export const PeopleIcon = icon(UserMultipleIcon, "PeopleIcon");
+export const AddPersonIcon = icon(UserAdd01Icon, "AddPersonIcon");
+export const ClockIcon = icon(Clock01Icon, "ClockIcon");
+export const LocationIcon = icon(Location01Icon, "LocationIcon");
+export const TaskIcon = icon(Task01Icon, "TaskIcon");
+export const FolderIcon = icon(Folder01Icon, "FolderIcon");
+export const RecentIcon = icon(Time04Icon, "RecentIcon");
 export const ThumbsUpIcon = toggleIcon(HugeThumbsUpIcon, "ThumbsUpIcon");
 export const HeartIcon = toggleIcon(FavouriteIcon, "HeartIcon");
 export const StarIcon = toggleIcon(HugeStarIcon, "StarIcon");

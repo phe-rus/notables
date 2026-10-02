@@ -1,6 +1,7 @@
 import { accents } from "@notables/tokens";
 import { IconButton, SegmentedControl, SidebarIcon, SwatchPicker, Switch } from "@notables/ui";
 import { AppMark } from "../../../components/brand/app-mark";
+import { SelectInput } from "../../../components/form/form-fields";
 import { CollapsedSidebarControls } from "../../../components/window/collapsed-sidebar-controls";
 import { type LanguageChoice, setLanguageChoice, t, useLanguageChoice } from "../../../i18n/i18n";
 import { languages } from "../../../i18n/languages";
@@ -112,19 +113,20 @@ export function SettingsScreen({ onOpenSidebar }: { onOpenSidebar: () => void })
               />
             </SettingsRow>
             <SettingsRow label={t("settings.language")} description={t("settings.languageHint")}>
-              <select
-                aria-label={t("settings.language")}
+              <SelectInput<LanguageChoice>
+                label={t("settings.language")}
                 value={languageChoice}
-                onChange={(event) => setLanguageChoice(event.target.value as LanguageChoice)}
-                className="rounded-[10px] control-field px-3 py-1.5 text-[15px] text-label"
-              >
-                <option value="system">{t("settings.languageSystem")}</option>
-                {languages.map((language) => (
-                  <option key={language.id} value={language.id} lang={language.id}>
-                    {language.name}
-                  </option>
-                ))}
-              </select>
+                onChange={setLanguageChoice}
+                className="w-auto min-w-[10rem] py-1.5 text-[15px]"
+                options={[
+                  { value: "system", label: t("settings.languageSystem") },
+                  ...languages.map((language) => ({
+                    value: language.id,
+                    label: language.name,
+                    lang: language.id,
+                  })),
+                ]}
+              />
             </SettingsRow>
           </SettingsGroup>
 

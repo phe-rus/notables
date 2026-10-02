@@ -1,5 +1,6 @@
 import { SegmentedControl } from "@notables/ui";
 import { useEffect, useState } from "react";
+import { SelectInput } from "../../../components/form/form-fields";
 import { t } from "../../../i18n/i18n";
 import { SettingsGroup, SettingsRow } from "../../settings/components/settings-controls";
 import { useModelPacks } from "../lib/model-packs";
@@ -32,25 +33,26 @@ export function ListeningSettingsSection() {
         {voices && voices.length === 0 ? (
           <p className="text-[14px] text-label-secondary">{t("listening.noVoices")}</p>
         ) : (
-          <select
-            aria-label={t("listening.voice")}
+          <SelectInput
+            label={t("listening.voice")}
             value={settings.voiceId ?? ""}
-            onChange={(event) => setNarrationSettings({ voiceId: event.target.value || null })}
-            className="w-full rounded-[10px] control-field px-3 py-2 text-[15px] text-label"
-          >
-            <option value="">{t("listening.bestVoice")}</option>
-            {(voices ?? []).map((voice) => (
-              <option key={voice.id} value={voice.id}>
-                {voice.name}
-                {voice.natural ? ` · ${t("listening.natural")}` : ""}
-                {voice.provider === "gemini"
-                  ? " · Gemini"
-                  : voice.offline
-                    ? ""
-                    : ` · ${t("listening.online")}`}
-              </option>
-            ))}
-          </select>
+            onChange={(voiceId) => setNarrationSettings({ voiceId: voiceId || null })}
+            className="py-2 text-[15px]"
+            options={[
+              { value: "", label: t("listening.bestVoice") },
+              ...(voices ?? []).map((voice) => ({
+                value: voice.id,
+                label: voice.name,
+                detail: voice.natural
+                  ? t("listening.natural")
+                  : voice.provider === "gemini"
+                    ? "Gemini"
+                    : voice.offline
+                      ? undefined
+                      : t("listening.online"),
+              })),
+            ]}
+          />
         )}
       </SettingsRow>
       <SettingsRow label={t("listening.speed")} wide>

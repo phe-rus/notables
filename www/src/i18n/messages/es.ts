@@ -23,6 +23,7 @@ export const es: Messages = {
     untitled: "Sin título",
     deleted: "Eliminado",
     notAvailable: "No disponible en este dispositivo.",
+    noMatches: "Sin resultados",
   },
   nav: {
     newNote: "Nueva nota",

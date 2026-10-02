@@ -10,10 +10,7 @@ import { type GroupId, type ViewId, viewGroups } from "../model/library-views";
 export function GroupSwitcher({ group, active }: { group: GroupId; active: ViewId | "books" }) {
   const { options } = viewGroups[group];
   return (
-    <nav
-      aria-label={viewGroups[group].title}
-      className="no-scrollbar -mx-4 flex gap-1.5 overflow-x-auto px-4"
-    >
+    <nav aria-label={viewGroups[group].title} className="flex flex-wrap gap-1.5">
       {options.map((option) => {
         const selected = option.id === active;
         return (
@@ -24,7 +21,7 @@ export function GroupSwitcher({ group, active }: { group: GroupId; active: ViewI
               : { to: "/" as const, search: { view: option.id } })}
             aria-current={selected ? "page" : undefined}
             className={cn(
-              "relative isolate shrink-0 rounded-full px-3.5 py-1.5 text-[13px] font-medium no-underline transition-colors",
+              "relative isolate max-w-full truncate rounded-full px-3.5 py-1.5 text-[13px] font-medium no-underline transition-colors",
               selected ? "text-on-inverse" : "bg-fill/70 text-label-secondary hover:text-label",
             )}
           >

@@ -49,16 +49,15 @@ export function SettingsRow({
             ),
       )}
     >
-      <div className="flex min-w-0 flex-col">
+      <div className="flex min-w-[min(40%,9rem)] flex-col">
         <span className="text-[15px] text-label">{label}</span>
         {description && (
           <span className="text-[13px] leading-snug text-label-secondary">{description}</span>
         )}
       </div>
-      {/* Wide controls take the full width when the row stacks. */}
-      <div className={cn("flex shrink-0 [&>fieldset]:max-sm:w-full", stacked && "w-full")}>
-        {children}
-      </div>
+      {/* Controls give way before the label does; a segmented control that
+          no longer fits turns into a pop-up button by itself. */}
+      <div className={cn("flex min-w-0 justify-end", stacked && "w-full")}>{children}</div>
     </div>
   );
 }

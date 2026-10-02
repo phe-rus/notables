@@ -182,20 +182,16 @@ function BooksListContent({ activeId, onOpenSidebar, className }: BooksListProps
           </div>
         </div>
         <GroupSwitcher group="books" active="books" />
-        {/* Five shelves can be wider than a narrow list: it scrolls rather than squeezes. */}
-        <div className="no-scrollbar -mx-4 overflow-x-auto px-4">
-          <div className="w-max min-w-full">
-            <SegmentedControl<BooksShelf>
-              label={t("books.shelf.label")}
-              value={current}
-              onChange={chooseShelf}
-              options={(["all", ...kinds] as BooksShelf[]).map((value) => ({
-                value,
-                label: shelfLabel(value),
-              }))}
-            />
-          </div>
-        </div>
+        {/* Five shelves can be wider than a narrow list: it becomes a pop-up button then. */}
+        <SegmentedControl<BooksShelf>
+          label={t("books.shelf.label")}
+          value={current}
+          onChange={chooseShelf}
+          options={(["all", ...kinds] as BooksShelf[]).map((value) => ({
+            value,
+            label: shelfLabel(value),
+          }))}
+        />
       </header>
 
       <div className="flex grow flex-col gap-1 overflow-y-auto px-2.5 pt-2 pb-28 md:pb-8">

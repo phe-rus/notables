@@ -107,10 +107,7 @@ export function InvoicesList({
             </IconButton>
           </div>
         </div>
-        <nav
-          aria-label="Document type"
-          className="no-scrollbar -mx-4 flex gap-1.5 overflow-x-auto px-4"
-        >
+        <nav aria-label="Document type" className="flex flex-wrap gap-1.5">
           {(["all", "invoice", "receipt", "quote"] as const).map((kind) => {
             const selected = filter === kind;
             const count = kind === "all" ? all.length : all.filter((i) => i.kind === kind).length;
@@ -121,7 +118,7 @@ export function InvoicesList({
                 aria-pressed={selected}
                 onClick={() => setFilter(kind)}
                 className={cn(
-                  "relative isolate flex shrink-0 items-center gap-1.5 rounded-full px-3.5 py-1.5 text-[13px] font-medium transition-colors",
+                  "relative isolate flex max-w-full min-w-0 items-center gap-1.5 rounded-full px-3.5 py-1.5 text-[13px] font-medium transition-colors",
                   selected ? "text-on-inverse" : "bg-fill/70 text-label-secondary hover:text-label",
                 )}
               >

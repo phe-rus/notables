@@ -29,6 +29,20 @@
 }
 
 /**
+ * A row that scrolls sideways fades out at its edges, so a cut-off item
+ * reads as "there's more" rather than as broken layout.
+ */
+@utility scroll-fade-x {
+  mask-image: linear-gradient(
+    to right,
+    transparent,
+    #000 14px,
+    #000 calc(100% - 14px),
+    transparent
+  );
+}
+
+/**
  * Two-tone icons: the first path is the primary stroke, the rest are
  * secondary. Hovering a `.group` brings both to full strength with a
  * slight tilt in opposite directions.

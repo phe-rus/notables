@@ -25,6 +25,7 @@ export const en = {
     untitled: "Untitled",
     deleted: "Deleted",
     notAvailable: "Not available on this device.",
+    noMatches: "No matches",
   },
   nav: {
     newNote: "New note",

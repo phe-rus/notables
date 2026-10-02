@@ -1,5 +1,6 @@
 import { cn, SegmentedControl, Switch, toast } from "@notables/ui";
 import { useCallback, useEffect, useState } from "react";
+import { SelectInput } from "../../../components/form/form-fields";
 import { SettingsGroup, SettingsRow } from "../../settings/components/settings-controls";
 import { type ModelOption, recommendedModels, tierLabels } from "../lib/model-choices";
 import { AiError, listModels, streamText } from "../lib/stream-text";
@@ -295,19 +296,18 @@ function ModelChooser({
           <summary className="cursor-pointer list-none text-[13px] font-medium text-accent-text">
             {picked ? "Other model…" : `Using ${current?.name ?? value}`}
           </summary>
-          <select
-            value={value}
-            onChange={(event) => onChange(event.target.value)}
-            aria-label="Any model"
-            className="mt-2 w-full rounded-[10px] control-field px-3 py-2 text-[14px]"
-          >
-            {models.map((option) => (
-              <option key={option.id} value={option.id}>
-                {option.name}
-                {option.free ? " (free)" : ""}
-              </option>
-            ))}
-          </select>
+          <div className="mt-2">
+            <SelectInput
+              label="Any model"
+              value={value}
+              onChange={onChange}
+              options={models.map((option) => ({
+                value: option.id,
+                label: option.name,
+                detail: option.free ? "Free" : undefined,
+              }))}
+            />
+          </div>
         </details>
       )}
     </div>

@@ -47,14 +47,14 @@ export function BubbleInspector({
         className="w-full resize-none rounded-[14px] bg-fill/50 px-3 py-2 text-[16px] text-label outline-none placeholder:text-label-tertiary"
         style={{ fontFamily: fontFamilies[bubble.font] }}
       />
-      <div className="no-scrollbar flex items-center gap-1 overflow-x-auto">
+      <div className="no-scrollbar scroll-fade-x -mx-2 flex items-center gap-1 overflow-x-auto px-2">
         {(Object.keys(bubbleStyleLabels) as BubbleStyle[]).map((style) => (
           <Chip key={style} active={bubble.style === style} onClick={() => setStyle(style)}>
             {bubbleStyleLabels[style]}
           </Chip>
         ))}
       </div>
-      <div className="no-scrollbar flex items-center gap-1 overflow-x-auto">
+      <div className="no-scrollbar scroll-fade-x -mx-2 flex items-center gap-1 overflow-x-auto px-2">
         {(Object.keys(fontLabels) as BubbleFont[]).map((font) => (
           <button
             key={font}

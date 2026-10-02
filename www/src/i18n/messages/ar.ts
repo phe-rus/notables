@@ -23,6 +23,7 @@ export const ar: Messages = {
     untitled: "بلا عنوان",
     deleted: "تم الحذف",
     notAvailable: "غير متاح على هذا الجهاز.",
+    noMatches: "لا توجد نتائج",
   },
   nav: {
     newNote: "ملاحظة جديدة",

@@ -19,7 +19,7 @@ export function RecentClientPicker({
   return (
     <div className="flex flex-col gap-1.5">
       <span className="text-[12px] font-medium text-label-secondary">Recent</span>
-      <div className="no-scrollbar -mx-1 flex gap-1.5 overflow-x-auto px-1">
+      <div className="no-scrollbar scroll-fade-x -mx-3 flex gap-1.5 overflow-x-auto px-3">
         {clients.map((client) => (
           <button
             key={client.name}

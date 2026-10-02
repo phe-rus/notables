@@ -190,42 +190,33 @@ function EventForm({ target, onClose }: { target: EventSheetTarget; onClose: () 
         <div className="grid grid-cols-2 gap-2.5">
           {!birthday && (
             <Field label={t("calendar.repeatLabel")}>
-              <SelectInput
-                aria-label={t("calendar.repeatLabel")}
+              <SelectInput<Repeat>
+                label={t("calendar.repeatLabel")}
                 value={event.repeat}
-                onChange={(e) => set({ repeat: e.target.value as Repeat })}
-              >
-                {(Object.keys(repeatLabels) as Repeat[]).map((repeat) => (
-                  <option key={repeat} value={repeat}>
-                    {t(`calendar.repeat.${repeat}`)}
-                  </option>
-                ))}
-              </SelectInput>
+                onChange={(repeat) => set({ repeat })}
+                options={(Object.keys(repeatLabels) as Repeat[]).map((repeat) => ({
+                  value: repeat,
+                  label: t(`calendar.repeat.${repeat}`),
+                }))}
+              />
             </Field>
           )}
           <Field label={t("calendar.alert")} className={birthday ? "col-span-2" : undefined}>
             <SelectInput
-              aria-label={t("calendar.alert")}
+              label={t("calendar.alert")}
               value={event.alert === null ? "none" : String(event.alert)}
-              onChange={(e) =>
-                set({ alert: e.target.value === "none" ? null : Number(e.target.value) })
-              }
-            >
-              {[
+              onChange={(value) => set({ alert: value === "none" ? null : Number(value) })}
+              options={[
                 ...alerts,
                 // Keep a value chosen with the other kind of timing.
                 ...(alerts.some((choice) => choice.value === event.alert)
                   ? []
                   : [{ value: event.alert, label: alertLabel(event.alert, allDay) }]),
-              ].map((choice) => (
-                <option
-                  key={String(choice.value)}
-                  value={choice.value === null ? "none" : choice.value}
-                >
-                  {choice.label}
-                </option>
-              ))}
-            </SelectInput>
+              ].map((choice) => ({
+                value: choice.value === null ? "none" : String(choice.value),
+                label: choice.label,
+              }))}
+            />
           </Field>
         </div>
 

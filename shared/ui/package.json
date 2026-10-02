@@ -13,11 +13,14 @@
     "typecheck": "tsc -p tsconfig.json"
   },
   "peerDependencies": {
-    "react": "catalog:"
+    "react": "catalog:",
+    "react-dom": "catalog:"
   },
   "devDependencies": {
     "@types/react": "catalog:",
+    "@types/react-dom": "catalog:",
     "react": "catalog:",
+    "react-dom": "catalog:",
     "typescript": "catalog:"
   },
   "dependencies": {

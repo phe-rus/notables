@@ -23,6 +23,7 @@ export const fr: Messages = {
     untitled: "Sans titre",
     deleted: "Supprimé",
     notAvailable: "Non disponible sur cet appareil.",
+    noMatches: "Aucun résultat",
   },
   nav: {
     newNote: "Nouvelle note",

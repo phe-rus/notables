@@ -1,4 +1,4 @@
-import { Button, CloseIcon, IconButton, Sheet, toast } from "@notables/ui";
+import { Button, CloseIcon, IconButton, Select, Sheet, toast } from "@notables/ui";
 import { useState } from "react";
 import { Field, FormSection, TextArea, TextInput } from "../../../components/form/form-fields";
 import { PartyFields } from "../components/party-fields";
@@ -8,7 +8,7 @@ import {
   draftBusinessProfile,
   saveBusinessProfile,
 } from "../lib/business-profile";
-import { currencies } from "../lib/currencies";
+import { currencyOptions } from "../lib/currencies";
 
 /**
  * Your business, set once: name, contact details, logo, currency, tax,
@@ -64,18 +64,12 @@ function BusinessForm({ onClose }: { onClose: () => void }) {
         <FormSection title="Money">
           <div className="grid grid-cols-3 gap-2.5">
             <Field label="Currency">
-              <select
-                aria-label="Currency"
+              <Select
+                label="Currency"
                 value={profile.currency}
-                onChange={(e) => set({ currency: e.target.value })}
-                className="w-full rounded-[10px] control-field px-3 py-2 text-[14px] text-label"
-              >
-                {[...new Set([profile.currency, ...currencies])].map((code) => (
-                  <option key={code} value={code}>
-                    {code}
-                  </option>
-                ))}
-              </select>
+                onChange={(currency) => set({ currency })}
+                options={currencyOptions(profile.currency)}
+              />
             </Field>
             <Field label="Tax rate (%)">
               <TextInput

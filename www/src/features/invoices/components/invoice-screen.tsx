@@ -10,6 +10,7 @@ import {
   Popover,
   PrintIcon,
   SegmentedControl,
+  Select,
   TrashIcon,
   toast,
   useDismiss,
@@ -26,7 +27,7 @@ import {
   saveBusinessProfile,
   useBusinessProfile,
 } from "../lib/business-profile";
-import { currencies } from "../lib/currencies";
+import { currencyOptions } from "../lib/currencies";
 import { useInvoiceSeal } from "../lib/use-invoice-seal";
 import { getInvoiceStore } from "../store/invoice-store";
 import { InvoicePaper } from "./invoice-paper";
@@ -216,18 +217,12 @@ export function InvoiceScreen({ invoice }: { invoice: InvoiceDocument }) {
                   />
                 </Field>
                 <Field label="Currency">
-                  <select
-                    aria-label="Currency"
+                  <Select
+                    label="Currency"
                     value={invoice.currency}
-                    onChange={(e) => set({ currency: e.target.value })}
-                    className="w-full rounded-[10px] control-field px-3 py-2 text-[14px] text-label"
-                  >
-                    {[...new Set([invoice.currency, ...currencies])].map((code) => (
-                      <option key={code} value={code}>
-                        {code}
-                      </option>
-                    ))}
-                  </select>
+                    onChange={(currency) => set({ currency })}
+                    options={currencyOptions(invoice.currency)}
+                  />
                 </Field>
                 <Field label={invoice.kind === "receipt" ? "Date paid" : "Date of issue"}>
                   <TextInput

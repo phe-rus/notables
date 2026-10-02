@@ -23,6 +23,7 @@ export const sw: Messages = {
     untitled: "Bila jina",
     deleted: "Imefutwa",
     notAvailable: "Haipatikani kwenye kifaa hiki.",
+    noMatches: "Hakuna kinacholingana",
   },
   nav: {
     newNote: "Dokezo jipya",
