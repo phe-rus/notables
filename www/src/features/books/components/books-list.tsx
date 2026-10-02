@@ -5,24 +5,25 @@ import {
   cn,
   DownloadIcon,
   IconButton,
+  openContextMenu,
   SidebarIcon,
   spring,
   TrashIcon,
-  toast,
   useContextMenu,
 } from "@notables/ui";
 import { Link, useNavigate } from "@tanstack/react-router";
 import { AnimatePresence, motion } from "motion/react";
-import { useEffect, useMemo, useState } from "react";
+import { type MouseEvent, useEffect, useMemo, useRef, useState } from "react";
 import { CollapsedSidebarControls } from "../../../components/window/collapsed-sidebar-controls";
 import { ImportSheet } from "../../imports/components/import-sheet";
 import { GroupSwitcher } from "../../library/components/group-switcher";
 import { usePreferences } from "../../settings/store/preferences-store";
 import { moveBooksToBin } from "../../trash/lib/recycle-bin";
-import { exportBookAsEpub } from "../export/export-book";
+import { exportMenuItems } from "../export/export-book-button";
 import { arrangeShelf, titleInSeries } from "../lib/arrange-shelf";
 import {
   type BookEntry,
+  type BookShelf,
   bookFormat,
   bookKindLabel,
   getBookStore,
@@ -56,9 +57,17 @@ function BooksListContent({ activeId, onOpenSidebar, className }: BooksListProps
 
   const [importing, setImporting] = useState(false);
 
-  const createBook = () => {
-    const book = getBookStore().create();
+  const createBook = (shelf: BookShelf = "books") => {
+    const book = getBookStore().create(shelf);
     void navigate({ to: "/books/$bookId", params: { bookId: book.id } });
+  };
+  const chooseNewBook = (event: MouseEvent<HTMLElement>) => {
+    const rect = event.currentTarget.getBoundingClientRect();
+    openContextMenu(rect.right - 200, rect.bottom + 6, [
+      { label: "New book", onSelect: () => createBook("books") },
+      { label: "New manga", onSelect: () => createBook("manga") },
+      { label: "New comic", onSelect: () => createBook("comic") },
+    ]);
   };
 
   const { selecting, selected, stop } = selection;
@@ -124,7 +133,7 @@ function BooksListContent({ activeId, onOpenSidebar, className }: BooksListProps
                 >
                   <DownloadIcon size={20} />
                 </IconButton>
-                <IconButton label="New book" tone="accent" onClick={createBook}>
+                <IconButton label="New book, manga or comic" tone="accent" onClick={chooseNewBook}>
                   <BookIcon size={20} />
                 </IconButton>
               </>
@@ -142,7 +151,7 @@ function BooksListContent({ activeId, onOpenSidebar, className }: BooksListProps
             </p>
             <button
               type="button"
-              onClick={createBook}
+              onClick={() => createBook()}
               className="rounded-full bg-accent px-4 py-2 text-[14px] font-semibold text-on-accent transition-transform active:scale-[0.97]"
             >
               Make a book
@@ -242,6 +251,11 @@ function BookRow({
   const count = chapters === 1 ? "1 chapter" : `${chapters} chapters`;
   const navigate = useNavigate();
   const selection = useBookSelection();
+  // Where the menu opened, so the export formats can open in the same place.
+  const menuPoint = useRef({ x: 0, y: 0 });
+  const remember = (event: { clientX: number; clientY: number }) => {
+    menuPoint.current = { x: event.clientX, y: event.clientY };
+  };
   const menu = useContextMenu(() => [
     {
       label: "Open",
@@ -253,17 +267,17 @@ function BookRow({
       onSelect: () => void navigate({ to: "/read/$bookId", params: { bookId: book.id } }),
     },
     {
-      label: "Export as EPUB",
+      label: "Export…",
       disabled: chapters === 0,
-      onSelect: () => {
-        void toast
-          .promise(exportBookAsEpub(book), {
-            loading: "Exporting your book…",
-            success: "Book exported",
-            error: "The book couldn’t be exported",
-          })
-          .catch(() => {});
-      },
+      onSelect: () =>
+        // Formats get their own menu where this one was.
+        requestAnimationFrame(() =>
+          openContextMenu(
+            Math.max(12, menuPoint.current.x - 20),
+            menuPoint.current.y,
+            exportMenuItems(book),
+          ),
+        ),
     },
     "divider",
     { label: "Select", onSelect: () => selection.start(book.id) },
@@ -325,6 +339,8 @@ function BookRow({
       to="/books/$bookId"
       params={{ bookId: book.id }}
       {...menu}
+      onPointerDownCapture={remember}
+      onContextMenuCapture={remember}
       className={cn(rowClass, active ? "bg-accent-soft" : "hover:bg-fill/60")}
     >
       {body}

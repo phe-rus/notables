@@ -10,15 +10,18 @@ import {
   BirthdayCakeIcon,
   Book02Icon,
   BookOpen01Icon,
+  BubbleChatIcon,
   Calendar03Icon,
   Cancel01Icon,
   CheckListIcon,
   CheckmarkBadge01Icon,
   CheckmarkCircle02Icon,
   Comment01Icon,
+  Cursor01Icon,
   Delete02Icon,
   Download01Icon,
   DragDropVerticalIcon,
+  Eraser01Icon,
   FavouriteIcon,
   FullScreenIcon,
   Globe02Icon,
@@ -29,11 +32,14 @@ import {
   HighlighterIcon as HugeHighlighterIcon,
   PauseIcon as HugePauseIcon,
   PlayIcon as HugePlayIcon,
+  RedoIcon as HugeRedoIcon,
   RepeatIcon as HugeRepeatIcon,
   StarIcon as HugeStarIcon,
   ThumbsUpIcon as HugeThumbsUpIcon,
+  UndoIcon as HugeUndoIcon,
   Image01Icon,
   Invoice03Icon,
+  LayoutGridIcon,
   LeftToRightListBulletIcon,
   Link01Icon,
   Mic01Icon,
@@ -43,6 +49,7 @@ import {
   Note01Icon,
   NotebookIcon,
   Notification03Icon,
+  PaintBrush02Icon,
   PencilEdit02Icon,
   PencilIcon,
   Pin02Icon,
@@ -52,6 +59,7 @@ import {
   QuillWrite02Icon,
   ScanIcon,
   Search01Icon,
+  SearchAddIcon,
   Settings02Icon,
   Share08Icon,
   SidebarLeftIcon,
@@ -145,6 +153,14 @@ export const CalendarIcon = icon(Calendar03Icon, "CalendarIcon");
 export const BirthdayIcon = icon(BirthdayCakeIcon, "BirthdayIcon");
 export const AlarmIcon = icon(AlarmClockIcon, "AlarmIcon");
 export const RepeatIcon = icon(HugeRepeatIcon, "RepeatIcon");
+export const UndoIcon = icon(HugeUndoIcon, "UndoIcon");
+export const RedoIcon = icon(HugeRedoIcon, "RedoIcon");
+export const PointerIcon = icon(Cursor01Icon, "PointerIcon");
+export const EraserIcon = icon(Eraser01Icon, "EraserIcon");
+export const BubbleIcon = icon(BubbleChatIcon, "BubbleIcon");
+export const BrushIcon = icon(PaintBrush02Icon, "BrushIcon");
+export const LayoutIcon = icon(LayoutGridIcon, "LayoutIcon");
+export const ZoomIcon = icon(SearchAddIcon, "ZoomIcon");
 export const ThumbsUpIcon = toggleIcon(HugeThumbsUpIcon, "ThumbsUpIcon");
 export const HeartIcon = toggleIcon(FavouriteIcon, "HeartIcon");
 export const StarIcon = toggleIcon(HugeStarIcon, "StarIcon");

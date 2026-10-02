@@ -80,7 +80,8 @@ class BookStore {
 
   getTrashed = () => this.#trashed;
 
-  create(): BookEntry {
+  /** A new, empty book; comics and manga start on their own shelf. */
+  create(shelf: BookShelf = "books"): BookEntry {
     const now = Date.now();
     const book: BookEntry = {
       id: createId(now),
@@ -90,6 +91,12 @@ class BookStore {
       chapterIds: [],
       createdAt: now,
       updatedAt: now,
+      ...(shelf === "books"
+        ? {}
+        : {
+            format: "comic" as const,
+            direction: shelf === "manga" ? ("rtl" as const) : ("ltr" as const),
+          }),
     };
     this.books.set(book.id, book);
     return book;

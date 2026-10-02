@@ -1,6 +1,7 @@
 import { $createHeadingNode, $isHeadingNode } from "@lexical/rich-text";
 import { $createParagraphNode, $createTextNode, $getRoot } from "lexical";
 import { $createAudioClipNode } from "../nodes/audio-clip/audio-clip-node";
+import { $createImageNode, type ImageInput } from "../nodes/image/image-node";
 
 export interface AudioClipInput {
   src: string;
@@ -14,10 +15,17 @@ export interface ComposedContent {
   title?: string;
   audioClip?: AudioClipInput;
   paragraphs?: string[];
+  /** Photos or drawn pages, after any paragraphs. */
+  images?: ImageInput[];
 }
 
 /** Appends content to the document. Call inside `editor.update`. */
-export function $appendContent({ title, audioClip, paragraphs = [] }: ComposedContent): void {
+export function $appendContent({
+  title,
+  audioClip,
+  paragraphs = [],
+  images = [],
+}: ComposedContent): void {
   const root = $getRoot();
   if (title) {
     const first = root.getFirstChild();
@@ -32,4 +40,5 @@ export function $appendContent({ title, audioClip, paragraphs = [] }: ComposedCo
   for (const text of paragraphs) {
     root.append($createParagraphNode().append($createTextNode(text)));
   }
+  for (const image of images) root.append($createImageNode(image));
 }

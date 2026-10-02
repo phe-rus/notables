@@ -1,6 +1,7 @@
 import type { NoteKind } from "@notables/core";
 import {
   Button,
+  CanvasIcon,
   ChevronDownIcon,
   ChevronLeftIcon,
   ChevronUpIcon,
@@ -19,6 +20,7 @@ import { IMPORT_ACCEPT, withPath } from "../../imports/lib/picked-files";
 import { appendToBook } from "../../imports/lib/run-import";
 import { noteKindPlural } from "../../library/model/note-kind-labels";
 import { isListedNote, type LibraryEntry, useLibrary } from "../../library/store/library-store";
+import { queueDrawing } from "../../studio/lib/pending-drawing";
 import { moveBooksToBin, moveNotesToBin } from "../../trash/lib/recycle-bin";
 import { chapterKind, startChapter } from "../actions/start-chapter";
 import { type BookEntry, bookShelf, getBookStore, useBook } from "../store/book-store";
@@ -113,6 +115,7 @@ function ChapterList({ book, chapters }: { book: BookEntry; chapters: LibraryEnt
   const [adding, setAdding] = useState<{ label: string; progress: number } | null>(null);
   const filesInput = useRef<HTMLInputElement>(null);
   const kind = chapterKind(book);
+  const drawn = bookShelf(book) !== "books";
 
   // E-books, PDFs, comic pages and audiobook tracks become chapters here.
   const addFiles = async (files: File[]) => {
@@ -152,6 +155,18 @@ function ChapterList({ book, chapters }: { book: BookEntry; chapters: LibraryEnt
     }
   };
 
+  // Comics and manga are drawn: open the last chapter straight into the studio.
+  const drawPage = async () => {
+    setStarting(true);
+    try {
+      const noteId = book.chapterIds.at(-1) ?? (await startChapter(book));
+      queueDrawing(noteId);
+      void navigate({ to: "/notes/$noteId", params: { noteId } });
+    } finally {
+      setStarting(false);
+    }
+  };
+
   const newChapter = async () => {
     setStarting(true);
     try {
@@ -176,7 +191,9 @@ function ChapterList({ book, chapters }: { book: BookEntry; chapters: LibraryEnt
       </h2>
       {chapters.length === 0 && (
         <p className="text-[15px] text-label-secondary">
-          No chapters yet. Start writing one, or add {noteKindPlural[kind]} you’ve already written.
+          {drawn
+            ? "No pages yet. Draw the first one, or add pages from image files."
+            : `No chapters yet. Start writing one, or add ${noteKindPlural[kind]} you’ve already written.`}
         </p>
       )}
       <ol className="flex flex-col gap-1.5">
@@ -228,7 +245,13 @@ function ChapterList({ book, chapters }: { book: BookEntry; chapters: LibraryEnt
         </AnimatePresence>
       </ol>
       <div className="flex flex-wrap gap-2 pt-1">
-        <Button variant="primary" disabled={starting} onClick={newChapter}>
+        {drawn && (
+          <Button variant="primary" disabled={starting} onClick={drawPage}>
+            <CanvasIcon size={16} />
+            Draw a page
+          </Button>
+        )}
+        <Button variant={drawn ? "secondary" : "primary"} disabled={starting} onClick={newChapter}>
           <PlusIcon size={16} strokeWidth={2.2} />
           New chapter
         </Button>

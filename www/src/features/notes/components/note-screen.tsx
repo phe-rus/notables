@@ -36,6 +36,7 @@ import {
 import { PublishControl } from "../../publishing/components/publish-control";
 import { NoteRecorder } from "../../recording/components/note-recorder";
 import { usePreferences } from "../../settings/store/preferences-store";
+import { PendingDrawing } from "../../studio/components/pending-drawing";
 import { moveNotesToBin } from "../../trash/lib/recycle-bin";
 import { noteFontItems } from "../actions/note-menu";
 import { useNoteProvider } from "../hooks/use-note-provider";
@@ -191,6 +192,7 @@ function NoteEditorScreen({ entry, viewId }: { entry: LibraryEntry; viewId?: str
 
       <NoteRecorder open={recording} title={entry.title} onClose={() => setRecording(false)} />
       <PendingNarration noteId={entry.id} ready={status === "local" || status === "synced"} />
+      <PendingDrawing noteId={entry.id} ready={status === "local" || status === "synced"} />
     </NotesEditor>
   );
 }

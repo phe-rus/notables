@@ -11,24 +11,32 @@ import {
 } from "lexical";
 import type { JSX } from "react";
 import { MediaImage } from "../../media/media-image";
+import { RedrawButton } from "./redraw-button";
 
 export type SerializedImageNode = Spread<
-  { src: string; alt: string; caption: string },
+  {
+    src: string;
+    alt: string;
+    caption: string;
+    /** Set on drawn pages: the editable scene the image was rendered from. */
+    scene?: string;
+  },
   SerializedLexicalNode
 >;
 
-/** A photo in the flow of a note, journal or story. */
+/** A photo in the flow of a note, journal or story, or a drawn page. */
 export class ImageNode extends DecoratorNode<JSX.Element> {
   __src: string;
   __alt: string;
   __caption: string;
+  __scene: string;
 
   static override getType(): string {
     return "image";
   }
 
   static override clone(node: ImageNode): ImageNode {
-    return new ImageNode(node.__src, node.__alt, node.__caption, node.__key);
+    return new ImageNode(node.__src, node.__alt, node.__caption, node.__scene, node.__key);
   }
 
   static override importJSON(json: SerializedImageNode): ImageNode {
@@ -44,11 +52,19 @@ export class ImageNode extends DecoratorNode<JSX.Element> {
     };
   }
 
-  constructor(src: string, alt = "", caption = "", key?: NodeKey) {
+  constructor(src: string, alt = "", caption = "", scene = "", key?: NodeKey) {
     super(key);
     this.__src = src;
     this.__alt = alt;
     this.__caption = caption;
+    this.__scene = scene;
+  }
+
+  /** Replaces a drawn page after it has been redrawn. */
+  setDrawing(src: string, scene: string): void {
+    const writable = this.getWritable();
+    writable.__src = src;
+    writable.__scene = scene;
   }
 
   override exportJSON(): SerializedImageNode {
@@ -59,6 +75,7 @@ export class ImageNode extends DecoratorNode<JSX.Element> {
       src: this.__src,
       alt: this.__alt,
       caption: this.__caption,
+      ...(this.__scene ? { scene: this.__scene } : {}),
     };
   }
 
@@ -87,18 +104,22 @@ export class ImageNode extends DecoratorNode<JSX.Element> {
     return (
       <>
         <MediaImage src={this.__src} alt={this.__alt} />
+        {this.__scene && <RedrawButton nodeKey={this.__key} scene={this.__scene} />}
         {this.__caption && <figcaption className="nt-caption">{this.__caption}</figcaption>}
       </>
     );
   }
 }
 
-export function $createImageNode(input: {
+export interface ImageInput {
   src: string;
   alt?: string;
   caption?: string;
-}): ImageNode {
-  return $applyNodeReplacement(new ImageNode(input.src, input.alt, input.caption));
+  scene?: string;
+}
+
+export function $createImageNode(input: ImageInput): ImageNode {
+  return $applyNodeReplacement(new ImageNode(input.src, input.alt, input.caption, input.scene));
 }
 
 export function $isImageNode(node: LexicalNode | null | undefined): node is ImageNode {

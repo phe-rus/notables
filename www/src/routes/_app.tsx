@@ -25,6 +25,7 @@ import { AppearanceSync } from "../features/settings/components/appearance-sync"
 import { sidebarWidth } from "../features/settings/model/preferences";
 import { updatePreferences, usePreferences } from "../features/settings/store/preferences-store";
 import { needsSetup } from "../features/setup/lib/setup-state";
+import { StudioHost } from "../features/studio/components/studio-host";
 import { eraseExpired } from "../features/trash/lib/recycle-bin";
 import { isShortcut } from "../lib/keyboard/shortcuts";
 import { markAppReady } from "../platform/app-ready";
@@ -231,32 +232,34 @@ function AppShell() {
           )}
         >
           {/* Screens push in from the right on phones and settle into place on larger displays. */}
-          <TranscriptionProvider service={transcription}>
-            <motion.div
-              key={
-                noteId ??
-                bookId ??
-                invoiceId ??
-                (inSettings
-                  ? "settings"
-                  : inTrash
-                    ? "trash"
-                    : inCalendar
-                      ? "calendar"
-                      : inInvoices
-                        ? "invoices"
-                        : inBooks
-                          ? "books"
-                          : "notes")
-              }
-              className="flex min-h-0 grow flex-col"
-              initial={isPhone ? { x: 56, opacity: 0.6 } : { y: 8, opacity: 0 }}
-              animate={{ x: 0, y: 0, opacity: 1 }}
-              transition={spring.smooth}
-            >
-              <Outlet />
-            </motion.div>
-          </TranscriptionProvider>
+          <StudioHost>
+            <TranscriptionProvider service={transcription}>
+              <motion.div
+                key={
+                  noteId ??
+                  bookId ??
+                  invoiceId ??
+                  (inSettings
+                    ? "settings"
+                    : inTrash
+                      ? "trash"
+                      : inCalendar
+                        ? "calendar"
+                        : inInvoices
+                          ? "invoices"
+                          : inBooks
+                            ? "books"
+                            : "notes")
+                }
+                className="flex min-h-0 grow flex-col"
+                initial={isPhone ? { x: 56, opacity: 0.6 } : { y: 8, opacity: 0 }}
+                animate={{ x: 0, y: 0, opacity: 1 }}
+                transition={spring.smooth}
+              >
+                <Outlet />
+              </motion.div>
+            </TranscriptionProvider>
+          </StudioHost>
         </main>
       </motion.div>
 

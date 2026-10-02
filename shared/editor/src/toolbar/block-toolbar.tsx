@@ -1,5 +1,6 @@
 import { useLexicalComposerContext } from "@lexical/react/LexicalComposerContext";
 import {
+  CanvasIcon,
   ChecklistIcon,
   cn,
   DrawIcon,
@@ -12,6 +13,7 @@ import {
 import { useCallback, useId, useRef, useState } from "react";
 import { type BlockType, blockLabels, setBlockType } from "../blocks/block-types";
 import { useSelectionState } from "../hooks/use-selection-state";
+import { useDrawingStudio } from "../media/drawing-studio";
 import { INSERT_IMAGE_COMMAND, INSERT_INK_COMMAND } from "../plugins/media/media-plugin";
 
 const BLOCK_MENU_ORDER: BlockType[] = [
@@ -57,9 +59,15 @@ export function BlockToolbar({
   className,
 }: BlockToolbarProps) {
   const [editor] = useLexicalComposerContext();
+  const studio = useDrawingStudio();
   const state = useSelectionState();
   const [menuOpen, setMenuOpen] = useState(false);
   const menuId = useId();
+
+  const drawPage = async () => {
+    const drawing = await studio?.open(null);
+    if (drawing) editor.dispatchCommand(INSERT_IMAGE_COMMAND, drawing);
+  };
   const menuRef = useRef<HTMLDivElement>(null);
   const fileRef = useRef<HTMLInputElement>(null);
 
@@ -146,6 +154,11 @@ export function BlockToolbar({
       <IconButton label="Record audio" onClick={onRecord} disabled={!onRecord}>
         <MicIcon size={19} />
       </IconButton>
+      {studio && (
+        <IconButton label="Draw a page" onClick={() => void drawPage()}>
+          <CanvasIcon size={19} />
+        </IconButton>
+      )}
       <IconButton
         label="Write by hand"
         onClick={onDraw ?? (() => editor.dispatchCommand(INSERT_INK_COMMAND, undefined))}

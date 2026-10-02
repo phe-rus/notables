@@ -5,6 +5,7 @@ import {
   type AudioClipInput,
   type ComposedContent,
 } from "../blocks/append-content";
+import type { ImageInput } from "../nodes/image/image-node";
 import { INSERT_AUDIO_CLIP_COMMAND, INSERT_IMAGE_COMMAND } from "../plugins/media/media-plugin";
 
 /** Editor actions for app-level controls rendered inside a NotesEditor. */
@@ -14,8 +15,7 @@ export function useEditorCommands() {
     () => ({
       insertAudioClip: (clip: AudioClipInput) =>
         editor.dispatchCommand(INSERT_AUDIO_CLIP_COMMAND, clip),
-      insertImage: (image: { src: string; alt?: string; caption?: string }) =>
-        editor.dispatchCommand(INSERT_IMAGE_COMMAND, image),
+      insertImage: (image: ImageInput) => editor.dispatchCommand(INSERT_IMAGE_COMMAND, image),
       /** Appends content at the end of the note as one undoable edit. */
       appendContent: (content: ComposedContent) => editor.update(() => $appendContent(content)),
       focus: () => editor.focus(),

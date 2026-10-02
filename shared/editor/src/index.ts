@@ -18,6 +18,12 @@ export { useEditorCommands } from "./hooks/use-editor-commands";
 export { type SelectionState, useSelectionState } from "./hooks/use-selection-state";
 export { useWritingBridge, type WritingSource } from "./hooks/use-writing-bridge";
 export { sanitizeUrl } from "./lib/sanitize-url";
+export {
+  type Drawing,
+  type DrawingStudio,
+  DrawingStudioProvider,
+  useDrawingStudio,
+} from "./media/drawing-studio";
 export { MediaImage } from "./media/media-image";
 export { type MediaResolver, MediaResolverProvider, useMediaSource } from "./media/media-source";
 export {

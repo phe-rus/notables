@@ -235,6 +235,50 @@
   border-radius: var(--radius-lg);
 }
 
+/* Drawn pages show whole, with a way back into the studio. */
+.nt-figure:has(.nt-redraw) {
+  position: relative;
+}
+
+.nt-figure:has(.nt-redraw) .nt-image {
+  max-height: none;
+  object-fit: contain;
+  border-radius: var(--radius-md);
+  box-shadow:
+    0 0 0 1px var(--color-separator),
+    0 8px 24px -12px rgb(0 0 0 / 0.25);
+}
+
+.nt-redraw {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 12px;
+  border-radius: 999px;
+  font-family: var(--font-sans);
+  font-size: 13px;
+  font-weight: 600;
+  color: #fff;
+  background: rgb(20 18 16 / 0.72);
+  backdrop-filter: blur(12px);
+  opacity: 0;
+  transition: opacity 160ms ease;
+}
+
+.nt-figure:hover .nt-redraw,
+.nt-redraw:focus-visible {
+  opacity: 1;
+}
+
+@media (hover: none) {
+  .nt-redraw {
+    opacity: 1;
+  }
+}
+
 .nt-image-pending {
   aspect-ratio: 4 / 3;
   background: var(--color-fill);

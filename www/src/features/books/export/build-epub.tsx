@@ -70,7 +70,7 @@ function coverSvg(title: string, author: string): string {
 const PRELOAD_HINT = /<link rel="preload"[^>]*\/>/g;
 
 /** Plain, reader-friendly media for e-books: no scripts or custom controls. */
-function renderChapterBody(document: unknown): string {
+export function renderChapterBody(document: unknown): string {
   return renderToStaticMarkup(
     <DocumentView
       document={document}

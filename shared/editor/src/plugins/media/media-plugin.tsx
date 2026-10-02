@@ -2,9 +2,14 @@ import { useLexicalComposerContext } from "@lexical/react/LexicalComposerContext
 import { $insertNodeToNearestRoot, mergeRegister } from "@lexical/utils";
 import { COMMAND_PRIORITY_EDITOR, createCommand, type LexicalCommand } from "lexical";
 import { useEffect } from "react";
-import { $createAudioClipNode, $createImageNode, $createInkNode } from "../../nodes/node-registry";
+import {
+  $createAudioClipNode,
+  $createImageNode,
+  $createInkNode,
+  type ImageInput,
+} from "../../nodes/node-registry";
 
-export const INSERT_IMAGE_COMMAND: LexicalCommand<{ src: string; alt?: string; caption?: string }> =
+export const INSERT_IMAGE_COMMAND: LexicalCommand<ImageInput> =
   createCommand("INSERT_IMAGE_COMMAND");
 
 export const INSERT_AUDIO_CLIP_COMMAND: LexicalCommand<{
