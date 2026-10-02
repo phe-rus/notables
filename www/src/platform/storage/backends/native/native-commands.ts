@@ -21,6 +21,8 @@ export function unframe(buffer: ArrayBuffer): Uint8Array[] {
   return frames;
 }
 
+let mediaBase: Promise<string | null> | null = null;
+
 export const nativeStorage = {
   async documentUpdates(document: string): Promise<Uint8Array[]> {
     return unframe(await invoke<ArrayBuffer>("storage_document_load", { document }));
@@ -54,6 +56,16 @@ export const nativeStorage = {
   /** Streams from disk through the `media` protocol, with range support. */
   mediaUrl(id: string): string {
     return convertFileSrc(id, MEDIA_SCHEME);
+  },
+  /**
+   * A URL the media player can stream: the `media` protocol, except on
+   * Linux, where WebKitGTK's player can't read it and the app serves media
+   * over a local HTTP address instead.
+   */
+  async playableUrl(id: string): Promise<string> {
+    mediaBase ??= invoke<string | null>("storage_media_base").catch(() => null);
+    const base = await mediaBase;
+    return base ? `${base}/${encodeURIComponent(id)}` : convertFileSrc(id, MEDIA_SCHEME);
   },
   removeMedia(id: string): Promise<void> {
     return invoke("storage_media_remove", { id });

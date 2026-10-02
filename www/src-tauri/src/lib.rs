@@ -52,6 +52,7 @@ pub fn run() {
             storage::commands::storage_note_content_remove,
             storage::commands::storage_media_save,
             storage::commands::storage_media_remove,
+            storage::commands::storage_media_base,
             storage::commands::storage_meta_get,
             storage::commands::storage_meta_set,
             transcription::commands::whisper_model_status,
@@ -107,6 +108,13 @@ pub fn run() {
             deep_links::register(app);
             let data_dir = app.path().app_data_dir()?;
             app.manage(Storage::open(&data_dir)?);
+            #[cfg(target_os = "linux")]
+            match storage::media_server::MediaServer::start(app.handle().clone()) {
+                Ok(server) => {
+                    app.manage(server);
+                }
+                Err(error) => log::warn!("media server: {error}"),
+            }
             let models = Models::new(&data_dir);
             models.clean_up();
             app.manage(models);

@@ -41,7 +41,7 @@ pub fn handle<R: Runtime>(
     });
 }
 
-fn serve(file: &Path, mime_type: &str, range: Option<&str>) -> Response<Vec<u8>> {
+pub(super) fn serve(file: &Path, mime_type: &str, range: Option<&str>) -> Response<Vec<u8>> {
     let Ok(mut handle) = File::open(file) else {
         return status(StatusCode::NOT_FOUND);
     };
@@ -122,7 +122,7 @@ fn preflight() -> Response<Vec<u8>> {
         .unwrap_or_else(|_| status(StatusCode::NO_CONTENT))
 }
 
-fn status(code: StatusCode) -> Response<Vec<u8>> {
+pub(super) fn status(code: StatusCode) -> Response<Vec<u8>> {
     let mut response = Response::new(Vec::new());
     *response.status_mut() = code;
     response.headers_mut().insert(

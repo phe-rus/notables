@@ -8,6 +8,8 @@ mod database;
 mod documents;
 mod error;
 mod media;
+#[cfg(target_os = "linux")]
+pub mod media_server;
 mod note_content;
 pub mod protocol;
 

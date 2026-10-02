@@ -43,7 +43,7 @@ export const nativeMedia: MediaBackend = {
   },
   async url(id) {
     await browserDataMigrated();
-    return nativeStorage.mediaUrl(id);
+    return nativeStorage.playableUrl(id);
   },
 };
 

@@ -123,3 +123,20 @@ pub async fn storage_meta_get(app: AppHandle, key: String) -> Result<Option<Stri
 pub async fn storage_meta_set(app: AppHandle, key: String, value: String) -> Result<()> {
     with_storage(app, move |storage| storage.set_meta(&key, &value)).await
 }
+
+/// Where the WebView's media player should load stored media from, when it
+/// can't use the `media` protocol (Linux); null elsewhere.
+#[tauri::command]
+pub fn storage_media_base(app: tauri::AppHandle) -> Option<String> {
+    #[cfg(target_os = "linux")]
+    {
+        use tauri::Manager;
+        app.try_state::<super::media_server::MediaServer>()
+            .map(|server| server.base.clone())
+    }
+    #[cfg(not(target_os = "linux"))]
+    {
+        let _ = app;
+        None
+    }
+}

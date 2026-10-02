@@ -84,7 +84,9 @@ export function useAudiobook(
     (error: unknown) => {
       // An interrupted play() (pausing, changing chapter) is not a failure.
       if (error instanceof DOMException && error.name === "AbortError") return;
-      console.warn("Audiobook playback failed", track?.src, src, error);
+      const detail =
+        error instanceof MediaError ? `MediaError ${error.code}: ${error.message}` : String(error);
+      console.warn("Audiobook playback failed", track?.src, src, detail);
       setPlaying(false);
       setFailed(true);
     },
