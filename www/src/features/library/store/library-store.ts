@@ -89,6 +89,27 @@ class Library {
     return entry;
   }
 
+  /**
+   * Adds a note that started on another device, such as one shared with
+   * this person, keeping its id and origin so this device never seeds it.
+   */
+  receive(input: { id: string; kind: NoteKind; title: string; origin: string }): LibraryEntry {
+    const existing = this.entries.get(input.id);
+    if (existing) return existing;
+    const now = Date.now();
+    const entry: LibraryEntry = {
+      ...input,
+      excerpt: "",
+      pinned: false,
+      publicationId: null,
+      publishKey: null,
+      createdAt: now,
+      updatedAt: now,
+    };
+    this.entries.set(entry.id, entry);
+    return entry;
+  }
+
   update(id: string, patch: Partial<Omit<LibraryEntry, "id" | "origin" | "createdAt">>) {
     const current = this.entries.get(id);
     if (current) this.entries.set(id, { ...current, ...patch });

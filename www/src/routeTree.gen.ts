@@ -18,6 +18,7 @@ import { Route as AppSettingsRouteImport } from './routes/_app/settings'
 import { Route as AppTrashRouteImport } from './routes/_app/trash'
 import { Route as PPublicationIdRouteImport } from './routes/p/$publicationId'
 import { Route as ReadBookIdRouteImport } from './routes/read/$bookId'
+import { Route as SShareIdRouteImport } from './routes/s/$shareId'
 import { Route as AppBooksIndexRouteImport } from './routes/_app/books/index'
 import { Route as AppBooksBookIdRouteImport } from './routes/_app/books/$bookId'
 import { Route as AppInvoicesIndexRouteImport } from './routes/_app/invoices/index'
@@ -69,6 +70,11 @@ const ReadBookIdRoute = ReadBookIdRouteImport.update({
   path: '/read/$bookId',
   getParentRoute: () => rootRouteImport,
 } as any)
+const SShareIdRoute = SShareIdRouteImport.update({
+  id: '/s/$shareId',
+  path: '/s/$shareId',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const AppBooksIndexRoute = AppBooksIndexRouteImport.update({
   id: '/books/',
   path: '/books/',
@@ -110,6 +116,7 @@ export interface FileRoutesByFullPath {
   '/trash': typeof AppTrashRoute
   '/p/$publicationId': typeof PPublicationIdRoute
   '/read/$bookId': typeof ReadBookIdRoute
+  '/s/$shareId': typeof SShareIdRoute
   '/books/$bookId': typeof AppBooksBookIdRoute
   '/invoices/$invoiceId': typeof AppInvoicesInvoiceIdRoute
   '/notes/$noteId': typeof AppNotesNoteIdRoute
@@ -125,6 +132,7 @@ export interface FileRoutesByTo {
   '/trash': typeof AppTrashRoute
   '/p/$publicationId': typeof PPublicationIdRoute
   '/read/$bookId': typeof ReadBookIdRoute
+  '/s/$shareId': typeof SShareIdRoute
   '/': typeof AppIndexRoute
   '/books/$bookId': typeof AppBooksBookIdRoute
   '/invoices/$invoiceId': typeof AppInvoicesInvoiceIdRoute
@@ -143,6 +151,7 @@ export interface FileRoutesById {
   '/_app/trash': typeof AppTrashRoute
   '/p/$publicationId': typeof PPublicationIdRoute
   '/read/$bookId': typeof ReadBookIdRoute
+  '/s/$shareId': typeof SShareIdRoute
   '/_app/': typeof AppIndexRoute
   '/_app/books/$bookId': typeof AppBooksBookIdRoute
   '/_app/invoices/$invoiceId': typeof AppInvoicesInvoiceIdRoute
@@ -162,6 +171,7 @@ export interface FileRouteTypes {
     | '/trash'
     | '/p/$publicationId'
     | '/read/$bookId'
+    | '/s/$shareId'
     | '/books/$bookId'
     | '/invoices/$invoiceId'
     | '/notes/$noteId'
@@ -177,6 +187,7 @@ export interface FileRouteTypes {
     | '/trash'
     | '/p/$publicationId'
     | '/read/$bookId'
+    | '/s/$shareId'
     | '/'
     | '/books/$bookId'
     | '/invoices/$invoiceId'
@@ -194,6 +205,7 @@ export interface FileRouteTypes {
     | '/_app/trash'
     | '/p/$publicationId'
     | '/read/$bookId'
+    | '/s/$shareId'
     | '/_app/'
     | '/_app/books/$bookId'
     | '/_app/invoices/$invoiceId'
@@ -209,6 +221,7 @@ export interface RootRouteChildren {
   WelcomeRoute: typeof WelcomeRoute
   PPublicationIdRoute: typeof PPublicationIdRoute
   ReadBookIdRoute: typeof ReadBookIdRoute
+  SShareIdRoute: typeof SShareIdRoute
   MediaPublicationIdMediaIdRoute: typeof MediaPublicationIdMediaIdRoute
 }
 
@@ -275,6 +288,13 @@ declare module '@tanstack/react-router' {
       path: '/read/$bookId'
       fullPath: '/read/$bookId'
       preLoaderRoute: typeof ReadBookIdRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/s/$shareId': {
+      id: '/s/$shareId'
+      path: '/s/$shareId'
+      fullPath: '/s/$shareId'
+      preLoaderRoute: typeof SShareIdRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/_app/books/': {
@@ -354,6 +374,7 @@ const rootRouteChildren: RootRouteChildren = {
   WelcomeRoute: WelcomeRoute,
   PPublicationIdRoute: PPublicationIdRoute,
   ReadBookIdRoute: ReadBookIdRoute,
+  SShareIdRoute: SShareIdRoute,
   MediaPublicationIdMediaIdRoute: MediaPublicationIdMediaIdRoute,
 }
 export const routeTree = rootRouteImport

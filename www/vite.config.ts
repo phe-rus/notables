@@ -63,6 +63,9 @@ export default defineConfig({
       "@notables/sync > y-indexeddb",
       "@notables/sync > y-partyserver/provider",
       "@notables/sync > y-protocols/awareness",
+      "@notables/sync > y-protocols/sync",
+      "@notables/sync > lib0/decoding",
+      "@notables/sync > lib0/encoding",
       "yjs",
       // Loaded on demand by the importers; bundled up front so the first
       // import doesn't reload the page in development.

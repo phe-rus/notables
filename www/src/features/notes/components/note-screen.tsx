@@ -38,6 +38,8 @@ import { ReadAloudButton } from "../../listening/components/read-aloud-button";
 import { PublishControl } from "../../publishing/components/publish-control";
 import { NoteRecorder } from "../../recording/components/note-recorder";
 import { usePreferences } from "../../settings/store/preferences-store";
+import { ShareSheet } from "../../sharing/components/share-sheet";
+import { useShareSession } from "../../sharing/lib/share-sessions";
 import { PendingDrawing } from "../../studio/components/pending-drawing";
 import { moveNotesToBin } from "../../trash/lib/recycle-bin";
 import { noteFontItems } from "../actions/note-menu";
@@ -58,7 +60,13 @@ export function NoteScreen({ noteId, viewId }: { noteId: string; viewId?: string
   if (!entry) {
     return ready ? <MissingNote /> : null;
   }
-  return <NoteEditorScreen key={noteId} entry={entry} viewId={viewId} />;
+  return <SharedAwareEditor entry={entry} viewId={viewId} />;
+}
+
+/** Reopens the editor when a note starts or stops being shared, so it loads from the right place. */
+function SharedAwareEditor({ entry, viewId }: { entry: LibraryEntry; viewId?: string }) {
+  const shared = useShareSession(entry.id) !== undefined;
+  return <NoteEditorScreen key={`${entry.id}:${shared}`} entry={entry} viewId={viewId} />;
 }
 
 function NoteEditorScreen({ entry, viewId }: { entry: LibraryEntry; viewId?: string }) {
@@ -70,6 +78,8 @@ function NoteEditorScreen({ entry, viewId }: { entry: LibraryEntry; viewId?: str
   const { noteFont } = usePreferences();
   const [recording, setRecording] = useState(false);
   const articleRef = useRef<HTMLElement>(null);
+  const [sharing, setSharing] = useState(false);
+  const shareSession = useShareSession(entry.id);
   const startRecording = useCallback(() => setRecording(true), []);
 
   const onDocumentChange = useCallback(
@@ -154,11 +164,13 @@ function NoteEditorScreen({ entry, viewId }: { entry: LibraryEntry; viewId?: str
             <Button
               variant="secondary"
               className="max-md:hidden"
-              disabled
-              data-tooltip="Device-to-device sharing is coming soon"
+              onClick={() => setSharing(true)}
+              data-tooltip={t("sharing.tooltip")}
             >
               <ShareIcon size={16} />
-              Share
+              {shareSession
+                ? t("sharing.shared", { count: shareSession.peers.length + 1 })
+                : t("sharing.share")}
             </Button>
             <PublishControl entry={entry} doc={provider.doc} />
           </div>
@@ -198,6 +210,7 @@ function NoteEditorScreen({ entry, viewId }: { entry: LibraryEntry; viewId?: str
         />
       </motion.footer>
 
+      <ShareSheet entry={entry} open={sharing} onClose={() => setSharing(false)} />
       <NoteRecorder open={recording} title={entry.title} onClose={() => setRecording(false)} />
       <PendingNarration noteId={entry.id} ready={status === "local" || status === "synced"} />
       <PendingDrawing noteId={entry.id} ready={status === "local" || status === "synced"} />

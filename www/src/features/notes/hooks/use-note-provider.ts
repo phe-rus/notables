@@ -1,7 +1,8 @@
 import { NoteProvider, type SyncStatus } from "@notables/sync";
 import { useEffect, useState } from "react";
 import * as Y from "yjs";
-import { getPersistence, getRemoteSync } from "../../../platform/storage/document-storage";
+import { getRemoteSync } from "../../../platform/storage/document-storage";
+import { persistenceFor } from "../../sharing/lib/share-sessions";
 
 /** One provider per mounted editor; created in an effect so StrictMode remounts stay clean. */
 export function useNoteProvider(noteId: string) {
@@ -10,7 +11,8 @@ export function useNoteProvider(noteId: string) {
 
   useEffect(() => {
     const next = new NoteProvider(noteId, new Y.Doc(), {
-      persistence: getPersistence(),
+      // Shared notes load through their live session, so edits reach other devices.
+      persistence: persistenceFor(noteId),
       remote: getRemoteSync(),
     });
     next.on("change", setStatus);

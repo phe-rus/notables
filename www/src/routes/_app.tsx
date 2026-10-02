@@ -26,6 +26,7 @@ import { AppearanceSync } from "../features/settings/components/appearance-sync"
 import { sidebarWidth } from "../features/settings/model/preferences";
 import { updatePreferences, usePreferences } from "../features/settings/store/preferences-store";
 import { needsSetup } from "../features/setup/lib/setup-state";
+import { ShareSessionsRunner } from "../features/sharing/components/share-sessions-runner";
 import { StudioHost } from "../features/studio/components/studio-host";
 import { eraseExpired } from "../features/trash/lib/recycle-bin";
 import { isShortcut } from "../lib/keyboard/shortcuts";
@@ -134,6 +135,7 @@ function AppShell() {
     <div className="flex h-dvh overflow-hidden bg-sidebar">
       <AppearanceSync />
       {libraryReady && <ReminderRunner />}
+      {libraryReady && <ShareSessionsRunner />}
       <SearchPalette />
 
       {/* Desktop: the sidebar sits on the window; content floats in an inset card. */}
