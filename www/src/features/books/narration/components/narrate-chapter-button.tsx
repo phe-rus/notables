@@ -40,9 +40,14 @@ export function NarrateChapterButton({ book }: { book: BookEntry }) {
 
   return (
     <>
-      <Button variant="secondary" onClick={() => setRecording(true)} title="Narrate a new chapter">
+      <Button
+        variant="secondary"
+        onClick={() => setRecording(true)}
+        data-tooltip="Narrate a new chapter"
+        aria-label="Narrate a new chapter"
+      >
         <MicIcon size={16} />
-        Narrate
+        <span className="max-sm:hidden">Narrate</span>
       </Button>
       <RecorderSheet
         open={recording}

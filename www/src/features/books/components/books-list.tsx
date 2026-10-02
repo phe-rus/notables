@@ -50,7 +50,7 @@ export function BooksList({
         </div>
       </header>
 
-      <div className="flex grow flex-col gap-1 overflow-y-auto px-2.5 pt-2 pb-8">
+      <div className="flex grow flex-col gap-1 overflow-y-auto px-2.5 pt-2 pb-28 md:pb-8">
         {books.length === 0 && (
           <div className="flex flex-col items-center gap-3 px-6 pt-16 text-center">
             <p className="text-[15px] text-label-secondary">

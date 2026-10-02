@@ -27,18 +27,26 @@ export function SettingsRow({
   description,
   children,
   stacked,
+  wide,
 }: {
   label: string;
   description?: string;
   children: ReactNode;
   /** Put the control under the label, for wide controls. */
   stacked?: boolean;
+  /** A wide control (segmented) that moves under the label on phones. */
+  wide?: boolean;
 }) {
   return (
     <div
       className={cn(
         "flex gap-4 px-4 py-3",
-        stacked ? "flex-col items-stretch" : "items-center justify-between",
+        stacked
+          ? "flex-col items-stretch"
+          : cn(
+              "items-center justify-between",
+              wide && "max-sm:flex-col max-sm:items-stretch max-sm:gap-2.5",
+            ),
       )}
     >
       <div className="flex min-w-0 flex-col">
@@ -47,7 +55,10 @@ export function SettingsRow({
           <span className="text-[13px] leading-snug text-label-secondary">{description}</span>
         )}
       </div>
-      <div className={cn("flex shrink-0", stacked && "w-full")}>{children}</div>
+      {/* Wide controls take the full width when the row stacks. */}
+      <div className={cn("flex shrink-0 [&>fieldset]:max-sm:w-full", stacked && "w-full")}>
+        {children}
+      </div>
     </div>
   );
 }

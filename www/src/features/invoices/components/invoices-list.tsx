@@ -68,7 +68,7 @@ export function InvoicesList({
         </div>
       </header>
 
-      <div className="flex grow flex-col overflow-y-auto px-2.5 pb-8">
+      <div className="flex grow flex-col overflow-y-auto px-2.5 pb-28 md:pb-8">
         {invoices.length === 0 && (
           <div className="flex flex-col items-center gap-2 px-6 pt-16 text-center">
             <p className="text-[15px] font-semibold">Get paid, beautifully</p>

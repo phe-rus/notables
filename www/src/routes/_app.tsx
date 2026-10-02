@@ -11,6 +11,7 @@ import { AnimatePresence, motion } from "motion/react";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { setDrawerOpen, useDrawerOpen } from "../components/layout/drawer-store";
 import { ResizeHandle } from "../components/layout/resize-handle";
+import { TabBar } from "../components/layout/tab-bar";
 import { BooksList } from "../features/books/components/books-list";
 import { InvoicesList } from "../features/invoices/components/invoices-list";
 import { Sidebar, type SidebarLocation } from "../features/library/components/library-sidebar";
@@ -49,6 +50,8 @@ function AppShell() {
   const bookId = book?.params.bookId;
   const invoiceId = invoice?.params.invoiceId;
   const detailOpen = Boolean(note || book || invoice || inSettings);
+  // On phones Settings is a top-level place, so it keeps the tab bar.
+  const showTabBar = !(note || book || invoice);
   const isPhone = useMediaQuery("(max-width: 767px)");
   const isDesktop = useMediaQuery("(min-width: 1024px)");
   const drawerOpen = useDrawerOpen();
@@ -162,7 +165,11 @@ function AppShell() {
       </AnimatePresence>
 
       <motion.div
-        className="flex min-w-0 grow overflow-hidden bg-background lg:my-2 lg:mr-2 lg:rounded-[16px] lg:border lg:border-separator/70 lg:shadow-[0_1px_2px_rgba(0,0,0,0.04),0_8px_28px_rgba(0,0,0,0.05)]"
+        className={cn(
+          "flex min-w-0 grow overflow-hidden bg-background lg:my-2 lg:mr-2 lg:rounded-[16px] lg:border lg:border-separator/70 lg:shadow-[0_1px_2px_rgba(0,0,0,0.04),0_8px_28px_rgba(0,0,0,0.05)]",
+          // With the sidebar tucked away, the card sits evenly inside the window.
+          collapsed && "lg:ml-2",
+        )}
         // A drawer on smaller screens nudges the content back for depth.
         animate={!isDesktop && drawerOpen ? { scale: 0.97, x: 24 } : { scale: 1, x: 0 }}
         transition={spring.smooth}
@@ -215,6 +222,12 @@ function AppShell() {
           </TranscriptionProvider>
         </main>
       </motion.div>
+
+      {isPhone && showTabBar && (
+        <TabBar
+          active={inInvoices ? "invoices" : inBooks ? "books" : inSettings ? "settings" : "notes"}
+        />
+      )}
     </div>
   );
 }

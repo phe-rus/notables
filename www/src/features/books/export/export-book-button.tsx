@@ -1,4 +1,4 @@
-import { Button, toast } from "@notables/ui";
+import { Button, DownloadIcon, toast } from "@notables/ui";
 import { useState } from "react";
 import type { BookEntry } from "../store/book-store";
 import { exportBookAsEpub } from "./export-book";
@@ -27,9 +27,11 @@ export function ExportBookButton({ book }: { book: BookEntry }) {
       variant="secondary"
       disabled={exporting || book.chapterIds.length === 0}
       onClick={exportBook}
-      title="Export as EPUB"
+      data-tooltip="Export as EPUB"
+      aria-label="Export as EPUB"
     >
-      {exporting ? "Exporting…" : "Export"}
+      <DownloadIcon size={16} />
+      <span className="max-sm:hidden">{exporting ? "Exporting…" : "Export"}</span>
     </Button>
   );
 }

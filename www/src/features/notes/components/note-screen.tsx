@@ -127,7 +127,7 @@ function NoteEditorScreen({ entry, viewId }: { entry: LibraryEntry; viewId?: str
               variant="secondary"
               className="max-md:hidden"
               disabled
-              title="Device-to-device sharing is coming soon"
+              data-tooltip="Device-to-device sharing is coming soon"
             >
               <ShareIcon size={16} />
               Share
@@ -154,7 +154,7 @@ function NoteEditorScreen({ entry, viewId }: { entry: LibraryEntry; viewId?: str
 
       <motion.footer
         {...riseMotion}
-        className="glass fixed inset-x-3 bottom-[max(12px,env(safe-area-inset-bottom))] z-20 flex rounded-full px-2 py-1 md:hidden"
+        className="glass-menu fixed inset-x-3 bottom-[max(12px,env(safe-area-inset-bottom))] z-20 flex rounded-full px-2 py-1 md:hidden"
       >
         <BlockToolbar
           onRecord={startRecording}

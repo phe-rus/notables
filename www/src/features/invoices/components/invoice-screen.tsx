@@ -111,21 +111,23 @@ export function InvoiceScreen({ invoice }: { invoice: InvoiceDocument }) {
         >
           <ChevronLeftIcon size={22} />
         </Link>
-        <SegmentedControl<InvoiceKind>
-          label="Document type"
-          value={invoice.kind}
-          onChange={(kind) =>
-            set({
-              kind,
-              dueOn: kind === "receipt" ? null : (invoice.dueOn ?? invoice.issuedOn),
-            })
-          }
-          options={[
-            { value: "invoice", label: "Invoice" },
-            { value: "receipt", label: "Receipt" },
-            { value: "quote", label: "Quote" },
-          ]}
-        />
+        <div className="max-md:hidden">
+          <SegmentedControl<InvoiceKind>
+            label="Document type"
+            value={invoice.kind}
+            onChange={(kind) =>
+              set({
+                kind,
+                dueOn: kind === "receipt" ? null : (invoice.dueOn ?? invoice.issuedOn),
+              })
+            }
+            options={[
+              { value: "invoice", label: "Invoice" },
+              { value: "receipt", label: "Receipt" },
+              { value: "quote", label: "Quote" },
+            ]}
+          />
+        </div>
         <div className="xl:hidden">
           <SegmentedControl<"edit" | "preview">
             label="View"
@@ -142,7 +144,7 @@ export function InvoiceScreen({ invoice }: { invoice: InvoiceDocument }) {
           <IconButton label="Delete" onClick={remove}>
             <TrashIcon size={19} />
           </IconButton>
-          <Button variant="primary" onClick={print}>
+          <Button variant="primary" onClick={print} aria-label="Print or save as PDF">
             <PrintIcon size={16} />
             <span className="max-sm:hidden">Print or PDF</span>
           </Button>
@@ -160,6 +162,23 @@ export function InvoiceScreen({ invoice }: { invoice: InvoiceDocument }) {
             className="mx-auto flex max-w-[560px] flex-col gap-7 px-5 pt-5 pb-24"
             onSubmit={(event) => event.preventDefault()}
           >
+            <div className="md:hidden [&>fieldset]:w-full">
+              <SegmentedControl<InvoiceKind>
+                label="Document type"
+                value={invoice.kind}
+                onChange={(kind) =>
+                  set({
+                    kind,
+                    dueOn: kind === "receipt" ? null : (invoice.dueOn ?? invoice.issuedOn),
+                  })
+                }
+                options={[
+                  { value: "invoice", label: "Invoice" },
+                  { value: "receipt", label: "Receipt" },
+                  { value: "quote", label: "Quote" },
+                ]}
+              />
+            </div>
             <FormSection title="Details">
               <div className="grid grid-cols-2 gap-2.5">
                 <Field label="Number">
@@ -335,13 +354,14 @@ function StyleButton({
         variant="secondary"
         aria-expanded={open}
         aria-controls={panelId}
+        aria-label="Style"
         onClick={() => setOpen((value) => !value)}
       >
         <span
           className="size-3.5 rounded-full ring-1 ring-black/10"
           style={{ background: invoice.style.accent }}
         />
-        Style
+        <span className="max-sm:hidden">Style</span>
       </Button>
       <Popover
         open={open}

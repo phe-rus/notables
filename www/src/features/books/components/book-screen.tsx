@@ -64,9 +64,9 @@ function BookEditor({ book, actions }: { book: BookEntry; actions?: ReactNode })
           className="flex min-h-11 items-center gap-0.5 px-1 text-[17px] text-accent-text no-underline md:invisible"
         >
           <ChevronLeftIcon size={22} strokeWidth={2.2} />
-          Books
+          <span className="max-sm:sr-only">Books</span>
         </Link>
-        <div className="flex items-center gap-2">
+        <div className="flex items-center gap-1.5 sm:gap-2">
           <IconButton label="Delete book" onClick={remove}>
             <TrashIcon size={19} />
           </IconButton>
@@ -180,7 +180,7 @@ function ChapterButton({
     <button
       type="button"
       aria-label={label}
-      title={label}
+      data-tooltip={label}
       disabled={disabled}
       onClick={onClick}
       className="flex size-8 shrink-0 items-center justify-center rounded-full text-[16px] text-label-secondary transition-colors hover:bg-fill disabled:opacity-30"

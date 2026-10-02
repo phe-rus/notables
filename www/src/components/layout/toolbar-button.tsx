@@ -17,7 +17,7 @@ export function ToolbarButton({
     <button
       type="button"
       aria-label={label}
-      title={label}
+      data-tooltip={label}
       onClick={onClick}
       className={cn(
         "flex size-7 items-center justify-center rounded-md text-label-tertiary transition-colors duration-fast hover:bg-fill/80 hover:text-label active:scale-95",

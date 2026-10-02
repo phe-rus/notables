@@ -15,10 +15,30 @@ let persistence: Persistence | undefined;
  * SQLite through the Rust core in the native apps, IndexedDB in browsers.
  */
 export function getPersistence(): Persistence {
-  persistence ??= isTauri()
-    ? flushWhenHidden(createUpdateLogPersistence(nativeUpdateLog))
-    : createIndexedDbPersistence("notables");
+  if (!persistence) {
+    if (isTauri()) {
+      persistence = flushWhenHidden(createUpdateLogPersistence(nativeUpdateLog));
+    } else {
+      persistence = createIndexedDbPersistence("notables");
+      void requestPersistentStorage();
+    }
+  }
   return persistence;
+}
+
+/**
+ * Browsers may clear site data when space runs low unless the site's
+ * storage is marked persistent. Ask once; browsers grant it to sites
+ * people use, and installed web apps.
+ */
+async function requestPersistentStorage() {
+  try {
+    if (navigator.storage?.persist && !(await navigator.storage.persisted())) {
+      await navigator.storage.persist();
+    }
+  } catch {
+    // Not supported; storage stays best-effort.
+  }
 }
 
 /**

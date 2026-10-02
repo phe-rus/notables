@@ -48,7 +48,7 @@ export function StylePanel({
           />
           <label
             className="group flex cursor-pointer flex-col items-center gap-1.5"
-            title="Custom colour"
+            data-tooltip="Custom colour"
           >
             <span
               className="relative flex size-8 items-center justify-center overflow-hidden rounded-full ring-offset-2 ring-offset-elevated"

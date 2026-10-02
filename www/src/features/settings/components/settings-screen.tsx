@@ -44,9 +44,9 @@ export function SettingsScreen({ onOpenSidebar }: { onOpenSidebar: () => void })
       </header>
 
       <div className="flex grow flex-col overflow-y-auto">
-        <div className="mx-auto flex w-full max-w-[640px] flex-col gap-8 px-5 pt-4 pb-24">
+        <div className="mx-auto flex w-full max-w-[640px] flex-col gap-8 px-4 pt-4 pb-32 sm:px-5 md:pb-24">
           <SettingsGroup title="Appearance">
-            <SettingsRow label="Theme">
+            <SettingsRow label="Theme" wide>
               <SegmentedControl<ThemePreference>
                 label="Theme"
                 value={preferences.theme}
@@ -71,7 +71,7 @@ export function SettingsScreen({ onOpenSidebar }: { onOpenSidebar: () => void })
                 }))}
               />
             </SettingsRow>
-            <SettingsRow label="Text size" description="Writing and reading.">
+            <SettingsRow label="Text size" description="Writing and reading." wide>
               <SegmentedControl<TextSize>
                 label="Text size"
                 value={preferences.textSize}
@@ -85,7 +85,7 @@ export function SettingsScreen({ onOpenSidebar }: { onOpenSidebar: () => void })
           </SettingsGroup>
 
           <SettingsGroup title="Notes list">
-            <SettingsRow label="Sort by">
+            <SettingsRow label="Sort by" wide>
               <SegmentedControl<ListPreferences["sort"]>
                 label="Sort notes by"
                 value={list.sort}
@@ -97,7 +97,7 @@ export function SettingsScreen({ onOpenSidebar }: { onOpenSidebar: () => void })
                 ]}
               />
             </SettingsRow>
-            <SettingsRow label="Density">
+            <SettingsRow label="Density" wide>
               <SegmentedControl<ListPreferences["density"]>
                 label="List density"
                 value={list.density}

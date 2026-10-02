@@ -331,7 +331,7 @@ function ProfileRow({ active }: { active: boolean }) {
       <Link
         to="/settings"
         aria-label="Settings"
-        title="Settings"
+        data-tooltip="Settings"
         className={cn(
           "flex size-8 items-center justify-center rounded-lg transition-colors duration-fast",
           active

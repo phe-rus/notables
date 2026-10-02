@@ -114,7 +114,7 @@ export function NotesList({
         />
       </header>
 
-      <div className="flex grow flex-col overflow-y-auto px-2.5 pb-8">
+      <div className="flex grow flex-col overflow-y-auto px-2.5 pb-28 md:pb-8">
         {ready && groups.length === 0 && (
           <EmptyList searching={Boolean(deferredQuery)} onCreate={onCreateNote} />
         )}
