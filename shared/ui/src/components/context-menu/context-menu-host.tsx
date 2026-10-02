@@ -3,6 +3,7 @@ import { useEffect, useLayoutEffect, useRef, useState, useSyncExternalStore } fr
 import { FLOATING_LAYER } from "../../hooks/use-dismiss";
 import { CheckIcon } from "../../icons/icons";
 import { cn } from "../../lib/class-names";
+import { screenEdges } from "../../lib/screen-edges";
 import { spring } from "../../motion/transitions";
 import {
   type ContextMenuItem,
@@ -11,8 +12,6 @@ import {
   type OpenMenu,
   subscribeContextMenu,
 } from "./context-menu-store";
-
-const EDGE = 8;
 
 /** Renders the open context menu. Mount once, near the app root. */
 export function ContextMenuHost() {
@@ -26,24 +25,39 @@ const isAction = (item: ContextMenuItem): item is Action =>
 
 function Menu({ menu }: { menu: OpenMenu }) {
   const ref = useRef<HTMLDivElement>(null);
-  const [position, setPosition] = useState({ left: menu.x, top: menu.y, originX: 0, originY: 0 });
+  const [position, setPosition] = useState({
+    left: menu.x,
+    top: menu.y,
+    originX: 0,
+    originY: 0,
+    maxHeight: undefined as number | undefined,
+  });
   const actions = menu.items.filter(isAction).filter((item) => !item.disabled);
   const [focused, setFocused] = useState(-1);
   const focusedRef = useRef(focused);
   focusedRef.current = focused;
 
-  // Keep the whole menu on screen, opening up or left when near an edge.
+  // Keep the whole menu on screen, opening up or left when near an edge. The
+  // layout size, not the on-screen one: the menu is still mid-scale here.
   useLayoutEffect(() => {
     const element = ref.current;
     if (!element) return;
-    const { width, height } = element.getBoundingClientRect();
-    const flipX = menu.x + width + EDGE > window.innerWidth;
-    const flipY = menu.y + height + EDGE > window.innerHeight;
+    const width = element.offsetWidth;
+    const height = element.offsetHeight;
+    const edges = screenEdges();
+    const right = window.innerWidth - edges.right;
+    const bottom = window.innerHeight - edges.bottom;
+    const flipX = menu.x + width > right;
+    const flipY = menu.y + height > bottom;
+    const clamp = (value: number, min: number, max: number) =>
+      Math.min(Math.max(value, min), Math.max(min, max));
     setPosition({
-      left: Math.max(EDGE, flipX ? menu.x - width : menu.x),
-      top: Math.max(EDGE, flipY ? menu.y - height : menu.y),
+      left: clamp(flipX ? menu.x - width : menu.x, edges.left, right - width),
+      top: clamp(flipY ? menu.y - height : menu.y, edges.top, bottom - height),
       originX: flipX ? 1 : 0,
       originY: flipY ? 1 : 0,
+      // Taller than the screen (a phone on its side): it scrolls.
+      maxHeight: bottom - edges.top,
     });
   }, [menu]);
 
@@ -95,12 +109,13 @@ function Menu({ menu }: { menu: OpenMenu }) {
       role="menu"
       {...{ [FLOATING_LAYER]: "" }}
       className={cn(
-        "glass-menu fixed z-[75] flex min-w-[200px] max-w-[280px] flex-col rounded-[16px] p-1.5",
+        "glass-menu fixed z-[75] flex min-w-[200px] max-w-[min(280px,calc(100vw-24px))] flex-col overflow-y-auto overscroll-contain rounded-[16px] p-1.5",
         menu.touch && "min-w-[240px]",
       )}
       style={{
         left: position.left,
         top: position.top,
+        maxHeight: position.maxHeight,
         transformOrigin: `${position.originX * 100}% ${position.originY * 100}%`,
       }}
       initial={{ opacity: 0, scale: 0.88 }}

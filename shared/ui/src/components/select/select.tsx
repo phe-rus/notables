@@ -14,6 +14,7 @@ import { FLOATING_LAYER } from "../../hooks/use-dismiss";
 import { CheckIcon, SearchIcon, SelectorIcon } from "../../icons/icons";
 import { cn } from "../../lib/class-names";
 import { haptic } from "../../lib/haptics";
+import { screenEdges } from "../../lib/screen-edges";
 import { spring } from "../../motion/transitions";
 
 export interface SelectOption<T extends string> {
@@ -25,7 +26,6 @@ export interface SelectOption<T extends string> {
   lang?: string;
 }
 
-const EDGE = 8;
 const GAP = 6;
 /** Long lists get a filter field, as in the system pickers. */
 const SEARCH_FROM = 10;
@@ -145,10 +145,11 @@ function place(anchor: HTMLElement): Placement {
   const viewport = window.visualViewport;
   const height = viewport?.height ?? window.innerHeight;
   const screenWidth = viewport?.width ?? window.innerWidth;
-  const width = Math.min(Math.max(rect.width, 220), 360, screenWidth - EDGE * 2);
-  const left = Math.min(Math.max(EDGE, rect.left), screenWidth - width - EDGE);
-  const below = height - rect.bottom - GAP - EDGE;
-  const aboveSpace = rect.top - GAP - EDGE;
+  const edges = screenEdges();
+  const width = Math.min(Math.max(rect.width, 220), 360, screenWidth - edges.left - edges.right);
+  const left = Math.min(Math.max(edges.left, rect.left), screenWidth - width - edges.right);
+  const below = height - rect.bottom - GAP - edges.bottom;
+  const aboveSpace = rect.top - GAP - edges.top;
   // Open downward unless the list would be cramped there and there's more room above.
   const above = below < 240 && aboveSpace > below;
   return above

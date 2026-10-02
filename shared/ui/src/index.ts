@@ -25,4 +25,5 @@ export * from "./hooks/use-media-query";
 export * from "./icons/icons";
 export * from "./lib/class-names";
 export * from "./lib/haptics";
+export * from "./lib/screen-edges";
 export * from "./motion/transitions";
