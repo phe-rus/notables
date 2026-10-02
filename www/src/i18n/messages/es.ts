@@ -376,6 +376,24 @@ export const es: Messages = {
     placeSystem: "los ajustes de tu sistema",
   },
   books: {
+    deleteSeries: "Eliminar serie…",
+    deleteSeriesTitle: "¿Eliminar «{title}»?",
+    deleteSeriesBody:
+      "{items} y {chapters} pasan a Eliminado recientemente. Puedes restaurarlos durante {days} días.",
+    partCount: {
+      book: {
+        one: "{count} libro",
+        other: "{count} libros",
+      },
+      volume: {
+        one: "{count} tomo",
+        other: "{count} tomos",
+      },
+      season: {
+        one: "{count} temporada",
+        other: "{count} temporadas",
+      },
+    },
     nothingToAdd: "Nada que añadir",
     nothingToAddBody: "Estos archivos no tienen capítulos que Notables pueda leer.",
     chaptersAdded: { one: "Capítulo añadido", other: "{count} capítulos añadidos" },
@@ -417,6 +435,52 @@ export const es: Messages = {
     exportCancelled: "Exportación cancelada",
     exportFailed: "No se pudo exportar el libro",
     chapterCount: { one: "{count} capítulo", other: "{count} capítulos" },
+  },
+  trash: {
+    moved: "Movido a Eliminado recientemente",
+    notesDeleted: {
+      one: "{count} nota eliminada",
+      other: "{count} notas eliminadas",
+    },
+    deleted: "{what} eliminados",
+    seriesCount: {
+      one: "{count} serie",
+      other: "{count} series",
+    },
+    bookCount: {
+      one: "{count} libro",
+      other: "{count} libros",
+    },
+    restoreWithin: "Restáuralos desde Eliminado recientemente en {days} días.",
+    restored: "Restaurado",
+    erased: {
+      one: "{count} elemento borrado",
+      other: "{count} elementos borrados",
+    },
+    empty: "Vaciar",
+    emptyTitle: "¿Vaciar Eliminado recientemente?",
+    emptyBody: {
+      one: "Este elemento se borrará de este dispositivo. No se puede deshacer.",
+      other: "Los {count} elementos se borrarán de este dispositivo. No se puede deshacer.",
+    },
+    erase: "Borrar",
+    eraseNow: "Borrar ahora",
+    restore: "Restaurar",
+    intro: "Las notas, libros y series se quedan aquí {days} días y luego se borran para siempre.",
+    nothingTitle: "Aquí no hay nada",
+    nothingBody: "Lo que eliminas espera aquí una semana, por si cambias de idea.",
+    eraseTitle: "¿Borrar «{title}»?",
+    eraseBookBody:
+      "El libro y los capítulos que solo le pertenecen a él se borrarán de este dispositivo.",
+    eraseNoteBody: "Se borrará de este dispositivo, con sus fotos y grabaciones.",
+    eraseSeriesBody:
+      "La serie y todo lo eliminado con ella se borrarán de este dispositivo, con sus capítulos.",
+    daysLeft: {
+      one: "Queda {count} día",
+      other: "Quedan {count} días",
+    },
+    untitledNote: "Nota nueva",
+    untitledBook: "Libro sin título",
   },
   sharing: {
     title: "Compartir con personas",

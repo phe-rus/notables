@@ -16,6 +16,10 @@ export interface SeriesEntry {
   format: BookFormat;
   /** What a part is called: "Book", "Volume" or "Season". */
   partLabel: string;
+  /** When the whole series went to Recently Deleted. */
+  trashedAt?: number | null;
+  /** The delete that took it; the items deleted with it carry the same id. */
+  trashBatch?: string | null;
   createdAt: number;
   updatedAt: number;
 }

@@ -32,6 +32,8 @@ export interface BookEntry {
   cover?: string | null;
   /** When it went to Recently Deleted; cleared on restore. */
   trashedAt?: number | null;
+  /** The series delete that took it, while it waits in Recently Deleted with its series. */
+  trashBatch?: string | null;
 }
 
 /**

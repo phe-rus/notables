@@ -374,6 +374,24 @@ export const fr: Messages = {
     placeSystem: "les réglages de votre système",
   },
   books: {
+    deleteSeries: "Supprimer la série…",
+    deleteSeriesTitle: "Supprimer « {title} » ?",
+    deleteSeriesBody:
+      "{items} et {chapters} vont dans Supprimés récemment. Vous pouvez les restaurer pendant {days} jours.",
+    partCount: {
+      book: {
+        one: "{count} livre",
+        other: "{count} livres",
+      },
+      volume: {
+        one: "{count} tome",
+        other: "{count} tomes",
+      },
+      season: {
+        one: "{count} saison",
+        other: "{count} saisons",
+      },
+    },
     nothingToAdd: "Rien à ajouter",
     nothingToAddBody: "Ces fichiers ne contiennent aucun chapitre que Notables sait lire.",
     chaptersAdded: { one: "Chapitre ajouté", other: "{count} chapitres ajoutés" },
@@ -415,6 +433,53 @@ export const fr: Messages = {
     exportCancelled: "Export annulé",
     exportFailed: "Le livre n’a pas pu être exporté",
     chapterCount: { one: "{count} chapitre", other: "{count} chapitres" },
+  },
+  trash: {
+    moved: "Placé dans Supprimés récemment",
+    notesDeleted: {
+      one: "{count} note supprimée",
+      other: "{count} notes supprimées",
+    },
+    deleted: "{what} supprimés",
+    seriesCount: {
+      one: "{count} série",
+      other: "{count} séries",
+    },
+    bookCount: {
+      one: "{count} livre",
+      other: "{count} livres",
+    },
+    restoreWithin: "Restaurez-les depuis Supprimés récemment dans les {days} jours.",
+    restored: "Restauré",
+    erased: {
+      one: "{count} élément effacé",
+      other: "{count} éléments effacés",
+    },
+    empty: "Vider",
+    emptyTitle: "Vider Supprimés récemment ?",
+    emptyBody: {
+      one: "Cet élément sera effacé de cet appareil. Cette action est irréversible.",
+      other: "Les {count} éléments seront effacés de cet appareil. Cette action est irréversible.",
+    },
+    erase: "Effacer",
+    eraseNow: "Effacer maintenant",
+    restore: "Restaurer",
+    intro:
+      "Les notes, livres et séries restent ici {days} jours, puis sont effacés définitivement.",
+    nothingTitle: "Rien ici",
+    nothingBody: "Ce que vous supprimez attend ici une semaine, au cas où vous changeriez d’avis.",
+    eraseTitle: "Effacer « {title} » ?",
+    eraseBookBody:
+      "Le livre et les chapitres qui n’appartiennent qu’à lui seront effacés de cet appareil.",
+    eraseNoteBody: "Elle sera effacée de cet appareil, avec ses photos et ses enregistrements.",
+    eraseSeriesBody:
+      "La série et tout ce qui a été supprimé avec elle seront effacés de cet appareil, avec leurs chapitres.",
+    daysLeft: {
+      one: "{count} jour restant",
+      other: "{count} jours restants",
+    },
+    untitledNote: "Nouvelle note",
+    untitledBook: "Livre sans titre",
   },
   sharing: {
     title: "Partager avec des personnes",

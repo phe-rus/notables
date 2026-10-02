@@ -380,6 +380,24 @@ export const sw: Messages = {
     placeSystem: "mipangilio ya mfumo wako",
   },
   books: {
+    deleteSeries: "Futa mfululizo…",
+    deleteSeriesTitle: "Futa “{title}”?",
+    deleteSeriesBody:
+      "{items} na {chapters} vitahamishiwa kwenye Vilivyofutwa Karibuni. Unaweza kuvirejesha kwa siku {days}.",
+    partCount: {
+      book: {
+        one: "Kitabu {count}",
+        other: "Vitabu {count}",
+      },
+      volume: {
+        one: "Juzuu {count}",
+        other: "Juzuu {count}",
+      },
+      season: {
+        one: "Msimu {count}",
+        other: "Misimu {count}",
+      },
+    },
     nothingToAdd: "Hakuna cha kuongeza",
     nothingToAddBody: "Faili hizi hazina sura ambazo Notables inaweza kusoma.",
     chaptersAdded: { one: "Sura imeongezwa", other: "Sura {count} zimeongezwa" },
@@ -421,6 +439,51 @@ export const sw: Messages = {
     exportCancelled: "Uhamishaji umeghairiwa",
     exportFailed: "Kitabu hakikuweza kuhamishwa",
     chapterCount: { one: "Sura {count}", other: "Sura {count}" },
+  },
+  trash: {
+    moved: "Imehamishiwa kwenye Vilivyofutwa Karibuni",
+    notesDeleted: {
+      one: "Dokezo {count} limefutwa",
+      other: "Madokezo {count} yamefutwa",
+    },
+    deleted: "{what} vimefutwa",
+    seriesCount: {
+      one: "Mfululizo {count}",
+      other: "Mifululizo {count}",
+    },
+    bookCount: {
+      one: "Kitabu {count}",
+      other: "Vitabu {count}",
+    },
+    restoreWithin: "Virejeshe kutoka Vilivyofutwa Karibuni ndani ya siku {days}.",
+    restored: "Imerejeshwa",
+    erased: {
+      one: "Kipengee {count} kimefutwa kabisa",
+      other: "Vipengee {count} vimefutwa kabisa",
+    },
+    empty: "Futa vyote",
+    emptyTitle: "Futa vyote katika Vilivyofutwa Karibuni?",
+    emptyBody: {
+      one: "Kipengee hiki kitafutwa kabisa kwenye kifaa hiki. Huwezi kutendua.",
+      other: "Vipengee vyote {count} vitafutwa kabisa kwenye kifaa hiki. Huwezi kutendua.",
+    },
+    erase: "Futa kabisa",
+    eraseNow: "Futa kabisa sasa",
+    restore: "Rejesha",
+    intro: "Madokezo, vitabu na mifululizo hukaa hapa siku {days}, kisha hufutwa kabisa.",
+    nothingTitle: "Hakuna kitu hapa",
+    nothingBody: "Unachofuta husubiri hapa kwa wiki moja, endapo utabadili nia.",
+    eraseTitle: "Futa kabisa “{title}”?",
+    eraseBookBody: "Kitabu, na sura zilizo zake pekee, vitafutwa kabisa kwenye kifaa hiki.",
+    eraseNoteBody: "Litafutwa kabisa kwenye kifaa hiki, pamoja na picha na rekodi zake.",
+    eraseSeriesBody:
+      "Mfululizo na kila kilichofutwa pamoja nao vitafutwa kabisa kwenye kifaa hiki, pamoja na sura zake.",
+    daysLeft: {
+      one: "Imebaki siku {count}",
+      other: "Zimebaki siku {count}",
+    },
+    untitledNote: "Dokezo jipya",
+    untitledBook: "Kitabu kisicho na jina",
   },
   sharing: {
     title: "Shiriki na watu",

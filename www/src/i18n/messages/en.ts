@@ -370,6 +370,24 @@ export const en = {
     placeSystem: "your system settings",
   },
   books: {
+    deleteSeries: "Delete Series…",
+    deleteSeriesTitle: "Delete “{title}”?",
+    deleteSeriesBody:
+      "{items} and {chapters} move to Recently Deleted. You can restore them for {days} days.",
+    partCount: {
+      book: {
+        one: "{count} book",
+        other: "{count} books",
+      },
+      volume: {
+        one: "{count} volume",
+        other: "{count} volumes",
+      },
+      season: {
+        one: "{count} season",
+        other: "{count} seasons",
+      },
+    },
     nothingToAdd: "Nothing to add",
     nothingToAddBody: "These files didn’t contain chapters Notables can read.",
     chaptersAdded: { one: "Chapter added", other: "{count} chapters added" },
@@ -411,6 +429,52 @@ export const en = {
     exportCancelled: "Export cancelled",
     exportFailed: "The book couldn’t be exported",
     chapterCount: { one: "{count} chapter", other: "{count} chapters" },
+  },
+  trash: {
+    moved: "Moved to Recently Deleted",
+    notesDeleted: {
+      one: "{count} note deleted",
+      other: "{count} notes deleted",
+    },
+    deleted: "{what} deleted",
+    seriesCount: {
+      one: "{count} series",
+      other: "{count} series",
+    },
+    bookCount: {
+      one: "{count} book",
+      other: "{count} books",
+    },
+    restoreWithin: "Restore them from Recently Deleted within {days} days.",
+    restored: "Restored",
+    erased: {
+      one: "{count} item erased",
+      other: "{count} items erased",
+    },
+    empty: "Empty",
+    emptyTitle: "Empty Recently Deleted?",
+    emptyBody: {
+      one: "This item will be erased from this device. This can’t be undone.",
+      other: "All {count} items will be erased from this device. This can’t be undone.",
+    },
+    erase: "Erase",
+    eraseNow: "Erase Now",
+    restore: "Restore",
+    intro: "Notes, books and series stay here for {days} days, then they’re erased for good.",
+    nothingTitle: "Nothing here",
+    nothingBody: "What you delete waits here for a week, in case you change your mind.",
+    eraseTitle: "Erase “{title}”?",
+    eraseBookBody:
+      "The book, and chapters that belong only to it, will be erased from this device.",
+    eraseNoteBody: "It will be erased from this device, with its photos and recordings.",
+    eraseSeriesBody:
+      "The series and every item deleted with it will be erased from this device, with their chapters.",
+    daysLeft: {
+      one: "{count} day left",
+      other: "{count} days left",
+    },
+    untitledNote: "New Note",
+    untitledBook: "Untitled book",
   },
   sharing: {
     title: "Share with people",

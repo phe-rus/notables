@@ -3,6 +3,7 @@ import {
   Button,
   CheckIcon,
   cn,
+  confirmDialog,
   DownloadIcon,
   IconButton,
   openContextMenu,
@@ -21,13 +22,15 @@ import { ImportSheet } from "../../imports/components/import-sheet";
 import { GroupSwitcher } from "../../library/components/group-switcher";
 import type { BooksShelf } from "../../settings/model/preferences";
 import { updatePreferences, usePreferences } from "../../settings/store/preferences-store";
-import { moveBooksToBin } from "../../trash/lib/recycle-bin";
+import { liveSeriesItems, moveBooksToBin, moveSeriesToBin } from "../../trash/lib/recycle-bin";
+import { RETENTION_DAYS } from "../../trash/lib/retention";
+import { ownChapters } from "../actions/erase-book";
 import { switchComicKind } from "../actions/switch-kind";
 import { exportMenuItems } from "../export/export-book-button";
 import { arrangeShelf, titleInSeries } from "../lib/arrange-shelf";
 import { kindOfBook } from "../lib/book-kind";
 import { hasAction, otherDrawnKind, switchKindLabel } from "../lib/kind-actions";
-import { kindLabel, shelfLabel } from "../model/kind-labels";
+import { kindLabel, partCountLabel, shelfLabel } from "../model/kind-labels";
 import { type MediaKind, mediaKinds } from "../model/media-kind";
 import { type BookEntry, getBookStore, useBooks } from "../store/book-store";
 import { type SeriesEntry, useSeries } from "../store/series-store";
@@ -88,9 +91,20 @@ function BooksListContent({ activeId, onOpenSidebar, className }: BooksListProps
     updatePreferences((previous) => ({ ...previous, booksShelf }));
 
   const { selecting, selected, stop } = selection;
-  const allSelected = books.length > 0 && selected.size === books.length;
+  // A selected series heading stands for all its volumes.
+  const selectedSeries = series.filter((entry) => selected.has(entry.id));
+  const chosenSeries = new Set(selectedSeries.map((entry) => entry.id));
+  const selectedCount =
+    selectedSeries.length +
+    books.filter(
+      (book) => selected.has(book.id) && !(book.seriesId && chosenSeries.has(book.seriesId)),
+    ).length;
+  const allSelected = books.length > 0 && books.every((book) => selected.has(book.id));
   const deleteSelected = () => {
-    moveBooksToBin(books.filter((book) => selected.has(book.id)));
+    moveSeriesToBin(
+      selectedSeries,
+      books.filter((book) => selected.has(book.id)),
+    );
     stop();
   };
 
@@ -123,9 +137,9 @@ function BooksListContent({ activeId, onOpenSidebar, className }: BooksListProps
             </IconButton>
             <h1 className="text-[22px] font-bold tracking-tight">
               {selecting
-                ? selected.size === 0
+                ? selectedCount === 0
                   ? "Select Books"
-                  : `${selected.size} Selected`
+                  : `${selectedCount} Selected`
                 : "Books"}
             </h1>
           </div>
@@ -234,12 +248,12 @@ function BooksListContent({ activeId, onOpenSidebar, className }: BooksListProps
             </Button>
             <Button
               variant="primary"
-              disabled={selected.size === 0}
+              disabled={selectedCount === 0}
               onClick={deleteSelected}
               className="bg-danger text-white"
             >
               <TrashIcon size={16} />
-              Delete{selected.size > 0 ? ` ${selected.size}` : ""}
+              Delete{selectedCount > 0 ? ` ${selectedCount}` : ""}
             </Button>
           </motion.div>
         )}
@@ -261,20 +275,91 @@ function SeriesGroup({
   activeId?: string;
   showKind: boolean;
 }) {
+  const selection = useBookSelection();
   const kind = showKind && books[0] ? kindLabel(kindOfBook(books[0])) : null;
-  const parts = `${books.length} ${series.partLabel.toLowerCase()}s`;
+  const parts = partCountLabel(books.length, series.partLabel);
+  const menu = useContextMenu(() => [
+    { label: t("books.select"), onSelect: () => selection.start(series.id) },
+    "divider",
+    {
+      label: t("books.deleteSeries"),
+      destructive: true,
+      onSelect: () => void confirmDeleteSeries(series),
+    },
+  ]);
+  const whole = selection.selected.has(series.id);
+  const heading = (
+    <>
+      <span className="truncate text-[13px] font-semibold text-label">{series.title}</span>
+      <span className="shrink-0 text-[12px] text-label-tertiary">
+        {kind ? `${kind} · ${parts}` : parts}
+      </span>
+    </>
+  );
   return (
     <section aria-label={series.title} className="flex flex-col pt-2">
-      <h2 className="flex items-baseline justify-between gap-3 px-2.5 pb-1">
-        <span className="truncate text-[13px] font-semibold text-label">{series.title}</span>
-        <span className="shrink-0 text-[12px] text-label-tertiary">
-          {kind ? `${kind} · ${parts}` : parts}
-        </span>
-      </h2>
+      {selection.selecting ? (
+        <label className="flex cursor-pointer items-center gap-2 px-2.5 pb-1 has-[:focus-visible]:ring-2 has-[:focus-visible]:ring-accent/70">
+          <input
+            type="checkbox"
+            className="sr-only"
+            checked={whole}
+            onChange={() => selection.toggle(series.id)}
+          />
+          <SelectMark checked={whole} />
+          <span className="flex min-w-0 grow items-baseline justify-between gap-3">{heading}</span>
+        </label>
+      ) : (
+        <h2
+          {...menu}
+          className="flex touch-manipulation items-baseline justify-between gap-3 px-2.5 pb-1 [-webkit-touch-callout:none]"
+        >
+          {heading}
+        </h2>
+      )}
       {books.map((book) => (
-        <BookRow key={book.id} book={book} series={series} active={book.id === activeId} />
+        <BookRow
+          key={book.id}
+          book={book}
+          series={series}
+          active={book.id === activeId}
+          inSelectedSeries={whole}
+        />
       ))}
     </section>
+  );
+}
+
+/** Asks before a whole series, with all its volumes, goes to Recently Deleted. */
+async function confirmDeleteSeries(series: SeriesEntry) {
+  const items = liveSeriesItems(series);
+  const chapters = items.reduce((sum, book) => sum + ownChapters(book).length, 0);
+  const confirmed = await confirmDialog({
+    title: t("books.deleteSeriesTitle", { title: series.title }),
+    message: t("books.deleteSeriesBody", {
+      items: partCountLabel(items.length, series.partLabel),
+      chapters: t("books.chapterCount", { count: chapters }),
+      days: RETENTION_DAYS,
+    }),
+    confirmLabel: t("common.delete"),
+    destructive: true,
+  });
+  if (confirmed) moveSeriesToBin([series], []);
+}
+
+function SelectMark({ checked }: { checked: boolean }) {
+  return (
+    <span
+      aria-hidden="true"
+      className={cn(
+        "flex size-[22px] shrink-0 items-center justify-center rounded-full transition-colors",
+        checked
+          ? "bg-accent text-on-accent"
+          : "shadow-[inset_0_0_0_1.5px_var(--color-label-tertiary)]",
+      )}
+    >
+      {checked && <CheckIcon size={14} strokeWidth={2.6} />}
+    </span>
   );
 }
 
@@ -283,11 +368,14 @@ function BookRow({
   series,
   active,
   showKind = false,
+  inSelectedSeries = false,
 }: {
   book: BookEntry;
   /** Set when the row sits under its series' heading. */
   series?: SeriesEntry;
   active: boolean;
+  /** Its whole series is selected, so it is too. */
+  inSelectedSeries?: boolean;
   /** On the All shelf a row says what it is. */
   showKind?: boolean;
 }) {
@@ -358,7 +446,7 @@ function BookRow({
     "flex w-full touch-manipulation items-center gap-3 rounded-[14px] p-2.5 text-left no-underline transition-colors duration-fast [-webkit-touch-callout:none]";
 
   if (selection.selecting) {
-    const checked = selection.selected.has(book.id);
+    const checked = inSelectedSeries || selection.selected.has(book.id);
     return (
       <label
         className={cn(
@@ -371,19 +459,10 @@ function BookRow({
           type="checkbox"
           className="sr-only"
           checked={checked}
+          disabled={inSelectedSeries}
           onChange={() => selection.toggle(book.id)}
         />
-        <span
-          aria-hidden="true"
-          className={cn(
-            "flex size-[22px] shrink-0 items-center justify-center rounded-full transition-colors",
-            checked
-              ? "bg-accent text-on-accent"
-              : "shadow-[inset_0_0_0_1.5px_var(--color-label-tertiary)]",
-          )}
-        >
-          {checked && <CheckIcon size={14} strokeWidth={2.6} />}
-        </span>
+        <SelectMark checked={checked} />
         {body}
       </label>
     );

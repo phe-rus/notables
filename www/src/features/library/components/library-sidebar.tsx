@@ -30,6 +30,7 @@ import { shortcutLabel } from "../../../lib/keyboard/shortcuts";
 import { useAuthorName } from "../../../platform/author-preferences";
 import { windowChrome } from "../../../platform/window-chrome";
 import { useBooks, useTrashedBooks } from "../../books/store/book-store";
+import { useSeries } from "../../books/store/series-store";
 import { useUpcomingCount } from "../../calendar/store/use-upcoming-count";
 import { useInvoices } from "../../invoices/store/invoice-store";
 import { noteMenu } from "../../notes/actions/note-menu";
@@ -39,7 +40,7 @@ import {
   updatePreferences,
   usePreferences,
 } from "../../settings/store/preferences-store";
-import { binNotes } from "../../trash/lib/recycle-bin";
+import { binNotes, binSeriesAndBooks } from "../../trash/lib/bin-groups";
 import { formatAge } from "../lib/date-format";
 import { planningKinds, readingKinds, writingKinds } from "../model/library-views";
 import { type SidebarItemId, sidebarItemTitles } from "../model/sidebar-items";
@@ -79,7 +80,9 @@ export function Sidebar({
   const library = useLibrary();
   const entries = library.filter(isListedNote);
   const trashedBooks = useTrashedBooks();
-  const binCount = binNotes(library, trashedBooks).length + trashedBooks.length;
+  const allSeries = useSeries();
+  const bin = binSeriesAndBooks(trashedBooks, allSeries);
+  const binCount = binNotes(library, trashedBooks).length + bin.books.length + bin.series.length;
   const { order, hidden, counts } = usePreferences().sidebar;
   const [editing, setEditing] = useState(false);
   const navigate = useNavigate();
