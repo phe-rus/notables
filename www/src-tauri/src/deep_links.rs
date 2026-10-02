@@ -21,6 +21,7 @@ pub fn register<R: Runtime>(app: &tauri::App<R>) {
 }
 
 /// Brings the existing window forward when a second launch hands over a link.
+#[cfg(desktop)]
 pub fn focus_main<R: Runtime>(app: &AppHandle<R>) {
     if let Some(window) = app.get_webview_window("main") {
         let _ = window.unminimize();

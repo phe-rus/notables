@@ -2,7 +2,7 @@
 //! bodies with their identifiers in headers; every call runs on a blocking
 //! worker so SQLite and file I/O never stall the UI thread.
 
-use tauri::ipc::{InvokeBody, Request, Response};
+use tauri::ipc::{Request, Response};
 use tauri::{AppHandle, Manager};
 
 use super::Storage;
@@ -19,10 +19,7 @@ async fn with_storage<T: Send + 'static>(
 }
 
 fn raw_body(request: &Request<'_>) -> Result<Vec<u8>> {
-    match request.body() {
-        InvokeBody::Raw(bytes) => Ok(bytes.clone()),
-        InvokeBody::Json(_) => Err(StorageError::MissingInput("binary body")),
-    }
+    crate::ipc_bytes::bytes(request.body()).ok_or(StorageError::MissingInput("binary body"))
 }
 
 fn header(request: &Request<'_>, name: &'static str) -> Result<String> {

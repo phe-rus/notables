@@ -15,7 +15,7 @@ dist/
 
 # Tauri / Rust
 target/
-www/src-tauri/gen/
+www/src-tauri/gen/schemas/
 
 # Signing material
 *.jks

@@ -5,6 +5,7 @@
 
 mod deep_links;
 mod export;
+mod ipc_bytes;
 mod media_permissions;
 mod models;
 mod storage;

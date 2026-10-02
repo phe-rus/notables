@@ -67,6 +67,12 @@ Gotchas learned the hard way:
   global two-tone icon style dims its paths.
 - After adding a D1 migration: `wrangler d1 migrations apply notables-database --local`
   for dev, and `--remote` before deploying.
+- Android: `bun run tauri android build --debug --apk --target aarch64`
+  from `www/`. Needs `ANDROID_HOME`, `NDK_HOME`, `JAVA_HOME`, plus
+  `ANDROID_NDK` (CMake for whisper.cpp) and
+  `BINDGEN_EXTRA_CLANG_ARGS_aarch64_linux_android=--sysroot=$NDK_HOME/toolchains/llvm/prebuilt/linux-x86_64/sysroot`.
+  aarch64 only: `ort` has no prebuilt ONNX Runtime for x86_64 Android.
+  On Android, binary IPC bodies arrive as JSON arrays (`src/ipc_bytes.rs`).
 - Dev server: `cd www && bun run dev` (port 3000). Desktop app:
   `bun run tauri dev`. On Linux a leftover `notables` process makes new
   launches exit silently (single instance); `pkill -f target/debug/notables`.
@@ -129,8 +135,12 @@ Shipped and tested in the browser (Playwright) unless noted:
   no relay or TURN yet.
 - Widgets: floating desktop Today widget (`/widget`, `src-tauri/src/widgets.rs`).
   iOS and Android widget sources are in `www/src-tauri/widgets/` with
-  setup steps; never compiled, because `gen/apple` and `gen/android` don't
-  exist in the repo yet.
+  setup steps; never compiled yet (`gen/apple` doesn't exist).
+- Android (`www/src-tauri/gen/android`): debug APK runs on a real phone
+  (TECNO CAMON 19, Android 13): library and saving work. Crashes inside
+  Houdini (ARM translation) on an Intel Chromebook, so ChromeOS needs an
+  x86_64 build, which `ort` blocks. The notification permission check
+  is refused at startup (the WebView still reports `about:blank`).
 
 ## Next
 

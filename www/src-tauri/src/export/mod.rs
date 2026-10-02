@@ -2,7 +2,7 @@
 //! native save dialog for files, and the native print dialog for pages.
 
 use serde::{Serialize, Serializer};
-use tauri::ipc::{InvokeBody, Request};
+use tauri::ipc::Request;
 use tauri::{AppHandle, WebviewWindow};
 use tauri_plugin_dialog::DialogExt;
 
@@ -18,6 +18,9 @@ pub enum ExportError {
     UnsupportedLocation,
     #[error("saving was interrupted")]
     Interrupted,
+    #[cfg(mobile)]
+    #[error("printing isn't available on this device")]
+    PrintUnavailable,
 }
 
 impl Serialize for ExportError {
@@ -33,10 +36,8 @@ type Result<T> = std::result::Result<T, ExportError>;
 /// returns the path, or `None` if they cancelled.
 #[tauri::command]
 pub async fn export_save_file(app: AppHandle, request: Request<'_>) -> Result<Option<String>> {
-    let InvokeBody::Raw(bytes) = request.body() else {
-        return Err(ExportError::MissingInput("file contents"));
-    };
-    let bytes = bytes.clone();
+    let bytes = crate::ipc_bytes::bytes(request.body())
+        .ok_or(ExportError::MissingInput("file contents"))?;
     let name = request
         .headers()
         .get("x-file-name")
@@ -64,8 +65,16 @@ pub async fn export_save_file(app: AppHandle, request: Request<'_>) -> Result<Op
 }
 
 /// Opens the system print dialog for the current page.
+#[cfg(desktop)]
 #[tauri::command]
 pub fn export_print(window: WebviewWindow) -> Result<()> {
     window.print()?;
     Ok(())
+}
+
+/// Phones have no print dialog for a web view; the page offers the PDF instead.
+#[cfg(mobile)]
+#[tauri::command]
+pub fn export_print() -> Result<()> {
+    Err(ExportError::PrintUnavailable)
 }
