@@ -1,5 +1,9 @@
 import { describe, expect, it } from "bun:test";
-import { buildImportPlan, type ImportFile } from "../../../src/features/imports/lib/import-plan";
+import {
+  buildImportPlan,
+  type ImportFile,
+  plannedBookTitle,
+} from "../../../src/features/imports/lib/import-plan";
 import { parseName } from "../../../src/features/imports/lib/part-names";
 
 const file = (path: string, type = ""): ImportFile => ({
@@ -90,6 +94,18 @@ describe("buildImportPlan", () => {
       [1, [1, 2]],
       [2, [1]],
     ]);
+  });
+
+  it("leaves numbered parts without a title of their own untitled", () => {
+    const plan = buildImportPlan([file("Tidewater Vol 01.cbz"), file("Tidewater Vol 02.cbz")]);
+    const [series] = plan.series;
+    expect(series?.title).toBe("Tidewater");
+    expect(series?.books.map((b) => [b.volume, b.title])).toEqual([
+      [1, ""],
+      [2, ""],
+    ]);
+    const second = series?.books[1];
+    expect(series && second ? plannedBookTitle(series, second) : null).toBe("Tidewater Volume 2");
   });
 
   it("treats a single e-book as a one-book series", () => {

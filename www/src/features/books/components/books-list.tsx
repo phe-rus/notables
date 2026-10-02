@@ -2,6 +2,7 @@ import {
   BookIcon,
   cn,
   confirmDialog,
+  DownloadIcon,
   IconButton,
   SidebarIcon,
   spring,
@@ -10,7 +11,9 @@ import {
 } from "@notables/ui";
 import { Link, useNavigate } from "@tanstack/react-router";
 import { AnimatePresence, motion } from "motion/react";
+import { useState } from "react";
 import { CollapsedSidebarControls } from "../../../components/window/collapsed-sidebar-controls";
+import { ImportSheet } from "../../imports/components/import-sheet";
 import { GroupSwitcher } from "../../library/components/group-switcher";
 import { usePreferences } from "../../settings/store/preferences-store";
 import { exportBookAsEpub } from "../export/export-book";
@@ -29,6 +32,8 @@ export function BooksList({
   const books = useBooks();
   const navigate = useNavigate();
   const { collapsed } = usePreferences().sidebar;
+
+  const [importing, setImporting] = useState(false);
 
   const createBook = () => {
     const book = getBookStore().create();
@@ -55,9 +60,17 @@ export function BooksList({
             </IconButton>
             <h1 className="text-[22px] font-bold tracking-tight">Books</h1>
           </div>
-          <IconButton label="New book" tone="accent" onClick={createBook}>
-            <BookIcon size={20} />
-          </IconButton>
+          <div className="flex items-center gap-1">
+            <IconButton
+              label="Import books, comics or audiobooks"
+              onClick={() => setImporting(true)}
+            >
+              <DownloadIcon size={20} />
+            </IconButton>
+            <IconButton label="New book" tone="accent" onClick={createBook}>
+              <BookIcon size={20} />
+            </IconButton>
+          </div>
         </div>
         <GroupSwitcher group="books" active="books" />
       </header>
@@ -92,6 +105,7 @@ export function BooksList({
           ))}
         </AnimatePresence>
       </div>
+      <ImportSheet open={importing} onClose={() => setImporting(false)} />
     </section>
   );
 }

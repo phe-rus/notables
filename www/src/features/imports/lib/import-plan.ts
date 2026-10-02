@@ -25,6 +25,7 @@ export interface PlannedChapter {
 
 export interface PlannedBook {
   key: string;
+  /** The book's own title; empty when it is only a numbered part of its series. */
   title: string;
   volume: number | null;
   format: BookFormat;
@@ -64,11 +65,7 @@ function splitOnVolume(raw: string): { series: string; title: string; volume: nu
   }
   const series = clean(name.slice(0, match.index));
   const rest = clean(name.slice(match.index + match[0].length));
-  return {
-    series: series || rest,
-    title: rest || `${series} ${match[1]}`.trim(),
-    volume: Number(match[1]),
-  };
+  return { series: series || rest, title: rest, volume: Number(match[1]) };
 }
 
 function formatOf(kind: SourceKind): BookFormat {
@@ -158,7 +155,7 @@ export function buildImportPlan(files: ImportFile[]): ImportPlan {
     const book = bookIn(
       entry,
       volumeFolder ? `${top}/${volumeFolder}` : top,
-      volume?.title || volumeFolder || entry.title,
+      volume?.title ?? "",
       volume?.volume ?? null,
       "comic",
     );
@@ -181,13 +178,7 @@ export function buildImportPlan(files: ImportFile[]): ImportPlan {
     const folderParts = bookFolder ? parseName(bookFolder) : null;
     const volume = folderParts?.volume ?? named.volume;
     const bookKey = bookFolder ? `${top}/${bookFolder}` : `${top}#${volume ?? ""}`;
-    const book = bookIn(
-      entry,
-      bookKey,
-      folderParts?.title || (volume ? `${entry.partLabel} ${volume}` : entry.title),
-      volume,
-      "audio",
-    );
+    const book = bookIn(entry, bookKey, folderParts?.title ?? "", volume, "audio");
     book.chapters.push({
       title: parsed.title || `Chapter ${parsed.chapter ?? book.chapters.length + 1}`,
       number: parsed.chapter,
@@ -213,4 +204,10 @@ export function buildImportPlan(files: ImportFile[]): ImportPlan {
   });
 
   return { series: result.sort((a, b) => naturalCompare(a.title, b.title)), skipped };
+}
+
+/** What a planned book is called: its own title, or its series and part number. */
+export function plannedBookTitle(series: PlannedSeries, book: PlannedBook): string {
+  if (book.title) return book.title;
+  return book.volume === null ? series.title : `${series.title} ${series.partLabel} ${book.volume}`;
 }
