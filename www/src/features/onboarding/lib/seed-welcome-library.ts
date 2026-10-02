@@ -3,21 +3,24 @@ import { getBookStore } from "../../books/store/book-store";
 import { writeNote } from "../../library/lib/write-note";
 import { getLibrary } from "../../library/store/library-store";
 import { welcomeBook, welcomeNotes } from "../content/welcome-library";
+import { seedWelcomeShelf } from "./seed-welcome-shelf";
 
 const WELCOMED = "notables:welcomed";
+/** Set once the examples for manga, comics, articles, invoices and more are in. */
+const SHELF = "notables:welcomed-shelf";
 const HOUR = 3_600_000;
 
-function alreadyWelcomed(): boolean {
+function done(key: string): boolean {
   try {
-    return localStorage.getItem(WELCOMED) !== null;
+    return localStorage.getItem(key) !== null;
   } catch {
     return true;
   }
 }
 
-function markWelcomed() {
+function markDone(key: string) {
   try {
-    localStorage.setItem(WELCOMED, new Date().toISOString());
+    localStorage.setItem(key, new Date().toISOString());
   } catch {
     // Without storage the library is no longer empty next time, so it won't repeat.
   }
@@ -26,14 +29,22 @@ function markWelcomed() {
 let seeding: Promise<void> | undefined;
 
 /**
- * Fills an empty library, once per device, with a short guide and a few
- * examples: a journal entry, a three-chapter story made into a book, a plan
- * and a lesson. Each is a normal note people can edit or delete.
+ * Fills an empty library, once per device, with a short guide and an
+ * example in every place: journal, stories made into a book, an article,
+ * a plan, a lesson, a manga, a comic and an invoice. Each is ordinary
+ * content people can edit or delete. Devices welcomed before the later
+ * examples existed get just those, once.
  */
 export function seedWelcomeLibrary(): Promise<void> {
-  if (alreadyWelcomed() || getLibrary().entries.size > 0) return Promise.resolve();
-  markWelcomed();
-  seeding ??= seed();
+  const fresh = !done(WELCOMED) && getLibrary().entries.size === 0;
+  const shelf = !done(SHELF) && (fresh || done(WELCOMED));
+  if (fresh) markDone(WELCOMED);
+  if (shelf) markDone(SHELF);
+  if (!fresh && !shelf) return Promise.resolve();
+  seeding ??= (async () => {
+    if (fresh) await seed();
+    if (shelf) await seedWelcomeShelf();
+  })();
   return seeding;
 }
 
