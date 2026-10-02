@@ -5,6 +5,7 @@ import {
   cn,
   confirmDialog,
   DownloadIcon,
+  ExpandIcon,
   IconButton,
   Popover,
   PrintIcon,
@@ -24,6 +25,7 @@ import { Field, FormSection, TextArea, TextInput } from "./form-fields";
 import { InvoicePaper } from "./invoice-paper";
 import { LineItemsEditor } from "./line-items-editor";
 import { MoneyInput } from "./money-input";
+import { PaperFullscreen } from "./paper-fullscreen";
 import { PaperPreview } from "./paper-preview";
 import { PartyFields } from "./party-fields";
 import { StylePanel } from "./style-panel";
@@ -61,6 +63,7 @@ export function InvoiceScreen({ invoice }: { invoice: InvoiceDocument }) {
   const totals = computeTotals(invoice);
 
   const [exporting, setExporting] = useState(false);
+  const [fullscreen, setFullscreen] = useState(false);
 
   const downloadPdf = async () => {
     if (!link || !issuerId) return;
@@ -167,6 +170,9 @@ export function InvoiceScreen({ invoice }: { invoice: InvoiceDocument }) {
           <StyleButton invoice={invoice} onChange={(style) => set({ style })} />
           <IconButton label="Delete" onClick={remove}>
             <TrashIcon size={19} />
+          </IconButton>
+          <IconButton label="Full-screen preview" onClick={() => setFullscreen(true)}>
+            <ExpandIcon size={19} />
           </IconButton>
           <IconButton label="Print" onClick={print}>
             <PrintIcon size={19} />
@@ -353,10 +359,27 @@ export function InvoiceScreen({ invoice }: { invoice: InvoiceDocument }) {
             pane === "preview" ? "block" : "hidden",
           )}
         >
-          <PaperPreview invoice={invoice} verifyLink={link} issuerId={issuerId} />
+          <button
+            type="button"
+            aria-label="Open full-screen preview"
+            onClick={() => setFullscreen(true)}
+            className="block w-full cursor-zoom-in text-left"
+          >
+            <PaperPreview invoice={invoice} verifyLink={link} issuerId={issuerId} />
+          </button>
         </div>
       </div>
 
+      <PaperFullscreen
+        open={fullscreen}
+        invoice={invoice}
+        verifyLink={link}
+        issuerId={issuerId}
+        onClose={() => setFullscreen(false)}
+        onDownload={downloadPdf}
+        onPrint={print}
+        downloading={exporting}
+      />
       {createPortal(
         <div className="print-root">
           <InvoicePaper invoice={invoice} verifyLink={link} issuerId={issuerId} />

@@ -16,6 +16,7 @@ import {
   Download01Icon,
   DragDropVerticalIcon,
   FavouriteIcon,
+  FullScreenIcon,
   Globe02Icon,
   GoBackward15SecIcon,
   GoForward30SecIcon,
@@ -129,6 +130,7 @@ export const HeadphonesIcon = icon(HugeHeadphonesIcon, "HeadphonesIcon");
 export const HighlighterIcon = icon(HugeHighlighterIcon, "HighlighterIcon");
 export const ChaptersIcon = icon(LeftToRightListBulletIcon, "ChaptersIcon");
 export const SleepIcon = icon(Moon02Icon, "SleepIcon");
+export const ExpandIcon = icon(FullScreenIcon, "ExpandIcon");
 export const ThumbsUpIcon = toggleIcon(HugeThumbsUpIcon, "ThumbsUpIcon");
 export const HeartIcon = toggleIcon(FavouriteIcon, "HeartIcon");
 export const StarIcon = toggleIcon(HugeStarIcon, "StarIcon");

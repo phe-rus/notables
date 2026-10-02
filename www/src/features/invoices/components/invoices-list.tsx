@@ -10,7 +10,8 @@ import {
   cn,
   confirmDialog,
   IconButton,
-  InvoiceIcon,
+  openContextMenu,
+  PlusIcon,
   SidebarIcon,
   spring,
   toast,
@@ -18,9 +19,11 @@ import {
 } from "@notables/ui";
 import { Link, useNavigate } from "@tanstack/react-router";
 import { AnimatePresence, motion } from "motion/react";
+import { useState } from "react";
 import { CollapsedSidebarControls } from "../../../components/window/collapsed-sidebar-controls";
 import { usePreferences } from "../../settings/store/preferences-store";
 import { getInvoiceStore, useInvoices } from "../store/invoice-store";
+import { InvoicePaper, PAPER_HEIGHT, PAPER_WIDTH } from "./invoice-paper";
 
 const dueFormat = new Intl.DateTimeFormat(undefined, {
   day: "numeric",
@@ -37,7 +40,9 @@ export function InvoicesList({
   onOpenSidebar: () => void;
   className?: string;
 }) {
-  const invoices = useInvoices();
+  const all = useInvoices();
+  const [filter, setFilter] = useState<"all" | InvoiceKind>("all");
+  const invoices = filter === "all" ? all : all.filter((invoice) => invoice.kind === filter);
   const navigate = useNavigate();
   const { collapsed } = usePreferences().sidebar;
 
@@ -66,26 +71,68 @@ export function InvoicesList({
             </IconButton>
             <h1 className="text-[22px] font-bold tracking-tight">Invoices</h1>
           </div>
-          <IconButton label="New invoice" tone="accent" onClick={() => create("invoice")}>
-            <InvoiceIcon size={20} />
+          <IconButton
+            label="New invoice, receipt or quote"
+            tone="accent"
+            onClick={(event) => {
+              const rect = event.currentTarget.getBoundingClientRect();
+              openContextMenu(
+                rect.right - 200,
+                rect.bottom + 6,
+                (["invoice", "receipt", "quote"] as const).map((kind) => ({
+                  label: `New ${invoiceKindLabels[kind].toLowerCase()}`,
+                  onSelect: () => create(kind),
+                })),
+              );
+            }}
+          >
+            <PlusIcon size={20} strokeWidth={2} />
           </IconButton>
         </div>
-        <div className="flex gap-2">
-          {(["invoice", "receipt", "quote"] as const).map((kind) => (
-            <button
-              key={kind}
-              type="button"
-              onClick={() => create(kind)}
-              className="grow rounded-[10px] bg-fill px-2 py-1.5 text-[13px] font-medium text-label-secondary transition-colors hover:bg-separator/70 hover:text-label"
-            >
-              + {invoiceKindLabels[kind]}
-            </button>
-          ))}
-        </div>
+        <nav
+          aria-label="Document type"
+          className="no-scrollbar -mx-4 flex gap-1.5 overflow-x-auto px-4"
+        >
+          {(["all", "invoice", "receipt", "quote"] as const).map((kind) => {
+            const selected = filter === kind;
+            const count = kind === "all" ? all.length : all.filter((i) => i.kind === kind).length;
+            return (
+              <button
+                key={kind}
+                type="button"
+                aria-pressed={selected}
+                onClick={() => setFilter(kind)}
+                className={cn(
+                  "relative isolate flex shrink-0 items-center gap-1.5 rounded-full px-3.5 py-1.5 text-[13px] font-medium transition-colors",
+                  selected ? "text-on-inverse" : "bg-fill/70 text-label-secondary hover:text-label",
+                )}
+              >
+                {selected && (
+                  <motion.span
+                    layoutId="invoice-filter"
+                    className="absolute inset-0 -z-10 rounded-full bg-inverse"
+                    transition={spring.snappy}
+                  />
+                )}
+                {kind === "all" ? "All" : `${invoiceKindLabels[kind]}s`}
+                <span
+                  className={cn("tabular-nums", selected ? "opacity-70" : "text-label-tertiary")}
+                >
+                  {count}
+                </span>
+              </button>
+            );
+          })}
+        </nav>
       </header>
 
       <div className="flex grow flex-col overflow-y-auto px-2.5 pb-28 md:pb-8">
-        {invoices.length === 0 && (
+        {all.length > 0 && invoices.length === 0 && (
+          <p className="px-6 pt-12 text-center text-[14px] text-label-secondary">
+            No {filter === "all" ? "documents" : `${invoiceKindLabels[filter].toLowerCase()}s`} yet.
+          </p>
+        )}
+        {all.length === 0 && (
           <div className="flex flex-col items-center gap-2 px-6 pt-16 text-center">
             <p className="text-[15px] font-semibold">Get paid, beautifully</p>
             <p className="text-[14px] leading-snug text-label-secondary">
@@ -169,36 +216,60 @@ function InvoiceRow({ invoice, active }: { invoice: InvoiceDocument; active: boo
       params={{ invoiceId: invoice.id }}
       {...menu}
       className={cn(
-        "relative isolate flex touch-manipulation flex-col gap-1 rounded-[12px] px-3 py-3 no-underline transition-colors [-webkit-touch-callout:none]",
+        "relative isolate flex touch-manipulation items-center gap-3 rounded-[12px] px-2.5 py-2.5 no-underline transition-colors [-webkit-touch-callout:none]",
         !active && "hover:bg-fill/60",
       )}
     >
-      {active && (
-        <motion.span
-          layoutId="invoice-selection"
-          className="absolute inset-0 -z-10 rounded-[12px] bg-accent-soft"
-          transition={spring.snappy}
-        />
-      )}
-      <span className="flex items-baseline justify-between gap-3">
-        <span className="truncate text-[15px] font-semibold text-label">
-          {invoice.client.name || "No client yet"}
-        </span>
-        <span className="shrink-0 text-[14px] font-semibold tabular-nums text-label">
-          {formatMoney(total, invoice.currency)}
-        </span>
-      </span>
-      <span className="flex items-center gap-2 text-[13px] text-label-secondary">
-        <Chip tone={invoice.kind === "receipt" ? "public" : active ? "accent" : "neutral"}>
-          {invoiceKindLabels[invoice.kind]}
-        </Chip>
-        <span className="truncate">{invoice.number}</span>
-        {invoice.kind === "invoice" && invoice.dueOn && (
-          <span className="ml-auto shrink-0 text-label-tertiary">
-            Due {dueFormat.format(new Date(`${invoice.dueOn}T00:00:00Z`))}
-          </span>
+      <PaperThumbnail invoice={invoice} />
+      <span className="flex min-w-0 grow flex-col gap-1">
+        {active && (
+          <motion.span
+            layoutId="invoice-selection"
+            className="absolute inset-0 -z-10 rounded-[12px] bg-accent-soft"
+            transition={spring.snappy}
+          />
         )}
+        <span className="flex items-baseline justify-between gap-3">
+          <span className="truncate text-[15px] font-semibold text-label">
+            {invoice.client.name || "No client yet"}
+          </span>
+          <span className="shrink-0 text-[14px] font-semibold tabular-nums text-label">
+            {formatMoney(total, invoice.currency)}
+          </span>
+        </span>
+        <span className="flex items-center gap-2 text-[13px] text-label-secondary">
+          <Chip tone={invoice.kind === "receipt" ? "public" : active ? "accent" : "neutral"}>
+            {invoiceKindLabels[invoice.kind]}
+          </Chip>
+          <span className="truncate">{invoice.number}</span>
+          {invoice.kind === "invoice" && invoice.dueOn && (
+            <span className="ml-auto shrink-0 text-label-tertiary">
+              Due {dueFormat.format(new Date(`${invoice.dueOn}T00:00:00Z`))}
+            </span>
+          )}
+        </span>
       </span>
     </Link>
+  );
+}
+
+const THUMB_WIDTH = 46;
+
+/** A tiny page, so documents are recognisable at a glance. */
+function PaperThumbnail({ invoice }: { invoice: InvoiceDocument }) {
+  const scale = THUMB_WIDTH / PAPER_WIDTH;
+  return (
+    <span
+      aria-hidden="true"
+      className="pointer-events-none relative block shrink-0 overflow-hidden rounded-[3px] bg-white shadow-[0_1px_2px_rgba(0,0,0,0.1),0_6px_14px_-6px_rgba(60,40,0,0.3)] ring-1 ring-black/5"
+      style={{ width: THUMB_WIDTH, height: PAPER_HEIGHT * scale }}
+    >
+      <span
+        className="absolute top-0 left-0 block"
+        style={{ width: PAPER_WIDTH, transform: `scale(${scale})`, transformOrigin: "top left" }}
+      >
+        <InvoicePaper invoice={invoice} verifyLink={null} issuerId={null} />
+      </span>
+    </span>
   );
 }
