@@ -1,21 +1,23 @@
 import { Link } from "@tanstack/react-router";
 import { useMemo } from "react";
 import { arrangeShelf } from "../lib/arrange-shelf";
-import { type BookEntry, bookShelf, type BookShelf as Shelf, useBooks } from "../store/book-store";
+import { kindOfBook } from "../lib/book-kind";
+import type { MediaKind } from "../model/media-kind";
+import { type BookEntry, useBooks } from "../store/book-store";
 import { useSeries } from "../store/series-store";
 import { BookCover } from "./book-cover";
 
 /** The books on a shelf, with each series' volumes together and in order. */
-export function useShelfBooks(shelf: Shelf): BookEntry[] {
+export function useShelfBooks(kind: MediaKind): BookEntry[] {
   const books = useBooks();
   const series = useSeries();
   return useMemo(
     () =>
       arrangeShelf(
-        books.filter((book) => bookShelf(book) === shelf),
+        books.filter((book) => kindOfBook(book) === kind),
         series,
       ).flatMap((item) => (item.type === "book" ? [item.book] : item.books)),
-    [books, series, shelf],
+    [books, series, kind],
   );
 }
 

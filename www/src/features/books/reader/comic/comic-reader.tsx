@@ -3,7 +3,9 @@ import { ChevronLeftIcon, ChevronRightIcon, CloseIcon, cn } from "@notables/ui";
 import { Link } from "@tanstack/react-router";
 import { AnimatePresence, motion, type PanInfo } from "motion/react";
 import { useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState } from "react";
+import { useBookKind } from "../../lib/book-kind";
 import { chapterPages } from "../../lib/chapter-media";
+import { directionOf } from "../../model/media-kind";
 import type { BookEntry } from "../../store/book-store";
 import { useBookContent } from "../use-book-content";
 import { useReadingPosition } from "../use-reading-position";
@@ -34,7 +36,7 @@ const SWIPE_DISTANCE = 60;
  */
 export function ComicReader({ book }: { book: BookEntry }) {
   const chapters = useBookContent(book);
-  const rtl = book.direction === "rtl";
+  const rtl = directionOf(useBookKind(book)) === "rtl";
   const stage = useRef<HTMLDivElement>(null);
   const [wide, setWide] = useState(false);
   const [chrome, setChrome] = useState(true);

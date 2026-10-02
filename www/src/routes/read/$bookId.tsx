@@ -1,9 +1,10 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useEffect } from "react";
+import { useBookKind } from "../../features/books/lib/book-kind";
 import { AudiobookPlayer } from "../../features/books/reader/audio/audiobook-player";
 import { BookReader } from "../../features/books/reader/book-reader";
 import { ComicReader } from "../../features/books/reader/comic/comic-reader";
-import { bookFormat, useBook } from "../../features/books/store/book-store";
+import { type BookEntry, useBook } from "../../features/books/store/book-store";
 import { useLibraryReady } from "../../features/library/store/library-store";
 import { markAppReady } from "../../platform/app-ready";
 
@@ -31,8 +32,13 @@ function ReadRoute() {
       </main>
     ) : null;
   }
-  const format = bookFormat(book);
-  if (format === "comic") return <ComicReader book={book} />;
-  if (format === "audio") return <AudiobookPlayer book={book} />;
+  return <ReaderFor book={book} />;
+}
+
+/** Each kind opens in its own reader. */
+function ReaderFor({ book }: { book: BookEntry }) {
+  const kind = useBookKind(book);
+  if (kind === "comic" || kind === "manga") return <ComicReader book={book} />;
+  if (kind === "audiobook") return <AudiobookPlayer book={book} />;
   return <BookReader book={book} />;
 }

@@ -1,7 +1,9 @@
 import type { NoteKind } from "@notables/core";
 import { $appendContent, composeDocument, composeDocumentFromHtml } from "@notables/editor";
 import { saveMedia } from "../../../platform/storage/media-store";
+import { noteKindFor } from "../../books/actions/start-chapter";
 import { syncBookFormat } from "../../books/actions/sync-book-format";
+import { formatOf, kindFromFormat, type MediaKind } from "../../books/model/media-kind";
 import { type BookFormat, getBookStore } from "../../books/store/book-store";
 import { getSeriesStore } from "../../books/store/series-store";
 import { writeNote } from "../../library/lib/write-note";
@@ -59,8 +61,9 @@ function audioDuration(file: Blob): Promise<number> {
   });
 }
 
-const kindFor = (format: BookFormat, options: ImportOptions): NoteKind =>
-  format === "comic" ? options.comicKind : format === "audio" ? "note" : "story";
+/** The kind content of a format is filed as; comics follow the picked comic kind. */
+const kindFor = (format: BookFormat, options: Pick<ImportOptions, "comicKind">): MediaKind =>
+  format === "comic" ? options.comicKind : kindFromFormat(format);
 
 /** Total steps, for progress: one per chapter or container file. */
 function countSteps(plan: ImportPlan): number {
@@ -90,24 +93,30 @@ export async function runImport(plan: ImportPlan, options: ImportOptions): Promi
 
   const bookIds: string[] = [];
   for (const series of plan.series) {
+    const seriesKind = kindFor(series.format, options);
     const seriesEntry = needsSeries(series)
       ? getSeriesStore().create({
           title: series.title,
           author: "",
-          format: series.format,
+          kind: seriesKind,
           partLabel: series.partLabel,
         })
       : null;
 
     for (const planned of series.books) {
-      const book = getBookStore().create();
+      const book = getBookStore().create(seriesKind);
       bookIds.push(book.id);
       const chapterIds: string[] = [];
-      const write = chapterWriter(book.id, options, (id) => {
-        chapterIds.push(id);
-        chapterCount += 1;
-      });
+      const write = chapterWriter(
+        book.id,
+        (format) => noteKindFor(kindFor(format, options)),
+        (id) => {
+          chapterIds.push(id);
+          chapterCount += 1;
+        },
+      );
       const details = await importBookContent(planned, series, options, fileFor, write, step);
+      if (!details) continue;
       if (seriesEntry && details.author && !seriesEntry.author) {
         getSeriesStore().update(seriesEntry.id, { author: details.author });
       }
@@ -115,8 +124,8 @@ export async function runImport(plan: ImportPlan, options: ImportOptions): Promi
         title: details.title || plannedBookTitle(series, planned),
         author: details.author,
         ...(details.language ? { language: details.language } : {}),
-        format: details.format,
-        direction: details.format === "comic" && options.comicKind === "manga" ? "rtl" : "ltr",
+        // A series decides its items' kind; a single item is what it turned out to hold.
+        kind: seriesEntry ? seriesKind : kindFor(details.format, options),
         cover: details.cover,
         seriesId: seriesEntry?.id ?? null,
         volume: planned.volume,
@@ -130,12 +139,12 @@ export async function runImport(plan: ImportPlan, options: ImportOptions): Promi
 /** Writes one chapter note into a book and reports its id. */
 function chapterWriter(
   bookId: string,
-  options: ImportOptions,
+  noteKind: (format: BookFormat) => NoteKind,
   onWritten: (noteId: string) => void,
 ): WriteChapter {
   return async (title, format, content) => {
     const note = await writeNote({
-      kind: kindFor(format, options),
+      kind: noteKind(format),
       bookId,
       compose: (doc) =>
         "html" in content
@@ -149,24 +158,49 @@ function chapterWriter(
 /**
  * Adds the chapters found in files to the end of an existing book: an
  * e-book's chapters, a PDF's sections or pages, comic pages, or audio
- * tracks. An empty book takes on the kind and cover of what it receives.
+ * tracks. The book keeps its kind: files that don't fit it are skipped
+ * and named in `skipped`.
  */
 export async function appendToBook(
   bookId: string,
   files: Array<[ImportFile, File]>,
-  options: Omit<ImportOptions, "files">,
-): Promise<{ chapters: number; skipped: number }> {
+  options: Pick<ImportOptions, "onProgress">,
+): Promise<{ chapters: number; skipped: string[] }> {
+  const store = getBookStore();
+  const target = store.getSnapshot().find((book) => book.id === bookId);
+  if (!target) return { chapters: 0, skipped: [] };
+  const kind = store.kindOf(target);
+  const fits = formatOf(kind);
   const plan = buildImportPlan(files.map(([meta]) => meta));
+  const filesByPath = new Map(files.map(([meta, file]) => [meta.path, file]));
   const withFiles: ImportOptions = {
     ...options,
-    files: new Map(files.map(([meta, file]) => [meta.path, file])),
+    comicKind: kind === "comic" ? "comic" : "manga",
+    files: filesByPath,
   };
   const fileFor = (path: string) => {
-    const file = withFiles.files.get(path);
+    const file = filesByPath.get(path);
     if (!file) throw new Error(`Missing file: ${path}`);
     return file;
   };
-  const total = Math.max(1, countSteps(plan));
+  const nameOf = (book: PlannedBook) =>
+    book.container?.name ??
+    book.chapters.flatMap((chapter) => chapter.files)[0]?.name ??
+    book.title;
+
+  const skipped = plan.skipped.map((path) => path.split("/").pop() ?? path);
+  const fitting = plan.series.flatMap((series) =>
+    series.books.flatMap((book) => {
+      // A PDF holds text or pages; which one shows only once it is read.
+      if (book.format === fits || book.containerKind === "pdf") return [{ book, series }];
+      skipped.push(nameOf(book));
+      return [];
+    }),
+  );
+  const total = Math.max(
+    1,
+    fitting.reduce((sum, { book }) => sum + (book.container ? 1 : book.chapters.length), 0),
+  );
   let done = 0;
   const step = (label: string) => {
     done += 1;
@@ -174,31 +208,28 @@ export async function appendToBook(
   };
 
   const added: string[] = [];
-  const write = chapterWriter(bookId, withFiles, (id) => added.push(id));
+  const write = chapterWriter(
+    bookId,
+    () => noteKindFor(kind),
+    (id) => added.push(id),
+  );
   let first: BookDetails | null = null;
-  for (const series of plan.series) {
-    for (const book of series.books) {
-      const details = await importBookContent(book, series, withFiles, fileFor, write, step);
-      first ??= details;
-    }
+  for (const { book, series } of fitting) {
+    const details = await importBookContent(book, series, withFiles, fileFor, write, step, fits);
+    if (details) first ??= details;
+    else skipped.push(nameOf(book));
   }
 
-  const store = getBookStore();
   const current = store.getSnapshot().find((book) => book.id === bookId);
   if (current) {
-    const wasEmpty = current.chapterIds.length === 0;
-    const manga = first?.format === "comic" && options.comicKind === "manga";
     store.update(bookId, {
       chapterIds: [...current.chapterIds, ...added],
-      ...(wasEmpty && first
-        ? { format: first.format, direction: manga ? ("rtl" as const) : ("ltr" as const) }
-        : {}),
       ...(!current.cover && first?.cover ? { cover: first.cover } : {}),
       ...(!current.author && first?.author ? { author: first.author } : {}),
     });
   }
   await syncBookFormat(bookId);
-  return { chapters: added.length, skipped: plan.skipped.length };
+  return { chapters: added.length, skipped };
 }
 
 function needsSeries(series: PlannedSeries): boolean {
@@ -224,7 +255,9 @@ async function importBookContent(
   fileFor: (path: string) => File,
   write: WriteChapter,
   step: (label: string) => void,
-): Promise<BookDetails> {
+  /** When set, content of another format is left out and `null` returned. */
+  only?: BookFormat,
+): Promise<BookDetails | null> {
   const container = planned.container;
 
   if (container && planned.containerKind === "epub") {
@@ -268,6 +301,7 @@ async function importBookContent(
         options.onProgress?.(`${planned.title}: page ${page} of ${pages}`, page, pages),
     );
     step(planned.title);
+    if (only && only !== (content.kind === "pages" ? "comic" : "prose")) return null;
     if (content.kind === "pages") {
       const ids = await Promise.all(content.pages.map((page) => saveMedia(page)));
       await write(planned.title, "comic", { html: pagesHtml(ids) });

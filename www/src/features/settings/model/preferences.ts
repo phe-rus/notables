@@ -1,5 +1,6 @@
 import { type AccentId, defaultAccent, isAccentId } from "@notables/tokens";
 import { t } from "../../../i18n/i18n";
+import { isMediaKind, type MediaKind } from "../../books/model/media-kind";
 import { type NoteFont, noteFonts } from "../../library/model/note-fonts";
 import {
   isSidebarItemId,
@@ -16,7 +17,11 @@ export interface Preferences {
   noteFont: NoteFont;
   list: ListPreferences;
   sidebar: SidebarPreferences;
+  /** The Books list's shelf: everything, or one kind. */
+  booksShelf: BooksShelf;
 }
+
+export type BooksShelf = "all" | MediaKind;
 
 export type ThemePreference = "system" | "light" | "dark";
 export type TextSize = "small" | "medium" | "large";
@@ -66,6 +71,7 @@ export const defaultPreferences: Preferences = {
     width: sidebarWidth.default,
     collapsed: false,
   },
+  booksShelf: "all",
 };
 
 export const textSizes: Record<TextSize, { readonly label: string; bodyPx: number }> = {
@@ -129,5 +135,6 @@ export function normalizePreferences(raw: unknown): Preferences {
           : defaults.sidebar.width,
       collapsed: flag(sidebar.collapsed, defaults.sidebar.collapsed),
     },
+    booksShelf: isMediaKind(input.booksShelf) ? input.booksShelf : "all",
   };
 }

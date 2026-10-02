@@ -1,7 +1,9 @@
 import { stripLeadingTitle } from "../../../lib/documents/strip-leading-title";
 import { loadNoteContent } from "../../../platform/storage/note-content-cache";
 import { getLibrary } from "../../library/store/library-store";
-import { type BookEntry, bookFormat } from "../store/book-store";
+import { kindOfBook } from "../lib/book-kind";
+import { isDrawnKind, type MediaKind } from "../model/media-kind";
+import type { BookEntry } from "../store/book-store";
 import { type Block, documentBlocks } from "./document-blocks";
 
 export interface MaterialChapter {
@@ -15,6 +17,8 @@ export interface MaterialChapter {
 /** Everything an export needs: the book's details and each chapter's content. */
 export interface BookMaterial {
   book: BookEntry;
+  /** The item's kind, read through its series. */
+  kind: MediaKind;
   title: string;
   author: string;
   chapters: MaterialChapter[];
@@ -34,6 +38,7 @@ export async function loadBookMaterial(book: BookEntry): Promise<BookMaterial> {
   );
   return {
     book,
+    kind: kindOfBook(book),
     title: book.title.trim() || "Untitled",
     author: book.author.trim(),
     chapters,
@@ -55,4 +60,4 @@ export function materialRecordings(material: BookMaterial) {
   );
 }
 
-export const isDrawnBook = (book: BookEntry) => bookFormat(book) === "comic";
+export const isDrawnBook = (book: BookEntry) => isDrawnKind(kindOfBook(book));

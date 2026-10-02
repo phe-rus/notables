@@ -1,3 +1,4 @@
+import { directionOf } from "../../model/media-kind";
 import { type BookMaterial, isDrawnBook } from "../book-material";
 import { renderChapterBody } from "../build-epub";
 import { epubStylesheet } from "../epub-stylesheet";
@@ -54,7 +55,7 @@ export async function buildHtml(material: BookMaterial): Promise<string> {
     )
     .join("");
   return `<!doctype html>
-<html lang="${document.documentElement.lang || "en"}"${material.book.direction === "rtl" && !comic ? ' dir="rtl"' : ""}>
+<html lang="${document.documentElement.lang || "en"}"${directionOf(material.kind) === "rtl" && !comic ? ' dir="rtl"' : ""}>
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">

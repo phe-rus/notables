@@ -37,6 +37,7 @@ import {
 import { ReadAloudButton } from "../../listening/components/read-aloud-button";
 import { PublishControl } from "../../publishing/components/publish-control";
 import { NoteRecorder } from "../../recording/components/note-recorder";
+import { takeRecording } from "../../recording/lib/pending-recording";
 import { usePreferences } from "../../settings/store/preferences-store";
 import { ShareSheet } from "../../sharing/components/share-sheet";
 import { useShareSession } from "../../sharing/lib/share-sessions";
@@ -76,7 +77,8 @@ function NoteEditorScreen({ entry, viewId }: { entry: LibraryEntry; viewId?: str
   // Chapters written for a book lead back to it.
   const book = useBook(entry.bookId ?? "");
   const { noteFont } = usePreferences();
-  const [recording, setRecording] = useState(false);
+  // "Record chapter" on an audiobook opens its new chapter already recording.
+  const [recording, setRecording] = useState(() => takeRecording(entry.id));
   const articleRef = useRef<HTMLElement>(null);
   const [sharing, setSharing] = useState(false);
   const shareSession = useShareSession(entry.id);

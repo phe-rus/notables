@@ -29,7 +29,7 @@ export async function buildComicArchive(
     }
   }
   if (withInfo) {
-    const manga = material.book.direction === "rtl";
+    const manga = material.kind === "manga";
     files["ComicInfo.xml"] = strToU8(`<?xml version="1.0" encoding="utf-8"?>
 <ComicInfo xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
   <Title>${escapeXml(material.title)}</Title>

@@ -1,13 +1,22 @@
 import type { NoteKind } from "@notables/core";
 import { $appendContent, composeDocument } from "@notables/editor";
 import { writeNote } from "../../library/lib/write-note";
-import { type BookEntry, bookShelf, getBookStore } from "../store/book-store";
+import { kindOfBook } from "../lib/book-kind";
+import type { MediaKind } from "../model/media-kind";
+import { type BookEntry, getBookStore } from "../store/book-store";
 
-/** The kind of note a book's chapters are: stories, or manga or comic pages. */
-export function chapterKind(book: BookEntry): NoteKind {
-  const shelf = bookShelf(book);
-  return shelf === "books" ? "story" : shelf;
-}
+const noteKinds: Record<MediaKind, NoteKind> = {
+  book: "story",
+  comic: "comic",
+  manga: "manga",
+  audiobook: "note",
+};
+
+/** The note kind a kind's chapters are written as. */
+export const noteKindFor = (kind: MediaKind): NoteKind => noteKinds[kind];
+
+/** The kind of note a book's chapters are: stories, comic or manga pages, or recordings. */
+export const chapterKind = (book: BookEntry): NoteKind => noteKindFor(kindOfBook(book));
 
 /**
  * Starts a new chapter at the end of a book, titled with its number, and

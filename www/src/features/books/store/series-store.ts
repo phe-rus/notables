@@ -2,13 +2,17 @@ import { createId } from "@notables/core";
 import { useSyncExternalStore } from "react";
 import type * as Y from "yjs";
 import { getLibrary } from "../../library/store/library-store";
-import type { BookFormat } from "./book-store";
+import { formatOf, type MediaKind, seriesKind } from "../model/media-kind";
+import type { BookEntry, BookFormat } from "./book-store";
 
 /** Books that belong together: Book 1, 2, 3 of a saga, or the seasons of a show. */
 export interface SeriesEntry {
   id: string;
   title: string;
   author: string;
+  /** Every item in a series is this kind; missing on series saved before kinds. */
+  kind?: MediaKind;
+  /** Written with `kind` for older app versions; read only as its fallback. */
   format: BookFormat;
   /** What a part is called: "Book", "Volume" or "Season". */
   partLabel: string;
@@ -18,11 +22,13 @@ export interface SeriesEntry {
 
 class SeriesStore {
   readonly series: Y.Map<SeriesEntry>;
+  readonly #books: Y.Map<BookEntry>;
   #snapshot: SeriesEntry[] = [];
   #listeners = new Set<() => void>();
 
   constructor(doc: Y.Doc) {
     this.series = doc.getMap<SeriesEntry>("series");
+    this.#books = doc.getMap<BookEntry>("books");
     this.series.observe(() => this.#refresh());
     this.#refresh();
   }
@@ -41,16 +47,32 @@ class SeriesStore {
 
   getSnapshot = () => this.#snapshot;
 
-  create(input: Pick<SeriesEntry, "title" | "author" | "format" | "partLabel">): SeriesEntry {
+  create(
+    input: Pick<SeriesEntry, "title" | "author" | "partLabel"> & { kind: MediaKind },
+  ): SeriesEntry {
     const now = Date.now();
-    const entry: SeriesEntry = { id: createId(now), ...input, createdAt: now, updatedAt: now };
+    const entry: SeriesEntry = {
+      id: createId(now),
+      ...input,
+      format: formatOf(input.kind),
+      createdAt: now,
+      updatedAt: now,
+    };
     this.series.set(entry.id, entry);
     return entry;
   }
 
+  kindOf(series: SeriesEntry): MediaKind {
+    return seriesKind(series, [...this.#books.values()]);
+  }
+
+  /** Like the book store, every write stores the kind with its `format`. */
   update(id: string, patch: Partial<Omit<SeriesEntry, "id" | "createdAt">>) {
     const current = this.series.get(id);
-    if (current) this.series.set(id, { ...current, ...patch, updatedAt: Date.now() });
+    if (!current) return;
+    const next = { ...current, ...patch };
+    const kind = patch.kind ?? this.kindOf(next);
+    this.series.set(id, { ...next, kind, format: formatOf(kind), updatedAt: Date.now() });
   }
 
   remove(id: string) {

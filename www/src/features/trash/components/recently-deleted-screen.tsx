@@ -13,7 +13,9 @@ import { AnimatePresence, motion } from "motion/react";
 import { useMemo } from "react";
 import { CollapsedSidebarControls } from "../../../components/window/collapsed-sidebar-controls";
 import { BookCover } from "../../books/components/book-cover";
-import { type BookEntry, bookKindLabel, useTrashedBooks } from "../../books/store/book-store";
+import { kindOfBook } from "../../books/lib/book-kind";
+import { kindLabel } from "../../books/model/kind-labels";
+import { type BookEntry, useTrashedBooks } from "../../books/store/book-store";
 import { noteKindLabels } from "../../library/model/note-kind-labels";
 import { type LibraryEntry, useLibrary } from "../../library/store/library-store";
 import { usePreferences } from "../../settings/store/preferences-store";
@@ -135,7 +137,7 @@ export function RecentlyDeletedScreen({ onOpenSidebar }: { onOpenSidebar: () => 
 function BinRow({ item }: { item: Item }) {
   const left = daysLeft(item.trashedAt);
   const kind =
-    item.type === "note" ? noteKindLabels[item.entry.kind] : (bookKindLabel(item.book) ?? "Book");
+    item.type === "note" ? noteKindLabels[item.entry.kind] : kindLabel(kindOfBook(item.book));
 
   const restore = () => (item.type === "note" ? restoreNote(item.entry) : restoreBook(item.book));
   const erase = async () => {

@@ -1,6 +1,8 @@
 import { fileNameFor, saveFile } from "../../../platform/save-file";
 import { loadMedia } from "../../../platform/storage/media-store";
-import { type BookEntry, bookFormat } from "../store/book-store";
+import { kindOfBook } from "../lib/book-kind";
+import type { MediaKind } from "../model/media-kind";
+import type { BookEntry } from "../store/book-store";
 import { type BookMaterial, loadBookMaterial } from "./book-material";
 import { buildEpub } from "./build-epub";
 import { buildAudiobook, buildComicArchive } from "./formats/build-archives";
@@ -125,17 +127,15 @@ export const exportFormats: Record<ExportFormat, FormatSpec> = {
   },
 };
 
+const kindFormats: Record<MediaKind, ExportFormat[]> = {
+  book: ["epub", "pdf", "docx", "html", "markdown", "text"],
+  comic: ["cbz", "pdf", "epub", "images", "html"],
+  manga: ["cbz", "pdf", "epub", "images", "html"],
+  audiobook: ["audiobook", "epub", "html", "text"],
+};
+
 /** The formats that suit a book, most useful first. */
-export function formatsFor(book: BookEntry): ExportFormat[] {
-  switch (bookFormat(book)) {
-    case "comic":
-      return ["cbz", "pdf", "epub", "images", "html"];
-    case "audio":
-      return ["audiobook", "epub", "html", "text"];
-    default:
-      return ["epub", "pdf", "docx", "html", "markdown", "text"];
-  }
-}
+export const formatsFor = (book: BookEntry): ExportFormat[] => kindFormats[kindOfBook(book)];
 
 /** Builds the book in a format and saves it the way the device expects. */
 export async function exportBook(

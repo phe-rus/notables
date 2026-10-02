@@ -31,7 +31,7 @@ _These are recommendations to keep the build orderly, not requirements. Skip any
 | 2 | Natural voice on the device | Slice 1 | in-progress |
 | 3 | Cloud voices with your own key | Slice 1 | planned |
 | 4 | Responsive layout for tablets and small windows | Slice 2 | planned |
-| 5 | Four media kinds | Slice 3 | planned |
+| 5 | Four media kinds | Slice 3 | in-progress |
 | 6 | Read aloud where it belongs | Slice 3 | planned |
 | 7 | Turn audio into a book | Slice 3 | planned |
 | 8 | Your identity: name and @code | Slice 4 | planned |
@@ -123,10 +123,20 @@ Desktop and web layouts adapt to tablet widths and to small desktop windows, so 
 
 ## Slice 3: Media kinds
 
-### 5. Four media kinds · needs a decision
+### 5. Four media kinds · in-progress
 Books, comics, manga and audiobooks become four distinct kinds, each with its own shelf and its own tools, instead of formats bolted onto one book type.
 **Done when:** every item in the library is clearly one of the four kinds, imports land in the right one, and each kind shows only the actions that fit it.
-- [ ] Design it (spec): `/architect four media kinds`
+- [x] Design it (spec): `/architect four media kinds`
+- [ ] Build it: `/develop four media kinds`
+  - [ ] Kinds everywhere: stored kind, four shelves, New menu, actions per kind, comic and manga switching, adding files (AC-1, AC-2, AC-3, AC-4, AC-5, AC-6, AC-7, AC-21)
+  - [ ] Delete and restore a whole series through Recently Deleted (AC-16, AC-17, AC-18, AC-19)
+  - [ ] Franchises, parts and loose chapters (AC-8, AC-9, AC-10, AC-11)
+  - [ ] Imports that guess the kind, find parts, merge into series and offer franchises (AC-12, AC-13, AC-14, AC-15)
+  - [ ] Every new string in six languages (AC-20)
+- [ ] Verify it: `/check verify four media kinds`
+- [ ] Test it: `/test four media kinds`
+spec [0002](../../specs/www/0002-four-media-kinds/index.md)
+code in `www/src/features/books`, `www/src/features/imports`, `www/src/features/trash`
 
 ### 6. Read aloud where it belongs · needs a decision
 Read aloud is offered for books and comics (text you can hear), never for audiobooks, which already have sound.
@@ -182,6 +192,8 @@ Kept so the plan stays honest; not in this pass.
 - **Pherus PassID**: optional sign in, cloud backup, and a relay so sharing works when people are not online together (ADR 0005, 0006) · needs a decision · GA
 - **Learning**: lessons, flashcards and tutoring notes · needs a decision
 - **Natural voice in the browser**: the same voice pack on the web build with onnxruntime-web, stored in the Origin Private File System · from spec 0001 · needs a decision
+- **Stop writing old book fields**: drop `format` and `direction` once every app version reads `kind` · from spec 0002 · needs a decision
+- **Series screen and Move to Volume**: a page per series, and moving loose chapters into a volume · from spec 0002 · needs a decision
 - **Natural Swahili voice**: when an open Swahili voice with a license that allows commercial use appears · from spec 0001 · needs a decision
 
 ## Legend

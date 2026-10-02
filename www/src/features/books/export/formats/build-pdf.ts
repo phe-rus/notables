@@ -7,6 +7,7 @@ import {
   rgb,
   StandardFonts,
 } from "pdf-lib";
+import { directionOf } from "../../model/media-kind";
 import { type BookMaterial, isDrawnBook, materialPages } from "../book-material";
 import type { Block, Inline } from "../document-blocks";
 import { inkToPng } from "../ink-image";
@@ -485,7 +486,7 @@ async function buildComicPdf(material: BookMaterial): Promise<Uint8Array> {
     page.drawImage(image, { x: 0, y: 0, width: page.getWidth(), height: page.getHeight() });
   }
   if (pdf.getPageCount() === 0) throw new Error("This book has no pages to export yet.");
-  if (material.book.direction === "rtl") {
+  if (directionOf(material.kind) === "rtl") {
     // Manga reads right to left; tell PDF readers to turn pages that way.
     pdf.catalog.set(PDFName.of("ViewerPreferences"), pdf.context.obj({ Direction: "R2L" }));
   }

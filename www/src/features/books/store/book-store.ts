@@ -2,6 +2,8 @@ import { createId } from "@notables/core";
 import { useSyncExternalStore } from "react";
 import type * as Y from "yjs";
 import { getLibrary } from "../../library/store/library-store";
+import { itemKind, kindFields, type MediaKind } from "../model/media-kind";
+import type { SeriesEntry } from "./series-store";
 
 /** How a book is read: flowing text, full-page images, or listened to. */
 export type BookFormat = "prose" | "comic" | "audio";
@@ -17,7 +19,9 @@ export interface BookEntry {
   chapterIds: string[];
   createdAt: number;
   updatedAt: number;
-  // Added with imports; older books read as prose, left to right, on their own.
+  /** Book, comic, manga or audiobook; missing on items saved before kinds. */
+  kind?: MediaKind;
+  // Written with `kind` so older app versions keep working; read only as its fallback.
   format?: BookFormat;
   /** Manga reads right to left. */
   direction?: "ltr" | "rtl";
@@ -30,35 +34,20 @@ export interface BookEntry {
   trashedAt?: number | null;
 }
 
-export const bookFormat = (book: BookEntry): BookFormat => book.format ?? "prose";
-
-/** Which shelf a book sits on: manga and comics have their own. */
-export type BookShelf = "books" | "manga" | "comic";
-
-export function bookShelf(book: BookEntry): BookShelf {
-  if (bookFormat(book) !== "comic") return "books";
-  return book.direction === "rtl" ? "manga" : "comic";
-}
-
-/** "Manga", "Comic" or "Audiobook"; nothing for an ordinary book. */
-export function bookKindLabel(book: BookEntry): string | null {
-  if (bookFormat(book) === "audio") return "Audiobook";
-  const shelf = bookShelf(book);
-  return shelf === "manga" ? "Manga" : shelf === "comic" ? "Comic" : null;
-}
-
 /**
  * Books live in the library document next to the notes index, so they sync
  * and back up together.
  */
 class BookStore {
   readonly books: Y.Map<BookEntry>;
+  readonly #series: Y.Map<SeriesEntry>;
   #snapshot: BookEntry[] = [];
   #trashed: BookEntry[] = [];
   #listeners = new Set<() => void>();
 
   constructor(doc: Y.Doc) {
     this.books = doc.getMap<BookEntry>("books");
+    this.#series = doc.getMap<SeriesEntry>("series");
     this.books.observe(() => this.#refresh());
     this.#refresh();
   }
@@ -82,8 +71,8 @@ class BookStore {
 
   getTrashed = () => this.#trashed;
 
-  /** A new, empty book; comics and manga start on their own shelf. */
-  create(shelf: BookShelf = "books"): BookEntry {
+  /** A new, empty item of a kind. */
+  create(kind: MediaKind = "book"): BookEntry {
     const now = Date.now();
     const book: BookEntry = {
       id: createId(now),
@@ -93,20 +82,30 @@ class BookStore {
       chapterIds: [],
       createdAt: now,
       updatedAt: now,
-      ...(shelf === "books"
-        ? {}
-        : {
-            format: "comic" as const,
-            direction: shelf === "manga" ? ("rtl" as const) : ("ltr" as const),
-          }),
+      ...kindFields(kind),
     };
     this.books.set(book.id, book);
     return book;
   }
 
+  /** The kind an item is read as right now, through its series when it has one. */
+  kindOf(book: BookEntry): MediaKind {
+    const series = book.seriesId ? this.#series.get(book.seriesId) : undefined;
+    return itemKind(book, series, [...this.books.values()]);
+  }
+
+  /**
+   * Every write also stores the item's kind with the `format` and
+   * `direction` it implies, so an entry saved before kinds, or left out of
+   * step by another device, heals on its next edit. A patch that names a
+   * `kind` changes it.
+   */
   update(id: string, patch: Partial<Omit<BookEntry, "id" | "createdAt">>) {
     const current = this.books.get(id);
-    if (current) this.books.set(id, { ...current, ...patch, updatedAt: Date.now() });
+    if (!current) return;
+    const next = { ...current, ...patch };
+    const kind = patch.kind ?? this.kindOf(next);
+    this.books.set(id, { ...next, ...kindFields(kind), updatedAt: Date.now() });
   }
 
   addChapter(id: string, noteId: string) {

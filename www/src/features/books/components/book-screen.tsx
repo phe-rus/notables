@@ -7,6 +7,7 @@ import {
   ChevronUpIcon,
   CloseIcon,
   IconButton,
+  MicIcon,
   PlusIcon,
   SearchField,
   spring,
@@ -21,11 +22,15 @@ import { IMPORT_ACCEPT, withPath } from "../../imports/lib/picked-files";
 import { appendToBook } from "../../imports/lib/run-import";
 import { noteKindPlural } from "../../library/model/note-kind-labels";
 import { isListedNote, type LibraryEntry, useLibrary } from "../../library/store/library-store";
+import { queueRecording } from "../../recording/lib/pending-recording";
 import { queueDrawing } from "../../studio/lib/pending-drawing";
 import { moveBooksToBin, moveNotesToBin } from "../../trash/lib/recycle-bin";
 import { chapterKind, startChapter } from "../actions/start-chapter";
+import { switchComicKind } from "../actions/switch-kind";
 import { syncBookFormat } from "../actions/sync-book-format";
-import { type BookEntry, bookFormat, bookShelf, getBookStore, useBook } from "../store/book-store";
+import { useBookKind } from "../lib/book-kind";
+import { hasAction, otherDrawnKind, switchKindLabel } from "../lib/kind-actions";
+import { type BookEntry, getBookStore, useBook } from "../store/book-store";
 import { BookCover } from "./book-cover";
 
 export function BookScreen({ bookId, actions }: { bookId: string; actions?: ReactNode }) {
@@ -122,9 +127,10 @@ function ChapterList({ book, chapters }: { book: BookEntry; chapters: LibraryEnt
   const [adding, setAdding] = useState<{ label: string; progress: number } | null>(null);
   const filesInput = useRef<HTMLInputElement>(null);
   const kind = chapterKind(book);
-  const drawn = bookShelf(book) !== "books";
-  // An audiobook grows by adding recordings, not by writing chapters.
-  const audio = bookFormat(book) === "audio";
+  const mediaKind = useBookKind(book);
+  const drawn = hasAction(mediaKind, "drawPage");
+  // An audiobook grows by recording or adding audio, not by writing chapters.
+  const audio = hasAction(mediaKind, "addAudio");
 
   // E-books, PDFs, comic pages and audiobook tracks become chapters here.
   const addFiles = async (files: File[]) => {
@@ -135,25 +141,21 @@ function ChapterList({ book, chapters }: { book: BookEntry; chapters: LibraryEnt
         book.id,
         files.map((file) => withPath(file)),
         {
-          comicKind: bookShelf(book) === "comic" ? "comic" : "manga",
           onProgress: (label, done, total) =>
             setAdding({ label, progress: total ? done / total : 0 }),
         },
       );
+      // Files that don't fit this kind are named, so nothing goes missing silently.
+      const skipped =
+        result.skipped.length > 0
+          ? `${t("books.skippedFiles", { count: result.skipped.length })}: ${result.skipped.join(", ")}`
+          : undefined;
       if (result.chapters === 0) {
-        toast("Nothing to add", {
-          description: "These files didn’t contain chapters Notables can read.",
-        });
+        toast(t("books.nothingToAdd"), { description: skipped ?? t("books.nothingToAddBody") });
       } else {
-        toast.success(
-          result.chapters === 1 ? "Chapter added" : `${result.chapters} chapters added`,
-          {
-            description:
-              result.skipped > 0
-                ? `Skipped ${result.skipped} ${result.skipped === 1 ? "file" : "files"} it couldn’t read.`
-                : undefined,
-          },
-        );
+        toast.success(t("books.chaptersAdded", { count: result.chapters }), {
+          description: skipped,
+        });
       }
     } catch (error) {
       toast.error("Couldn’t add those files", {
@@ -170,6 +172,18 @@ function ChapterList({ book, chapters }: { book: BookEntry; chapters: LibraryEnt
     try {
       const noteId = book.chapterIds.at(-1) ?? (await startChapter(book));
       queueDrawing(noteId);
+      void navigate({ to: "/notes/$noteId", params: { noteId } });
+    } finally {
+      setStarting(false);
+    }
+  };
+
+  // An audiobook's chapter opens with the recorder already running.
+  const recordChapter = async () => {
+    setStarting(true);
+    try {
+      const noteId = await startChapter(book);
+      queueRecording(noteId);
       void navigate({ to: "/notes/$noteId", params: { noteId } });
     } finally {
       setStarting(false);
@@ -262,22 +276,23 @@ function ChapterList({ book, chapters }: { book: BookEntry; chapters: LibraryEnt
             {t("books.drawPage")}
           </Button>
         )}
-        {!audio && (
-          <Button
-            variant={drawn ? "secondary" : "primary"}
-            disabled={starting}
-            onClick={newChapter}
-          >
+        {hasAction(mediaKind, "newChapter") && (
+          <Button variant="primary" disabled={starting} onClick={newChapter}>
             <PlusIcon size={16} strokeWidth={2.2} />
             {t("books.newChapter")}
           </Button>
         )}
+        {hasAction(mediaKind, "recordChapter") && (
+          <Button variant="primary" disabled={starting} onClick={recordChapter}>
+            <MicIcon size={16} />
+            {t("books.action.recordChapter")}
+          </Button>
+        )}
         <Button
-          variant={audio ? "primary" : "secondary"}
+          variant="secondary"
           disabled={adding !== null}
           onClick={() => filesInput.current?.click()}
         >
-          {audio && <PlusIcon size={16} strokeWidth={2.2} />}
           {audio ? t("books.addAudio") : t("books.addFromFiles")}
         </Button>
         <input
@@ -299,6 +314,14 @@ function ChapterList({ book, chapters }: { book: BookEntry; chapters: LibraryEnt
             onClick={() => setPicking((open) => !open)}
           >
             {picking ? "Done adding" : `Add ${noteKindPlural[kind]}…`}
+          </Button>
+        )}
+        {hasAction(mediaKind, "switchKind") && (
+          <Button
+            variant="secondary"
+            onClick={() => switchComicKind(book, otherDrawnKind(mediaKind))}
+          >
+            {switchKindLabel(book, mediaKind)}
           </Button>
         )}
       </div>

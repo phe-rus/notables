@@ -6,6 +6,7 @@ import {
   DownloadIcon,
   IconButton,
   openContextMenu,
+  SegmentedControl,
   SidebarIcon,
   spring,
   TrashIcon,
@@ -18,18 +19,17 @@ import { CollapsedSidebarControls } from "../../../components/window/collapsed-s
 import { t } from "../../../i18n/i18n";
 import { ImportSheet } from "../../imports/components/import-sheet";
 import { GroupSwitcher } from "../../library/components/group-switcher";
-import { usePreferences } from "../../settings/store/preferences-store";
+import type { BooksShelf } from "../../settings/model/preferences";
+import { updatePreferences, usePreferences } from "../../settings/store/preferences-store";
 import { moveBooksToBin } from "../../trash/lib/recycle-bin";
+import { switchComicKind } from "../actions/switch-kind";
 import { exportMenuItems } from "../export/export-book-button";
 import { arrangeShelf, titleInSeries } from "../lib/arrange-shelf";
-import {
-  type BookEntry,
-  type BookShelf,
-  bookFormat,
-  bookKindLabel,
-  getBookStore,
-  useBooks,
-} from "../store/book-store";
+import { kindOfBook } from "../lib/book-kind";
+import { hasAction, otherDrawnKind, switchKindLabel } from "../lib/kind-actions";
+import { kindLabel, shelfLabel } from "../model/kind-labels";
+import { type MediaKind, mediaKinds } from "../model/media-kind";
+import { type BookEntry, getBookStore, useBooks } from "../store/book-store";
 import { type SeriesEntry, useSeries } from "../store/series-store";
 import { BookCover } from "./book-cover";
 import { BookSelectionProvider, useBookSelection } from "./book-selection";
@@ -49,27 +49,43 @@ export function BooksList(props: BooksListProps) {
 }
 
 function BooksListContent({ activeId, onOpenSidebar, className }: BooksListProps) {
-  const books = useBooks();
+  const allBooks = useBooks();
   const selection = useBookSelection();
   const series = useSeries();
+  const preferences = usePreferences();
+  const { collapsed } = preferences.sidebar;
+  // Kinds with something on their shelf; a kind left empty falls back to All.
+  const kinds = useMemo(() => {
+    const present = new Set(allBooks.map(kindOfBook));
+    return mediaKinds.filter((kind) => present.has(kind));
+  }, [allBooks]);
+  const current: BooksShelf =
+    preferences.booksShelf !== "all" && kinds.includes(preferences.booksShelf)
+      ? preferences.booksShelf
+      : "all";
+  const books = useMemo(
+    () => (current === "all" ? allBooks : allBooks.filter((book) => kindOfBook(book) === current)),
+    [allBooks, current],
+  );
   const shelf = useMemo(() => arrangeShelf(books, series), [books, series]);
   const navigate = useNavigate();
-  const { collapsed } = usePreferences().sidebar;
 
   const [importing, setImporting] = useState(false);
 
-  const createBook = (shelf: BookShelf = "books") => {
-    const book = getBookStore().create(shelf);
+  const createBook = (kind: MediaKind = "book") => {
+    const book = getBookStore().create(kind);
     void navigate({ to: "/books/$bookId", params: { bookId: book.id } });
   };
   const chooseNewBook = (event: MouseEvent<HTMLElement>) => {
     const rect = event.currentTarget.getBoundingClientRect();
-    openContextMenu(rect.right - 200, rect.bottom + 6, [
-      { label: t("books.newBook"), onSelect: () => createBook("books") },
-      { label: t("books.newManga"), onSelect: () => createBook("manga") },
-      { label: t("books.newComic"), onSelect: () => createBook("comic") },
-    ]);
+    openContextMenu(
+      rect.right - 200,
+      rect.bottom + 6,
+      mediaKinds.map((kind) => ({ label: kindLabel(kind), onSelect: () => createBook(kind) })),
+    );
   };
+  const chooseShelf = (booksShelf: BooksShelf) =>
+    updatePreferences((previous) => ({ ...previous, booksShelf }));
 
   const { selecting, selected, stop } = selection;
   const allSelected = books.length > 0 && selected.size === books.length;
@@ -142,10 +158,24 @@ function BooksListContent({ activeId, onOpenSidebar, className }: BooksListProps
           </div>
         </div>
         <GroupSwitcher group="books" active="books" />
+        {/* Five shelves can be wider than a narrow list: it scrolls rather than squeezes. */}
+        <div className="no-scrollbar -mx-4 overflow-x-auto px-4">
+          <div className="w-max min-w-full">
+            <SegmentedControl<BooksShelf>
+              label={t("books.shelf.label")}
+              value={current}
+              onChange={chooseShelf}
+              options={(["all", ...kinds] as BooksShelf[]).map((value) => ({
+                value,
+                label: shelfLabel(value),
+              }))}
+            />
+          </div>
+        </div>
       </header>
 
       <div className="flex grow flex-col gap-1 overflow-y-auto px-2.5 pt-2 pb-28 md:pb-8">
-        {books.length === 0 && (
+        {allBooks.length === 0 && (
           <div className="flex flex-col items-center gap-3 px-6 pt-16 text-center">
             <p className="text-[15px] text-label-secondary">
               Gather stories, journals or lessons into a book you can read like the real thing.
@@ -170,9 +200,18 @@ function BooksListContent({ activeId, onOpenSidebar, className }: BooksListProps
               transition={spring.smooth}
             >
               {item.type === "book" ? (
-                <BookRow book={item.book} active={item.book.id === activeId} />
+                <BookRow
+                  book={item.book}
+                  active={item.book.id === activeId}
+                  showKind={current === "all"}
+                />
               ) : (
-                <SeriesGroup series={item.series} books={item.books} activeId={activeId} />
+                <SeriesGroup
+                  series={item.series}
+                  books={item.books}
+                  activeId={activeId}
+                  showKind={current === "all"}
+                />
               )}
             </motion.div>
           ))}
@@ -215,12 +254,14 @@ function SeriesGroup({
   series,
   books,
   activeId,
+  showKind,
 }: {
   series: SeriesEntry;
   books: BookEntry[];
   activeId?: string;
+  showKind: boolean;
 }) {
-  const kind = books[0] ? bookKindLabel(books[0]) : null;
+  const kind = showKind && books[0] ? kindLabel(kindOfBook(books[0])) : null;
   const parts = `${books.length} ${series.partLabel.toLowerCase()}s`;
   return (
     <section aria-label={series.title} className="flex flex-col pt-2">
@@ -241,14 +282,18 @@ function BookRow({
   book,
   series,
   active,
+  showKind = false,
 }: {
   book: BookEntry;
   /** Set when the row sits under its series' heading. */
   series?: SeriesEntry;
   active: boolean;
+  /** On the All shelf a row says what it is. */
+  showKind?: boolean;
 }) {
   const chapters = book.chapterIds.length;
-  const kind = series ? null : bookKindLabel(book);
+  const mediaKind = kindOfBook(book);
+  const kind = showKind && !series ? kindLabel(mediaKind) : null;
   const count = t("books.chapterCount", { count: chapters });
   const navigate = useNavigate();
   const selection = useBookSelection();
@@ -263,7 +308,7 @@ function BookRow({
       onSelect: () => void navigate({ to: "/books/$bookId", params: { bookId: book.id } }),
     },
     {
-      label: bookFormat(book) === "audio" ? "Listen" : "Read",
+      label: hasAction(mediaKind, "listen") ? t("books.action.listen") : t("books.action.read"),
       disabled: chapters === 0,
       onSelect: () => void navigate({ to: "/read/$bookId", params: { bookId: book.id } }),
     },
@@ -280,6 +325,14 @@ function BookRow({
           ),
         ),
     },
+    ...(hasAction(mediaKind, "switchKind")
+      ? [
+          {
+            label: switchKindLabel(book, mediaKind),
+            onSelect: () => switchComicKind(book, otherDrawnKind(mediaKind)),
+          },
+        ]
+      : []),
     "divider",
     { label: t("books.select"), onSelect: () => selection.start(book.id) },
     {
