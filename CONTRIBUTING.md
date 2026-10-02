@@ -2,21 +2,8 @@
 
 ## Setup
 
-```sh
-bun install
-bun run dev        # the web app at http://localhost:3000
-```
-
-Requirements: [Bun](https://bun.sh) 1.3+. Native builds also need Rust and
-the [Tauri prerequisites](https://tauri.app/start/prerequisites/); iOS needs
-Xcode and Android needs Android Studio.
-
-```sh
-cd www
-bun run tauri dev               # desktop
-bun run tauri ios dev           # iOS simulator
-bun run tauri android dev       # Android emulator
-```
+Building and running the web and native apps is covered in
+[DEVELOPERS.md](DEVELOPERS.md).
 
 ## Checks
 
