@@ -49,6 +49,7 @@ bun run lint        # Biome
 bun run typecheck   # every package, including tests
 bun run test        # every package
 bun run build
+(cd www && TAURI_ENV_PLATFORM=linux bun run build)   # the native jobs prerender "/" on the server
 cd www/src-tauri && cargo fmt --check && cargo clippy --all-targets -- -D warnings && cargo test --lib
 ```
 
@@ -59,6 +60,9 @@ Gotchas learned the hard way:
 - Dependencies that are imported lazily must be listed in
   `www/vite.config.ts` `optimizeDeps.include`, or dev reloads the page
   and can load Yjs twice.
+- Anything at the app root (`routes/__root.tsx`) is prerendered on the
+  server for the native builds: browser-only stores (the library,
+  IndexedDB) may only be touched after mount.
 - Every SVG that is artwork, not an icon, needs `data-brand`, or the
   global two-tone icon style dims its paths.
 - After adding a D1 migration: `wrangler d1 migrations apply notables --local`

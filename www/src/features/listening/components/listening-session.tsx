@@ -9,13 +9,17 @@ import { publishPlayback, useListeningBookId } from "../store/listening-store";
  * app. Renders nothing; the player and the mini player show its state.
  */
 export function ListeningSession() {
+  // The library lives in the browser; the server prerenders without it.
+  const [mounted, setMounted] = useState(false);
+  useEffect(() => setMounted(true), []);
+  return mounted ? <ActiveBook /> : null;
+}
+
+function ActiveBook() {
   // Only the book id: following playback here would re-render in a loop.
   const bookId = useListeningBookId();
   const book = useBook(bookId ?? "");
-  const [mounted, setMounted] = useState(false);
-  useEffect(() => setMounted(true), []);
-  if (!mounted || !book) return null;
-  return <Session key={book.id} book={book} />;
+  return book ? <Session key={book.id} book={book} /> : null;
 }
 
 const Session = memo(function Session({ book }: { book: BookEntry }) {
