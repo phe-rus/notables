@@ -28,22 +28,30 @@ platform from the same `www` codebase.
   layout), full-text search with ⌘K, and a new mark and app icons
 - A welcome library for first-time users
 - Tauri shell for iOS, Android, macOS, Windows and Linux
+- Toasts and dialogs, recycle bin, highlights, bulk import of e-books,
+  PDFs, comics and audiobooks, comic and manga readers
+- Handwriting with pen pressure, and handwriting fonts
+- Invoices, receipts and quotes with a verifiable seal, a hidden
+  tamper mark, and a saved business profile
+- AI writing help with your own key, off by default
+- Calendar with plans, birthdays, reminders and notifications
+- A drawing studio for comic, manga and picture-book pages
+- Export to EPUB, PDF, Word, HTML, Markdown, text, CBZ and audiobook ZIPs
+- Continuous audiobooks, read-along with on-device Whisper, and read aloud
+  with natural voices
+- Six languages: English, French, Spanish, Portuguese, Swahili, Arabic
+- Peer-to-peer sharing with specific people (ADR-0006)
+- A desktop Today widget; home-screen widget sources for iOS and Android
 
 ## Next
 
-- **Toasts and dialogs**, morphing, gooey toasts for progress and results,
-  and spring-animated dialogs in place of browser prompts
-- **Peer-to-peer sharing**, share with family, friends or specific people
-  without an account (ADR-0006)
-- **Templates**, invoices and receipts with a signature anyone can scan to
-  check they are genuine; quotes and social posts sized for TikTok, X and
-  Instagram
-- **Whisper while recording**, replace the platform recogniser with
-  streaming Whisper in the native apps
+- Translate the remaining screens
+- **Whisper while recording**, streaming Whisper in the native apps
+- Native home-screen widgets built into the mobile projects
+- Templates for social posts sized for TikTok, X and Instagram
 
 ## Later
 
-- **Freeform canvas**, ink, shapes, stickies and images for planning,
-  manga panels and teaching
+- **Freeform canvas**, shapes, stickies and images for planning and teaching
 - **Optional Pherus PassID**, cloud backup and multi-device sync
 - **Learning**, lessons, flashcards and tutoring notes
