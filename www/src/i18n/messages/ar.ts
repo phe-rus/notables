@@ -392,6 +392,21 @@ export const ar: Messages = {
     placeSystem: "إعدادات نظامك",
   },
   books: {
+    franchise: {
+      add: "إضافة إلى سلسلة عالم…",
+      addTitle: "إضافة «{title}» إلى سلسلة عالم",
+      hint: "تجمع سلسلة العالم سلاسل من أي نوع من عالم واحد، مثل مانغا ورواياتها وكتبها الصوتية.",
+      existing: "سلاسل العوالم",
+      newLabel: "سلسلة عالم جديدة",
+      name: "اسم سلسلة العالم",
+      create: "إنشاء",
+      rename: "إعادة التسمية…",
+      renameTitle: "إعادة تسمية سلسلة العالم",
+      remove: "إزالة سلسلة العالم",
+      removeTitle: "إزالة «{title}»؟",
+      removeBody: "تبقى سلاسلها على رفوفك. يزول التجميع فقط.",
+      removeConfirm: "إزالة",
+    },
     deleteSeries: "حذف السلسلة…",
     deleteSeriesTitle: "حذف «{title}»؟",
     deleteSeriesBody:

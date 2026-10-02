@@ -27,15 +27,17 @@ import { RETENTION_DAYS } from "../../trash/lib/retention";
 import { ownChapters } from "../actions/erase-book";
 import { switchComicKind } from "../actions/switch-kind";
 import { exportMenuItems } from "../export/export-book-button";
-import { arrangeShelf, titleInSeries } from "../lib/arrange-shelf";
+import { arrangeShelf, type SeriesOrBook, titleInSeries } from "../lib/arrange-shelf";
 import { kindOfBook } from "../lib/book-kind";
 import { hasAction, otherDrawnKind, switchKindLabel } from "../lib/kind-actions";
 import { kindLabel, partCountLabel, shelfLabel } from "../model/kind-labels";
 import { type MediaKind, mediaKinds } from "../model/media-kind";
 import { type BookEntry, getBookStore, useBooks } from "../store/book-store";
+import { type FranchiseEntry, getFranchiseStore, useFranchises } from "../store/franchise-store";
 import { type SeriesEntry, useSeries } from "../store/series-store";
 import { BookCover } from "./book-cover";
 import { BookSelectionProvider, useBookSelection } from "./book-selection";
+import { FranchiseSheet, type FranchiseTask } from "./franchise-sheet";
 
 interface BooksListProps {
   activeId?: string;
@@ -70,7 +72,18 @@ function BooksListContent({ activeId, onOpenSidebar, className }: BooksListProps
     () => (current === "all" ? allBooks : allBooks.filter((book) => kindOfBook(book) === current)),
     [allBooks, current],
   );
-  const shelf = useMemo(() => arrangeShelf(books, series), [books, series]);
+  const franchises = useFranchises();
+  // Franchises gather their series on All; a kind shelf names them under each series.
+  const shelf = useMemo(
+    () => arrangeShelf(books, series, current === "all" ? { franchises, kindOf: kindOfBook } : {}),
+    [books, series, franchises, current],
+  );
+  const franchiseOf = useMemo(() => {
+    const byId = new Map(franchises.map((entry) => [entry.id, entry]));
+    return (entry?: SeriesEntry) => (entry?.franchiseId ? byId.get(entry.franchiseId) : undefined);
+  }, [franchises]);
+  const seriesById = useMemo(() => new Map(series.map((entry) => [entry.id, entry])), [series]);
+  const [franchiseTask, setFranchiseTask] = useState<FranchiseTask | null>(null);
   const navigate = useNavigate();
 
   const [importing, setImporting] = useState(false);
@@ -206,25 +219,42 @@ function BooksListContent({ activeId, onOpenSidebar, className }: BooksListProps
         <AnimatePresence initial={false}>
           {shelf.map((item) => (
             <motion.div
-              key={item.type === "book" ? item.book.id : item.series.id}
+              key={
+                item.type === "book"
+                  ? item.book.id
+                  : item.type === "series"
+                    ? item.series.id
+                    : item.franchise.id
+              }
               layout="position"
               initial={{ opacity: 0, scale: 0.97 }}
               animate={{ opacity: 1, scale: 1 }}
               exit={{ opacity: 0, scale: 0.97 }}
               transition={spring.smooth}
             >
-              {item.type === "book" ? (
-                <BookRow
-                  book={item.book}
-                  active={item.book.id === activeId}
-                  showKind={current === "all"}
+              {item.type === "franchise" ? (
+                <FranchiseGroup
+                  franchise={item.franchise}
+                  items={item.items}
+                  activeId={activeId}
+                  onRename={() => setFranchiseTask({ type: "rename", franchise: item.franchise })}
+                  onAddToFranchise={(entry) => setFranchiseTask({ type: "add", series: entry })}
                 />
               ) : (
-                <SeriesGroup
-                  series={item.series}
-                  books={item.books}
+                <ShelfEntry
+                  item={item}
                   activeId={activeId}
                   showKind={current === "all"}
+                  franchise={
+                    current === "all"
+                      ? undefined
+                      : franchiseOf(
+                          item.type === "series"
+                            ? item.series
+                            : seriesById.get(item.book.seriesId ?? ""),
+                        )?.title
+                  }
+                  onAddToFranchise={(entry) => setFranchiseTask({ type: "add", series: entry })}
                 />
               )}
             </motion.div>
@@ -259,8 +289,100 @@ function BooksListContent({ activeId, onOpenSidebar, className }: BooksListProps
         )}
       </AnimatePresence>
       <ImportSheet open={importing} onClose={() => setImporting(false)} />
+      <FranchiseSheet task={franchiseTask} onClose={() => setFranchiseTask(null)} />
     </section>
   );
+}
+
+interface EntryProps {
+  activeId?: string;
+  onAddToFranchise: (series: SeriesEntry) => void;
+}
+
+/** A series or a single book, as it sits on a shelf. */
+function ShelfEntry({
+  item,
+  activeId,
+  showKind,
+  franchise,
+  onAddToFranchise,
+}: EntryProps & { item: SeriesOrBook; showKind: boolean; franchise?: string }) {
+  return item.type === "book" ? (
+    <BookRow
+      book={item.book}
+      active={item.book.id === activeId}
+      showKind={showKind}
+      franchise={franchise}
+    />
+  ) : (
+    <SeriesGroup
+      series={item.series}
+      books={item.books}
+      activeId={activeId}
+      showKind={showKind}
+      franchise={franchise}
+      onAddToFranchise={onAddToFranchise}
+    />
+  );
+}
+
+/** A franchise's series, of every kind, under its name. */
+function FranchiseGroup({
+  franchise,
+  items,
+  activeId,
+  onRename,
+  onAddToFranchise,
+}: EntryProps & { franchise: FranchiseEntry; items: SeriesOrBook[]; onRename: () => void }) {
+  const first = items[0]?.type === "series" ? items[0].books[0] : items[0]?.book;
+  const menu = useContextMenu(() => [
+    { label: t("books.franchise.rename"), onSelect: onRename },
+    "divider",
+    {
+      label: t("books.franchise.remove"),
+      destructive: true,
+      onSelect: () => void confirmRemoveFranchise(franchise),
+    },
+  ]);
+  return (
+    <section aria-label={franchise.title} className="flex flex-col pt-3">
+      <h2
+        {...menu}
+        className="flex touch-manipulation items-center gap-2.5 px-2.5 pb-1 [-webkit-touch-callout:none]"
+      >
+        <BookCover
+          title={franchise.title}
+          author={first?.author ?? ""}
+          image={first?.cover}
+          className="w-6"
+        />
+        <span className="truncate text-[15px] font-bold tracking-tight text-label">
+          {franchise.title}
+        </span>
+      </h2>
+      <div className="flex flex-col border-s-2 border-separator/70 ps-1.5 ms-3">
+        {items.map((item) => (
+          <ShelfEntry
+            key={item.type === "series" ? item.series.id : item.book.id}
+            item={item}
+            activeId={activeId}
+            showKind
+            onAddToFranchise={onAddToFranchise}
+          />
+        ))}
+      </div>
+    </section>
+  );
+}
+
+/** Ungrouping keeps every series; only the franchise goes. */
+async function confirmRemoveFranchise(franchise: FranchiseEntry) {
+  const confirmed = await confirmDialog({
+    title: t("books.franchise.removeTitle", { title: franchise.title }),
+    message: t("books.franchise.removeBody"),
+    confirmLabel: t("books.franchise.removeConfirm"),
+  });
+  if (confirmed) getFranchiseStore().remove(franchise.id);
 }
 
 /** The volumes of a series under one heading. */
@@ -269,16 +391,22 @@ function SeriesGroup({
   books,
   activeId,
   showKind,
+  franchise,
+  onAddToFranchise,
 }: {
   series: SeriesEntry;
   books: BookEntry[];
   activeId?: string;
   showKind: boolean;
+  /** Its franchise's name, shown on kind shelves. */
+  franchise?: string;
+  onAddToFranchise: (series: SeriesEntry) => void;
 }) {
   const selection = useBookSelection();
   const kind = showKind && books[0] ? kindLabel(kindOfBook(books[0])) : null;
   const parts = partCountLabel(books.length, series.partLabel);
   const menu = useContextMenu(() => [
+    { label: t("books.franchise.add"), onSelect: () => onAddToFranchise(series) },
     { label: t("books.select"), onSelect: () => selection.start(series.id) },
     "divider",
     {
@@ -290,7 +418,10 @@ function SeriesGroup({
   const whole = selection.selected.has(series.id);
   const heading = (
     <>
-      <span className="truncate text-[13px] font-semibold text-label">{series.title}</span>
+      <span className="flex min-w-0 flex-col">
+        <span className="truncate text-[13px] font-semibold text-label">{series.title}</span>
+        {franchise && <span className="truncate text-[12px] text-label-tertiary">{franchise}</span>}
+      </span>
       <span className="shrink-0 text-[12px] text-label-tertiary">
         {kind ? `${kind} · ${parts}` : parts}
       </span>
@@ -369,6 +500,7 @@ function BookRow({
   active,
   showKind = false,
   inSelectedSeries = false,
+  franchise,
 }: {
   book: BookEntry;
   /** Set when the row sits under its series' heading. */
@@ -376,6 +508,8 @@ function BookRow({
   active: boolean;
   /** Its whole series is selected, so it is too. */
   inSelectedSeries?: boolean;
+  /** Its series' franchise, named on kind shelves. */
+  franchise?: string;
   /** On the All shelf a row says what it is. */
   showKind?: boolean;
 }) {
@@ -437,7 +571,7 @@ function BookRow({
           {(series ? titleInSeries(book, series) : book.title) || "Untitled book"}
         </span>
         <span className="text-[13px] text-label-secondary">
-          {kind ? `${kind} · ${count}` : count}
+          {[franchise, kind, count].filter(Boolean).join(" · ")}
         </span>
       </span>
     </>

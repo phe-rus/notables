@@ -380,6 +380,21 @@ export const sw: Messages = {
     placeSystem: "mipangilio ya mfumo wako",
   },
   books: {
+    franchise: {
+      add: "Ongeza kwenye franchise…",
+      addTitle: "Ongeza “{title}” kwenye franchise",
+      hint: "Franchise hukusanya mifululizo ya aina yoyote kutoka ulimwengu mmoja, kama manga, riwaya zake na vitabu vyake vya sauti.",
+      existing: "Franchise",
+      newLabel: "Franchise mpya",
+      name: "Jina la franchise",
+      create: "Unda",
+      rename: "Badilisha jina…",
+      renameTitle: "Badilisha jina la franchise",
+      remove: "Ondoa franchise",
+      removeTitle: "Ondoa “{title}”?",
+      removeBody: "Mifululizo yake inabaki kwenye rafu zako. Ni mkusanyiko tu unaoondoka.",
+      removeConfirm: "Ondoa",
+    },
     deleteSeries: "Futa mfululizo…",
     deleteSeriesTitle: "Futa “{title}”?",
     deleteSeriesBody:

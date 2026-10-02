@@ -376,6 +376,21 @@ export const es: Messages = {
     placeSystem: "los ajustes de tu sistema",
   },
   books: {
+    franchise: {
+      add: "Añadir a una franquicia…",
+      addTitle: "Añadir «{title}» a una franquicia",
+      hint: "Una franquicia agrupa series de cualquier tipo de un mismo mundo, como un manga, sus novelas y sus audiolibros.",
+      existing: "Franquicias",
+      newLabel: "Nueva franquicia",
+      name: "Nombre de la franquicia",
+      create: "Crear",
+      rename: "Cambiar nombre…",
+      renameTitle: "Cambiar nombre de la franquicia",
+      remove: "Quitar franquicia",
+      removeTitle: "¿Quitar «{title}»?",
+      removeBody: "Sus series siguen en tus estantes. Solo desaparece la agrupación.",
+      removeConfirm: "Quitar",
+    },
     deleteSeries: "Eliminar serie…",
     deleteSeriesTitle: "¿Eliminar «{title}»?",
     deleteSeriesBody:

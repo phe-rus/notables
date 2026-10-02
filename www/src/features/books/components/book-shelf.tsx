@@ -1,6 +1,6 @@
 import { Link } from "@tanstack/react-router";
 import { useMemo } from "react";
-import { arrangeShelf } from "../lib/arrange-shelf";
+import { arrangeShelf, shelfBooks } from "../lib/arrange-shelf";
 import { kindOfBook } from "../lib/book-kind";
 import type { MediaKind } from "../model/media-kind";
 import { type BookEntry, useBooks } from "../store/book-store";
@@ -13,10 +13,12 @@ export function useShelfBooks(kind: MediaKind): BookEntry[] {
   const series = useSeries();
   return useMemo(
     () =>
-      arrangeShelf(
-        books.filter((book) => kindOfBook(book) === kind),
-        series,
-      ).flatMap((item) => (item.type === "book" ? [item.book] : item.books)),
+      shelfBooks(
+        arrangeShelf(
+          books.filter((book) => kindOfBook(book) === kind),
+          series,
+        ),
+      ),
     [books, series, kind],
   );
 }

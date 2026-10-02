@@ -374,6 +374,21 @@ export const fr: Messages = {
     placeSystem: "les réglages de votre système",
   },
   books: {
+    franchise: {
+      add: "Ajouter à une franchise…",
+      addTitle: "Ajouter « {title} » à une franchise",
+      hint: "Une franchise regroupe des séries de tout type venant d’un même univers, comme un manga, ses romans et ses livres audio.",
+      existing: "Franchises",
+      newLabel: "Nouvelle franchise",
+      name: "Nom de la franchise",
+      create: "Créer",
+      rename: "Renommer…",
+      renameTitle: "Renommer la franchise",
+      remove: "Retirer la franchise",
+      removeTitle: "Retirer « {title} » ?",
+      removeBody: "Ses séries restent sur vos étagères. Seul le regroupement disparaît.",
+      removeConfirm: "Retirer",
+    },
     deleteSeries: "Supprimer la série…",
     deleteSeriesTitle: "Supprimer « {title} » ?",
     deleteSeriesBody:

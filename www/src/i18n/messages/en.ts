@@ -370,6 +370,21 @@ export const en = {
     placeSystem: "your system settings",
   },
   books: {
+    franchise: {
+      add: "Add to Franchise…",
+      addTitle: "Add “{title}” to a franchise",
+      hint: "A franchise groups series of any kind from one world, like a manga, its novels and its audiobooks.",
+      existing: "Franchises",
+      newLabel: "New franchise",
+      name: "Franchise name",
+      create: "Create",
+      rename: "Rename…",
+      renameTitle: "Rename franchise",
+      remove: "Remove Franchise",
+      removeTitle: "Remove “{title}”?",
+      removeBody: "Its series stay on your shelves. Only the grouping goes.",
+      removeConfirm: "Remove",
+    },
     deleteSeries: "Delete Series…",
     deleteSeriesTitle: "Delete “{title}”?",
     deleteSeriesBody:

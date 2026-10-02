@@ -5,6 +5,7 @@ import { deleteNote } from "../../notes/actions/delete-note";
 import { getHighlightStore } from "../highlights/store/highlight-store";
 import { type BookEntry, getBookStore } from "../store/book-store";
 import { getSeriesStore } from "../store/series-store";
+import { dropFranchiseIfEmpty } from "./franchise";
 
 /** Chapters that exist only inside this book, such as imported or new ones. */
 export const ownChapters = (book: BookEntry) =>
@@ -29,6 +30,10 @@ export async function eraseBook(book: BookEntry): Promise<void> {
     const left = [...store.getSnapshot(), ...store.getTrashed()].some(
       (other) => other.seriesId === book.seriesId,
     );
-    if (!left) getSeriesStore().remove(book.seriesId);
+    if (!left) {
+      const franchiseId = getSeriesStore().series.get(book.seriesId)?.franchiseId;
+      getSeriesStore().remove(book.seriesId);
+      dropFranchiseIfEmpty(franchiseId);
+    }
   }
 }

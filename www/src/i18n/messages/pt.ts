@@ -373,6 +373,21 @@ export const pt: Messages = {
     placeSystem: "as definições do sistema",
   },
   books: {
+    franchise: {
+      add: "Adicionar a uma franquia…",
+      addTitle: "Adicionar «{title}» a uma franquia",
+      hint: "Uma franquia agrupa séries de qualquer tipo do mesmo universo, como uma manga, os seus romances e audiolivros.",
+      existing: "Franquias",
+      newLabel: "Nova franquia",
+      name: "Nome da franquia",
+      create: "Criar",
+      rename: "Mudar o nome…",
+      renameTitle: "Mudar o nome da franquia",
+      remove: "Remover franquia",
+      removeTitle: "Remover «{title}»?",
+      removeBody: "As séries ficam nas suas estantes. Só o agrupamento desaparece.",
+      removeConfirm: "Remover",
+    },
     deleteSeries: "Apagar série…",
     deleteSeriesTitle: "Apagar «{title}»?",
     deleteSeriesBody:
