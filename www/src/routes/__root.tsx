@@ -1,5 +1,5 @@
 import { MediaResolverProvider } from "@notables/editor";
-import { DialogHost, Toaster, TooltipHost } from "@notables/ui";
+import { ContextMenuHost, DialogHost, Toaster, TooltipHost } from "@notables/ui";
 import { createRootRoute, HeadContent, Outlet, Scripts } from "@tanstack/react-router";
 import { MotionConfig } from "motion/react";
 import type { ReactNode } from "react";
@@ -51,6 +51,7 @@ function RootDocument({ children }: { children: ReactNode }) {
           <Toaster />
           <DialogHost />
           <TooltipHost />
+          <ContextMenuHost />
         </MotionConfig>
         <Scripts />
       </body>

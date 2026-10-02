@@ -16,7 +16,7 @@ import { BooksList } from "../features/books/components/books-list";
 import { InvoicesList } from "../features/invoices/components/invoices-list";
 import { Sidebar, type SidebarLocation } from "../features/library/components/library-sidebar";
 import { NotesList } from "../features/library/components/notes-list";
-import { getView } from "../features/library/model/library-views";
+import { getView, groupOf } from "../features/library/model/library-views";
 import { getLibrary, useLibraryReady } from "../features/library/store/library-store";
 import { seedWelcomeLibrary } from "../features/onboarding/lib/seed-welcome-library";
 import { SearchPalette } from "../features/search/components/search-palette";
@@ -67,9 +67,7 @@ function AppShell() {
       ? "invoices"
       : inBooks
         ? "books"
-        : view.id === "note"
-          ? "all"
-          : view.id;
+        : (groupOf(view.id) ?? (view.id === "published" ? "published" : "all"));
 
   const createNote = useCallback(() => {
     const entry = getLibrary().create(view.kind);
@@ -225,7 +223,15 @@ function AppShell() {
 
       {isPhone && showTabBar && (
         <TabBar
-          active={inInvoices ? "invoices" : inBooks ? "books" : inSettings ? "settings" : "notes"}
+          active={
+            inInvoices
+              ? "invoices"
+              : inBooks || location === "books"
+                ? "books"
+                : inSettings
+                  ? "settings"
+                  : "notes"
+          }
         />
       )}
     </div>

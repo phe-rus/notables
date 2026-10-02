@@ -7,6 +7,7 @@ export const noteKindLabels: Record<NoteKind, string> = {
   story: "Story",
   article: "Article",
   manga: "Manga",
+  comic: "Comic",
   lesson: "Lesson",
   plan: "Plan",
 };

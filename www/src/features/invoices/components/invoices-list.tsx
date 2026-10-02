@@ -1,5 +1,21 @@
-import { computeTotals, formatMoney, type InvoiceKind, invoiceKindLabels } from "@notables/core";
-import { Chip, cn, IconButton, InvoiceIcon, SidebarIcon, spring } from "@notables/ui";
+import {
+  computeTotals,
+  formatMoney,
+  type InvoiceDocument,
+  type InvoiceKind,
+  invoiceKindLabels,
+} from "@notables/core";
+import {
+  Chip,
+  cn,
+  confirmDialog,
+  IconButton,
+  InvoiceIcon,
+  SidebarIcon,
+  spring,
+  toast,
+  useContextMenu,
+} from "@notables/ui";
 import { Link, useNavigate } from "@tanstack/react-router";
 import { AnimatePresence, motion } from "motion/react";
 import { CollapsedSidebarControls } from "../../../components/window/collapsed-sidebar-controls";
@@ -79,60 +95,110 @@ export function InvoicesList({
           </div>
         )}
         <AnimatePresence initial={false}>
-          {invoices.map((invoice) => {
-            const active = invoice.id === activeId;
-            const total = computeTotals(invoice).total;
-            return (
-              <motion.div
-                key={invoice.id}
-                layout="position"
-                initial={{ opacity: 0, scale: 0.97 }}
-                animate={{ opacity: 1, scale: 1 }}
-                exit={{ opacity: 0, scale: 0.97 }}
-                transition={spring.smooth}
-              >
-                <Link
-                  to="/invoices/$invoiceId"
-                  params={{ invoiceId: invoice.id }}
-                  className={cn(
-                    "relative isolate flex flex-col gap-1 rounded-[12px] px-3 py-3 no-underline transition-colors",
-                    !active && "hover:bg-fill/60",
-                  )}
-                >
-                  {active && (
-                    <motion.span
-                      layoutId="invoice-selection"
-                      className="absolute inset-0 -z-10 rounded-[12px] bg-accent-soft"
-                      transition={spring.snappy}
-                    />
-                  )}
-                  <span className="flex items-baseline justify-between gap-3">
-                    <span className="truncate text-[15px] font-semibold text-label">
-                      {invoice.client.name || "No client yet"}
-                    </span>
-                    <span className="shrink-0 text-[14px] font-semibold tabular-nums text-label">
-                      {formatMoney(total, invoice.currency)}
-                    </span>
-                  </span>
-                  <span className="flex items-center gap-2 text-[13px] text-label-secondary">
-                    <Chip
-                      tone={invoice.kind === "receipt" ? "public" : active ? "accent" : "neutral"}
-                    >
-                      {invoiceKindLabels[invoice.kind]}
-                    </Chip>
-                    <span className="truncate">{invoice.number}</span>
-                    {invoice.kind === "invoice" && invoice.dueOn && (
-                      <span className="ml-auto shrink-0 text-label-tertiary">
-                        Due {dueFormat.format(new Date(`${invoice.dueOn}T00:00:00Z`))}
-                      </span>
-                    )}
-                  </span>
-                </Link>
-              </motion.div>
-            );
-          })}
+          {invoices.map((invoice) => (
+            <motion.div
+              key={invoice.id}
+              layout="position"
+              initial={{ opacity: 0, scale: 0.97 }}
+              animate={{ opacity: 1, scale: 1 }}
+              exit={{ opacity: 0, scale: 0.97 }}
+              transition={spring.smooth}
+            >
+              <InvoiceRow invoice={invoice} active={invoice.id === activeId} />
+            </motion.div>
+          ))}
         </AnimatePresence>
       </div>
     </section>
+  );
+}
+
+function InvoiceRow({ invoice, active }: { invoice: InvoiceDocument; active: boolean }) {
+  const navigate = useNavigate();
+  const store = getInvoiceStore();
+  const total = computeTotals(invoice).total;
+  const open = (id: string) =>
+    void navigate({ to: "/invoices/$invoiceId", params: { invoiceId: id } });
+  const menu = useContextMenu(() => [
+    { label: "Open", onSelect: () => open(invoice.id) },
+    {
+      label: "Duplicate",
+      onSelect: () => {
+        const copy = store.duplicate(invoice.id);
+        if (copy) {
+          toast.success("Duplicated", { description: copy.number });
+          open(copy.id);
+        }
+      },
+    },
+    ...(invoice.kind === "invoice"
+      ? [
+          {
+            label: "Issue receipt",
+            onSelect: () => {
+              const receipt = store.receiptFor(invoice.id);
+              if (receipt) {
+                toast.success("Receipt ready", { description: receipt.number });
+                open(receipt.id);
+              }
+            },
+          },
+        ]
+      : []),
+    "divider",
+    {
+      label: "Delete",
+      destructive: true,
+      onSelect: async () => {
+        const confirmed = await confirmDialog({
+          title: `Delete this ${invoice.kind}?`,
+          message: "Copies you already sent stay verifiable; only this device forgets it.",
+          confirmLabel: "Delete",
+          destructive: true,
+        });
+        if (!confirmed) return;
+        store.remove(invoice.id);
+        toast(`${invoice.number} deleted`);
+      },
+    },
+  ]);
+
+  return (
+    <Link
+      to="/invoices/$invoiceId"
+      params={{ invoiceId: invoice.id }}
+      {...menu}
+      className={cn(
+        "relative isolate flex touch-manipulation flex-col gap-1 rounded-[12px] px-3 py-3 no-underline transition-colors [-webkit-touch-callout:none]",
+        !active && "hover:bg-fill/60",
+      )}
+    >
+      {active && (
+        <motion.span
+          layoutId="invoice-selection"
+          className="absolute inset-0 -z-10 rounded-[12px] bg-accent-soft"
+          transition={spring.snappy}
+        />
+      )}
+      <span className="flex items-baseline justify-between gap-3">
+        <span className="truncate text-[15px] font-semibold text-label">
+          {invoice.client.name || "No client yet"}
+        </span>
+        <span className="shrink-0 text-[14px] font-semibold tabular-nums text-label">
+          {formatMoney(total, invoice.currency)}
+        </span>
+      </span>
+      <span className="flex items-center gap-2 text-[13px] text-label-secondary">
+        <Chip tone={invoice.kind === "receipt" ? "public" : active ? "accent" : "neutral"}>
+          {invoiceKindLabels[invoice.kind]}
+        </Chip>
+        <span className="truncate">{invoice.number}</span>
+        {invoice.kind === "invoice" && invoice.dueOn && (
+          <span className="ml-auto shrink-0 text-label-tertiary">
+            Due {dueFormat.format(new Date(`${invoice.dueOn}T00:00:00Z`))}
+          </span>
+        )}
+      </span>
+    </Link>
   );
 }

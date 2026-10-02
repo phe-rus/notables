@@ -1,31 +1,22 @@
-import type { ViewId } from "./library-views";
-
 /**
- * Sidebar entries people can reorder or hide. All Notes, Search and
- * Settings are fixed and always present.
+ * Sidebar places people can reorder or hide. All Notes, Search and
+ * Settings are fixed and always present. Related kinds share one place
+ * (see viewGroups) so the sidebar stays short.
  */
-export type SidebarItemId = Exclude<ViewId, "all" | "note"> | "books" | "invoices";
+export type SidebarItemId = "writing" | "books" | "planning" | "invoices" | "published";
 
 export const sidebarItemIds: readonly SidebarItemId[] = [
-  "journal",
-  "story",
-  "article",
-  "manga",
-  "lesson",
-  "plan",
+  "writing",
   "books",
+  "planning",
   "invoices",
   "published",
 ];
 
 export const sidebarItemTitles: Record<SidebarItemId, string> = {
-  journal: "Journal",
-  story: "Stories",
-  article: "Articles",
-  manga: "Manga",
-  lesson: "Lessons",
-  plan: "Plans",
+  writing: "Writing",
   books: "Books",
+  planning: "Plan & learn",
   invoices: "Invoices",
   published: "Published",
 };

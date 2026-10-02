@@ -7,19 +7,22 @@ import {
   SearchField,
   SidebarIcon,
   spring,
+  useContextMenu,
 } from "@notables/ui";
-import { Link } from "@tanstack/react-router";
+import { Link, useNavigate } from "@tanstack/react-router";
 import { AnimatePresence, motion } from "motion/react";
 import { useDeferredValue, useMemo, useState } from "react";
 import { CollapsedSidebarControls } from "../../../components/window/collapsed-sidebar-controls";
+import { noteMenu } from "../../notes/actions/note-menu";
 import { search } from "../../search/lib/rank";
 import { useSearchableNotes } from "../../search/lib/use-searchable-notes";
 import type { ListPreferences } from "../../settings/model/preferences";
 import { usePreferences } from "../../settings/store/preferences-store";
 import { bucket, formatUpdated } from "../lib/date-format";
-import type { View } from "../model/library-views";
+import { type GroupId, groupOf, type View } from "../model/library-views";
 import { noteKindLabels } from "../model/note-kind-labels";
 import { type LibraryEntry, useLibraryReady } from "../store/library-store";
+import { GroupSwitcher } from "./group-switcher";
 
 interface Group {
   label: string | null;
@@ -107,6 +110,7 @@ export function NotesList({
             <PenIcon size={20} strokeWidth={1.9} />
           </IconButton>
         </div>
+        {groupOf(view.id) && <GroupSwitcher group={groupOf(view.id) as GroupId} active={view.id} />}
         <SearchField
           value={query}
           placeholder={`Search ${view.title.toLowerCase()}`}
@@ -162,6 +166,8 @@ function NoteRow({
   active: boolean;
   options: ListPreferences;
 }) {
+  const navigate = useNavigate();
+  const menu = useContextMenu(() => noteMenu(entry, navigate));
   const kind = entry.kind === "note" || !options.kindTags ? null : noteKindLabels[entry.kind];
   const compact = options.density === "compact";
   return (
@@ -169,8 +175,9 @@ function NoteRow({
       to="/notes/$noteId"
       params={{ noteId: entry.id }}
       search={(s) => s}
+      {...menu}
       className={cn(
-        "group relative isolate flex flex-col rounded-[12px] px-3 no-underline transition-colors duration-fast",
+        "group relative isolate flex touch-manipulation flex-col rounded-[12px] px-3 no-underline transition-colors duration-fast [-webkit-touch-callout:none]",
         compact ? "gap-px py-2" : "gap-[3px] py-3",
         !active && "hover:bg-fill/60",
       )}

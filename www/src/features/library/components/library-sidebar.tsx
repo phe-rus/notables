@@ -1,26 +1,23 @@
-import type { NoteKind } from "@notables/core";
 import {
-  ArticleIcon,
   BookIcon,
-  CanvasIcon,
   ChevronLeftIcon,
   ChevronRightIcon,
+  type ContextMenuItem,
   cn,
   GlobeIcon,
   InvoiceIcon,
-  JournalIcon,
   LessonIcon,
   NoteIcon,
   PenIcon,
   PinIcon,
-  PlanIcon,
   SearchIcon,
   SettingsIcon,
   SidebarIcon,
   StoryIcon,
   spring,
+  useContextMenu,
 } from "@notables/ui";
-import { Link, type LinkProps, useRouter } from "@tanstack/react-router";
+import { Link, type LinkProps, useNavigate, useRouter } from "@tanstack/react-router";
 import { AnimatePresence, motion } from "motion/react";
 import { type ReactNode, useState } from "react";
 import { AppMark } from "../../../components/brand/app-mark";
@@ -31,9 +28,15 @@ import { useAuthorName } from "../../../platform/author-preferences";
 import { windowChrome } from "../../../platform/window-chrome";
 import { useBooks } from "../../books/store/book-store";
 import { useInvoices } from "../../invoices/store/invoice-store";
+import { noteMenu } from "../../notes/actions/note-menu";
 import { openSearch } from "../../search/store/search-palette";
-import { toggleSidebarCollapsed, usePreferences } from "../../settings/store/preferences-store";
+import {
+  toggleSidebarCollapsed,
+  updatePreferences,
+  usePreferences,
+} from "../../settings/store/preferences-store";
 import { formatAge } from "../lib/date-format";
+import { planningKinds, readingKinds, writingKinds } from "../model/library-views";
 import { type SidebarItemId, sidebarItemTitles } from "../model/sidebar-items";
 import { useLibrary } from "../store/library-store";
 import { SidebarEditor } from "./sidebar-editor";
@@ -42,13 +45,9 @@ import { SidebarEditor } from "./sidebar-editor";
 export type SidebarLocation = SidebarItemId | "all" | "settings";
 
 export const sidebarIcons: Record<SidebarItemId, ReactNode> = {
-  journal: <JournalIcon size={17} />,
-  story: <StoryIcon size={17} />,
-  article: <ArticleIcon size={17} />,
-  manga: <CanvasIcon size={17} />,
-  lesson: <LessonIcon size={17} />,
-  plan: <PlanIcon size={17} />,
+  writing: <StoryIcon size={17} />,
   books: <BookIcon size={17} />,
+  planning: <LessonIcon size={17} />,
   invoices: <InvoiceIcon size={17} />,
   published: <GlobeIcon size={17} />,
 };
@@ -73,14 +72,18 @@ export function Sidebar({
   const entries = useLibrary();
   const { order, hidden, counts } = usePreferences().sidebar;
   const [editing, setEditing] = useState(false);
+  const navigate = useNavigate();
   const pinned = entries.filter((entry) => entry.pinned).slice(0, PINNED_LIMIT);
 
   const count = (id: SidebarItemId | "all") => {
-    if (id === "books") return books.length;
     if (id === "invoices") return invoices.length;
-    return entries.filter((e) =>
-      id === "all" ? true : id === "published" ? e.publicationId : e.kind === (id as NoteKind),
-    ).length;
+    if (id === "books") {
+      return books.length + entries.filter((e) => readingKinds.includes(e.kind)).length;
+    }
+    if (id === "all") return entries.length;
+    if (id === "published") return entries.filter((e) => e.publicationId).length;
+    const kinds = id === "writing" ? writingKinds : planningKinds;
+    return entries.filter((e) => kinds.includes(e.kind)).length;
   };
   const link = (id: SidebarItemId): LinkProps =>
     id === "books"
@@ -171,6 +174,17 @@ export function Sidebar({
                       active={active === id}
                       icon={sidebarIcons[id]}
                       trailing={counts ? count(id) : undefined}
+                      menu={() => [
+                        {
+                          label: "Hide from sidebar",
+                          onSelect: () =>
+                            updatePreferences((p) => ({
+                              ...p,
+                              sidebar: { ...p.sidebar, hidden: [...p.sidebar.hidden, id] },
+                            })),
+                        },
+                        { label: "Edit sidebar…", onSelect: () => setEditing(true) },
+                      ]}
                     >
                       {sidebarItemTitles[id]}
                     </NavItem>
@@ -192,6 +206,7 @@ export function Sidebar({
                   search={(s) => s}
                   active={entry.id === activeNoteId}
                   icon={<PinIcon size={15} />}
+                  menu={() => noteMenu(entry, navigate)}
                   trailing={formatAge(entry.updatedAt)}
                 >
                   {entry.title || "New Note"}
@@ -278,15 +293,34 @@ function ActionRow({
   );
 }
 
+const NO_MENU = () => [];
+
 function NavItem({
   active,
   icon,
   trailing,
+  menu,
   children,
   ...link
-}: LinkProps & { active: boolean; icon: ReactNode; trailing?: ReactNode; children: ReactNode }) {
+}: LinkProps & {
+  active: boolean;
+  icon: ReactNode;
+  trailing?: ReactNode;
+  /** Actions for right-click and long-press. */
+  menu?: () => ContextMenuItem[];
+  children: ReactNode;
+}) {
+  const handlers = useContextMenu(menu ?? NO_MENU);
   return (
-    <Link {...link} className={cn(rowClass, active ? "font-medium" : "hover:bg-fill/70")}>
+    <Link
+      {...link}
+      {...(menu ? handlers : {})}
+      className={cn(
+        rowClass,
+        "touch-manipulation [-webkit-touch-callout:none]",
+        active ? "font-medium" : "hover:bg-fill/70",
+      )}
+    >
       {active && (
         <motion.span
           layoutId="sidebar-selection"

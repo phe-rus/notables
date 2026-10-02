@@ -1,8 +1,19 @@
-import { BookIcon, cn, IconButton, SidebarIcon, spring } from "@notables/ui";
+import {
+  BookIcon,
+  cn,
+  confirmDialog,
+  IconButton,
+  SidebarIcon,
+  spring,
+  toast,
+  useContextMenu,
+} from "@notables/ui";
 import { Link, useNavigate } from "@tanstack/react-router";
 import { AnimatePresence, motion } from "motion/react";
 import { CollapsedSidebarControls } from "../../../components/window/collapsed-sidebar-controls";
+import { GroupSwitcher } from "../../library/components/group-switcher";
 import { usePreferences } from "../../settings/store/preferences-store";
+import { exportBookAsEpub } from "../export/export-book";
 import { type BookEntry, getBookStore, useBooks } from "../store/book-store";
 import { BookCover } from "./book-cover";
 
@@ -48,6 +59,7 @@ export function BooksList({
             <BookIcon size={20} />
           </IconButton>
         </div>
+        <GroupSwitcher group="books" active="books" />
       </header>
 
       <div className="flex grow flex-col gap-1 overflow-y-auto px-2.5 pt-2 pb-28 md:pb-8">
@@ -86,12 +98,54 @@ export function BooksList({
 
 function BookRow({ book, active }: { book: BookEntry; active: boolean }) {
   const chapters = book.chapterIds.length;
+  const navigate = useNavigate();
+  const menu = useContextMenu(() => [
+    {
+      label: "Open",
+      onSelect: () => void navigate({ to: "/books/$bookId", params: { bookId: book.id } }),
+    },
+    {
+      label: "Read",
+      disabled: chapters === 0,
+      onSelect: () => void navigate({ to: "/read/$bookId", params: { bookId: book.id } }),
+    },
+    {
+      label: "Export as EPUB",
+      disabled: chapters === 0,
+      onSelect: () => {
+        void toast
+          .promise(exportBookAsEpub(book), {
+            loading: "Exporting your book…",
+            success: "Book exported",
+            error: "The book couldn’t be exported",
+          })
+          .catch(() => {});
+      },
+    },
+    "divider",
+    {
+      label: "Delete",
+      destructive: true,
+      onSelect: async () => {
+        const confirmed = await confirmDialog({
+          title: "Delete this book?",
+          message: "Its chapters stay in your notes.",
+          confirmLabel: "Delete",
+          destructive: true,
+        });
+        if (!confirmed) return;
+        getBookStore().remove(book.id);
+        toast("Book deleted", { description: book.title || undefined });
+      },
+    },
+  ]);
   return (
     <Link
       to="/books/$bookId"
       params={{ bookId: book.id }}
+      {...menu}
       className={cn(
-        "flex items-center gap-3 rounded-[14px] p-2.5 no-underline transition-colors duration-fast",
+        "flex touch-manipulation items-center gap-3 rounded-[14px] p-2.5 no-underline transition-colors duration-fast [-webkit-touch-callout:none]",
         active ? "bg-accent-soft" : "hover:bg-fill/60",
       )}
     >
