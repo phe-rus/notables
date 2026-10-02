@@ -42,6 +42,12 @@ pub fn run() {
                         .build(),
                 )?;
             }
+            // Windows and Linux get the app's own window controls (see
+            // www/src/components/window); macOS keeps its traffic lights.
+            #[cfg(any(target_os = "windows", target_os = "linux"))]
+            if let Some(window) = app.get_webview_window("main") {
+                window.set_decorations(false)?;
+            }
             let data_dir = app.path().app_data_dir()?;
             app.manage(Storage::open(&data_dir)?);
             Ok(())
