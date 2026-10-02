@@ -101,8 +101,8 @@ A premium sounding voice you download once that reads offline and privately on e
 - [ ] Design it (spec): `/architect natural voice on the device`
 
 ### 3. Cloud voices with your own key · needs a decision
-ChatGPT quality voices for people who add their own key, alongside Gemini's. You are confirming the exact voice name you want as the default.
-**Done when:** with a key added in Settings, the voice picker offers the cloud voices, read aloud uses them at full loudness, and without a key they are hidden.
+ChatGPT quality voices for people who add their own key, alongside Gemini's. The default should feel like ChatGPT's Juniper: open and upbeat, and speaking whatever language the text is in. Juniper itself is only in the ChatGPT app, so the spec picks the closest voice developers can use (likely `marin`) and steers its tone to match.
+**Done when:** with a key added in Settings, the voice picker offers the cloud voices with a Juniper like default that sounds open and upbeat, reads each passage in its own language without a language setting, plays at full loudness, and is hidden without a key.
 - [ ] Design it (spec): `/architect cloud voices with your own key`
 
 ## Slice 2: Responsive layout
