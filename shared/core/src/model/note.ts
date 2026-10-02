@@ -13,7 +13,16 @@ export const SurfaceKind = z.enum(["text", "canvas", "audio", "media"]);
 export type SurfaceKind = z.infer<typeof SurfaceKind>;
 
 /** What a note is primarily used for; drives templates and discovery. */
-export const NoteKind = z.enum(["note", "journal", "story", "article", "manga", "lesson", "plan"]);
+export const NoteKind = z.enum([
+  "note",
+  "journal",
+  "story",
+  "article",
+  "manga",
+  "comic",
+  "lesson",
+  "plan",
+]);
 export type NoteKind = z.infer<typeof NoteKind>;
 
 /** Metadata kept in the local database and mirrored into the Yjs document. */
