@@ -19,7 +19,7 @@ import {
 } from "@notables/ui";
 import { Link, useNavigate } from "@tanstack/react-router";
 import { motion } from "motion/react";
-import { useCallback, useState } from "react";
+import { useCallback, useRef, useState } from "react";
 import { getDeviceId } from "../../../platform/device-identity";
 import { saveNoteContent } from "../../../platform/storage/note-content-cache";
 import { AiAssist } from "../../ai/components/ai-assist";
@@ -33,6 +33,7 @@ import {
   useEntry,
   useLibraryReady,
 } from "../../library/store/library-store";
+import { ReadAloudButton } from "../../listening/components/read-aloud-button";
 import { PublishControl } from "../../publishing/components/publish-control";
 import { NoteRecorder } from "../../recording/components/note-recorder";
 import { usePreferences } from "../../settings/store/preferences-store";
@@ -67,6 +68,7 @@ function NoteEditorScreen({ entry, viewId }: { entry: LibraryEntry; viewId?: str
   const book = useBook(entry.bookId ?? "");
   const { noteFont } = usePreferences();
   const [recording, setRecording] = useState(false);
+  const articleRef = useRef<HTMLElement>(null);
   const startRecording = useCallback(() => setRecording(true), []);
 
   const onDocumentChange = useCallback(
@@ -125,6 +127,7 @@ function NoteEditorScreen({ entry, viewId }: { entry: LibraryEntry; viewId?: str
             >
               {statusLabel[status]}
             </StatusIndicator>
+            <ReadAloudButton root={articleRef} title={entry.title} />
             <AiAssist />
             <IconButton
               label={entry.pinned ? "Unpin" : "Pin"}
@@ -161,11 +164,15 @@ function NoteEditorScreen({ entry, viewId }: { entry: LibraryEntry; viewId?: str
         </header>
 
         <article
+          ref={articleRef}
           data-note-font={entry.font ?? noteFont}
           className="flex grow justify-center px-6 pt-6 pb-36 md:pt-11"
         >
           <div className="flex w-full max-w-[640px] flex-col gap-4">
-            <p className="text-center font-sans text-[12px] text-label-tertiary md:text-left md:text-[13px]">
+            <p
+              data-read-aloud-skip
+              className="text-center font-sans text-[12px] text-label-tertiary md:text-left md:text-[13px]"
+            >
               {formatFull(entry.createdAt)}
             </p>
             <div className="relative">

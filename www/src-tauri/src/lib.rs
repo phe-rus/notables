@@ -51,6 +51,7 @@ pub fn run() {
             transcription::commands::whisper_model_status,
             transcription::commands::whisper_download_model,
             transcription::commands::whisper_transcribe,
+            transcription::commands::whisper_transcribe_media,
             window_frame::window_frame,
         ])
         .setup(|app| {

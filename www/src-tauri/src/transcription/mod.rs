@@ -1,9 +1,11 @@
-//! On-device speech-to-text with whisper.cpp. Audio is decoded and
-//! resampled to 16 kHz mono in the WebView, sent here as raw samples, and
-//! transcribed on a worker thread. Nothing leaves the device except the
-//! one-time model download.
+//! On-device speech-to-text with whisper.cpp. Short recordings are decoded
+//! in the WebView and sent here as raw samples; long ones such as
+//! audiobooks are decoded here from their stored files, window by window.
+//! Transcription runs on a worker thread. Nothing leaves the device except
+//! the one-time model download.
 
 pub mod commands;
+mod decode;
 mod engine;
 mod error;
 mod model;

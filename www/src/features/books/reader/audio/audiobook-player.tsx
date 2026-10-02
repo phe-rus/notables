@@ -6,6 +6,7 @@ import {
   PauseIcon,
   PlayIcon,
   PreviousTrackIcon,
+  SegmentedControl,
   SkipBackIcon,
   SkipForwardIcon,
   SleepIcon,
@@ -14,10 +15,11 @@ import {
 import { Link } from "@tanstack/react-router";
 import { AnimatePresence, motion } from "motion/react";
 import { useEffect, useState } from "react";
+import { ReadAlong } from "../../../listening/components/read-along";
+import { useAudiobookSession } from "../../../listening/store/listening-store";
 import { BookCover } from "../../components/book-cover";
 import type { BookEntry } from "../../store/book-store";
-import { useBookContent } from "../use-book-content";
-import { type SleepTimer, SPEEDS, useAudiobook } from "./use-audiobook";
+import { type AudiobookPlayback, type SleepTimer, SPEEDS } from "./use-audiobook";
 
 const SLEEP_CHOICES: SleepTimer[] = [null, 15, 30, 60, "chapter"];
 
@@ -41,10 +43,16 @@ function sleepLabel(sleep: SleepTimer, sleepAt: number | null, now: number): str
  * chapter list, speed and a sleep timer. The cover tints the backdrop.
  */
 export function AudiobookPlayer({ book }: { book: BookEntry }) {
-  const chapters = useBookContent(book);
-  const player = useAudiobook(book, chapters, book.cover ?? null);
+  // Playback lives app-wide, so it carries on after this screen closes.
+  const player = useAudiobookSession(book.id);
+  if (!player) return <div className="fixed inset-0 bg-surface" />;
+  return <PlayerScreen book={book} player={player} />;
+}
+
+function PlayerScreen({ book, player }: { book: BookEntry; player: AudiobookPlayback }) {
   const cover = useMediaSource(book.cover ?? "");
   const [now, setNow] = useState(() => Date.now());
+  const [panel, setPanel] = useState<"chapters" | "words">("chapters");
 
   useEffect(() => {
     if (!player.sleepAt) return;
@@ -204,60 +212,74 @@ export function AudiobookPlayer({ book }: { book: BookEntry }) {
         </section>
 
         <section
-          aria-label="Chapters"
-          className="flex w-full max-w-[420px] flex-col lg:max-h-full lg:overflow-y-auto lg:pt-4"
+          aria-label={panel === "chapters" ? "Chapters" : "Read along"}
+          className="flex w-full max-w-[420px] flex-col gap-3 lg:max-h-full lg:overflow-y-auto lg:pt-4"
         >
-          <h2 className="px-3 pb-2 text-[13px] font-semibold text-label-secondary">Chapters</h2>
-          {chapters && player.tracks.length === 0 && (
-            <p className="px-3 text-[14px] text-label-secondary">
-              No recordings in this book on this device yet.
-            </p>
-          )}
-          <ol className="flex flex-col">
-            {player.tracks.map((entry, index) => {
-              const current = index === player.index;
-              return (
-                <li key={`${entry.chapter}-${entry.src}`}>
-                  <button
-                    type="button"
-                    aria-current={current ? "true" : undefined}
-                    onClick={() => (current ? player.toggle() : player.playTrack(index))}
-                    className={cn(
-                      "flex w-full items-center gap-3 rounded-[12px] px-3 py-2.5 text-left transition-colors",
-                      current ? "bg-fill/80" : "hover:bg-fill/50",
-                    )}
-                  >
-                    <span
-                      className={cn(
-                        "w-6 shrink-0 text-center text-[13px] tabular-nums",
-                        current ? "text-accent-text" : "text-label-tertiary",
-                      )}
-                    >
-                      {current && player.playing ? <Equalizer /> : index + 1}
-                    </span>
-                    <span
-                      className={cn(
-                        "min-w-0 grow truncate text-[15px]",
-                        current && "font-semibold",
-                      )}
-                    >
-                      {entry.title}
-                    </span>
-                    <span className="shrink-0 text-[13px] text-label-tertiary tabular-nums">
-                      {entry.durationMs ? clock(entry.durationMs / 1000) : ""}
-                    </span>
-                  </button>
-                </li>
-              );
-            })}
-          </ol>
-          {track?.transcript && (
-            <div className="mt-6 flex flex-col gap-2 px-3">
-              <h2 className="text-[13px] font-semibold text-label-secondary">Transcript</h2>
-              <p className="font-serif text-[16px] leading-relaxed whitespace-pre-line text-label">
-                {track.transcript}
-              </p>
-            </div>
+          <div className="px-3">
+            <SegmentedControl<"chapters" | "words">
+              label="Show"
+              value={panel}
+              onChange={setPanel}
+              options={[
+                { value: "chapters", label: "Chapters" },
+                { value: "words", label: "Read along" },
+              ]}
+            />
+          </div>
+          {panel === "words" && track ? (
+            <ReadAlong
+              src={track.src}
+              plainTranscript={track.transcript}
+              time={time}
+              playing={player.playing}
+              onSeek={player.seek}
+            />
+          ) : (
+            <>
+              {player.ready && player.tracks.length === 0 && (
+                <p className="px-3 text-[14px] text-label-secondary">
+                  No recordings in this book on this device yet.
+                </p>
+              )}
+              <ol className="flex flex-col">
+                {player.tracks.map((entry, index) => {
+                  const current = index === player.index;
+                  return (
+                    <li key={`${entry.chapter}-${entry.src}`}>
+                      <button
+                        type="button"
+                        aria-current={current ? "true" : undefined}
+                        onClick={() => (current ? player.toggle() : player.playTrack(index))}
+                        className={cn(
+                          "flex w-full items-center gap-3 rounded-[12px] px-3 py-2.5 text-left transition-colors",
+                          current ? "bg-fill/80" : "hover:bg-fill/50",
+                        )}
+                      >
+                        <span
+                          className={cn(
+                            "w-6 shrink-0 text-center text-[13px] tabular-nums",
+                            current ? "text-accent-text" : "text-label-tertiary",
+                          )}
+                        >
+                          {current && player.playing ? <Equalizer /> : index + 1}
+                        </span>
+                        <span
+                          className={cn(
+                            "min-w-0 grow truncate text-[15px]",
+                            current && "font-semibold",
+                          )}
+                        >
+                          {entry.title}
+                        </span>
+                        <span className="shrink-0 text-[13px] text-label-tertiary tabular-nums">
+                          {entry.durationMs ? clock(entry.durationMs / 1000) : ""}
+                        </span>
+                      </button>
+                    </li>
+                  );
+                })}
+              </ol>
+            </>
           )}
         </section>
       </div>

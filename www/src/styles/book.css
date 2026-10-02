@@ -161,3 +161,10 @@
 ::highlight(nt-highlight-pink) {
   background-color: rgb(242 155 191 / 0.45);
 }
+
+/* The sentence being read aloud, in books and notes. */
+::highlight(nt-reading) {
+  background-color: color-mix(in srgb, var(--color-accent) 26%, transparent);
+  text-decoration: underline 2px color-mix(in srgb, var(--color-accent) 70%, transparent);
+  text-underline-offset: 4px;
+}

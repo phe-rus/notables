@@ -1,7 +1,11 @@
-import { ChaptersIcon, CloseIcon, cn, HighlighterIcon } from "@notables/ui";
+import { ChaptersIcon, CloseIcon, cn, HeadphonesIcon, HighlighterIcon, toast } from "@notables/ui";
 import { Link } from "@tanstack/react-router";
-import { motion } from "motion/react";
+import { AnimatePresence, motion } from "motion/react";
 import { useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState } from "react";
+import { NarrationBar } from "../../listening/components/narration-bar";
+import { buildScript, type ScriptLine } from "../../listening/lib/narration-script";
+import { clearReading, paintReading, rangesForLine } from "../../listening/lib/reading-highlight";
+import { useNarration } from "../../listening/lib/use-narration";
 import { HighlightPalette } from "../highlights/components/highlight-palette";
 import { HighlightsPanel } from "../highlights/components/highlights-panel";
 import { highlightsSupported, rangesFor } from "../highlights/lib/paint-highlights";
@@ -51,6 +55,9 @@ export function BookReader({ book }: { book: BookEntry }) {
   const [highlighting, setHighlighting] = useState(false);
   const [listOpen, setListOpen] = useState(false);
   usePaintedHighlights(root, highlights);
+  const lang = document.documentElement.lang || navigator.language || "en";
+  const narration = useNarration(lang, book.title || "Book");
+  const script = useRef<ScriptLine[]>([]);
 
   useLayoutEffect(() => {
     const element = stage.current;
@@ -87,17 +94,69 @@ export function BookReader({ book }: { book: BookEntry }) {
 
   const label = positionLabel(page, total, geometry?.spread ?? false);
 
-  /** Turns to the page a highlight is on, measured in the off-screen flow. */
+  /** The page a range falls on, measured in the off-screen flow. */
+  const pageOf = useCallback(
+    (range: Range | undefined): number | null => {
+      const flowElement = measurer.current?.querySelector<HTMLElement>(".book-flow");
+      const rect = range?.getClientRects()[0];
+      if (!geometry || !flowElement || !rect) return null;
+      const column = geometry.textWidth + geometry.columnGap;
+      const index = Math.floor((rect.left - flowElement.getBoundingClientRect().left + 1) / column);
+      return Math.max(0, Math.min(index, total - 1));
+    },
+    [geometry, total],
+  );
+
+  /** Turns to the page a highlight is on. */
   const turnTo = (entry: HighlightEntry) => {
-    const container = measurer.current;
-    const flowElement = container?.querySelector<HTMLElement>(".book-flow");
-    const rect = container && rangesFor(container, entry)[0]?.getClientRects()[0];
     setListOpen(false);
-    if (!geometry || !flowElement || !rect) return;
-    const column = geometry.textWidth + geometry.columnGap;
-    const index = Math.floor((rect.left - flowElement.getBoundingClientRect().left + 1) / column);
-    setPage(Math.max(0, Math.min(index, total - 1)));
+    const container = measurer.current;
+    const index = container ? pageOf(rangesFor(container, entry)[0]) : null;
+    if (index !== null) setPage(index);
   };
+
+  /** Reads the book aloud from the page that's open. */
+  const listen = () => {
+    const flowElement = measurer.current?.querySelector(".book-flow");
+    if (!flowElement) return;
+    const lines = buildScript(flowElement, lang);
+    if (lines.length === 0) {
+      toast("Nothing to read aloud yet");
+      return;
+    }
+    const firstVisible = geometry?.spread ? Math.max(0, toSpread(page)) : Math.max(0, page);
+    const from = lines.findIndex((line) => {
+      const at = pageOf(measurer.current ? rangesForLine(measurer.current, line)[0] : undefined);
+      return at !== null && at >= firstVisible;
+    });
+    script.current = lines;
+    narration
+      .start(
+        lines.map((line) => line.text),
+        Math.max(0, from),
+      )
+      .catch((error: unknown) =>
+        toast.error("Couldn’t read aloud", {
+          description: error instanceof Error ? error.message : undefined,
+        }),
+      );
+  };
+
+  // Light up the sentence being read, and turn the page to keep up with it.
+  const readingIndex = narration.state?.index ?? -1;
+  useEffect(() => {
+    const line = script.current[readingIndex];
+    if (!line) {
+      clearReading();
+      return;
+    }
+    if (stage.current) paintReading(rangesForLine(stage.current, line));
+    const at = measurer.current ? pageOf(rangesForLine(measurer.current, line)[0]) : null;
+    if (at === null) return;
+    const visible = geometry?.spread ? [toSpread(page), toSpread(page) + 1] : [page];
+    if (!visible.includes(at)) setPage(at);
+  }, [readingIndex, geometry?.spread, page, pageOf, setPage]);
+  useEffect(() => clearReading, []);
 
   return (
     <div ref={root} className="book-desk fixed inset-0 flex flex-col">
@@ -119,6 +178,19 @@ export function BookReader({ book }: { book: BookEntry }) {
           >
             {total ? label : ""}
           </p>
+          <button
+            type="button"
+            aria-pressed={narration.state !== null}
+            aria-label="Read aloud"
+            data-tooltip="Read aloud"
+            onClick={() => (narration.state ? narration.close() : listen())}
+            className={cn(
+              "flex size-[34px] items-center justify-center rounded-full transition-colors",
+              narration.state ? "bg-accent text-on-accent" : "text-label hover:bg-fill",
+            )}
+          >
+            <HeadphonesIcon size={19} />
+          </button>
           {highlightsSupported() && (
             <button
               type="button"
@@ -205,6 +277,21 @@ export function BookReader({ book }: { book: BookEntry }) {
         chapters={chapters ?? []}
         onChoose={turnTo}
       />
+
+      <AnimatePresence>
+        {narration.state && (
+          <div className="pointer-events-none fixed inset-x-0 bottom-[calc(max(14px,env(safe-area-inset-bottom))+44px)] z-30 flex justify-center px-3">
+            <NarrationBar
+              className="pointer-events-auto"
+              state={narration.state}
+              lang={lang}
+              onToggle={narration.toggle}
+              onSeek={narration.seek}
+              onClose={narration.close}
+            />
+          </div>
+        )}
+      </AnimatePresence>
 
       <footer className="flex shrink-0 items-center gap-3 px-6 pt-2 pb-[max(14px,env(safe-area-inset-bottom))]">
         <label className="sr-only" htmlFor="book-progress">

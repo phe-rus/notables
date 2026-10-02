@@ -9,6 +9,7 @@ import { ReminderSettingsSection } from "../../calendar/components/reminder-sett
 import { sidebarIcons } from "../../library/components/library-sidebar";
 import { SidebarEditor } from "../../library/components/sidebar-editor";
 import { type NoteFont, noteFontLabels, noteFonts } from "../../library/model/note-fonts";
+import { ListeningSettingsSection } from "../../listening/components/listening-settings-section";
 import {
   type ListPreferences,
   type Preferences,
@@ -183,6 +184,8 @@ export function SettingsScreen({ onOpenSidebar }: { onOpenSidebar: () => void })
               />
             </SettingsRow>
           </SettingsGroup>
+
+          <ListeningSettingsSection />
 
           <ReminderSettingsSection />
 

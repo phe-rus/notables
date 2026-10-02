@@ -11,6 +11,7 @@ import { MotionConfig } from "motion/react";
 import { type ReactNode, useEffect } from "react";
 import { AppLinkListener } from "../components/app-links/app-link-listener";
 import { SplashScreen } from "../components/splash/splash-screen";
+import { ListeningSession } from "../features/listening/components/listening-session";
 import { resolveMediaUrl } from "../platform/storage/media-store";
 import { startWindowFrame } from "../platform/window-frame";
 import styles from "../styles/app.css?url";
@@ -60,7 +61,11 @@ function RootDocument({ children }: { children: ReactNode }) {
         {/* Respect the system's Reduce Motion setting everywhere. */}
         <MotionConfig reducedMotion="user">
           {/* Recordings and photos stored on this device play from local URLs. */}
-          <MediaResolverProvider resolve={resolveMediaUrl}>{children}</MediaResolverProvider>
+          <MediaResolverProvider resolve={resolveMediaUrl}>
+            {children}
+            {/* Audiobooks keep playing from page to page. */}
+            <ListeningSession />
+          </MediaResolverProvider>
           <Toaster />
           <DialogHost />
           <TooltipHost />

@@ -232,7 +232,7 @@ export function useAudiobook(
     return () => window.clearInterval(timer);
   }, [setSleepTimer, sleepAt]);
 
-  // Stop playing when the player closes.
+  // Stop playing when the listening session ends.
   useEffect(
     () => () => {
       audio.current?.pause();
@@ -295,6 +295,8 @@ export function useAudiobook(
   }, [duration, playing, speed, time]);
 
   return {
+    /** Chapters have loaded, so an empty track list really is empty. */
+    ready: chapters !== null,
     tracks,
     index: track ? index : -1,
     track,
@@ -312,3 +314,5 @@ export function useAudiobook(
     setSleepTimer,
   };
 }
+
+export type AudiobookPlayback = ReturnType<typeof useAudiobook>;

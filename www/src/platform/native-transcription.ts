@@ -29,7 +29,7 @@ async function recordingBlob(src: string): Promise<Blob> {
   return blob;
 }
 
-async function ensureModel(onProgress: (status: string) => void): Promise<void> {
+export async function ensureModel(onProgress: (status: string) => void): Promise<void> {
   const status = await invoke<ModelStatus>("whisper_model_status");
   if (status.downloaded) return;
   const consent = await confirmDialog({

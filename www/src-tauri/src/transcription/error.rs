@@ -12,6 +12,10 @@ pub enum TranscriptionError {
     Path(#[from] tauri::Error),
     #[error("audio must be 32-bit float samples")]
     InvalidAudio,
+    #[error("this audio format can't be read")]
+    UnsupportedAudio,
+    #[error("that recording isn't on this device")]
+    MediaMissing,
     #[error("transcription failed: {0}")]
     Whisper(#[from] whisper_rs::WhisperError),
     #[error("transcription was interrupted")]
