@@ -1,5 +1,6 @@
 import { localMediaId } from "@notables/core";
 import type { TranscriptionService } from "@notables/editor";
+import { confirmDialog, toast } from "@notables/ui";
 import { Channel, invoke } from "@tauri-apps/api/core";
 import { decodeForSpeech } from "../features/recording/lib/decode-audio";
 import { isTauri } from "./runtime";
@@ -31,17 +32,35 @@ async function recordingBlob(src: string): Promise<Blob> {
 async function ensureModel(onProgress: (status: string) => void): Promise<void> {
   const status = await invoke<ModelStatus>("whisper_model_status");
   if (status.downloaded) return;
-  const consent = window.confirm(
-    "Transcribe on this device?\n\nNotables will download the speech model once (about 140 MB). Your recordings never leave this device.",
-  );
+  const consent = await confirmDialog({
+    title: "Transcribe on this device?",
+    message:
+      "Notables downloads the speech model once (about 140 MB). Your recordings never leave this device.",
+    confirmLabel: "Download",
+  });
   if (!consent) throw new Error("Transcription needs the speech model.");
 
+  const toastId = toast.loading("Downloading the speech model…");
   const progress = new Channel<DownloadProgress>();
   progress.onmessage = ({ receivedBytes, totalBytes }) => {
     const percent = totalBytes ? Math.round((receivedBytes / totalBytes) * 100) : null;
-    onProgress(percent === null ? "Downloading model…" : `Downloading model… ${percent}%`);
+    const label = percent === null ? "Downloading model…" : `Downloading model… ${percent}%`;
+    onProgress(label);
+    toast.update(toastId, "loading", "Downloading the speech model…", {
+      description: percent === null ? undefined : `${percent}%`,
+    });
   };
-  await invoke("whisper_download_model", { onProgress: progress });
+  try {
+    await invoke("whisper_download_model", { onProgress: progress });
+    toast.update(toastId, "success", "Speech model ready", {
+      description: "Transcription now works offline.",
+    });
+  } catch (error) {
+    toast.update(toastId, "error", "Couldn’t download the speech model", {
+      description: "Check your connection and try again.",
+    });
+    throw error;
+  }
 }
 
 /** On-device Whisper in the native apps; null where it isn't available. */

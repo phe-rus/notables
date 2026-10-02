@@ -1,4 +1,13 @@
-import { Button, cn, GlobeIcon, IconButton, LinkIcon, Popover, useDismiss } from "@notables/ui";
+import {
+  Button,
+  cn,
+  GlobeIcon,
+  IconButton,
+  LinkIcon,
+  Popover,
+  toast,
+  useDismiss,
+} from "@notables/ui";
 import { useCallback, useId, useRef, useState } from "react";
 import type * as Y from "yjs";
 import { getAuthorName } from "../../../platform/author-preferences";
@@ -27,14 +36,27 @@ export function PublishControl({ entry, doc }: { entry: LibraryEntry; doc: Y.Doc
   const close = useCallback(() => setOpen(false), []);
   useDismiss(root, open, close);
 
-  const publish = () => publishAs(author);
+  const publish = async () => {
+    const wasPublished = published;
+    if (await publishAs(author)) {
+      toast.success(wasPublished ? "Publication updated" : "Published", {
+        description: wasPublished
+          ? "Readers now see this version."
+          : "Anyone with the link can read it.",
+      });
+    }
+  };
   const unpublish = async () => {
-    if (await remove()) setOpen(false);
+    if (await remove()) {
+      setOpen(false);
+      toast("Unpublished", { description: "The public link no longer works." });
+    }
   };
 
   const copy = async () => {
     if (!link) return;
     await navigator.clipboard.writeText(link);
+    toast.success("Link copied");
     setCopied(true);
     setTimeout(() => setCopied(false), 1600);
   };

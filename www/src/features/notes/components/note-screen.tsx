@@ -9,12 +9,14 @@ import type { SyncStatus } from "@notables/sync";
 import {
   Button,
   ChevronLeftIcon,
+  confirmDialog,
   IconButton,
   PinIcon,
   riseMotion,
   ShareIcon,
   StatusIndicator,
   TrashIcon,
+  toast,
 } from "@notables/ui";
 import { Link, useNavigate } from "@tanstack/react-router";
 import { motion } from "motion/react";
@@ -73,8 +75,15 @@ function NoteEditorScreen({ entry, viewId }: { entry: LibraryEntry; viewId?: str
   if (!provider) return null;
 
   const remove = async () => {
-    if (!window.confirm("Delete this note from this device?")) return;
+    const confirmed = await confirmDialog({
+      title: "Delete this note?",
+      message: "It will be removed from this device, with its photos and recordings.",
+      confirmLabel: "Delete",
+      destructive: true,
+    });
+    if (!confirmed) return;
     await deleteNote(entry.id);
+    toast("Note deleted", { description: entry.title || undefined });
     void navigate({ to: "/", search: (s) => s });
   };
 

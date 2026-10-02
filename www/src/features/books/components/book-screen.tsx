@@ -4,11 +4,13 @@ import {
   ChevronUpIcon,
   CloseIcon,
   cn,
+  confirmDialog,
   IconButton,
   PlusIcon,
   SearchField,
   spring,
   TrashIcon,
+  toast,
 } from "@notables/ui";
 import { Link, useNavigate } from "@tanstack/react-router";
 import { AnimatePresence, motion } from "motion/react";
@@ -41,9 +43,16 @@ function BookEditor({ book, actions }: { book: BookEntry; actions?: ReactNode })
     .map((id) => notesById.get(id))
     .filter((note): note is LibraryEntry => Boolean(note));
 
-  const remove = () => {
-    if (!window.confirm("Delete this book? Its chapters stay in your notes.")) return;
+  const remove = async () => {
+    const confirmed = await confirmDialog({
+      title: "Delete this book?",
+      message: "Its chapters stay in your notes.",
+      confirmLabel: "Delete",
+      destructive: true,
+    });
+    if (!confirmed) return;
     store.remove(book.id);
+    toast("Book deleted", { description: book.title || undefined });
     void navigate({ to: "/books" });
   };
 

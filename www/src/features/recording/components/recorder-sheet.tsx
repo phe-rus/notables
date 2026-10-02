@@ -1,5 +1,5 @@
 import type { TranscriptSegment } from "@notables/core";
-import { cn, PauseIcon, PlayIcon, spring } from "@notables/ui";
+import { cn, confirmDialog, PauseIcon, PlayIcon, spring } from "@notables/ui";
 import { AnimatePresence, motion } from "motion/react";
 import { useEffect, useRef, useSyncExternalStore } from "react";
 import { createPortal } from "react-dom";
@@ -83,8 +83,19 @@ function RecorderSession({ title, onCancel, onFinish }: Omit<RecorderSheetProps,
     transcriptEnd.current?.scrollIntoView({ block: "end", behavior: "smooth" });
   }, [transcription.segments.length, transcription.interim]);
 
-  const cancel = () => {
-    if (recorder.elapsedMs > 3000 && !window.confirm("Discard this recording?")) return;
+  const cancel = async () => {
+    if (
+      recorder.elapsedMs > 3000 &&
+      !(await confirmDialog({
+        title: "Discard this recording?",
+        message: "What you recorded won’t be saved.",
+        confirmLabel: "Discard",
+        cancelLabel: "Keep recording",
+        destructive: true,
+      }))
+    ) {
+      return;
+    }
     recorder.cancel();
     onCancel();
   };

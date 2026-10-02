@@ -1,4 +1,5 @@
 import { MediaResolverProvider } from "@notables/editor";
+import { DialogHost, Toaster } from "@notables/ui";
 import { createRootRoute, HeadContent, Outlet, Scripts } from "@tanstack/react-router";
 import { MotionConfig } from "motion/react";
 import type { ReactNode } from "react";
@@ -47,6 +48,8 @@ function RootDocument({ children }: { children: ReactNode }) {
         <MotionConfig reducedMotion="user">
           {/* Recordings and photos stored on this device play from local URLs. */}
           <MediaResolverProvider resolve={resolveMediaUrl}>{children}</MediaResolverProvider>
+          <Toaster />
+          <DialogHost />
         </MotionConfig>
         <Scripts />
       </body>
