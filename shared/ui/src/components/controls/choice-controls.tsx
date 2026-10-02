@@ -18,7 +18,7 @@ export function SegmentedControl<T extends string>({
 }) {
   const id = useId();
   return (
-    <fieldset className="flex rounded-[10px] bg-fill p-[3px]">
+    <fieldset className="flex rounded-[11px] bg-fill p-[3px] shadow-[inset_0_1px_2px_rgb(40_30_0/0.06)]">
       <legend className="sr-only">{label}</legend>
       {options.map((option) => {
         const selected = option.value === value;
@@ -27,7 +27,9 @@ export function SegmentedControl<T extends string>({
             key={option.value}
             className={cn(
               "relative isolate min-w-[64px] flex-1 cursor-pointer rounded-[8px] px-3 py-1 text-center text-[13px] whitespace-nowrap transition-colors has-[:focus-visible]:ring-2 has-[:focus-visible]:ring-accent/60",
-              selected ? "font-semibold text-label" : "text-label-secondary hover:text-label",
+              selected
+                ? "font-semibold text-label"
+                : "font-medium text-label-secondary hover:text-label",
             )}
           >
             <input
@@ -41,7 +43,7 @@ export function SegmentedControl<T extends string>({
             {selected && (
               <motion.span
                 layoutId={`segment-${id}`}
-                className="absolute inset-0 -z-10 rounded-[8px] bg-elevated shadow-[0_1px_3px_rgba(0,0,0,0.12)]"
+                className="absolute inset-0 -z-10 rounded-[8px] bg-elevated shadow-[0_0_0_0.5px_rgb(0_0_0/0.06),0_1px_2px_rgb(0_0_0/0.08),0_3px_8px_-2px_rgb(0_0_0/0.10)]"
                 transition={spring.snappy}
               />
             )}
@@ -70,14 +72,16 @@ export function Switch({
       aria-label={label}
       onClick={() => onChange(!checked)}
       className={cn(
-        "flex h-[28px] w-[46px] items-center rounded-full p-[2px] transition-colors duration-normal",
-        checked ? "justify-end bg-accent" : "justify-start bg-fill",
+        "group/switch flex h-[30px] w-[50px] shrink-0 items-center rounded-full p-[2px] transition-colors duration-normal",
+        "shadow-[inset_0_1px_2px_rgb(0_0_0/0.10)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent/70 focus-visible:ring-offset-2 focus-visible:ring-offset-background",
+        checked ? "justify-end bg-accent" : "justify-start bg-separator/80",
       )}
     >
+      {/* The thumb stretches while pressed, as on iOS. */}
       <motion.span
         layout
         transition={spring.snappy}
-        className="size-6 rounded-full bg-white shadow-[0_2px_6px_rgba(0,0,0,0.2)]"
+        className="h-[26px] w-[26px] rounded-full bg-white shadow-[0_0_0_0.5px_rgb(0_0_0/0.04),0_2px_4px_rgb(0_0_0/0.16),0_3px_8px_rgb(0_0_0/0.10)] transition-[width] duration-fast group-active/switch:w-[32px]"
       />
     </button>
   );

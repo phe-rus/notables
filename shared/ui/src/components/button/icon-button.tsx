@@ -19,10 +19,11 @@ export const IconButton = forwardRef<HTMLButtonElement, IconButtonProps>(functio
       aria-label={label}
       data-tooltip={label}
       className={cn(
-        "group inline-flex shrink-0 items-center justify-center rounded-full transition-[background-color,transform] duration-fast ease-standard active:scale-[0.94] disabled:opacity-40",
-        size === "sm" ? "size-[34px]" : "size-11",
-        tone === "default" && "text-label hover:bg-fill",
-        tone === "accent" && "text-accent-text hover:bg-fill",
+        "group inline-flex shrink-0 items-center justify-center rounded-full transition-[background-color,color,transform] duration-fast ease-standard active:scale-[0.92] disabled:opacity-40",
+        "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent/70",
+        size === "sm" ? "size-9" : "size-11",
+        tone === "default" && "text-label-secondary hover:bg-fill/80 hover:text-label",
+        tone === "accent" && "text-accent-text hover:bg-accent-soft",
         tone === "inverse" && "text-on-inverse hover:bg-white/10",
         className,
       )}
