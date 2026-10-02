@@ -354,6 +354,11 @@ export const en = {
       one: "{count} year",
       other: "{count} years",
     },
+    quickAdd: "Type It…",
+    quickAddPlaceholder: "Lunch with Ana Friday 1pm",
+    quickAddHint:
+      "Write it as you’d say it: a day, a time, “for 2h”, “every week”, “remind me to”. Read in English for now.",
+    addedQuick: "Added to your calendar",
     done: "Done",
     jumpTo: "Go to a year",
     observance: "Observance",

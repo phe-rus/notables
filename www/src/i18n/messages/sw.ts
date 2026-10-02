@@ -355,6 +355,11 @@ export const sw: Messages = {
       one: "Mwaka {count}",
       other: "Miaka {count}",
     },
+    quickAdd: "Iandike…",
+    quickAddPlaceholder: "Lunch with Ana Friday 1pm",
+    quickAddHint:
+      "Andika kama ungesema: siku, saa, “for 2h”, “every week”, “remind me to”. Kwa sasa inasomwa kwa Kiingereza.",
+    addedQuick: "Imeongezwa kwenye kalenda yako",
     done: "Imekamilika",
     jumpTo: "Nenda kwenye mwaka",
     observance: "Maadhimisho",

@@ -353,6 +353,11 @@ export const pt: Messages = {
       one: "{count} ano",
       other: "{count} anos",
     },
+    quickAdd: "Escrever…",
+    quickAddPlaceholder: "Lunch with Ana Friday 1pm",
+    quickAddHint:
+      "Escreva como você diria: um dia, uma hora, “for 2h”, “every week”, “remind me to”. Lido em inglês por enquanto.",
+    addedQuick: "Adicionado ao seu calendário",
     done: "Feito",
     jumpTo: "Ir para um ano",
     observance: "Data comemorativa",

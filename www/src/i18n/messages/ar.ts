@@ -383,6 +383,11 @@ export const ar: Messages = {
       one: "سنة واحدة",
       other: "{count} سنوات",
     },
+    quickAdd: "اكتبه…",
+    quickAddPlaceholder: "Lunch with Ana Friday 1pm",
+    quickAddHint:
+      "اكتبه كما تقوله: يوم ووقت و«for 2h» و«every week» و«remind me to». يُقرأ بالإنجليزية حاليًا.",
+    addedQuick: "أُضيف إلى تقويمك",
     done: "منجز",
     jumpTo: "الانتقال إلى سنة",
     observance: "مناسبة",

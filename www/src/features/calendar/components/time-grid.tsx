@@ -20,7 +20,20 @@ import { formatClock } from "../lib/describe-alert";
 import { eventTitle, kindIcons, minutesOf, timeOf } from "../lib/event-display";
 import { getCalendarStore } from "../store/calendar-store";
 
-const HOUR = 52;
+/** How tall an hour is, from packed to roomy; pinching moves between them. */
+const HOUR_MIN = 28;
+const HOUR_MAX = 160;
+const HOUR_DEFAULT = 52;
+const HOUR_KEY = "notables:calendar-hour";
+
+function storedHour(): number {
+  try {
+    const value = Number(localStorage.getItem(HOUR_KEY));
+    return value >= HOUR_MIN && value <= HOUR_MAX ? value : HOUR_DEFAULT;
+  } catch {
+    return HOUR_DEFAULT;
+  }
+}
 const SNAP = 15;
 const DAY_MINUTES = 24 * 60;
 
@@ -70,6 +83,65 @@ export function TimeGrid({
   const columns = useRef<HTMLDivElement>(null);
   const [now, setNow] = useState(() => new Date());
   const [drag, setDrag] = useState<Drag | null>(null);
+  const [hourHeight, setHourHeight] = useState(storedHour);
+
+  // Pinch to zoom the hours: a trackpad pinch arrives as a ctrl+wheel, a
+  // phone's as two fingers. The time under the pinch stays where it was.
+  useEffect(() => {
+    const element = scroller.current;
+    if (!element) return;
+    let height = hourHeight;
+    const zoom = (factor: number, anchorY: number) => {
+      const next = Math.min(HOUR_MAX, Math.max(HOUR_MIN, height * factor));
+      if (next === height) return;
+      const rect = element.getBoundingClientRect();
+      const minutes = ((element.scrollTop + anchorY - rect.top) / height) * 60;
+      height = next;
+      setHourHeight(next);
+      requestAnimationFrame(() => {
+        element.scrollTop = (minutes / 60) * next - (anchorY - rect.top);
+      });
+      try {
+        localStorage.setItem(HOUR_KEY, String(Math.round(next)));
+      } catch {
+        // Remembered for this session.
+      }
+    };
+    const onWheel = (event: WheelEvent) => {
+      if (!event.ctrlKey) return;
+      event.preventDefault();
+      zoom(Math.exp(-event.deltaY * 0.01), event.clientY);
+    };
+    let pinch: number | null = null;
+    const distance = (touches: TouchList) => {
+      const [a, b] = [touches[0], touches[1]];
+      return a && b ? Math.hypot(a.clientX - b.clientX, a.clientY - b.clientY) : 0;
+    };
+    const onTouchStart = (event: TouchEvent) => {
+      if (event.touches.length === 2) pinch = distance(event.touches);
+    };
+    const onTouchMove = (event: TouchEvent) => {
+      if (pinch === null || event.touches.length !== 2) return;
+      event.preventDefault();
+      const now = distance(event.touches);
+      const [a, b] = [event.touches[0], event.touches[1]];
+      if (pinch > 0 && a && b) zoom(now / pinch, (a.clientY + b.clientY) / 2);
+      pinch = now;
+    };
+    const onTouchEnd = () => {
+      pinch = null;
+    };
+    element.addEventListener("wheel", onWheel, { passive: false });
+    element.addEventListener("touchstart", onTouchStart, { passive: true });
+    element.addEventListener("touchmove", onTouchMove, { passive: false });
+    element.addEventListener("touchend", onTouchEnd);
+    return () => {
+      element.removeEventListener("wheel", onWheel);
+      element.removeEventListener("touchstart", onTouchStart);
+      element.removeEventListener("touchmove", onTouchMove);
+      element.removeEventListener("touchend", onTouchEnd);
+    };
+  }, []);
   const first = days[0] ?? today;
   const last = days.at(-1) ?? today;
 
@@ -81,7 +153,7 @@ export function TimeGrid({
   // Open on the working day, or an hour before now when today is shown.
   useEffect(() => {
     const hour = days.includes(today) ? Math.max(0, now.getHours() - 1) : 7;
-    scroller.current?.scrollTo({ top: hour * HOUR });
+    scroller.current?.scrollTo({ top: hour * hourHeight });
   }, [first]);
 
   const occurrences = useMemo(
@@ -124,7 +196,7 @@ export function TimeGrid({
     });
   };
 
-  const snapMinutes = (dy: number) => Math.round((dy / HOUR) * (60 / SNAP)) * SNAP;
+  const snapMinutes = (dy: number) => Math.round((dy / hourHeight) * (60 / SNAP)) * SNAP;
   const dayShift = (dx: number) => (days.length > 1 ? Math.round(dx / columnWidth()) : 0);
 
   const onPointerMove = (pointer: ReactPointerEvent) => {
@@ -157,7 +229,7 @@ export function TimeGrid({
 
   const createAt = (pointer: React.MouseEvent<HTMLDivElement>, day: Day) => {
     const rect = pointer.currentTarget.getBoundingClientRect();
-    const minutes = Math.floor(((pointer.clientY - rect.top) / HOUR) * (60 / 30)) * 30;
+    const minutes = Math.floor(((pointer.clientY - rect.top) / hourHeight) * (60 / 30)) * 30;
     onCreate(day, timeOf(minutes));
   };
 
@@ -226,13 +298,13 @@ export function TimeGrid({
       )}
 
       <div ref={scroller} className="relative min-h-0 grow overflow-y-auto">
-        <div className="relative flex" style={{ height: 24 * HOUR }}>
+        <div className="relative flex" style={{ height: 24 * hourHeight }}>
           <div className="w-14 shrink-0">
             {Array.from({ length: 24 }, (_, hour) => (
               <span
                 key={hour}
                 className="absolute w-12 pe-2 text-end text-[11px] text-label-tertiary tabular-nums"
-                style={{ top: hour * HOUR - 7 }}
+                style={{ top: hour * hourHeight - 7 }}
               >
                 {hour === 0 ? "" : hourLabel(hour)}
               </span>
@@ -250,7 +322,7 @@ export function TimeGrid({
               <span
                 key={hour}
                 className="pointer-events-none absolute inset-x-0 border-t border-separator/60"
-                style={{ top: hour * HOUR }}
+                style={{ top: hour * hourHeight }}
               />
             ))}
             {days.map((day) => (
@@ -280,10 +352,10 @@ export function TimeGrid({
                     dragging?.mode === "move" && event.repeat === "never"
                       ? dayShift(dragging.dx)
                       : 0;
-                  const top = ((block.start + move) / 60) * HOUR;
+                  const top = ((block.start + move) / 60) * hourHeight;
                   const height = Math.max(
                     20,
-                    (Math.max(SNAP, block.end - block.start + grow) / 60) * HOUR - 2,
+                    (Math.max(SNAP, block.end - block.start + grow) / 60) * hourHeight - 2,
                   );
                   const done = event.kind === "reminder" && isDone(event, day);
                   return (
@@ -348,7 +420,7 @@ export function TimeGrid({
                 {day === today && (
                   <span
                     className="pointer-events-none absolute inset-x-0 z-30 flex items-center"
-                    style={{ top: (nowMinutes / 60) * HOUR }}
+                    style={{ top: (nowMinutes / 60) * hourHeight }}
                   >
                     <span className="-ms-1 size-2 rounded-full bg-danger" />
                     <span className="h-[1.5px] grow bg-danger" />

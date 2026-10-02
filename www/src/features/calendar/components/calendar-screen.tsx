@@ -38,19 +38,20 @@ import {
   useHolidaySettings,
   useHolidays,
 } from "../lib/holidays";
-import { firstWeekday, monthGrid } from "../lib/month-grid";
+import { firstWeekday } from "../lib/month-grid";
 import { getCalendarStore, useCalendarEvents } from "../store/calendar-store";
 import { byStart, DayAgenda } from "./day-agenda";
 import type { EventTarget } from "./event-form";
 import { EventSheet } from "./event-sheet";
 import { MonthView } from "./month-view";
+import { QuickAddSheet } from "./quick-add-sheet";
 import { TimeGrid } from "./time-grid";
 import { YearView } from "./year-view";
 
 export type CalendarView = "day" | "week" | "month" | "year" | "years";
 export const calendarViews: readonly CalendarView[] = ["day", "week", "month", "year", "years"];
 /** The Years view runs from here to a few years ahead of now. */
-const YEARS_FROM = 1900;
+const YEARS_FROM = 1990;
 const YEARS_AHEAD = 5;
 
 const clampDay = (day: Day): Day =>
@@ -90,6 +91,7 @@ export function CalendarScreen({
   const [target, setTarget] = useState<EventTarget | null>(null);
   // Which way the last change of view went, so the new one grows in or settles back.
   const [zoom, setZoom] = useState<"in" | "out" | null>(null);
+  const [typing, setTyping] = useState(false);
 
   // Keep "today" right across midnight.
   useEffect(() => {
@@ -100,6 +102,7 @@ export function CalendarScreen({
   const depth: Record<CalendarView, number> = { years: 0, year: 1, month: 2, week: 3, day: 4 };
   const zoomTo = (day: Day, next: CalendarView) => {
     setZoom(depth[next] > depth[view] ? "in" : depth[next] < depth[view] ? "out" : null);
+    setJumps((count) => count + 1);
     go(day, next);
   };
 
@@ -115,34 +118,22 @@ export function CalendarScreen({
   const year = Number(selected.slice(0, 4));
   const month = Number(selected.slice(5, 7)) - 1;
   const weekFirst = addDaysTo(selected, -((weekday(selected) - weekStart + 7) % 7));
-  const weeks = useMemo(() => monthGrid(year, month, weekStart), [year, month, weekStart]);
-  const range: [Day, Day] =
-    view === "day"
-      ? [selected, selected]
-      : view === "week"
-        ? [weekFirst, addDaysTo(weekFirst, 6)]
-        : view === "month"
-          ? [weeks[0]?.[0] ?? selected, weeks.at(-1)?.at(-1) ?? selected]
-          : [dayInMonth(year, 0, 1), dayInMonth(year, 11, 31)];
-  const holidays = useHolidays(range[0], range[1]);
+  // The chosen day's holidays, for the agenda beside the calendar.
+  const holidays = useHolidays(selected, selected);
 
-  const byDay = useMemo(() => {
-    const map = new Map<Day, CalendarEvent[]>();
-    if (view !== "month") return map;
-    for (const event of events) {
-      for (const occurrence of occurrencesTouching(event, range[0], range[1])) {
-        for (let on = occurrence.start; on <= occurrence.end; on = addDaysTo(on, 1)) {
-          map.set(on, [...(map.get(on) ?? []), event]);
-        }
-      }
-    }
-    for (const list of map.values()) list.sort(byStart);
-    return map;
-  }, [events, view, range[0], range[1]]);
-
-  // In the Year view the title follows the year scrolled to.
+  // In Year and Month the title follows what the scroll has reached.
   const [scrolledYear, setScrolledYear] = useState(year);
-  useEffect(() => setScrolledYear(year), [year]);
+  const [scrolledMonth, setScrolledMonth] = useState(month);
+  useEffect(() => {
+    setScrolledYear(year);
+    setScrolledMonth(month);
+  }, [year, month]);
+  const onVisibleMonth = useCallback((y: number, m: number) => {
+    setScrolledYear(y);
+    setScrolledMonth(m);
+  }, []);
+  // Arrows, Today and zooming jump the scrolling views; choosing a day doesn't.
+  const [jumps, setJumps] = useState(0);
 
   const dayEvents = useMemo(
     () =>
@@ -153,17 +144,13 @@ export function CalendarScreen({
   );
 
   const shift = (direction: 1 | -1) => {
+    setJumps((count) => count + 1);
     if (view === "day") go(addDaysTo(selected, direction));
     else if (view === "week") go(addDaysTo(selected, direction * 7));
-    else if (view === "month")
-      go(
-        dayInMonth(
-          year + Math.floor((month + direction) / 12),
-          (month + direction + 12) % 12,
-          Number(selected.slice(8)),
-        ),
-      );
-    else go(dayInMonth(year + direction, month, Number(selected.slice(8))));
+    else if (view === "month") {
+      const next = scrolledMonth + direction;
+      go(dayInMonth(scrolledYear + Math.floor(next / 12), (next + 12) % 12, 1));
+    } else go(dayInMonth(year + direction, month, Number(selected.slice(8))));
   };
 
   const add = (kind: CalendarEventKind, day: Day = selected, time?: string | null) =>
@@ -197,7 +184,11 @@ export function CalendarScreen({
         ? String(scrolledYear)
         : view === "day"
           ? format({ day: "numeric", month: "long", year: "numeric" }).format(asDate(selected))
-          : format({ month: "long", year: "numeric" }).format(asDate(selected));
+          : view === "month"
+            ? format({ month: "long", year: "numeric" }).format(
+                asDate(dayInMonth(scrolledYear, scrolledMonth, 1)),
+              )
+            : format({ month: "long", year: "numeric" }).format(asDate(selected));
 
   // Apple's way through time: the title zooms out a level, a tap zooms back in.
   const outer: Record<CalendarView, CalendarView | null> = {
@@ -239,7 +230,9 @@ export function CalendarScreen({
                 outer[view]
                   ? () =>
                       zoomTo(
-                        view === "year" ? dayInMonth(scrolledYear, month, 1) : selected,
+                        view === "year" || view === "month"
+                          ? dayInMonth(scrolledYear, scrolledMonth, 1)
+                          : selected,
                         outer[view] as CalendarView,
                       )
                   : null
@@ -275,16 +268,16 @@ export function CalendarScreen({
               tone="accent"
               onClick={(event) => {
                 const rect = event.currentTarget.getBoundingClientRect();
-                openContextMenu(
-                  rect.right - 220,
-                  rect.bottom + 6,
-                  (
+                openContextMenu(rect.right - 220, rect.bottom + 6, [
+                  { label: t("calendar.quickAdd"), onSelect: () => setTyping(true) },
+                  "divider" as const,
+                  ...(
                     ["plan", "reminder", "birthday", "anniversary", "deadline", "trip"] as const
                   ).map((kind) => ({
                     label: t(`calendar.newOf.${kind}`),
                     onSelect: () => add(kind),
                   })),
-                );
+                ]);
               }}
             >
               <PlusIcon size={20} strokeWidth={2} />
@@ -295,7 +288,7 @@ export function CalendarScreen({
 
       <div className="flex min-h-0 grow flex-col overflow-y-auto md:flex-row md:overflow-hidden">
         <motion.div
-          key={`${view}:${view === "years" ? pageStart : view === "year" ? year : view === "month" ? selected.slice(0, 7) : weekFirst}`}
+          key={`${view}:${view === "day" || view === "week" ? weekFirst : jumps}`}
           initial={{ opacity: 0, scale: zoom === "in" ? 0.94 : zoom === "out" ? 1.06 : 1 }}
           animate={{ opacity: 1, scale: 1 }}
           transition={spring.smooth}
@@ -320,16 +313,15 @@ export function CalendarScreen({
             />
           ) : view === "month" ? (
             <MonthView
-              weeks={weeks}
+              year={year}
               month={month}
               today={today}
               selected={selected}
               weekStart={weekStart}
-              byDay={byDay}
-              holidays={holidays}
+              events={events}
               onDay={(day) => go(day)}
               onZoomIn={(day) => zoomTo(day, "day")}
-              onSwipe={shift}
+              onVisibleMonth={onVisibleMonth}
             />
           ) : (
             <TimeGrid
@@ -356,6 +348,12 @@ export function CalendarScreen({
       </div>
 
       <EventSheet target={target} onClose={() => setTarget(null)} />
+      <QuickAddSheet
+        open={typing}
+        today={today}
+        onClose={() => setTyping(false)}
+        onAdded={(day) => zoomTo(day, view === "year" || view === "years" ? "month" : view)}
+      />
     </div>
   );
 }

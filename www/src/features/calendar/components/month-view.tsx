@@ -1,48 +1,137 @@
-import type { CalendarEvent, Day } from "@notables/core";
-import { cn, spring } from "@notables/ui";
-import { motion } from "motion/react";
-import { t } from "../../../i18n/i18n";
+import {
+  addDaysTo,
+  type CalendarEvent,
+  type Day,
+  dayInMonth,
+  FIRST_YEAR,
+  LAST_YEAR,
+  occurrencesTouching,
+} from "@notables/core";
+import { cn } from "@notables/ui";
+import { useLayoutEffect, useMemo, useRef, useState } from "react";
+import { locale, t } from "../../../i18n/i18n";
 import { formatClock } from "../lib/describe-alert";
 import { eventTitle } from "../lib/event-display";
-import type { Holiday } from "../lib/holidays";
-import { weekdayNames } from "../lib/month-grid";
+import { type Holiday, useHolidays } from "../lib/holidays";
+import { monthGrid, weekdayNames } from "../lib/month-grid";
+import { byStart } from "./day-agenda";
 
 const MAX_PILLS = 3;
+/** Months kept either side of the one in view; more join near the ends. */
+const AROUND = 3;
+const EDGE = 500;
+const FIRST_MONTH = FIRST_YEAR * 12;
+const LAST_MONTH = LAST_YEAR * 12 + 11;
+
+/** A month counted from year 0, so months add and subtract as plain numbers. */
+const monthIndex = (year: number, month: number) => year * 12 + month;
+const yearOf = (index: number) => Math.floor(index / 12);
+
+const monthName = (index: number, withYear: boolean) =>
+  new Intl.DateTimeFormat(locale(), {
+    month: "long",
+    ...(withYear ? { year: "numeric" } : {}),
+    timeZone: "UTC",
+  }).format(new Date(`${dayInMonth(yearOf(index), index % 12, 1)}T00:00:00Z`));
 
 /**
- * A month as six weeks of days. Larger screens list what's on each day;
- * phones show a dot per event. Swipe sideways to change month.
+ * Months one after another, as in Apple's Month view: each starts on its
+ * own row under its name, the past above and the future below. Larger
+ * screens list what's on each day; phones show a dot per event.
  */
 export function MonthView({
-  weeks,
+  year,
   month,
   today,
   selected,
   weekStart,
+  events,
   onDay,
   onZoomIn,
-  byDay,
-  holidays,
-  onSwipe,
+  onVisibleMonth,
 }: {
-  weeks: Day[][];
-  /** 0-based month shown, to fade days from its neighbours. */
+  year: number;
+  /** 0-based month to open on. */
   month: number;
   today: Day;
   selected: Day;
   weekStart: number;
+  events: CalendarEvent[];
   onDay: (day: Day) => void;
   /** Double-click: into that day's hours. */
   onZoomIn: (day: Day) => void;
-  byDay: Map<Day, CalendarEvent[]>;
-  holidays: Map<Day, Holiday[]>;
-  onSwipe: (direction: 1 | -1) => void;
+  /** The month the scroll has reached, for the title. */
+  onVisibleMonth: (year: number, month: number) => void;
 }) {
+  const scroller = useRef<HTMLDivElement>(null);
+  const start = monthIndex(year, month);
+  const [range, setRange] = useState(() => ({
+    first: Math.max(FIRST_MONTH, start - AROUND),
+    last: Math.min(LAST_MONTH, start + AROUND),
+  }));
+  const before = useRef<number | null>(null);
+  const shown = useRef(start);
+
+  // Start on the chosen month.
+  useLayoutEffect(() => {
+    scroller.current?.querySelector(`[data-month="${start}"]`)?.scrollIntoView({ block: "start" });
+  }, []);
+
+  // Months added above keep the view where it was.
+  useLayoutEffect(() => {
+    const element = scroller.current;
+    if (element && before.current !== null) {
+      element.scrollTop += element.scrollHeight - before.current;
+      before.current = null;
+    }
+  }, [range.first]);
+
+  const onScroll = () => {
+    const element = scroller.current;
+    if (!element) return;
+    if (element.scrollTop < EDGE && range.first > FIRST_MONTH && before.current === null) {
+      before.current = element.scrollHeight;
+      setRange((r) => ({ ...r, first: Math.max(FIRST_MONTH, r.first - AROUND) }));
+    } else if (
+      element.scrollHeight - element.scrollTop - element.clientHeight < EDGE &&
+      range.last < LAST_MONTH
+    ) {
+      setRange((r) => ({ ...r, last: Math.min(LAST_MONTH, r.last + AROUND) }));
+    }
+    const top = element.getBoundingClientRect().top + 60;
+    let current = range.first;
+    for (const heading of element.querySelectorAll<HTMLElement>("[data-month]")) {
+      if (heading.getBoundingClientRect().top <= top) current = Number(heading.dataset.month);
+    }
+    if (current !== shown.current) {
+      shown.current = current;
+      onVisibleMonth(yearOf(current), current % 12);
+    }
+  };
+
+  const from = dayInMonth(yearOf(range.first), range.first % 12, 1);
+  const to = dayInMonth(yearOf(range.last), range.last % 12, 31);
+  const holidays = useHolidays(from, to);
+  const byDay = useMemo(() => {
+    const map = new Map<Day, CalendarEvent[]>();
+    for (const event of events) {
+      for (const occurrence of occurrencesTouching(event, from, to)) {
+        for (let on = occurrence.start; on <= occurrence.end; on = addDaysTo(on, 1)) {
+          map.set(on, [...(map.get(on) ?? []), event]);
+        }
+      }
+    }
+    for (const list of map.values()) list.sort(byStart);
+    return map;
+  }, [events, from, to]);
+
   const names = weekdayNames(weekStart);
   const narrow = weekdayNames(weekStart, "narrow");
+  const thisYear = Number(today.slice(0, 4));
+
   return (
     <div className="flex min-h-0 grow flex-col">
-      <div className="grid grid-cols-7 px-2 pb-1.5 md:px-4">
+      <div className="grid grid-cols-7 border-b border-separator/60 px-2 pb-1.5 md:px-4">
         {names.map((name, index) => (
           <span
             key={name}
@@ -53,38 +142,59 @@ export function MonthView({
           </span>
         ))}
       </div>
-      <motion.div
-        className="grid grow touch-pan-y grid-rows-6 px-2 md:px-4 md:pb-4"
-        drag="x"
-        dragConstraints={{ left: 0, right: 0 }}
-        dragElastic={0.18}
-        dragSnapToOrigin
-        transition={spring.smooth}
-        onDragEnd={(_, info) => {
-          if (Math.abs(info.offset.x) > 60) onSwipe(info.offset.x < 0 ? 1 : -1);
-        }}
+      <div
+        ref={scroller}
+        onScroll={onScroll}
+        className="min-h-0 grow overflow-y-auto px-2 [overflow-anchor:none] md:px-4 md:pb-4"
       >
-        {weeks.map((week) => (
-          <div
-            key={week[0]}
-            className="grid min-h-[52px] grid-cols-7 md:min-h-[92px] md:border-t md:border-separator/60"
-          >
-            {week.map((day) => (
-              <DayCell
-                key={day}
-                day={day}
-                outside={Number(day.slice(5, 7)) - 1 !== month}
-                isToday={day === today}
-                isSelected={day === selected}
-                events={byDay.get(day) ?? []}
-                holidays={holidays.get(day) ?? []}
-                onSelect={() => onDay(day)}
-                onZoomIn={() => onZoomIn(day)}
-              />
-            ))}
-          </div>
-        ))}
-      </motion.div>
+        {Array.from({ length: range.last - range.first + 1 }, (_, i) => range.first + i).map(
+          (index) => {
+            const y = yearOf(index);
+            const m = index % 12;
+            const weeks = monthGrid(y, m, weekStart).filter((week) =>
+              week.some((day) => Number(day.slice(5, 7)) - 1 === m),
+            );
+            const isThisMonth = today.startsWith(dayInMonth(y, m, 1).slice(0, 7));
+            return (
+              <section key={index} aria-label={monthName(index, true)} className="pb-2">
+                <h2
+                  data-month={index}
+                  className={cn(
+                    "pt-4 pb-1.5 text-[20px] font-bold tracking-tight md:text-[22px]",
+                    isThisMonth && "text-accent-text",
+                  )}
+                >
+                  {monthName(index, y !== thisYear)}
+                </h2>
+                {weeks.map((week) => (
+                  <div
+                    key={week[0]}
+                    className="grid min-h-[52px] grid-cols-7 md:min-h-[92px] md:border-t md:border-separator/60"
+                  >
+                    {week.map((day) =>
+                      Number(day.slice(5, 7)) - 1 === m ? (
+                        <DayCell
+                          key={day}
+                          day={day}
+                          outside={false}
+                          isToday={day === today}
+                          isSelected={day === selected}
+                          events={byDay.get(day) ?? []}
+                          holidays={holidays.get(day) ?? []}
+                          onSelect={() => onDay(day)}
+                          onZoomIn={() => onZoomIn(day)}
+                        />
+                      ) : (
+                        <span key={day} />
+                      ),
+                    )}
+                  </div>
+                ))}
+              </section>
+            );
+          },
+        )}
+      </div>
     </div>
   );
 }
