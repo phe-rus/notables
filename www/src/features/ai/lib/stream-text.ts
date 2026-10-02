@@ -1,5 +1,6 @@
 import Anthropic from "@anthropic-ai/sdk";
 import type { AiProvider } from "../model/providers";
+import type { ModelOption } from "./model-choices";
 
 /**
  * Sends one writing request to the chosen provider and streams the reply.
@@ -222,13 +223,15 @@ async function streamOpenRouter({
 
 /* Models */
 
-/** The models a key can use, newest first where the provider says. */
-export async function listModels(provider: AiProvider, apiKey: string): Promise<string[]> {
+/** The models a key can use, with the names providers give them. */
+export async function listModels(provider: AiProvider, apiKey: string): Promise<ModelOption[]> {
   if (provider === "anthropic") {
     const client = new Anthropic({ apiKey, dangerouslyAllowBrowser: true });
-    const ids: string[] = [];
-    for await (const model of client.models.list()) ids.push(model.id);
-    return ids;
+    const models: ModelOption[] = [];
+    for await (const model of client.models.list()) {
+      models.push({ id: model.id, name: model.display_name, free: false });
+    }
+    return models;
   }
   if (provider === "gemini") {
     const response = await fetch(`${GEMINI}/models?pageSize=200`, {
@@ -236,14 +239,23 @@ export async function listModels(provider: AiProvider, apiKey: string): Promise<
     });
     if (!response.ok) throw await failure(response, "Gemini");
     const body = (await response.json()) as {
-      models?: Array<{ name: string; supportedGenerationMethods?: string[] }>;
+      models?: Array<{ name: string; displayName?: string; supportedGenerationMethods?: string[] }>;
     };
     return (body.models ?? [])
       .filter((model) => model.supportedGenerationMethods?.includes("generateContent"))
-      .map((model) => model.name.replace(/^models\//, ""));
+      .map((model) => {
+        const id = model.name.replace(/^models\//, "");
+        return { id, name: model.displayName || id, free: false };
+      });
   }
   const response = await fetch("https://openrouter.ai/api/v1/models");
   if (!response.ok) throw await failure(response, "OpenRouter");
-  const body = (await response.json()) as { data?: Array<{ id: string }> };
-  return (body.data ?? []).map((model) => model.id);
+  const body = (await response.json()) as {
+    data?: Array<{ id: string; name?: string; pricing?: { prompt?: string; completion?: string } }>;
+  };
+  return (body.data ?? []).map((model) => ({
+    id: model.id,
+    name: (model.name || model.id).replace(/\s*\(free\)$/i, ""),
+    free: Number(model.pricing?.prompt ?? 1) === 0 && Number(model.pricing?.completion ?? 1) === 0,
+  }));
 }
