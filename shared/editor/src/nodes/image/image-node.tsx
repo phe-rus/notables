@@ -1,6 +1,8 @@
 import {
   $applyNodeReplacement,
   DecoratorNode,
+  type DOMConversionMap,
+  type DOMConversionOutput,
   type DOMExportOutput,
   type LexicalNode,
   type NodeKey,
@@ -31,6 +33,15 @@ export class ImageNode extends DecoratorNode<JSX.Element> {
 
   static override importJSON(json: SerializedImageNode): ImageNode {
     return $createImageNode(json);
+  }
+
+  /** Reads `<img>` and `<figure><img><figcaption>` from HTML, e.g. imported e-books. */
+  static override importDOM(): DOMConversionMap {
+    return {
+      img: () => ({ conversion: convertImage, priority: 0 }),
+      figure: (element: HTMLElement) =>
+        element.querySelector("img") ? { conversion: convertFigure, priority: 1 } : null,
+    };
   }
 
   constructor(src: string, alt = "", caption = "", key?: NodeKey) {
@@ -92,4 +103,23 @@ export function $createImageNode(input: {
 
 export function $isImageNode(node: LexicalNode | null | undefined): node is ImageNode {
   return node instanceof ImageNode;
+}
+
+function convertImage(element: HTMLElement): DOMConversionOutput {
+  const img = element as HTMLImageElement;
+  const src = img.getAttribute("src") ?? "";
+  return {
+    node: src ? $createImageNode({ src, alt: img.getAttribute("alt") ?? "", caption: "" }) : null,
+  };
+}
+
+function convertFigure(element: HTMLElement): DOMConversionOutput {
+  const img = element.querySelector("img");
+  const src = img?.getAttribute("src") ?? "";
+  const caption = element.querySelector("figcaption")?.textContent?.trim() ?? "";
+  return {
+    node: src ? $createImageNode({ src, alt: img?.getAttribute("alt") ?? "", caption }) : null,
+    // The figure's children (the image and caption) are handled here.
+    forChild: () => null,
+  };
 }

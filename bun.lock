@@ -29,6 +29,7 @@
       "version": "0.0.0",
       "dependencies": {
         "@lexical/code": "catalog:",
+        "@lexical/html": "catalog:",
         "@lexical/link": "catalog:",
         "@lexical/list": "catalog:",
         "@lexical/markdown": "catalog:",
@@ -138,6 +139,7 @@
   },
   "catalog": {
     "@lexical/code": "0.52.0",
+    "@lexical/html": "0.52.0",
     "@lexical/link": "0.52.0",
     "@lexical/list": "0.52.0",
     "@lexical/markdown": "0.52.0",

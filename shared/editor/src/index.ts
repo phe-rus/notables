@@ -1,7 +1,15 @@
-export type { AudioClipInput, ComposedContent } from "./blocks/append-content";
+export {
+  $appendContent,
+  type AudioClipInput,
+  type ComposedContent,
+} from "./blocks/append-content";
 export { type BlockType, blockLabels, setBlockType } from "./blocks/block-types";
 export type { DocumentProvider } from "./collaboration/document-provider";
-export { composeDocumentFromMarkdown } from "./compose/compose-document";
+export {
+  composeDocument,
+  composeDocumentFromHtml,
+  composeDocumentFromMarkdown,
+} from "./compose/compose-document";
 export { editorTheme } from "./editor/editor-theme";
 export { NotesEditor, type NotesEditorProps } from "./editor/notes-editor";
 export { NotesEditorContent, type NotesEditorContentProps } from "./editor/notes-editor-content";
