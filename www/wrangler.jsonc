@@ -8,11 +8,11 @@
   "d1_databases": [
     {
       "binding": "DB",
-      "database_name": "notables",
-      // Replace with the id printed by `wrangler d1 create notables`.
+      "database_name": "notables-database",
+      // Replace with the id printed by `wrangler d1 create notables-database`.
       "database_id": "00000000-0000-0000-0000-000000000000",
       "migrations_dir": "migrations"
     }
   ],
-  "r2_buckets": [{ "binding": "MEDIA", "bucket_name": "notables-media" }]
+  "r2_buckets": [{ "binding": "MEDIA", "bucket_name": "notables-bucket" }]
 }

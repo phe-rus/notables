@@ -108,8 +108,8 @@ bun run build    # production build of the web app
 
 ```sh
 cd www
-bunx wrangler d1 create notables          # once; put the id in wrangler.jsonc
-bunx wrangler r2 bucket create notables-media
+bunx wrangler d1 create notables-database # once; put the id in wrangler.jsonc
+bunx wrangler r2 bucket create notables-bucket
 bunx wrangler d1 migrations apply DB --remote
 bun run deploy
 ```

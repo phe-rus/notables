@@ -65,7 +65,7 @@ Gotchas learned the hard way:
   IndexedDB) may only be touched after mount.
 - Every SVG that is artwork, not an icon, needs `data-brand`, or the
   global two-tone icon style dims its paths.
-- After adding a D1 migration: `wrangler d1 migrations apply notables --local`
+- After adding a D1 migration: `wrangler d1 migrations apply notables-database --local`
   for dev, and `--remote` before deploying.
 - Dev server: `cd www && bun run dev` (port 3000). Desktop app:
   `bun run tauri dev`. On Linux a leftover `notables` process makes new
