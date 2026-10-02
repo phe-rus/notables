@@ -193,6 +193,7 @@ export const ar: Messages = {
       "اقرأ مع الصوت: يستطيع Notables كتابة هذا الفصل على هذا الجهاز، وإبراز كل سطر أثناء نطقه.",
     readAlongWebHint:
       "تعمل القراءة مع الصوت مع النصوص المفرّغة في تطبيق Notables على حاسوبك أو هاتفك.",
+    couldNotPlay: "لا يمكن تشغيل هذا الفصل على هذا الجهاز.",
     naturalVoice: "صوت طبيعي",
     noVoiceForLanguage: "لا يوجد صوت لهذه اللغة",
     voiceStyles: {
@@ -397,6 +398,8 @@ export const ar: Messages = {
     newComic: "قصة مصوّرة جديدة",
     newMenu: "كتاب أو مانغا أو قصة مصوّرة جديدة",
     drawPage: "ارسم صفحة",
+    addAudio: "إضافة ملفات صوتية…",
+    noAudio: "لا يوجد صوت بعد. أضف ملفات صوتية لتستمع إليها هنا.",
     newChapter: "فصل جديد",
     addFromFiles: "إضافة من ملفات…",
     chapters: "الفصول",

@@ -15,6 +15,7 @@ import {
 import { Link } from "@tanstack/react-router";
 import { AnimatePresence, motion } from "motion/react";
 import { useEffect, useState } from "react";
+import { t } from "../../../../i18n/i18n";
 import { ReadAlong } from "../../../listening/components/read-along";
 import { useAudiobookSession } from "../../../listening/store/listening-store";
 import { BookCover } from "../../components/book-cover";
@@ -209,6 +210,11 @@ function PlayerScreen({ book, player }: { book: BookEntry; player: AudiobookPlay
               {sleepLabel(player.sleep, player.sleepAt, now)}
             </Pill>
           </div>
+          {player.failed && (
+            <p role="alert" className="text-center text-[13px] text-danger">
+              {t("listening.couldNotPlay")}
+            </p>
+          )}
         </section>
 
         <section

@@ -92,6 +92,16 @@ pub fn run() {
                 #[cfg(target_os = "windows")]
                 window.set_shadow(true)?;
             }
+            // Development on Linux: the page's console goes to the terminal.
+            #[cfg(all(debug_assertions, target_os = "linux"))]
+            if let Some(window) = app.get_webview_window("main") {
+                window.with_webview(|webview| {
+                    use webkit2gtk::{SettingsExt, WebViewExt};
+                    if let Some(settings) = webview.inner().settings() {
+                        settings.set_enable_write_console_messages_to_stdout(true);
+                    }
+                })?;
+            }
             media_permissions::allow_microphone(app)?;
             window_frame::setup(app)?;
             deep_links::register(app);

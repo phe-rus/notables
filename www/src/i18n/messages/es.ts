@@ -193,6 +193,7 @@ export const es: Messages = {
       "Leer a la vez: Notables puede escribir este capítulo en este dispositivo y resaltar cada línea mientras se dice.",
     readAlongWebHint:
       "Leer a la vez funciona con transcripciones hechas en la app Notables en tu ordenador o teléfono.",
+    couldNotPlay: "Este capítulo no se puede reproducir en este dispositivo.",
     naturalVoice: "Voz natural",
     noVoiceForLanguage: "No hay voz para este idioma",
     voiceStyles: {
@@ -381,6 +382,8 @@ export const es: Messages = {
     newComic: "Nuevo cómic",
     newMenu: "Nuevo libro, manga o cómic",
     drawPage: "Dibujar una página",
+    addAudio: "Añadir archivos de audio…",
+    noAudio: "Todavía no hay audio. Añade archivos de audio para escucharlos aquí.",
     newChapter: "Nuevo capítulo",
     addFromFiles: "Añadir desde archivos…",
     chapters: "Capítulos",

@@ -25,7 +25,7 @@ import { queueDrawing } from "../../studio/lib/pending-drawing";
 import { moveBooksToBin, moveNotesToBin } from "../../trash/lib/recycle-bin";
 import { chapterKind, startChapter } from "../actions/start-chapter";
 import { syncBookFormat } from "../actions/sync-book-format";
-import { type BookEntry, bookShelf, getBookStore, useBook } from "../store/book-store";
+import { type BookEntry, bookFormat, bookShelf, getBookStore, useBook } from "../store/book-store";
 import { BookCover } from "./book-cover";
 
 export function BookScreen({ bookId, actions }: { bookId: string; actions?: ReactNode }) {
@@ -123,6 +123,8 @@ function ChapterList({ book, chapters }: { book: BookEntry; chapters: LibraryEnt
   const filesInput = useRef<HTMLInputElement>(null);
   const kind = chapterKind(book);
   const drawn = bookShelf(book) !== "books";
+  // An audiobook grows by adding recordings, not by writing chapters.
+  const audio = bookFormat(book) === "audio";
 
   // E-books, PDFs, comic pages and audiobook tracks become chapters here.
   const addFiles = async (files: File[]) => {
@@ -198,9 +200,11 @@ function ChapterList({ book, chapters }: { book: BookEntry; chapters: LibraryEnt
       </h2>
       {chapters.length === 0 && (
         <p className="text-[15px] text-label-secondary">
-          {drawn
-            ? t("books.noPages")
-            : `No chapters yet. Start writing one, or add ${noteKindPlural[kind]} you’ve already written.`}
+          {audio
+            ? t("books.noAudio")
+            : drawn
+              ? t("books.noPages")
+              : `No chapters yet. Start writing one, or add ${noteKindPlural[kind]} you’ve already written.`}
         </p>
       )}
       <ol className="flex flex-col gap-1.5">
@@ -258,22 +262,29 @@ function ChapterList({ book, chapters }: { book: BookEntry; chapters: LibraryEnt
             {t("books.drawPage")}
           </Button>
         )}
-        <Button variant={drawn ? "secondary" : "primary"} disabled={starting} onClick={newChapter}>
-          <PlusIcon size={16} strokeWidth={2.2} />
-          {t("books.newChapter")}
-        </Button>
+        {!audio && (
+          <Button
+            variant={drawn ? "secondary" : "primary"}
+            disabled={starting}
+            onClick={newChapter}
+          >
+            <PlusIcon size={16} strokeWidth={2.2} />
+            {t("books.newChapter")}
+          </Button>
+        )}
         <Button
-          variant="secondary"
+          variant={audio ? "primary" : "secondary"}
           disabled={adding !== null}
           onClick={() => filesInput.current?.click()}
         >
-          {t("books.addFromFiles")}
+          {audio && <PlusIcon size={16} strokeWidth={2.2} />}
+          {audio ? t("books.addAudio") : t("books.addFromFiles")}
         </Button>
         <input
           ref={filesInput}
           type="file"
           multiple
-          accept={IMPORT_ACCEPT}
+          accept={audio ? "audio/*" : IMPORT_ACCEPT}
           hidden
           onChange={(event) => {
             const files = [...(event.target.files ?? [])];
@@ -281,13 +292,15 @@ function ChapterList({ book, chapters }: { book: BookEntry; chapters: LibraryEnt
             void addFiles(files);
           }}
         />
-        <Button
-          variant="secondary"
-          aria-expanded={picking}
-          onClick={() => setPicking((open) => !open)}
-        >
-          {picking ? "Done adding" : `Add ${noteKindPlural[kind]}…`}
-        </Button>
+        {!audio && (
+          <Button
+            variant="secondary"
+            aria-expanded={picking}
+            onClick={() => setPicking((open) => !open)}
+          >
+            {picking ? "Done adding" : `Add ${noteKindPlural[kind]}…`}
+          </Button>
+        )}
       </div>
       {adding && (
         <div className="flex flex-col gap-2 rounded-[14px] bg-fill/50 px-4 py-3" aria-live="polite">

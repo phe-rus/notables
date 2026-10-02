@@ -195,6 +195,7 @@ export const en = {
       "Read along: Notables can write out this chapter on this device, and highlight each line as it’s spoken.",
     readAlongWebHint:
       "Read along works with transcripts made in the Notables app on your computer or phone.",
+    couldNotPlay: "This chapter can’t play on this device.",
     naturalVoice: "Natural voice",
     noVoiceForLanguage: "No voice for this language",
     voiceStyles: {
@@ -375,6 +376,8 @@ export const en = {
     newComic: "New comic",
     newMenu: "New book, manga or comic",
     drawPage: "Draw a page",
+    addAudio: "Add audio files…",
+    noAudio: "No audio yet. Add audio files to listen to them here.",
     newChapter: "New chapter",
     addFromFiles: "Add from files…",
     chapters: "Chapters",

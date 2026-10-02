@@ -70,6 +70,8 @@ export function useAudiobook(
   const [speed, setSpeedState] = useState(initial.current.speed);
   const [sleep, setSleep] = useState<SleepTimer>(null);
   const [sleepAt, setSleepAt] = useState<number | null>(null);
+  /** Why the current chapter can't play, when it can't. */
+  const [failed, setFailed] = useState(false);
   const resume = useRef<{ time: number; play: boolean } | null>({
     time: initial.current.time,
     play: false,
@@ -77,6 +79,17 @@ export function useAudiobook(
 
   const track = tracks[Math.min(index, Math.max(0, tracks.length - 1))];
   const src = useMediaSource(track?.src ?? "");
+
+  const refused = useCallback(
+    (error: unknown) => {
+      // An interrupted play() (pausing, changing chapter) is not a failure.
+      if (error instanceof DOMException && error.name === "AbortError") return;
+      console.warn("Audiobook playback failed", track?.src, src, error);
+      setPlaying(false);
+      setFailed(true);
+    },
+    [src, track?.src],
+  );
 
   if (!audio.current && typeof Audio !== "undefined") {
     audio.current = new Audio();
@@ -111,13 +124,13 @@ export function useAudiobook(
       if (pending) {
         element.currentTime = Math.min(pending.time, element.duration || pending.time);
         resume.current = null;
-        if (pending.play) void element.play().catch(() => setPlaying(false));
+        if (pending.play) void element.play().catch(refused);
       }
     };
     if (element.readyState >= 1) start();
     else element.addEventListener("loadedmetadata", start, { once: true });
     return () => element.removeEventListener("loadedmetadata", start);
-  }, [index, src, speed]);
+  }, [index, src, speed, refused]);
 
   const playTrack = useCallback(
     (next: number, at = 0, play = true) => {
@@ -131,18 +144,22 @@ export function useAudiobook(
       if (element && next === index && element.readyState >= 1) {
         element.currentTime = at;
         resume.current = null;
-        if (play) void element.play();
+        if (play) void element.play().catch(refused);
       }
     },
-    [index, remember, tracks.length],
+    [index, refused, remember, tracks.length],
   );
 
   const toggle = useCallback(() => {
     const element = audio.current;
-    if (!element || !src) return;
-    if (element.paused) void element.play().catch(() => setPlaying(false));
+    if (!element) return;
+    if (!src) {
+      refused(new Error(`No playable source for ${track?.src ?? "this chapter"}`));
+      return;
+    }
+    if (element.paused) void element.play().catch(refused);
     else element.pause();
-  }, [src]);
+  }, [refused, src, track?.src]);
 
   const seek = useCallback((seconds: number) => {
     const element = audio.current;
@@ -182,7 +199,11 @@ export function useAudiobook(
         remember();
       }
     };
-    const onPlay = () => setPlaying(true);
+    const onPlay = () => {
+      setPlaying(true);
+      setFailed(false);
+    };
+    const onError = () => refused(element.error);
     const onPause = () => {
       setPlaying(false);
       remember();
@@ -205,14 +226,16 @@ export function useAudiobook(
     element.addEventListener("pause", onPause);
     element.addEventListener("durationchange", onDuration);
     element.addEventListener("ended", onEnded);
+    element.addEventListener("error", onError);
     return () => {
+      element.removeEventListener("error", onError);
       element.removeEventListener("timeupdate", onTime);
       element.removeEventListener("play", onPlay);
       element.removeEventListener("pause", onPause);
       element.removeEventListener("durationchange", onDuration);
       element.removeEventListener("ended", onEnded);
     };
-  }, [index, playTrack, remember, setSleepTimer, sleep, tracks.length]);
+  }, [index, playTrack, refused, remember, setSleepTimer, sleep, tracks.length]);
 
   // A timed sleep fades out over the last few seconds, then pauses.
   useEffect(() => {
@@ -301,6 +324,7 @@ export function useAudiobook(
     index: track ? index : -1,
     track,
     playing,
+    failed,
     time,
     duration: duration || (track ? track.durationMs / 1000 : 0),
     speed,

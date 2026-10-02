@@ -193,6 +193,7 @@ export const fr: Messages = {
       "Lire en même temps : Notables peut écrire ce chapitre sur cet appareil et surligner chaque ligne pendant qu’elle est dite.",
     readAlongWebHint:
       "La lecture en même temps fonctionne avec les transcriptions faites dans l’app Notables sur votre ordinateur ou votre téléphone.",
+    couldNotPlay: "Ce chapitre ne peut pas être lu sur cet appareil.",
     naturalVoice: "Voix naturelle",
     noVoiceForLanguage: "Aucune voix pour cette langue",
     voiceStyles: {
@@ -379,6 +380,8 @@ export const fr: Messages = {
     newComic: "Nouvelle BD",
     newMenu: "Nouveau livre, manga ou BD",
     drawPage: "Dessiner une page",
+    addAudio: "Ajouter des fichiers audio…",
+    noAudio: "Pas encore d’audio. Ajoutez des fichiers audio pour les écouter ici.",
     newChapter: "Nouveau chapitre",
     addFromFiles: "Ajouter depuis des fichiers…",
     chapters: "Chapitres",

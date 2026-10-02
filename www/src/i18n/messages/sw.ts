@@ -193,6 +193,7 @@ export const sw: Messages = {
       "Soma pamoja: Notables inaweza kuiandika sura hii kwenye kifaa hiki, na kuangazia kila mstari unaposemwa.",
     readAlongWebHint:
       "Soma pamoja hufanya kazi na nukuu zilizotengenezwa kwenye programu ya Notables katika kompyuta au simu yako.",
+    couldNotPlay: "Sura hii haiwezi kuchezwa kwenye kifaa hiki.",
     naturalVoice: "Sauti asilia",
     noVoiceForLanguage: "Hakuna sauti ya lugha hii",
     voiceStyles: {
@@ -385,6 +386,8 @@ export const sw: Messages = {
     newComic: "Kibonzo kipya",
     newMenu: "Kitabu kipya, manga au kibonzo",
     drawPage: "Chora ukurasa",
+    addAudio: "Ongeza faili za sauti…",
+    noAudio: "Bado hakuna sauti. Ongeza faili za sauti ili uzisikilize hapa.",
     newChapter: "Sura mpya",
     addFromFiles: "Ongeza kutoka faili…",
     chapters: "Sura",
