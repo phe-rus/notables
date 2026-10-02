@@ -1,6 +1,13 @@
 export * from "./components/button/button";
 export * from "./components/button/icon-button";
 export * from "./components/chip/chip";
+export * from "./components/context-menu/context-menu-host";
+export {
+  type ContextMenuItem,
+  closeContextMenu,
+  openContextMenu,
+} from "./components/context-menu/context-menu-store";
+export * from "./components/context-menu/use-context-menu";
 export * from "./components/controls/choice-controls";
 export * from "./components/dialog/dialog-host";
 export { type ConfirmOptions, confirmDialog } from "./components/dialog/dialog-store";
