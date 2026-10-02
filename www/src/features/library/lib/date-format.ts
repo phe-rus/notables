@@ -31,3 +31,16 @@ export function bucket(ms: number, now = Date.now()): string {
   if (ms >= startOfToday - 29 * DAY) return "This month";
   return new Intl.DateTimeFormat(undefined, { month: "long", year: "numeric" }).format(ms);
 }
+
+/** Compact age for tight spaces: "now", "5m", "3h", "2d", "4w", then a date. */
+export function formatAge(ms: number, now = Date.now()): string {
+  const minutes = Math.max(0, Math.floor((now - ms) / 60_000));
+  if (minutes < 1) return "now";
+  if (minutes < 60) return `${minutes}m`;
+  const hours = Math.floor(minutes / 60);
+  if (hours < 24) return `${hours}h`;
+  const days = Math.floor(hours / 24);
+  if (days < 7) return `${days}d`;
+  if (days < 35) return `${Math.floor(days / 7)}w`;
+  return new Intl.DateTimeFormat(undefined, { day: "numeric", month: "short" }).format(ms);
+}

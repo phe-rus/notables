@@ -8,87 +8,125 @@ import {
   SidebarIcon,
   spring,
 } from "@notables/ui";
-import { Link, useNavigate } from "@tanstack/react-router";
+import { Link } from "@tanstack/react-router";
 import { AnimatePresence, motion } from "motion/react";
 import { useDeferredValue, useMemo, useState } from "react";
+import { CollapsedSidebarControls } from "../../../components/window/collapsed-sidebar-controls";
+import { search } from "../../search/lib/rank";
+import { useSearchableNotes } from "../../search/lib/use-searchable-notes";
+import type { ListPreferences } from "../../settings/model/preferences";
+import { usePreferences } from "../../settings/store/preferences-store";
 import { bucket, formatUpdated } from "../lib/date-format";
 import type { View } from "../model/library-views";
 import { noteKindLabels } from "../model/note-kind-labels";
-import { getLibrary, type LibraryEntry, useLibrary, useLibraryReady } from "../store/library-store";
+import { type LibraryEntry, useLibraryReady } from "../store/library-store";
+
+interface Group {
+  label: string | null;
+  items: Array<{ entry: LibraryEntry; snippet?: string }>;
+}
+
+const sorters: Record<ListPreferences["sort"], (a: LibraryEntry, b: LibraryEntry) => number> = {
+  edited: (a, b) => b.updatedAt - a.updatedAt,
+  created: (a, b) => b.createdAt - a.createdAt,
+  title: (a, b) => (a.title || "￿").localeCompare(b.title || "￿"),
+};
 
 export function NotesList({
   view,
   activeId,
   onOpenSidebar,
+  onCreateNote,
   className,
 }: {
   view: View;
   activeId?: string;
   onOpenSidebar: () => void;
+  onCreateNote: () => void;
   className?: string;
 }) {
-  const entries = useLibrary();
   const ready = useLibraryReady();
-  const navigate = useNavigate();
+  const preferences = usePreferences();
+  const options = preferences.list;
   const [query, setQuery] = useState("");
-  const deferredQuery = useDeferredValue(query);
+  const deferredQuery = useDeferredValue(query.trim());
+  const notes = useSearchableNotes(Boolean(deferredQuery));
 
-  const groups = useMemo(() => {
-    const q = deferredQuery.trim().toLowerCase();
-    const visible = entries.filter(
-      (e) =>
-        view.matches(e) &&
-        (!q || e.title.toLowerCase().includes(q) || e.excerpt.toLowerCase().includes(q)),
-    );
-    const result: Array<{ label: string; items: LibraryEntry[] }> = [];
-    for (const entry of visible) {
-      const label = entry.pinned ? "Pinned" : bucket(entry.updatedAt);
+  const groups = useMemo<Group[]>(() => {
+    const inView = notes.filter((note) => view.matches(note.entry));
+    // Searching shows the best matches first, with the passage that matched.
+    if (deferredQuery) {
+      const hits = search(inView, deferredQuery);
+      return hits.length
+        ? [
+            {
+              label: `${hits.length} ${hits.length === 1 ? "result" : "results"}`,
+              items: hits.map((hit) => ({ entry: hit.item.entry, snippet: hit.snippet?.text })),
+            },
+          ]
+        : [];
+    }
+    const sorted = inView
+      .map((note) => note.entry)
+      .sort((a, b) => Number(b.pinned) - Number(a.pinned) || sorters[options.sort](a, b));
+    const result: Group[] = [];
+    for (const entry of sorted) {
+      const label = entry.pinned
+        ? "Pinned"
+        : options.groupByDate && options.sort !== "title"
+          ? bucket(options.sort === "created" ? entry.createdAt : entry.updatedAt)
+          : null;
       const group = result.at(-1);
-      if (group?.label === label) group.items.push(entry);
-      else result.push({ label, items: [entry] });
+      if (group && group.label === label) group.items.push({ entry });
+      else result.push({ label, items: [{ entry }] });
     }
     return result;
-  }, [entries, view, deferredQuery]);
-
-  const createNote = () => {
-    const entry = getLibrary().create(view.kind);
-    void navigate({ to: "/notes/$noteId", params: { noteId: entry.id }, search: (s) => s });
-  };
+  }, [notes, view, deferredQuery, options.sort, options.groupByDate]);
 
   return (
     <section
       aria-label={view.title}
       className={cn(
-        "flex w-full flex-col bg-surface md:w-[330px] md:shrink-0 md:border-r md:border-separator",
+        "flex w-full flex-col bg-surface md:w-[330px] md:shrink-0 md:border-r md:border-separator/70",
         className,
       )}
     >
-      <header className="flex flex-col gap-3 px-4 pt-[max(16px,env(safe-area-inset-top))] pb-2.5">
-        <div className="flex items-center justify-between">
+      <header
+        data-tauri-drag-region
+        className="flex flex-col gap-3 px-4 pt-[max(12px,env(safe-area-inset-top))] pb-2.5"
+      >
+        {preferences.sidebar.collapsed && <CollapsedSidebarControls />}
+        <div data-tauri-drag-region className="flex items-center justify-between">
           <div className="flex items-center gap-1">
             <IconButton label="Show library" className="lg:hidden" onClick={onOpenSidebar}>
               <SidebarIcon size={20} />
             </IconButton>
             <h1 className="text-[22px] font-bold tracking-tight">{view.title}</h1>
           </div>
-          <IconButton label="New note" tone="accent" onClick={createNote}>
+          <IconButton label="New note" tone="accent" onClick={onCreateNote}>
             <PenIcon size={20} strokeWidth={1.9} />
           </IconButton>
         </div>
-        <SearchField value={query} onChange={(event) => setQuery(event.target.value)} />
+        <SearchField
+          value={query}
+          placeholder={`Search ${view.title.toLowerCase()}`}
+          onChange={(event) => setQuery(event.target.value)}
+        />
       </header>
 
       <div className="flex grow flex-col overflow-y-auto px-2.5 pb-8">
         {ready && groups.length === 0 && (
-          <EmptyList searching={Boolean(deferredQuery)} onCreate={createNote} />
+          <EmptyList searching={Boolean(deferredQuery)} onCreate={onCreateNote} />
         )}
-        {groups.map((group) => (
-          <div key={group.label} className="flex flex-col">
-            <h2 className="px-2.5 pt-3 pb-1 text-[12px] font-semibold text-label-tertiary">
-              {group.label}
-            </h2>
+        {groups.map((group, index) => (
+          <div key={group.label ?? `group-${index}`} className="flex flex-col">
+            {group.label && (
+              <h2 className="px-2.5 pt-3 pb-1 text-[12px] font-medium text-label-tertiary">
+                {group.label}
+              </h2>
+            )}
             <AnimatePresence initial={false}>
-              {group.items.map((entry) => (
+              {group.items.map(({ entry, snippet }) => (
                 <motion.div
                   key={entry.id}
                   layout="position"
@@ -97,7 +135,12 @@ export function NotesList({
                   exit={{ opacity: 0, scale: 0.97 }}
                   transition={spring.smooth}
                 >
-                  <NoteRow entry={entry} active={entry.id === activeId} />
+                  <NoteRow
+                    entry={entry}
+                    snippet={snippet}
+                    active={entry.id === activeId}
+                    options={options}
+                  />
                 </motion.div>
               ))}
             </AnimatePresence>
@@ -108,28 +151,59 @@ export function NotesList({
   );
 }
 
-function NoteRow({ entry, active }: { entry: LibraryEntry; active: boolean }) {
-  const kind = entry.kind === "note" ? null : noteKindLabels[entry.kind];
+function NoteRow({
+  entry,
+  snippet,
+  active,
+  options,
+}: {
+  entry: LibraryEntry;
+  snippet?: string;
+  active: boolean;
+  options: ListPreferences;
+}) {
+  const kind = entry.kind === "note" || !options.kindTags ? null : noteKindLabels[entry.kind];
+  const compact = options.density === "compact";
   return (
     <Link
       to="/notes/$noteId"
       params={{ noteId: entry.id }}
       search={(s) => s}
       className={cn(
-        "group relative flex flex-col gap-[3px] rounded-[14px] px-3 py-3 no-underline transition-colors duration-fast",
-        active ? "bg-accent-soft" : "hover:bg-fill/60",
+        "group relative isolate flex flex-col rounded-[12px] px-3 no-underline transition-colors duration-fast",
+        compact ? "gap-px py-2" : "gap-[3px] py-3",
+        !active && "hover:bg-fill/60",
       )}
     >
-      <span className="flex items-center gap-1.5 text-[15px] font-semibold text-label">
+      {active && (
+        <motion.span
+          layoutId="note-selection"
+          className="absolute inset-0 -z-10 rounded-[12px] bg-accent-soft"
+          transition={spring.snappy}
+        />
+      )}
+      <span
+        className={cn(
+          "flex items-center gap-1.5 font-semibold text-label",
+          compact ? "text-[14px]" : "text-[15px]",
+        )}
+      >
         {entry.pinned && <PinIcon size={13} className="text-accent-text" />}
         <span className="truncate">{entry.title || "New Note"}</span>
+        {compact && (
+          <span className="ml-auto shrink-0 text-[12px] font-normal text-label-tertiary">
+            {formatUpdated(entry.updatedAt)}
+          </span>
+        )}
       </span>
-      <span className="truncate text-[13px] text-label-secondary">
-        <b className="font-medium text-label">{formatUpdated(entry.updatedAt)}</b>
-        {"  "}
-        {entry.excerpt || "No additional text"}
-      </span>
-      {(kind || entry.publicationId) && (
+      {(options.preview || snippet) && (
+        <span className="truncate text-[13px] text-label-secondary">
+          {!compact && <b className="font-medium text-label">{formatUpdated(entry.updatedAt)}</b>}
+          {!compact && "  "}
+          {snippet ?? (entry.excerpt || "No additional text")}
+        </span>
+      )}
+      {!compact && (kind || entry.publicationId) && (
         <span className="mt-[3px] flex gap-1.5">
           {entry.publicationId && <Chip tone="public">Public</Chip>}
           {kind && <Chip tone={active ? "accent" : "neutral"}>{kind}</Chip>}

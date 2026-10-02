@@ -1,6 +1,8 @@
 import { BookIcon, cn, IconButton, SidebarIcon, spring } from "@notables/ui";
 import { Link, useNavigate } from "@tanstack/react-router";
 import { AnimatePresence, motion } from "motion/react";
+import { CollapsedSidebarControls } from "../../../components/window/collapsed-sidebar-controls";
+import { usePreferences } from "../../settings/store/preferences-store";
 import { type BookEntry, getBookStore, useBooks } from "../store/book-store";
 import { BookCover } from "./book-cover";
 
@@ -15,6 +17,7 @@ export function BooksList({
 }) {
   const books = useBooks();
   const navigate = useNavigate();
+  const { collapsed } = usePreferences().sidebar;
 
   const createBook = () => {
     const book = getBookStore().create();
@@ -25,20 +28,26 @@ export function BooksList({
     <section
       aria-label="Books"
       className={cn(
-        "flex w-full flex-col bg-surface md:w-[330px] md:shrink-0 md:border-r md:border-separator",
+        "flex w-full flex-col bg-surface md:w-[330px] md:shrink-0 md:border-r md:border-separator/70",
         className,
       )}
     >
-      <header className="flex items-center justify-between px-4 pt-[max(16px,env(safe-area-inset-top))] pb-2.5">
-        <div className="flex items-center gap-1">
-          <IconButton label="Show library" className="lg:hidden" onClick={onOpenSidebar}>
-            <SidebarIcon size={20} />
+      <header
+        data-tauri-drag-region
+        className="flex flex-col gap-3 px-4 pt-[max(12px,env(safe-area-inset-top))] pb-2.5"
+      >
+        {collapsed && <CollapsedSidebarControls />}
+        <div data-tauri-drag-region className="flex items-center justify-between">
+          <div className="flex items-center gap-1">
+            <IconButton label="Show library" className="lg:hidden" onClick={onOpenSidebar}>
+              <SidebarIcon size={20} />
+            </IconButton>
+            <h1 className="text-[22px] font-bold tracking-tight">Books</h1>
+          </div>
+          <IconButton label="New book" tone="accent" onClick={createBook}>
+            <BookIcon size={20} />
           </IconButton>
-          <h1 className="text-[22px] font-bold tracking-tight">Books</h1>
         </div>
-        <IconButton label="New book" tone="accent" onClick={createBook}>
-          <BookIcon size={20} />
-        </IconButton>
       </header>
 
       <div className="flex grow flex-col gap-1 overflow-y-auto px-2.5 pt-2 pb-8">
