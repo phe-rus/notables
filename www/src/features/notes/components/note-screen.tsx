@@ -22,6 +22,7 @@ import { useCallback, useState } from "react";
 import { getDeviceId } from "../../../platform/device-identity";
 import { saveNoteContent } from "../../../platform/storage/note-content-cache";
 import { PendingNarration } from "../../books/narration/components/pending-narration";
+import { useBook } from "../../books/store/book-store";
 import { formatFull } from "../../library/lib/date-format";
 import { getView, summarize } from "../../library/model/library-views";
 import {
@@ -57,6 +58,8 @@ function NoteEditorScreen({ entry, viewId }: { entry: LibraryEntry; viewId?: str
   const { provider, status } = useNoteProvider(entry.id);
   const navigate = useNavigate();
   const view = getView(viewId);
+  // Chapters written for a book lead back to it.
+  const book = useBook(entry.bookId ?? "");
   const [recording, setRecording] = useState(false);
   const startRecording = useCallback(() => setRecording(true), []);
 
@@ -74,21 +77,34 @@ function NoteEditorScreen({ entry, viewId }: { entry: LibraryEntry; viewId?: str
 
   const remove = () => {
     moveNotesToBin([entry]);
-    void navigate({ to: "/", search: (s) => s });
+    if (book) void navigate({ to: "/books/$bookId", params: { bookId: book.id } });
+    else void navigate({ to: "/", search: (s) => s });
   };
 
   return (
     <NotesEditor id={entry.id} provider={provider} bootstrap={entry.origin === getDeviceId()}>
       <div className="relative flex min-h-0 grow flex-col overflow-y-auto">
         <header className="glass-bar sticky top-0 z-20 flex h-14 shrink-0 items-center justify-between gap-2 px-3 pt-[env(safe-area-inset-top)] md:px-5">
-          <Link
-            to="/"
-            search={(s) => s}
-            className="flex min-h-11 items-center gap-0.5 px-1 text-[17px] text-accent-text no-underline md:hidden"
-          >
-            <ChevronLeftIcon size={22} strokeWidth={2.2} />
-            {view.title}
-          </Link>
+          {book ? (
+            // A chapter leads back to its book, on every screen size.
+            <Link
+              to="/books/$bookId"
+              params={{ bookId: book.id }}
+              className="flex min-h-11 min-w-0 items-center gap-0.5 px-1 text-[17px] text-accent-text no-underline"
+            >
+              <ChevronLeftIcon size={22} strokeWidth={2.2} className="shrink-0" />
+              <span className="max-w-[180px] truncate">{book.title || "Book"}</span>
+            </Link>
+          ) : (
+            <Link
+              to="/"
+              search={(s) => s}
+              className="flex min-h-11 items-center gap-0.5 px-1 text-[17px] text-accent-text no-underline md:hidden"
+            >
+              <ChevronLeftIcon size={22} strokeWidth={2.2} />
+              {view.title}
+            </Link>
+          )}
           <BlockToolbar onRecord={startRecording} className="hidden md:flex" />
           <div className="flex items-center gap-1.5 md:gap-2.5">
             <StatusIndicator

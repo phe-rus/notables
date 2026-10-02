@@ -63,14 +63,21 @@ export function restoreBook(book: BookEntry) {
   toast.success("Restored", { description: book.title || undefined });
 }
 
-/** What's in the bin: notes on their own (a book's chapters travel with it), and books. */
+/**
+ * Deleted notes shown on their own: everything trashed except the
+ * chapters of a deleted book, which go and come back with it.
+ */
+export function binNotes(entries: LibraryEntry[], trashedBooks: BookEntry[]): LibraryEntry[] {
+  const deletedBooks = new Set(trashedBooks.map((book) => book.id));
+  return entries.filter(
+    (entry) => entry.trashedAt && !(entry.bookId && deletedBooks.has(entry.bookId)),
+  );
+}
+
+/** What's in the bin: notes on their own, and books. */
 export function binContents() {
-  return {
-    notes: getLibrary()
-      .getSnapshot()
-      .filter((entry) => entry.trashedAt && !entry.bookId),
-    books: getBookStore().getTrashed(),
-  };
+  const books = getBookStore().getTrashed();
+  return { notes: binNotes(getLibrary().getSnapshot(), books), books };
 }
 
 export async function eraseNotes(entries: LibraryEntry[]) {

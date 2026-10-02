@@ -1,9 +1,10 @@
+import type { NoteKind } from "@notables/core";
 import {
+  Button,
   ChevronDownIcon,
   ChevronLeftIcon,
   ChevronUpIcon,
   CloseIcon,
-  cn,
   IconButton,
   PlusIcon,
   SearchField,
@@ -13,8 +14,10 @@ import {
 import { Link, useNavigate } from "@tanstack/react-router";
 import { AnimatePresence, motion } from "motion/react";
 import { type ReactNode, useDeferredValue, useMemo, useState } from "react";
+import { noteKindPlural } from "../../library/model/note-kind-labels";
 import { isListedNote, type LibraryEntry, useLibrary } from "../../library/store/library-store";
-import { moveBooksToBin } from "../../trash/lib/recycle-bin";
+import { moveBooksToBin, moveNotesToBin } from "../../trash/lib/recycle-bin";
+import { chapterKind, startChapter } from "../actions/start-chapter";
 import { type BookEntry, getBookStore, useBook } from "../store/book-store";
 import { BookCover } from "./book-cover";
 
@@ -94,7 +97,6 @@ function BookEditor({ book, actions }: { book: BookEntry; actions?: ReactNode })
         </section>
 
         <ChapterList book={book} chapters={chapters} />
-        <ChapterPicker book={book} notes={notes} />
       </div>
     </div>
   );
@@ -102,13 +104,37 @@ function BookEditor({ book, actions }: { book: BookEntry; actions?: ReactNode })
 
 function ChapterList({ book, chapters }: { book: BookEntry; chapters: LibraryEntry[] }) {
   const store = getBookStore();
+  const navigate = useNavigate();
+  const [picking, setPicking] = useState(false);
+  const [starting, setStarting] = useState(false);
+  const kind = chapterKind(book);
+
+  const newChapter = async () => {
+    setStarting(true);
+    try {
+      const noteId = await startChapter(book);
+      void navigate({ to: "/notes/$noteId", params: { noteId } });
+    } finally {
+      setStarting(false);
+    }
+  };
+
+  // A chapter written for this book goes to Recently Deleted; a borrowed
+  // note just leaves the book and stays in the notes.
+  const remove = (note: LibraryEntry) => {
+    if (note.bookId === book.id) moveNotesToBin([note]);
+    else store.removeChapter(book.id, note.id);
+  };
+
   return (
     <section className="flex flex-col gap-3">
       <h2 className="text-[13px] font-semibold tracking-[0.04em] text-label-tertiary uppercase">
         Chapters
       </h2>
       {chapters.length === 0 && (
-        <p className="text-[15px] text-label-secondary">Add notes below to make chapters.</p>
+        <p className="text-[15px] text-label-secondary">
+          No chapters yet. Start writing one, or add {noteKindPlural[kind]} you’ve already written.
+        </p>
       )}
       <ol className="flex flex-col gap-1.5">
         <AnimatePresence initial={false}>
@@ -120,14 +146,20 @@ function ChapterList({ book, chapters }: { book: BookEntry; chapters: LibraryEnt
               animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0, scale: 0.97 }}
               transition={spring.smooth}
-              className="flex items-center gap-3 rounded-[16px] bg-elevated px-3 py-2.5 shadow-[inset_0_0_0_1px_var(--color-separator)]"
+              className="group flex items-center gap-1 rounded-[16px] bg-elevated pr-2 shadow-[inset_0_0_0_1px_var(--color-separator)] transition-colors hover:bg-fill/40"
             >
-              <span className="flex size-7 shrink-0 items-center justify-center rounded-full bg-fill text-[13px] font-semibold text-label-secondary">
-                {index + 1}
-              </span>
-              <span className="grow truncate font-serif text-[17px]">
-                {note.title || "Untitled"}
-              </span>
+              <Link
+                to="/notes/$noteId"
+                params={{ noteId: note.id }}
+                className="flex min-w-0 grow items-center gap-3 py-2.5 pl-3 no-underline"
+              >
+                <span className="flex size-7 shrink-0 items-center justify-center rounded-full bg-fill text-[13px] font-semibold text-label-secondary">
+                  {index + 1}
+                </span>
+                <span className="grow truncate font-serif text-[17px] text-label">
+                  {note.title || "Untitled"}
+                </span>
+              </Link>
               <ChapterButton
                 label="Move up"
                 disabled={index === 0}
@@ -143,8 +175,8 @@ function ChapterList({ book, chapters }: { book: BookEntry; chapters: LibraryEnt
                 <ChevronDownIcon size={18} />
               </ChapterButton>
               <ChapterButton
-                label="Remove chapter"
-                onClick={() => store.removeChapter(book.id, note.id)}
+                label={note.bookId === book.id ? "Delete chapter" : "Remove from book"}
+                onClick={() => remove(note)}
               >
                 <CloseIcon size={17} />
               </ChapterButton>
@@ -152,6 +184,32 @@ function ChapterList({ book, chapters }: { book: BookEntry; chapters: LibraryEnt
           ))}
         </AnimatePresence>
       </ol>
+      <div className="flex flex-wrap gap-2 pt-1">
+        <Button variant="primary" disabled={starting} onClick={newChapter}>
+          <PlusIcon size={16} strokeWidth={2.2} />
+          New chapter
+        </Button>
+        <Button
+          variant="secondary"
+          aria-expanded={picking}
+          onClick={() => setPicking((open) => !open)}
+        >
+          {picking ? "Done adding" : `Add ${noteKindPlural[kind]}…`}
+        </Button>
+      </div>
+      <AnimatePresence initial={false}>
+        {picking && (
+          <motion.div
+            initial={{ opacity: 0, height: 0 }}
+            animate={{ opacity: 1, height: "auto" }}
+            exit={{ opacity: 0, height: 0 }}
+            transition={spring.smooth}
+            className="overflow-hidden"
+          >
+            <ChapterPicker book={book} kind={kind} />
+          </motion.div>
+        )}
+      </AnimatePresence>
     </section>
   );
 }
@@ -181,31 +239,33 @@ function ChapterButton({
   );
 }
 
-function ChapterPicker({ book, notes }: { book: BookEntry; notes: LibraryEntry[] }) {
+/** Notes of the book's kind that aren't in it yet, to add as chapters. */
+function ChapterPicker({ book, kind }: { book: BookEntry; kind: NoteKind }) {
+  const notes = useLibrary();
   const [query, setQuery] = useState("");
   const deferredQuery = useDeferredValue(query.trim().toLowerCase());
   const available = notes.filter(
     (n) =>
       isListedNote(n) &&
+      n.kind === kind &&
       !book.chapterIds.includes(n.id) &&
       (!deferredQuery || n.title.toLowerCase().includes(deferredQuery)),
   );
 
   return (
-    <section className="flex flex-col gap-3">
-      <h2 className="text-[13px] font-semibold tracking-[0.04em] text-label-tertiary uppercase">
-        Add from your notes
-      </h2>
-      <SearchField value={query} onChange={(e) => setQuery(e.target.value)} />
+    <div className="flex flex-col gap-2 pt-2">
+      <SearchField
+        value={query}
+        placeholder={`Search ${noteKindPlural[kind]}`}
+        onChange={(e) => setQuery(e.target.value)}
+      />
       <ul className="flex flex-col">
         {available.map((note) => (
           <li key={note.id}>
             <button
               type="button"
               onClick={() => getBookStore().addChapter(book.id, note.id)}
-              className={cn(
-                "group flex w-full items-center gap-3 rounded-[14px] px-3 py-2.5 text-left transition-colors hover:bg-fill/70",
-              )}
+              className="group flex w-full items-center gap-3 rounded-[14px] px-3 py-2.5 text-left transition-colors hover:bg-fill/70"
             >
               <span className="flex size-7 shrink-0 items-center justify-center rounded-full bg-accent text-on-accent">
                 <PlusIcon size={16} strokeWidth={2.2} />
@@ -222,9 +282,13 @@ function ChapterPicker({ book, notes }: { book: BookEntry; notes: LibraryEntry[]
           </li>
         ))}
         {available.length === 0 && (
-          <li className="px-3 text-[14px] text-label-tertiary">No more notes to add.</li>
+          <li className="px-3 py-2 text-[14px] text-label-tertiary">
+            {deferredQuery
+              ? "Nothing matches."
+              : `No other ${noteKindPlural[kind]} to add yet. Ones you write in your library show up here.`}
+          </li>
         )}
       </ul>
-    </section>
+    </div>
   );
 }

@@ -36,6 +36,7 @@ import {
   updatePreferences,
   usePreferences,
 } from "../../settings/store/preferences-store";
+import { binNotes } from "../../trash/lib/recycle-bin";
 import { formatAge } from "../lib/date-format";
 import { planningKinds, readingKinds, writingKinds } from "../model/library-views";
 import { type SidebarItemId, sidebarItemTitles } from "../model/sidebar-items";
@@ -72,8 +73,8 @@ export function Sidebar({
   const invoices = useInvoices();
   const library = useLibrary();
   const entries = library.filter(isListedNote);
-  const binCount =
-    library.filter((entry) => entry.trashedAt && !entry.bookId).length + useTrashedBooks().length;
+  const trashedBooks = useTrashedBooks();
+  const binCount = binNotes(library, trashedBooks).length + trashedBooks.length;
   const { order, hidden, counts } = usePreferences().sidebar;
   const [editing, setEditing] = useState(false);
   const navigate = useNavigate();

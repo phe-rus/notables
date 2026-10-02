@@ -1,16 +1,19 @@
 import {
   BookIcon,
+  Button,
+  CheckIcon,
   cn,
   DownloadIcon,
   IconButton,
   SidebarIcon,
   spring,
+  TrashIcon,
   toast,
   useContextMenu,
 } from "@notables/ui";
 import { Link, useNavigate } from "@tanstack/react-router";
 import { AnimatePresence, motion } from "motion/react";
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { CollapsedSidebarControls } from "../../../components/window/collapsed-sidebar-controls";
 import { ImportSheet } from "../../imports/components/import-sheet";
 import { GroupSwitcher } from "../../library/components/group-switcher";
@@ -27,17 +30,25 @@ import {
 } from "../store/book-store";
 import { type SeriesEntry, useSeries } from "../store/series-store";
 import { BookCover } from "./book-cover";
+import { BookSelectionProvider, useBookSelection } from "./book-selection";
 
-export function BooksList({
-  activeId,
-  onOpenSidebar,
-  className,
-}: {
+interface BooksListProps {
   activeId?: string;
   onOpenSidebar: () => void;
   className?: string;
-}) {
+}
+
+export function BooksList(props: BooksListProps) {
+  return (
+    <BookSelectionProvider>
+      <BooksListContent {...props} />
+    </BookSelectionProvider>
+  );
+}
+
+function BooksListContent({ activeId, onOpenSidebar, className }: BooksListProps) {
   const books = useBooks();
+  const selection = useBookSelection();
   const series = useSeries();
   const shelf = useMemo(() => arrangeShelf(books, series), [books, series]);
   const navigate = useNavigate();
@@ -50,11 +61,27 @@ export function BooksList({
     void navigate({ to: "/books/$bookId", params: { bookId: book.id } });
   };
 
+  const { selecting, selected, stop } = selection;
+  const allSelected = books.length > 0 && selected.size === books.length;
+  const deleteSelected = () => {
+    moveBooksToBin(books.filter((book) => selected.has(book.id)));
+    stop();
+  };
+
+  useEffect(() => {
+    if (!selecting) return;
+    const onKey = (event: KeyboardEvent) => {
+      if (event.key === "Escape") stop();
+    };
+    window.addEventListener("keydown", onKey);
+    return () => window.removeEventListener("keydown", onKey);
+  }, [selecting, stop]);
+
   return (
     <section
       aria-label="Books"
       className={cn(
-        "flex w-full flex-col bg-surface md:w-[330px] md:shrink-0 md:border-r md:border-separator/70",
+        "relative flex w-full flex-col bg-surface md:w-[330px] md:shrink-0 md:border-r md:border-separator/70",
         className,
       )}
     >
@@ -68,18 +95,40 @@ export function BooksList({
             <IconButton label="Show library" className="lg:hidden" onClick={onOpenSidebar}>
               <SidebarIcon size={20} />
             </IconButton>
-            <h1 className="text-[22px] font-bold tracking-tight">Books</h1>
+            <h1 className="text-[22px] font-bold tracking-tight">
+              {selecting
+                ? selected.size === 0
+                  ? "Select Books"
+                  : `${selected.size} Selected`
+                : "Books"}
+            </h1>
           </div>
           <div className="flex items-center gap-1">
-            <IconButton
-              label="Import books, comics or audiobooks"
-              onClick={() => setImporting(true)}
-            >
-              <DownloadIcon size={20} />
-            </IconButton>
-            <IconButton label="New book" tone="accent" onClick={createBook}>
-              <BookIcon size={20} />
-            </IconButton>
+            {(selecting || books.length > 0) && (
+              <button
+                type="button"
+                onClick={() => (selecting ? stop() : selection.start())}
+                className={cn(
+                  "h-8 rounded-full px-3 text-[15px] transition-colors hover:bg-fill",
+                  selecting ? "font-semibold text-accent-text" : "text-accent-text",
+                )}
+              >
+                {selecting ? "Done" : "Select"}
+              </button>
+            )}
+            {!selecting && (
+              <>
+                <IconButton
+                  label="Import books, comics or audiobooks"
+                  onClick={() => setImporting(true)}
+                >
+                  <DownloadIcon size={20} />
+                </IconButton>
+                <IconButton label="New book" tone="accent" onClick={createBook}>
+                  <BookIcon size={20} />
+                </IconButton>
+              </>
+            )}
           </div>
         </div>
         <GroupSwitcher group="books" active="books" />
@@ -119,6 +168,33 @@ export function BooksList({
           ))}
         </AnimatePresence>
       </div>
+      <AnimatePresence>
+        {selecting && (
+          <motion.div
+            initial={{ y: 24, opacity: 0 }}
+            animate={{ y: 0, opacity: 1 }}
+            exit={{ y: 24, opacity: 0 }}
+            transition={spring.smooth}
+            className="glass-menu absolute inset-x-3 bottom-[max(12px,env(safe-area-inset-bottom))] z-10 flex items-center justify-between gap-2 rounded-[18px] p-2 max-md:bottom-24"
+          >
+            <Button
+              variant="ghost"
+              onClick={() => selection.setAll(allSelected ? [] : books.map((book) => book.id))}
+            >
+              {allSelected ? "Deselect All" : "Select All"}
+            </Button>
+            <Button
+              variant="primary"
+              disabled={selected.size === 0}
+              onClick={deleteSelected}
+              className="bg-danger text-white"
+            >
+              <TrashIcon size={16} />
+              Delete{selected.size > 0 ? ` ${selected.size}` : ""}
+            </Button>
+          </motion.div>
+        )}
+      </AnimatePresence>
       <ImportSheet open={importing} onClose={() => setImporting(false)} />
     </section>
   );
@@ -165,6 +241,7 @@ function BookRow({
   const kind = series ? null : bookKindLabel(book);
   const count = chapters === 1 ? "1 chapter" : `${chapters} chapters`;
   const navigate = useNavigate();
+  const selection = useBookSelection();
   const menu = useContextMenu(() => [
     {
       label: "Open",
@@ -189,22 +266,15 @@ function BookRow({
       },
     },
     "divider",
+    { label: "Select", onSelect: () => selection.start(book.id) },
     {
       label: "Delete",
       destructive: true,
       onSelect: () => moveBooksToBin([book]),
     },
   ]);
-  return (
-    <Link
-      to="/books/$bookId"
-      params={{ bookId: book.id }}
-      {...menu}
-      className={cn(
-        "flex touch-manipulation items-center gap-3 rounded-[14px] p-2.5 no-underline transition-colors duration-fast [-webkit-touch-callout:none]",
-        active ? "bg-accent-soft" : "hover:bg-fill/60",
-      )}
-    >
+  const body = (
+    <>
       <BookCover title={book.title} author={book.author} image={book.cover} className="w-12" />
       <span className="flex min-w-0 flex-col gap-0.5">
         <span className="truncate text-[15px] font-semibold text-label">
@@ -214,6 +284,50 @@ function BookRow({
           {kind ? `${kind} · ${count}` : count}
         </span>
       </span>
+    </>
+  );
+  const rowClass =
+    "flex w-full touch-manipulation items-center gap-3 rounded-[14px] p-2.5 text-left no-underline transition-colors duration-fast [-webkit-touch-callout:none]";
+
+  if (selection.selecting) {
+    const checked = selection.selected.has(book.id);
+    return (
+      <label
+        className={cn(
+          rowClass,
+          "cursor-pointer has-[:focus-visible]:ring-2 has-[:focus-visible]:ring-accent/70",
+          checked ? "bg-accent-soft" : "hover:bg-fill/60",
+        )}
+      >
+        <input
+          type="checkbox"
+          className="sr-only"
+          checked={checked}
+          onChange={() => selection.toggle(book.id)}
+        />
+        <span
+          aria-hidden="true"
+          className={cn(
+            "flex size-[22px] shrink-0 items-center justify-center rounded-full transition-colors",
+            checked
+              ? "bg-accent text-on-accent"
+              : "shadow-[inset_0_0_0_1.5px_var(--color-label-tertiary)]",
+          )}
+        >
+          {checked && <CheckIcon size={14} strokeWidth={2.6} />}
+        </span>
+        {body}
+      </label>
+    );
+  }
+  return (
+    <Link
+      to="/books/$bookId"
+      params={{ bookId: book.id }}
+      {...menu}
+      className={cn(rowClass, active ? "bg-accent-soft" : "hover:bg-fill/60")}
+    >
+      {body}
     </Link>
   );
 }

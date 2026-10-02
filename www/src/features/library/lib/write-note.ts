@@ -30,6 +30,8 @@ export async function writeNote({
 }: NewNote): Promise<LibraryEntry> {
   const library = getLibrary();
   const entry = library.create(kind);
+  // Chapters belong to their book from the start, so they never flash into note lists.
+  if (bookId) library.update(entry.id, { bookId });
   const doc = new Y.Doc();
   const binding = await getPersistence().bind(`note:${entry.id}`, doc);
   const document = compose(doc);

@@ -17,7 +17,14 @@ import { type BookEntry, bookKindLabel, useTrashedBooks } from "../../books/stor
 import { noteKindLabels } from "../../library/model/note-kind-labels";
 import { type LibraryEntry, useLibrary } from "../../library/store/library-store";
 import { usePreferences } from "../../settings/store/preferences-store";
-import { emptyBin, eraseBooks, eraseNotes, restoreBook, restoreNote } from "../lib/recycle-bin";
+import {
+  binNotes,
+  emptyBin,
+  eraseBooks,
+  eraseNotes,
+  restoreBook,
+  restoreNote,
+} from "../lib/recycle-bin";
 import { daysLeft, RETENTION_DAYS } from "../lib/retention";
 
 type Item =
@@ -39,14 +46,12 @@ export function RecentlyDeletedScreen({ onOpenSidebar }: { onOpenSidebar: () => 
   const items = useMemo<Item[]>(
     () =>
       [
-        ...notes
-          .filter((entry) => entry.trashedAt && !entry.bookId)
-          .map((entry) => ({
-            type: "note" as const,
-            id: entry.id,
-            trashedAt: entry.trashedAt as number,
-            entry,
-          })),
+        ...binNotes(notes, books).map((entry) => ({
+          type: "note" as const,
+          id: entry.id,
+          trashedAt: entry.trashedAt as number,
+          entry,
+        })),
         ...books.map((book) => ({
           type: "book" as const,
           id: book.id,
