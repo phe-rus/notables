@@ -65,15 +65,37 @@ cd www && bun run db:migrate   # create the local D1 database
 bun run dev                    # http://localhost:3000
 ```
 
-Native apps additionally need Rust and the
-[Tauri prerequisites](https://tauri.app/start/prerequisites/):
+Native apps additionally need Rust, the
+[Tauri prerequisites](https://tauri.app/start/prerequisites/), and clang
+and CMake to build whisper.cpp for on-device transcription. On Debian,
+Ubuntu or ChromeOS Linux:
+
+```sh
+sudo apt install -y build-essential curl wget file pkg-config libssl-dev \
+  libwebkit2gtk-4.1-dev libxdo-dev libayatana-appindicator3-dev librsvg2-dev \
+  clang libclang-dev cmake
+curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh
+```
 
 ```sh
 cd www
 bun run tauri dev              # desktop
 bun run tauri ios dev          # iOS simulator (macOS + Xcode)
-bun run tauri android dev      # Android emulator (Android Studio)
+bun run tauri android dev      # Android device or emulator
 ```
+
+Android builds need a JDK, the Android SDK and NDK, and the Rust Android
+targets. Run `bun run tauri android init` once to generate the project:
+
+```sh
+export JAVA_HOME=/path/to/jdk         # e.g. Android Studio's jbr folder
+export ANDROID_HOME="$HOME/Android/Sdk"
+export NDK_HOME="$ANDROID_HOME/ndk/<version>"
+rustup target add aarch64-linux-android armv7-linux-androideabi i686-linux-android x86_64-linux-android
+```
+
+The native apps keep notes in SQLite and photos and recordings as files
+in the app's data folder (`~/.local/share/org.pherus.notables` on Linux).
 
 ## Checks
 
