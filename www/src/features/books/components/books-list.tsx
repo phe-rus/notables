@@ -1,7 +1,6 @@
 import {
   BookIcon,
   cn,
-  confirmDialog,
   DownloadIcon,
   IconButton,
   SidebarIcon,
@@ -16,9 +15,16 @@ import { CollapsedSidebarControls } from "../../../components/window/collapsed-s
 import { ImportSheet } from "../../imports/components/import-sheet";
 import { GroupSwitcher } from "../../library/components/group-switcher";
 import { usePreferences } from "../../settings/store/preferences-store";
+import { deleteBook } from "../actions/delete-book";
 import { exportBookAsEpub } from "../export/export-book";
 import { arrangeShelf, titleInSeries } from "../lib/arrange-shelf";
-import { type BookEntry, bookKindLabel, getBookStore, useBooks } from "../store/book-store";
+import {
+  type BookEntry,
+  bookFormat,
+  bookKindLabel,
+  getBookStore,
+  useBooks,
+} from "../store/book-store";
 import { type SeriesEntry, useSeries } from "../store/series-store";
 import { BookCover } from "./book-cover";
 
@@ -165,7 +171,7 @@ function BookRow({
       onSelect: () => void navigate({ to: "/books/$bookId", params: { bookId: book.id } }),
     },
     {
-      label: "Read",
+      label: bookFormat(book) === "audio" ? "Listen" : "Read",
       disabled: chapters === 0,
       onSelect: () => void navigate({ to: "/read/$bookId", params: { bookId: book.id } }),
     },
@@ -186,17 +192,7 @@ function BookRow({
     {
       label: "Delete",
       destructive: true,
-      onSelect: async () => {
-        const confirmed = await confirmDialog({
-          title: "Delete this book?",
-          message: "Its chapters stay in your notes.",
-          confirmLabel: "Delete",
-          destructive: true,
-        });
-        if (!confirmed) return;
-        getBookStore().remove(book.id);
-        toast("Book deleted", { description: book.title || undefined });
-      },
+      onSelect: () => void deleteBook(book),
     },
   ]);
   return (

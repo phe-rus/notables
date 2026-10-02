@@ -171,7 +171,8 @@ export function buildImportPlan(files: ImportFile[]): ImportPlan {
   for (const track of tracks) {
     const parts = segments(track.path);
     const named = splitOnVolume(track.name);
-    const parsed = parseName(track.name);
+    // "Night Tales Book 1 - 01 Opening": the chapter is what follows the book number.
+    const parsed = parseName(named.volume !== null && named.title ? named.title : track.name);
     const top = parts.length > 1 ? (parts[0] as string) : named.series || "Audiobook";
     const entry = seriesFor(top.toLowerCase(), parseName(top).title || top, "audio");
     const bookFolder = parts.length >= 3 ? (parts[1] as string) : null;

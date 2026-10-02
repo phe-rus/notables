@@ -17,21 +17,29 @@ import {
   DragDropVerticalIcon,
   FavouriteIcon,
   Globe02Icon,
+  GoBackward15SecIcon,
+  GoForward30SecIcon,
   CanvasIcon as HugeCanvasIcon,
+  HeadphonesIcon as HugeHeadphonesIcon,
+  HighlighterIcon as HugeHighlighterIcon,
   PauseIcon as HugePauseIcon,
   PlayIcon as HugePlayIcon,
   StarIcon as HugeStarIcon,
   ThumbsUpIcon as HugeThumbsUpIcon,
   Image01Icon,
   Invoice03Icon,
+  LeftToRightListBulletIcon,
   Link01Icon,
   Mic01Icon,
+  Moon02Icon,
   Mortarboard01Icon,
+  NextIcon,
   Note01Icon,
   NotebookIcon,
   PencilEdit02Icon,
   PencilIcon,
   Pin02Icon,
+  PreviousIcon,
   PrinterIcon,
   QrCodeIcon,
   QuillWrite02Icon,
@@ -113,6 +121,14 @@ export const PrintIcon = icon(PrinterIcon, "PrintIcon");
 export const DownloadIcon = icon(Download01Icon, "DownloadIcon");
 export const PlayIcon = icon(HugePlayIcon, "PlayIcon");
 export const PauseIcon = icon(HugePauseIcon, "PauseIcon");
+export const SkipBackIcon = icon(GoBackward15SecIcon, "SkipBackIcon");
+export const SkipForwardIcon = icon(GoForward30SecIcon, "SkipForwardIcon");
+export const PreviousTrackIcon = icon(PreviousIcon, "PreviousTrackIcon");
+export const NextTrackIcon = icon(NextIcon, "NextTrackIcon");
+export const HeadphonesIcon = icon(HugeHeadphonesIcon, "HeadphonesIcon");
+export const HighlighterIcon = icon(HugeHighlighterIcon, "HighlighterIcon");
+export const ChaptersIcon = icon(LeftToRightListBulletIcon, "ChaptersIcon");
+export const SleepIcon = icon(Moon02Icon, "SleepIcon");
 export const ThumbsUpIcon = toggleIcon(HugeThumbsUpIcon, "ThumbsUpIcon");
 export const HeartIcon = toggleIcon(FavouriteIcon, "HeartIcon");
 export const StarIcon = toggleIcon(HugeStarIcon, "StarIcon");

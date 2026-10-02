@@ -1,6 +1,8 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
+import { AudiobookPlayer } from "../../features/books/reader/audio/audiobook-player";
 import { BookReader } from "../../features/books/reader/book-reader";
-import { useBook } from "../../features/books/store/book-store";
+import { ComicReader } from "../../features/books/reader/comic/comic-reader";
+import { bookFormat, useBook } from "../../features/books/store/book-store";
 import { useLibraryReady } from "../../features/library/store/library-store";
 
 export const Route = createFileRoute("/read/$bookId")({
@@ -24,5 +26,8 @@ function ReadRoute() {
       </main>
     ) : null;
   }
+  const format = bookFormat(book);
+  if (format === "comic") return <ComicReader book={book} />;
+  if (format === "audio") return <AudiobookPlayer book={book} />;
   return <BookReader book={book} />;
 }

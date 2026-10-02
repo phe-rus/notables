@@ -81,6 +81,19 @@ describe("buildImportPlan", () => {
     ]);
   });
 
+  it("names loose audiobook tracks by what follows the book number", () => {
+    const plan = buildImportPlan([
+      file("Night Tales Book 1 - 02 The River.wav"),
+      file("Night Tales Book 1 - 01 Opening.wav"),
+    ]);
+    const [series] = plan.series;
+    expect(series?.title).toBe("Night Tales");
+    expect(series?.books[0]?.chapters.map((c) => [c.number, c.title])).toEqual([
+      [1, "Opening"],
+      [2, "The River"],
+    ]);
+  });
+
   it("reads seasons and episodes from loose files", () => {
     const plan = buildImportPlan([
       file("Night Stories S01E02.mp3"),
