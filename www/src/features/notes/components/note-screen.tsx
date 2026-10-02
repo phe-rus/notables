@@ -10,6 +10,7 @@ import {
   Button,
   ChevronLeftIcon,
   type ContextMenuItem,
+  cn,
   IconButton,
   MoreIcon,
   openContextMenu,
@@ -50,6 +51,8 @@ import { noteFontItems } from "../actions/note-menu";
 import { useNoteProvider } from "../hooks/use-note-provider";
 
 const statusLabel = (status: SyncStatus) => t(`notes.status.${status}`);
+/** How far the page scrolls before the title has left the screen and moves into the bar. */
+const TITLE_SCROLLED_PX = 72;
 
 /*
  * The top bar answers to the width of the note's own pane, not the window:
@@ -86,6 +89,7 @@ function NoteEditorScreen({ entry, viewId }: { entry: LibraryEntry; viewId?: str
   const [recording, setRecording] = useState(() => takeRecording(entry.id));
   const articleRef = useRef<HTMLElement>(null);
   const [sharing, setSharing] = useState(false);
+  const [titleInBar, setTitleInBar] = useState(false);
   const shareSession = useShareSession(entry.id);
   const startRecording = useCallback(() => setRecording(true), []);
 
@@ -129,7 +133,10 @@ function NoteEditorScreen({ entry, viewId }: { entry: LibraryEntry; viewId?: str
   return (
     <NotesEditor id={entry.id} provider={provider} bootstrap={entry.origin === getDeviceId()}>
       <div className="@container/note relative flex min-h-0 grow flex-col">
-        <div className="relative flex min-h-0 grow flex-col overflow-y-auto">
+        <div
+          className="relative flex min-h-0 grow flex-col overflow-y-auto"
+          onScroll={(event) => setTitleInBar(event.currentTarget.scrollTop > TITLE_SCROLLED_PX)}
+        >
           <header className="glass-bar sticky top-0 z-20 flex box-content h-14 shrink-0 items-center justify-between gap-2 px-3 pt-[env(safe-area-inset-top)] @min-[600px]/note:px-5">
             {book ? (
               // A chapter leads back to its book, on every screen size.
@@ -145,12 +152,29 @@ function NoteEditorScreen({ entry, viewId }: { entry: LibraryEntry; viewId?: str
               <Link
                 to="/"
                 search={(s) => s}
-                className="flex min-h-11 min-w-0 items-center gap-0.5 px-1 text-[17px] text-accent-text no-underline md:hidden"
+                className="flex min-h-11 shrink-0 items-center gap-0.5 px-1 text-[17px] text-accent-text no-underline md:hidden"
               >
                 <ChevronLeftIcon size={22} strokeWidth={2.2} className="shrink-0" />
-                <span className="truncate @max-[420px]/note:sr-only">{view.title}</span>
+                <span
+                  className={cn(
+                    "max-w-[40cqw] truncate transition-opacity duration-200",
+                    titleInBar && "@max-[860px]/note:sr-only",
+                  )}
+                >
+                  {view.title}
+                </span>
               </Link>
             )}
+            {/* Once the note's own title scrolls away, it moves up into the bar. */}
+            <span
+              aria-hidden={!titleInBar}
+              className={cn(
+                "min-w-0 flex-1 truncate text-center text-[17px] font-semibold text-label transition-opacity duration-200 @min-[860px]/note:hidden",
+                titleInBar ? "opacity-100" : "opacity-0",
+              )}
+            >
+              {entry.title || t("notes.newNote")}
+            </span>
             <BlockToolbar onRecord={startRecording} className="@max-[860px]/note:hidden" />
             <div className="ms-auto flex shrink-0 items-center gap-1 @min-[600px]/note:gap-2">
               <StatusIndicator
@@ -161,7 +185,14 @@ function NoteEditorScreen({ entry, viewId }: { entry: LibraryEntry; viewId?: str
                       ? "offline"
                       : "saved"
                 }
-                className="px-1.5 whitespace-nowrap"
+                // On a phone a lone "saved" dot is noise; it shows while syncing or offline.
+                className={cn(
+                  "px-1.5 whitespace-nowrap",
+                  status !== "connecting" &&
+                    status !== "loading" &&
+                    status !== "offline" &&
+                    "@max-[600px]/note:hidden",
+                )}
                 data-tooltip={statusLabel(status)}
               >
                 <span className="sr-only @min-[600px]/note:not-sr-only @min-[860px]/note:sr-only @min-[1100px]/note:not-sr-only">
