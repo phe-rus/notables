@@ -23,10 +23,16 @@ platform from the same `www` codebase.
   it leaving the device (the model downloads once, on first use)
 - Design system v2: Liquid Glass materials, motion/react transitions,
   Hugeicons dual-tone
+- Desktop polish: inset layout, custom window controls, a resizable and
+  customizable sidebar, Settings (theme, accent colors, text size, list
+  layout), full-text search with ⌘K, and a new mark and app icons
+- A welcome library for first-time users
 - Tauri shell for iOS, Android, macOS, Windows and Linux
 
 ## Next
 
+- **Toasts and dialogs** — morphing, gooey toasts for progress and results,
+  and spring-animated dialogs in place of browser prompts
 - **Peer-to-peer sharing** — share with family, friends or specific people
   without an account (ADR-0006)
 - **Templates** — invoices and receipts with a signature anyone can scan to
