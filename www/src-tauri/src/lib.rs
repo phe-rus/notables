@@ -4,7 +4,9 @@
 //! and printing.
 
 mod export;
+mod media_permissions;
 mod storage;
+mod system_settings;
 mod transcription;
 
 use tauri::Manager;
@@ -24,6 +26,7 @@ pub fn run() {
         .invoke_handler(tauri::generate_handler![
             export::export_save_file,
             export::export_print,
+            system_settings::open_microphone_settings,
             storage::commands::storage_document_load,
             storage::commands::storage_document_append,
             storage::commands::storage_document_replace,
@@ -53,6 +56,7 @@ pub fn run() {
             if let Some(window) = app.get_webview_window("main") {
                 window.set_decorations(false)?;
             }
+            media_permissions::allow_microphone(app)?;
             let data_dir = app.path().app_data_dir()?;
             app.manage(Storage::open(&data_dir)?);
             Ok(())

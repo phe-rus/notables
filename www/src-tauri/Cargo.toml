@@ -39,3 +39,7 @@ lto = true
 opt-level = "s"
 panic = "abort"
 strip = true
+
+# Linux: WebKitGTK refuses the microphone unless the app approves the request.
+[target.'cfg(target_os = "linux")'.dependencies]
+webkit2gtk = "2.0.2"
