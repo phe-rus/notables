@@ -15,7 +15,7 @@ import {
 import { Link, useNavigate } from "@tanstack/react-router";
 import { AnimatePresence, motion } from "motion/react";
 import { type ReactNode, useDeferredValue, useMemo, useState } from "react";
-import { type LibraryEntry, useLibrary } from "../../library/store/library-store";
+import { isOwnNote, type LibraryEntry, useLibrary } from "../../library/store/library-store";
 import { type BookEntry, getBookStore, useBook } from "../store/book-store";
 import { BookCover } from "./book-cover";
 
@@ -195,6 +195,7 @@ function ChapterPicker({ book, notes }: { book: BookEntry; notes: LibraryEntry[]
   const deferredQuery = useDeferredValue(query.trim().toLowerCase());
   const available = notes.filter(
     (n) =>
+      isOwnNote(n) &&
       !book.chapterIds.includes(n.id) &&
       (!deferredQuery || n.title.toLowerCase().includes(deferredQuery)),
   );

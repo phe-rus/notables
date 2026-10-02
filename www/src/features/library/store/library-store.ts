@@ -16,6 +16,11 @@ export interface LibraryEntry {
   publicationId: string | null;
   /** Secret that lets this device update or unpublish the publication. */
   publishKey: string | null;
+  /**
+   * Set on chapters imported as part of a book. They belong to the book and
+   * stay out of note lists, but are still found by search.
+   */
+  bookId?: string | null;
   createdAt: number;
   updatedAt: number;
 }
@@ -117,3 +122,6 @@ export function useLibraryReady(): boolean {
 export function useEntry(id: string): LibraryEntry | undefined {
   return useLibrary().find((entry) => entry.id === id);
 }
+
+/** Notes people wrote, as opposed to chapters that came in with an imported book. */
+export const isOwnNote = (entry: LibraryEntry) => !entry.bookId;

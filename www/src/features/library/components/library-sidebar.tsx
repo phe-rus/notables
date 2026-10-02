@@ -38,7 +38,7 @@ import {
 import { formatAge } from "../lib/date-format";
 import { planningKinds, readingKinds, writingKinds } from "../model/library-views";
 import { type SidebarItemId, sidebarItemTitles } from "../model/sidebar-items";
-import { useLibrary } from "../store/library-store";
+import { isOwnNote, useLibrary } from "../store/library-store";
 import { SidebarEditor } from "./sidebar-editor";
 
 /** Where the app is: a view of notes, books or settings. */
@@ -69,7 +69,7 @@ export function Sidebar({
 }) {
   const books = useBooks();
   const invoices = useInvoices();
-  const entries = useLibrary();
+  const entries = useLibrary().filter(isOwnNote);
   const { order, hidden, counts } = usePreferences().sidebar;
   const [editing, setEditing] = useState(false);
   const navigate = useNavigate();

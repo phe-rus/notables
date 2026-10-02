@@ -3,6 +3,9 @@ import { useSyncExternalStore } from "react";
 import type * as Y from "yjs";
 import { getLibrary } from "../../library/store/library-store";
 
+/** How a book is read: flowing text, full-page images, or listened to. */
+export type BookFormat = "prose" | "comic" | "audio";
+
 export interface BookEntry {
   id: string;
   title: string;
@@ -12,7 +15,18 @@ export interface BookEntry {
   chapterIds: string[];
   createdAt: number;
   updatedAt: number;
+  // Added with imports; older books read as prose, left to right, on their own.
+  format?: BookFormat;
+  /** Manga reads right to left. */
+  direction?: "ltr" | "rtl";
+  seriesId?: string | null;
+  /** Book or season number within its series. */
+  volume?: number | null;
+  /** `media:<id>` of a cover image. */
+  cover?: string | null;
 }
+
+export const bookFormat = (book: BookEntry): BookFormat => book.format ?? "prose";
 
 /**
  * Books live in the library document next to the notes index, so they sync

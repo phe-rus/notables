@@ -21,7 +21,7 @@ import { usePreferences } from "../../settings/store/preferences-store";
 import { bucket, formatUpdated } from "../lib/date-format";
 import { type GroupId, groupOf, type View } from "../model/library-views";
 import { noteKindLabels } from "../model/note-kind-labels";
-import { type LibraryEntry, useLibraryReady } from "../store/library-store";
+import { isOwnNote, type LibraryEntry, useLibraryReady } from "../store/library-store";
 import { GroupSwitcher } from "./group-switcher";
 
 interface Group {
@@ -56,7 +56,7 @@ export function NotesList({
   const notes = useSearchableNotes(Boolean(deferredQuery));
 
   const groups = useMemo<Group[]>(() => {
-    const inView = notes.filter((note) => view.matches(note.entry));
+    const inView = notes.filter((note) => isOwnNote(note.entry) && view.matches(note.entry));
     // Searching shows the best matches first, with the passage that matched.
     if (deferredQuery) {
       const hits = search(inView, deferredQuery);
