@@ -12,6 +12,8 @@
     "test": "bun test"
   },
   "dependencies": {
+    "@noble/curves": "catalog:",
+    "@noble/hashes": "catalog:",
     "yjs": "catalog:",
     "zod": "catalog:"
   },
