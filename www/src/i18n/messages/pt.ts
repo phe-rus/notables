@@ -500,6 +500,64 @@ export const pt: Messages = {
     untitledNote: "Nova nota",
     untitledBook: "Livro sem título",
   },
+  imports: {
+    open: "Importar livros, BD ou audiolivros",
+    title: "Importar",
+    sheetLabel: "Importar livros",
+    dropLabel: "Largue ficheiros ou pastas aqui",
+    dropTitle: "Largue livros, BD ou audiolivros",
+    dropBody:
+      "EPUB, PDF, CBZ, pastas de páginas ou ficheiros de áudio. Largue uma série inteira de uma vez: pastas como «Volume 2» ou nomes como «Book 3» e «S01E04» são postos por ordem.",
+    chooseFiles: "Escolher ficheiros",
+    chooseFolder: "Escolher uma pasta",
+    reading: "A ler os ficheiros…",
+    seriesTitle: "Título da série",
+    importAs: "Importar como",
+    numbered: {
+      book: {
+        one: "Livro {numbers}",
+        other: "Livros {numbers}",
+      },
+      volume: {
+        one: "Volume {numbers}",
+        other: "Volumes {numbers}",
+      },
+      season: {
+        one: "Temporada {numbers}",
+        other: "Temporadas {numbers}",
+      },
+    },
+    unnumbered: {
+      one: "{count} sem número",
+      other: "{count} sem número",
+    },
+    adds: "Adiciona {what} a {title}",
+    addsNothing: "Tudo isto já está em {title}",
+    alreadyThere: "Já existentes, ignorados: {what}",
+    joinFranchise: "Juntar à franquia {title}",
+    partCount: {
+      one: "{count} parte",
+      other: "{count} partes",
+    },
+    nothing: "Ainda não há aqui nada que se possa importar.",
+    skippingOthers: {
+      one: "A ignorar {count} outro ficheiro.",
+      other: "A ignorar {count} outros ficheiros.",
+    },
+    import: "Importar",
+    gettingStarted: "A começar…",
+    keepOpen: "Mantenha o Notables aberto até terminar.",
+    imported: {
+      one: "Livro importado",
+      other: "{count} livros importados",
+    },
+    chaptersReady: {
+      one: "{count} capítulo, pronto a ler",
+      other: "{count} capítulos, prontos a ler",
+    },
+    stopped: "Importação interrompida",
+    somethingWrong: "Algo correu mal.",
+  },
   sharing: {
     title: "Partilhar com pessoas",
     explainer:

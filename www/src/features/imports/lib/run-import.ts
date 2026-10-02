@@ -1,10 +1,11 @@
-import type { NoteKind } from "@notables/core";
+import { createId, type NoteKind } from "@notables/core";
 import { $appendContent, composeDocument, composeDocumentFromHtml } from "@notables/editor";
 import { saveMedia } from "../../../platform/storage/media-store";
 import { noteKindFor } from "../../books/actions/start-chapter";
 import { syncBookFormat } from "../../books/actions/sync-book-format";
-import { formatOf, kindFromFormat, type MediaKind } from "../../books/model/media-kind";
-import { type BookFormat, getBookStore } from "../../books/store/book-store";
+import { validParts } from "../../books/lib/chapter-outline";
+import { formatOf } from "../../books/model/media-kind";
+import { type BookFormat, getBookStore, type Part } from "../../books/store/book-store";
 import { getSeriesStore } from "../../books/store/series-store";
 import { writeNote } from "../../library/lib/write-note";
 import { readComicArchive } from "../importers/read-comic-archive";
@@ -20,8 +21,6 @@ import {
 } from "./import-plan";
 
 export interface ImportOptions {
-  /** Comics are filed as manga (and read right to left) or comics. */
-  comicKind: "manga" | "comic";
   /** Original files by their path in the plan. */
   files: Map<string, File>;
   onProgress?: (label: string, done: number, total: number) => void;
@@ -61,24 +60,38 @@ function audioDuration(file: Blob): Promise<number> {
   });
 }
 
-/** The kind content of a format is filed as; comics follow the picked comic kind. */
-const kindFor = (format: BookFormat, options: Pick<ImportOptions, "comicKind">): MediaKind =>
-  format === "comic" ? options.comicKind : kindFromFormat(format);
-
 /** Total steps, for progress: one per chapter or container file. */
-function countSteps(plan: ImportPlan): number {
-  return plan.series
-    .flatMap((series) => series.books)
-    .reduce((sum, book) => sum + (book.container ? 1 : book.chapters.length), 0);
+function countSteps(books: PlannedBook[]): number {
+  return books.reduce((sum, book) => sum + (book.container ? 1 : book.chapters.length), 0);
+}
+
+/** The volumes a planned series really imports: those its merge target lacks. */
+function booksToImport(series: PlannedSeries, merging: boolean): PlannedBook[] {
+  if (!merging) return series.books;
+  const skip = new Set(series.skippedVolumes);
+  return series.books.filter((book) => book.volume === null || !skip.has(book.volume));
+}
+
+/** A merge goes ahead only into a live series that still has the same kind. */
+function mergeTarget(series: PlannedSeries): string | null {
+  if (!series.mergeInto || !series.merge) return null;
+  const store = getSeriesStore();
+  const target = store.series.get(series.mergeInto.id);
+  return target && store.kindOf(target) === series.kind ? target.id : null;
 }
 
 /**
  * Carries out an import plan: series, books and chapter notes, with every
- * image and recording saved to the device. Chapters belong to their book
- * and stay out of note lists.
+ * image and recording saved to the device. Each series imports as the kind
+ * the preview settled on, joins the series it merges into, and can join a
+ * franchise. Chapters belong to their book and stay out of note lists.
  */
 export async function runImport(plan: ImportPlan, options: ImportOptions): Promise<ImportResult> {
-  const total = Math.max(1, countSteps(plan));
+  const work = plan.series.map((series) => {
+    const target = mergeTarget(series);
+    return { series, target, books: booksToImport(series, target !== null) };
+  });
+  const total = Math.max(1, countSteps(work.flatMap(({ books }) => books)));
   let done = 0;
   let chapterCount = 0;
   const step = (label: string) => {
@@ -92,31 +105,32 @@ export async function runImport(plan: ImportPlan, options: ImportOptions): Promi
   };
 
   const bookIds: string[] = [];
-  for (const series of plan.series) {
-    const seriesKind = kindFor(series.format, options);
-    const seriesEntry = needsSeries(series)
-      ? getSeriesStore().create({
-          title: series.title,
-          author: "",
-          kind: seriesKind,
-          partLabel: series.partLabel,
-        })
-      : null;
+  for (const { series, target, books } of work) {
+    const franchiseId =
+      !target && series.franchise && series.joinFranchise ? series.franchise.id : null;
+    const seriesId =
+      target ??
+      (needsSeries(series) || franchiseId
+        ? getSeriesStore().create({
+            title: series.title,
+            author: "",
+            kind: series.kind,
+            partLabel: series.partLabel,
+            ...(franchiseId ? { franchiseId } : {}),
+          }).id
+        : null);
 
-    for (const planned of series.books) {
-      const book = getBookStore().create(seriesKind);
+    for (const planned of books) {
+      const book = getBookStore().create(series.kind);
       bookIds.push(book.id);
       const chapterIds: string[] = [];
-      const write = chapterWriter(
-        book.id,
-        (format) => noteKindFor(kindFor(format, options)),
-        (id) => {
-          chapterIds.push(id);
-          chapterCount += 1;
-        },
-      );
-      const details = await importBookContent(planned, series, options, fileFor, write, step);
+      const write = chapterWriter(book.id, noteKindFor(series.kind), (id) => {
+        chapterIds.push(id);
+        chapterCount += 1;
+      });
+      const details = await importBookContent(planned, options, fileFor, write, step);
       if (!details) continue;
+      const seriesEntry = seriesId ? getSeriesStore().series.get(seriesId) : undefined;
       if (seriesEntry && details.author && !seriesEntry.author) {
         getSeriesStore().update(seriesEntry.id, { author: details.author });
       }
@@ -124,27 +138,27 @@ export async function runImport(plan: ImportPlan, options: ImportOptions): Promi
         title: details.title || plannedBookTitle(series, planned),
         author: details.author,
         ...(details.language ? { language: details.language } : {}),
-        // A series decides its items' kind; a single item is what it turned out to hold.
-        kind: seriesEntry ? seriesKind : kindFor(details.format, options),
+        kind: series.kind,
         cover: details.cover,
-        seriesId: seriesEntry?.id ?? null,
+        seriesId,
         volume: planned.volume,
         chapterIds,
+        ...(details.parts.length > 0 ? { parts: details.parts } : {}),
       });
     }
   }
   return { bookIds, chapters: chapterCount };
 }
 
-/** Writes one chapter note into a book and reports its id. */
+/** Writes one chapter note into a book and gives back its id. */
 function chapterWriter(
   bookId: string,
-  noteKind: (format: BookFormat) => NoteKind,
+  noteKind: NoteKind,
   onWritten: (noteId: string) => void,
 ): WriteChapter {
-  return async (title, format, content) => {
+  return async (title, content) => {
     const note = await writeNote({
-      kind: noteKind(format),
+      kind: noteKind,
       bookId,
       compose: (doc) =>
         "html" in content
@@ -152,14 +166,15 @@ function chapterWriter(
           : composeDocument(doc, () => $appendContent({ title, audioClip: content.audio })),
     });
     onWritten(note.id);
+    return note.id;
   };
 }
 
 /**
  * Adds the chapters found in files to the end of an existing book: an
  * e-book's chapters, a PDF's sections or pages, comic pages, or audio
- * tracks. The book keeps its kind: files that don't fit it are skipped
- * and named in `skipped`.
+ * tracks, with any parts they hold. The book keeps its kind: files that
+ * don't fit it are skipped and named in `skipped`.
  */
 export async function appendToBook(
   bookId: string,
@@ -173,11 +188,7 @@ export async function appendToBook(
   const fits = formatOf(kind);
   const plan = buildImportPlan(files.map(([meta]) => meta));
   const filesByPath = new Map(files.map(([meta, file]) => [meta.path, file]));
-  const withFiles: ImportOptions = {
-    ...options,
-    comicKind: kind === "comic" ? "comic" : "manga",
-    files: filesByPath,
-  };
+  const withFiles: ImportOptions = { ...options, files: filesByPath };
   const fileFor = (path: string) => {
     const file = filesByPath.get(path);
     if (!file) throw new Error(`Missing file: ${path}`);
@@ -190,17 +201,14 @@ export async function appendToBook(
 
   const skipped = plan.skipped.map((path) => path.split("/").pop() ?? path);
   const fitting = plan.series.flatMap((series) =>
-    series.books.flatMap((book) => {
+    series.books.filter((book) => {
       // A PDF holds text or pages; which one shows only once it is read.
-      if (book.format === fits || book.containerKind === "pdf") return [{ book, series }];
+      if (book.format === fits || book.containerKind === "pdf") return true;
       skipped.push(nameOf(book));
-      return [];
+      return false;
     }),
   );
-  const total = Math.max(
-    1,
-    fitting.reduce((sum, { book }) => sum + (book.container ? 1 : book.chapters.length), 0),
-  );
+  const total = Math.max(1, countSteps(fitting));
   let done = 0;
   const step = (label: string) => {
     done += 1;
@@ -208,22 +216,27 @@ export async function appendToBook(
   };
 
   const added: string[] = [];
-  const write = chapterWriter(
-    bookId,
-    () => noteKindFor(kind),
-    (id) => added.push(id),
-  );
+  const parts: Part[] = [];
+  const write = chapterWriter(bookId, noteKindFor(kind), (id) => added.push(id));
   let first: BookDetails | null = null;
-  for (const { book, series } of fitting) {
-    const details = await importBookContent(book, series, withFiles, fileFor, write, step, fits);
-    if (details) first ??= details;
-    else skipped.push(nameOf(book));
+  for (const book of fitting) {
+    const details = await importBookContent(book, withFiles, fileFor, write, step, fits);
+    if (!details) {
+      skipped.push(nameOf(book));
+      continue;
+    }
+    first ??= details;
+    parts.push(...details.parts);
   }
 
   const current = store.getSnapshot().find((book) => book.id === bookId);
   if (current) {
+    const chapterIds = [...current.chapterIds, ...added];
     store.update(bookId, {
-      chapterIds: [...current.chapterIds, ...added],
+      chapterIds,
+      ...(parts.length > 0
+        ? { parts: validParts({ chapterIds, parts: [...(current.parts ?? []), ...parts] }) }
+        : {}),
       ...(!current.cover && first?.cover ? { cover: first.cover } : {}),
       ...(!current.author && first?.author ? { author: first.author } : {}),
     });
@@ -240,17 +253,35 @@ interface BookDetails {
   title: string;
   author: string;
   language?: string;
-  format: BookFormat;
   cover: string | null;
+  /** Parts found in the content, opening at chapters just written. */
+  parts: Part[];
 }
 
 /** A chapter's content: HTML (text, pictures, pages) or a recording. */
 type ChapterContent = { html: string } | { audio: { src: string; durationMs: number } };
-type WriteChapter = (title: string, format: BookFormat, content: ChapterContent) => Promise<void>;
+type WriteChapter = (title: string, content: ChapterContent) => Promise<string>;
+
+/**
+ * Parts opening at chapters that were written. A part whose first source
+ * wrote nothing opens at the next chapter written after it, or is left out.
+ */
+function placeParts(
+  wanted: Array<{ title: string; source: number }>,
+  written: Array<{ source: number; noteId: string }>,
+): Part[] {
+  const parts: Part[] = [];
+  for (const part of wanted) {
+    const start = written.find((chapter) => chapter.source >= part.source);
+    if (start && !parts.some((other) => other.startsAt === start.noteId)) {
+      parts.push({ id: createId(), title: part.title, startsAt: start.noteId });
+    }
+  }
+  return parts;
+}
 
 async function importBookContent(
   planned: PlannedBook,
-  _series: PlannedSeries,
   options: ImportOptions,
   fileFor: (path: string) => File,
   write: WriteChapter,
@@ -272,6 +303,7 @@ async function importBookContent(
       saved.set(path, id);
       return id;
     };
+    const written: Array<{ source: number; noteId: string }> = [];
     for (const chapter of epub.chapters) {
       let html = chapter.html;
       for (const path of epub.images.keys()) {
@@ -279,7 +311,8 @@ async function importBookContent(
         const id = await mediaFor(path);
         if (id) html = html.split(`src="${path}"`).join(`src="media:${id}"`);
       }
-      await write(chapter.title, "prose", { html });
+      const noteId = await write(chapter.title, { html });
+      written.push({ source: epub.spine.indexOf(chapter.path), noteId });
     }
     step(epub.title);
     const cover = epub.cover
@@ -289,8 +322,13 @@ async function importBookContent(
       title: epub.title,
       author: epub.author,
       ...(epub.language ? { language: epub.language } : {}),
-      format: "prose",
       cover,
+      parts: placeParts(
+        epub.parts
+          .map((part) => ({ title: part.title, source: epub.spine.indexOf(part.firstChapterPath) }))
+          .filter((part) => part.source >= 0),
+        written,
+      ),
     };
   }
 
@@ -304,45 +342,55 @@ async function importBookContent(
     if (only && only !== (content.kind === "pages" ? "comic" : "prose")) return null;
     if (content.kind === "pages") {
       const ids = await Promise.all(content.pages.map((page) => saveMedia(page)));
-      await write(planned.title, "comic", { html: pagesHtml(ids) });
+      await write(planned.title, { html: pagesHtml(ids) });
       return {
         title: content.title,
         author: content.author,
-        format: "comic",
         cover: ids[0] ? `media:${ids[0]}` : null,
+        parts: [],
       };
     }
     for (const chapter of content.chapters) {
-      await write(chapter.title, "prose", { html: paragraphsHtml(chapter.paragraphs) });
+      await write(chapter.title, { html: paragraphsHtml(chapter.paragraphs) });
     }
-    return { title: content.title, author: content.author, format: "prose", cover: null };
+    return { title: content.title, author: content.author, cover: null, parts: [] };
   }
 
   if (container && planned.containerKind === "archive") {
-    const chapters = readComicArchive(new Uint8Array(await fileFor(container.path).arrayBuffer()));
+    const archive = readComicArchive(new Uint8Array(await fileFor(container.path).arrayBuffer()));
     let cover: string | null = null;
-    for (const chapter of chapters) {
+    for (const chapter of archive.chapters) {
       const ids: string[] = [];
       for (const page of chapter.pages) {
         ids.push(await saveMedia(new Blob([page.bytes as BlobPart], { type: page.type })));
       }
       cover ??= ids[0] ? `media:${ids[0]}` : null;
-      await write(chapter.title, "comic", { html: pagesHtml(ids) });
+      await write(chapter.title, { html: pagesHtml(ids) });
     }
     step(planned.title);
-    return { title: "", author: "", format: "comic", cover };
+    return { title: "", author: "", cover, parts: [] };
   }
 
   if (planned.format === "audio") {
-    for (const chapter of planned.chapters) {
+    const written: Array<{ source: number; noteId: string }> = [];
+    for (const [index, chapter] of planned.chapters.entries()) {
       const file = chapter.files[0];
       if (!file) continue;
       const blob = fileFor(file.path);
       const [id, durationMs] = await Promise.all([saveMedia(blob), audioDuration(blob)]);
-      await write(chapter.title, "audio", { audio: { src: `media:${id}`, durationMs } });
+      const noteId = await write(chapter.title, { audio: { src: `media:${id}`, durationMs } });
+      written.push({ source: index, noteId });
       step(chapter.title);
     }
-    return { title: "", author: "", format: "audio", cover: null };
+    return {
+      title: "",
+      author: "",
+      cover: null,
+      parts: placeParts(
+        planned.parts.map((part) => ({ title: part.title, source: part.firstChapter })),
+        written,
+      ),
+    };
   }
 
   // Folders of page images.
@@ -351,8 +399,8 @@ async function importBookContent(
     const ids: string[] = [];
     for (const page of chapter.files) ids.push(await saveMedia(fileFor(page.path)));
     cover ??= ids[0] ? `media:${ids[0]}` : null;
-    await write(chapter.title, "comic", { html: pagesHtml(ids) });
+    await write(chapter.title, { html: pagesHtml(ids) });
     step(chapter.title);
   }
-  return { title: "", author: "", format: "comic", cover };
+  return { title: "", author: "", cover, parts: [] };
 }

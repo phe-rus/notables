@@ -503,6 +503,64 @@ export const es: Messages = {
     untitledNote: "Nota nueva",
     untitledBook: "Libro sin título",
   },
+  imports: {
+    open: "Importar libros, cómics o audiolibros",
+    title: "Importar",
+    sheetLabel: "Importar libros",
+    dropLabel: "Suelta archivos o carpetas aquí",
+    dropTitle: "Suelta libros, cómics o audiolibros",
+    dropBody:
+      "EPUB, PDF, CBZ, carpetas de páginas o archivos de audio. Suelta una serie entera de una vez: las carpetas como «Volume 2» o los nombres como «Book 3» y «S01E04» se ordenan solos.",
+    chooseFiles: "Elegir archivos",
+    chooseFolder: "Elegir una carpeta",
+    reading: "Leyendo archivos…",
+    seriesTitle: "Título de la serie",
+    importAs: "Importar como",
+    numbered: {
+      book: {
+        one: "Libro {numbers}",
+        other: "Libros {numbers}",
+      },
+      volume: {
+        one: "Tomo {numbers}",
+        other: "Tomos {numbers}",
+      },
+      season: {
+        one: "Temporada {numbers}",
+        other: "Temporadas {numbers}",
+      },
+    },
+    unnumbered: {
+      one: "{count} sin número",
+      other: "{count} sin número",
+    },
+    adds: "Añade {what} a {title}",
+    addsNothing: "Todo esto ya está en {title}",
+    alreadyThere: "Ya estaban, se omiten: {what}",
+    joinFranchise: "Unirse a la franquicia {title}",
+    partCount: {
+      one: "{count} parte",
+      other: "{count} partes",
+    },
+    nothing: "Aquí no hay nada que se pueda importar todavía.",
+    skippingOthers: {
+      one: "Se omite {count} archivo más.",
+      other: "Se omiten {count} archivos más.",
+    },
+    import: "Importar",
+    gettingStarted: "Empezando…",
+    keepOpen: "Mantén Notables abierto hasta que termine.",
+    imported: {
+      one: "Libro importado",
+      other: "{count} libros importados",
+    },
+    chaptersReady: {
+      one: "{count} capítulo, listo para leer",
+      other: "{count} capítulos, listos para leer",
+    },
+    stopped: "Importación detenida",
+    somethingWrong: "Algo salió mal.",
+  },
   sharing: {
     title: "Compartir con personas",
     explainer:

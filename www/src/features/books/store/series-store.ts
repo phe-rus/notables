@@ -54,7 +54,9 @@ class SeriesStore {
   getSnapshot = () => this.#snapshot;
 
   create(
-    input: Pick<SeriesEntry, "title" | "author" | "partLabel"> & { kind: MediaKind },
+    input: Pick<SeriesEntry, "title" | "author" | "partLabel" | "franchiseId"> & {
+      kind: MediaKind;
+    },
   ): SeriesEntry {
     const now = Date.now();
     const entry: SeriesEntry = {

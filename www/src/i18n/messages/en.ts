@@ -497,6 +497,64 @@ export const en = {
     untitledNote: "New Note",
     untitledBook: "Untitled book",
   },
+  imports: {
+    open: "Import books, comics or audiobooks",
+    title: "Import",
+    sheetLabel: "Import books",
+    dropLabel: "Drop files or folders here",
+    dropTitle: "Drop books, comics or audiobooks",
+    dropBody:
+      "EPUB, PDF, CBZ, folders of pages or audio files. Drop a whole series at once: folders like “Volume 2” or names like “Book 3” and “S01E04” are put in order for you.",
+    chooseFiles: "Choose files",
+    chooseFolder: "Choose a folder",
+    reading: "Reading files…",
+    seriesTitle: "Series title",
+    importAs: "Import as",
+    numbered: {
+      book: {
+        one: "Book {numbers}",
+        other: "Books {numbers}",
+      },
+      volume: {
+        one: "Volume {numbers}",
+        other: "Volumes {numbers}",
+      },
+      season: {
+        one: "Season {numbers}",
+        other: "Seasons {numbers}",
+      },
+    },
+    unnumbered: {
+      one: "{count} without a number",
+      other: "{count} without a number",
+    },
+    adds: "Adds {what} to {title}",
+    addsNothing: "Everything here is already in {title}",
+    alreadyThere: "Already there, skipped: {what}",
+    joinFranchise: "Join franchise {title}",
+    partCount: {
+      one: "{count} part",
+      other: "{count} parts",
+    },
+    nothing: "Nothing here can be imported yet.",
+    skippingOthers: {
+      one: "Skipping {count} other file.",
+      other: "Skipping {count} other files.",
+    },
+    import: "Import",
+    gettingStarted: "Getting started…",
+    keepOpen: "Keep Notables open until it finishes.",
+    imported: {
+      one: "Book imported",
+      other: "{count} books imported",
+    },
+    chaptersReady: {
+      one: "{count} chapter, ready to read",
+      other: "{count} chapters, ready to read",
+    },
+    stopped: "Import stopped",
+    somethingWrong: "Something went wrong.",
+  },
   sharing: {
     title: "Share with people",
     explainer:

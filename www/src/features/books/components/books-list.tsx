@@ -171,10 +171,7 @@ function BooksListContent({ activeId, onOpenSidebar, className }: BooksListProps
             )}
             {!selecting && (
               <>
-                <IconButton
-                  label="Import books, comics or audiobooks"
-                  onClick={() => setImporting(true)}
-                >
+                <IconButton label={t("imports.open")} onClick={() => setImporting(true)}>
                   <DownloadIcon size={20} />
                 </IconButton>
                 <IconButton label={t("books.newMenu")} tone="accent" onClick={chooseNewBook}>

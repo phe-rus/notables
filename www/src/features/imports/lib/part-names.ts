@@ -46,3 +46,40 @@ export const naturalCompare = new Intl.Collator(undefined, {
   numeric: true,
   sensitivity: "base",
 }).compare;
+
+const NUMBER_WORDS = [
+  "one",
+  "two",
+  "three",
+  "four",
+  "five",
+  "six",
+  "seven",
+  "eight",
+  "nine",
+  "ten",
+  "eleven",
+  "twelve",
+  "thirteen",
+  "fourteen",
+  "fifteen",
+  "sixteen",
+  "seventeen",
+  "eighteen",
+  "nineteen",
+  "twenty",
+];
+
+/**
+ * A folder that is a part of an audiobook: its whole name is "Part" and a
+ * number or a number word, one to twenty ("Part 3", "Part Three"). Gives the
+ * name to show and its number for ordering.
+ */
+export function partFolder(name: string): { title: string; order: number } | null {
+  const match = /^\s*part\s+(\d{1,3}|[a-z]+)\s*$/i.exec(name);
+  if (!match?.[1]) return null;
+  const word = match[1].toLowerCase();
+  const order = /^\d+$/.test(word) ? Number(word) : NUMBER_WORDS.indexOf(word) + 1;
+  if (order < 1) return null;
+  return { title: name.trim().replace(/\s+/g, " "), order };
+}

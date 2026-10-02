@@ -506,6 +506,64 @@ export const sw: Messages = {
     untitledNote: "Dokezo jipya",
     untitledBook: "Kitabu kisicho na jina",
   },
+  imports: {
+    open: "Leta vitabu, vibonzo au vitabu vya sauti",
+    title: "Leta",
+    sheetLabel: "Leta vitabu",
+    dropLabel: "Dondosha faili au folda hapa",
+    dropTitle: "Dondosha vitabu, vibonzo au vitabu vya sauti",
+    dropBody:
+      "EPUB, PDF, CBZ, folda za kurasa au faili za sauti. Dondosha mfululizo mzima kwa mara moja: folda kama “Volume 2” au majina kama “Book 3” na “S01E04” hupangwa kwa ajili yako.",
+    chooseFiles: "Chagua faili",
+    chooseFolder: "Chagua folda",
+    reading: "Inasoma faili…",
+    seriesTitle: "Jina la mfululizo",
+    importAs: "Leta kama",
+    numbered: {
+      book: {
+        one: "Kitabu {numbers}",
+        other: "Vitabu {numbers}",
+      },
+      volume: {
+        one: "Juzuu {numbers}",
+        other: "Juzuu {numbers}",
+      },
+      season: {
+        one: "Msimu {numbers}",
+        other: "Misimu {numbers}",
+      },
+    },
+    unnumbered: {
+      one: "{count} bila namba",
+      other: "{count} bila namba",
+    },
+    adds: "Inaongeza {what} kwenye {title}",
+    addsNothing: "Vyote hivi tayari viko kwenye {title}",
+    alreadyThere: "Tayari vipo, vimerukwa: {what}",
+    joinFranchise: "Jiunge na franchise {title}",
+    partCount: {
+      one: "Sehemu {count}",
+      other: "Sehemu {count}",
+    },
+    nothing: "Hakuna kinachoweza kuletwa hapa bado.",
+    skippingOthers: {
+      one: "Inaruka faili {count} nyingine.",
+      other: "Inaruka faili {count} nyingine.",
+    },
+    import: "Leta",
+    gettingStarted: "Inaanza…",
+    keepOpen: "Acha Notables wazi hadi imalize.",
+    imported: {
+      one: "Kitabu kimeletwa",
+      other: "Vitabu {count} vimeletwa",
+    },
+    chaptersReady: {
+      one: "Sura {count}, tayari kusomwa",
+      other: "Sura {count}, tayari kusomwa",
+    },
+    stopped: "Uletaji umesimama",
+    somethingWrong: "Kuna hitilafu imetokea.",
+  },
   sharing: {
     title: "Shiriki na watu",
     explainer:

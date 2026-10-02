@@ -1,4 +1,5 @@
 import { strFromU8, unzipSync } from "fflate";
+import { spineIsRtl } from "./kind-hints";
 
 /**
  * Reads an EPUB (2 or 3): title, author, cover, and each chapter's HTML in
@@ -16,6 +17,14 @@ export interface EpubChapter {
   title: string;
   /** Body HTML; image sources are archive paths, keys of `images`. */
   html: string;
+  /** The file it came from inside the archive. */
+  path: string;
+}
+
+/** A top level contents entry that holds others: a part, opening at a file. */
+export interface EpubPart {
+  title: string;
+  firstChapterPath: string;
 }
 
 export interface Epub {
@@ -26,6 +35,11 @@ export interface Epub {
   cover: EpubImage | null;
   chapters: EpubChapter[];
   images: Map<string, EpubImage>;
+  /** Its spine turns pages right to left, as manga does. */
+  rtl: boolean;
+  parts: EpubPart[];
+  /** Every reading order file, including ones that gave no chapter. */
+  spine: string[];
 }
 
 const parser = () => new DOMParser();
@@ -52,13 +66,37 @@ const byLocalName = (
   name: string,
 ) => [...root.querySelectorAll("*")].filter((element) => element.localName === name);
 
-/** Chapter titles by file, from the EPUB 3 nav document or the EPUB 2 NCX. */
+/** Direct children of an element with a local name. */
+const childrenNamed = (element: Element, name: string) =>
+  [...element.children].filter((child) => child.localName === name);
+
+/**
+ * Parts from a nested contents list: a top level entry that holds entries
+ * is a part, opening at its own file when it has one, else at its first
+ * entry's. Top level entries without children are plain chapters.
+ */
+function partsOf<T>(
+  top: T[],
+  read: (entry: T) => { title: string; path: string | null; children: T[] },
+): EpubPart[] {
+  const parts: EpubPart[] = [];
+  for (const entry of top) {
+    const { title, path, children } = read(entry);
+    if (children.length === 0 || !title) continue;
+    const first = path ?? children.map((child) => read(child).path).find(Boolean) ?? null;
+    if (first) parts.push({ title, firstChapterPath: first });
+  }
+  return parts;
+}
+
+/** Chapter titles by file, and parts, from the EPUB 3 nav document or the EPUB 2 NCX. */
 function tableOfContents(
   files: Record<string, Uint8Array>,
   nav: string | null,
   ncx: string | null,
 ) {
   const titles = new Map<string, string>();
+  let parts: EpubPart[] = [];
   if (nav) {
     const doc = parser().parseFromString(text(files, nav) ?? "", "application/xhtml+xml");
     const tocNav =
@@ -73,6 +111,20 @@ function tableOfContents(
         if (!titles.has(path)) titles.set(path, label);
       }
     }
+    const list = tocNav ? byLocalName(tocNav, "ol")[0] : undefined;
+    if (list) {
+      parts = partsOf(childrenNamed(list, "li"), (item) => {
+        const link = childrenNamed(item, "a")[0];
+        const label = link ?? childrenNamed(item, "span")[0];
+        const href = link?.getAttribute("href");
+        const nested = childrenNamed(item, "ol")[0];
+        return {
+          title: label?.textContent?.trim() ?? "",
+          path: href ? resolvePath(nav, href) : null,
+          children: nested ? childrenNamed(nested, "li") : [],
+        };
+      });
+    }
   }
   if (titles.size === 0 && ncx) {
     const doc = parser().parseFromString(text(files, ncx) ?? "", "application/xml");
@@ -84,8 +136,19 @@ function tableOfContents(
         if (!titles.has(path)) titles.set(path, label);
       }
     }
+    const map = byLocalName(doc, "navMap")[0];
+    if (parts.length === 0 && map) {
+      parts = partsOf(childrenNamed(map, "navPoint"), (point) => {
+        const src = childrenNamed(point, "content")[0]?.getAttribute("src");
+        return {
+          title: byLocalName(point, "text")[0]?.textContent?.trim() ?? "",
+          path: src ? resolvePath(ncx, src) : null,
+          children: childrenNamed(point, "navPoint"),
+        };
+      });
+    }
   }
-  return titles;
+  return { titles, parts };
 }
 
 const imageTypes: Record<string, string> = {
@@ -130,7 +193,7 @@ export function readEpub(bytes: Uint8Array): Epub {
     (ncxId && manifest.get(ncxId)?.path) ||
     [...manifest.values()].find((item) => item.type === "application/x-dtbncx+xml")?.path ||
     null;
-  const titles = tableOfContents(files, nav, ncx);
+  const { titles, parts } = tableOfContents(files, nav, ncx);
 
   const coverId =
     byLocalName(opf, "meta")
@@ -143,10 +206,12 @@ export function readEpub(bytes: Uint8Array): Epub {
 
   const images = new Map<string, EpubImage>();
   const chapters: EpubChapter[] = [];
+  const spine: string[] = [];
   for (const ref of byLocalName(opf, "itemref")) {
     if (ref.getAttribute("linear") === "no") continue;
     const item = manifest.get(ref.getAttribute("idref") ?? "");
     if (!item || item.path === nav || !/x?html/.test(item.type)) continue;
+    spine.push(item.path);
     const source = text(files, item.path);
     if (!source) continue;
     const doc = parser().parseFromString(source, "application/xhtml+xml");
@@ -179,8 +244,57 @@ export function readEpub(bytes: Uint8Array): Epub {
     chapters.push({
       title: titles.get(item.path) || heading || `Chapter ${chapters.length + 1}`,
       html: body.innerHTML,
+      path: item.path,
     });
   }
 
-  return { title, author, language, cover, chapters, images };
+  return {
+    title,
+    author,
+    language,
+    cover,
+    chapters,
+    images,
+    rtl: spineIsRtl(opfText),
+    parts,
+    spine,
+  };
+}
+
+/**
+ * Just enough of an EPUB for the import preview: its direction and its
+ * part titles, read from the package and contents files only.
+ */
+export function readEpubOutline(bytes: Uint8Array): { rtl: boolean; parts: string[] } {
+  try {
+    const head = unzipSync(bytes, {
+      filter: (file) => file.name === "META-INF/container.xml" || file.name.endsWith(".opf"),
+    });
+    const container = text(head, "META-INF/container.xml");
+    const opfPath = container
+      ? parser()
+          .parseFromString(container, "application/xml")
+          .querySelector("rootfile")
+          ?.getAttribute("full-path")
+      : null;
+    const opfText = opfPath ? text(head, opfPath) : null;
+    if (!opfPath || !opfText) return { rtl: false, parts: [] };
+    const opf = parser().parseFromString(opfText, "application/xml");
+    let nav: string | null = null;
+    let ncx: string | null = null;
+    for (const item of byLocalName(opf, "item")) {
+      const href = item.getAttribute("href");
+      if (!href) continue;
+      if ((item.getAttribute("properties") ?? "").includes("nav")) nav = resolvePath(opfPath, href);
+      if (item.getAttribute("media-type") === "application/x-dtbncx+xml") {
+        ncx = resolvePath(opfPath, href);
+      }
+    }
+    const wanted = new Set([nav, ncx].filter(Boolean));
+    const toc = unzipSync(bytes, { filter: (file) => wanted.has(file.name) });
+    const { parts } = tableOfContents(toc, nav, ncx);
+    return { rtl: spineIsRtl(opfText), parts: parts.map((part) => part.title) };
+  } catch {
+    return { rtl: false, parts: [] };
+  }
 }

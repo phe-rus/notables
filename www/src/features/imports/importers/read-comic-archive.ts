@@ -1,6 +1,7 @@
-import { unzipSync } from "fflate";
+import { strFromU8, unzipSync } from "fflate";
 import { naturalCompare, parseName } from "../lib/part-names";
 import { isNoise, sourceKind } from "../lib/source-kinds";
+import { comicInfoHint, type KindHint } from "./kind-hints";
 
 export interface ArchivePage {
   name: string;
@@ -22,12 +23,19 @@ const pageTypes: Record<string, string> = {
   avif: "image/avif",
 };
 
+export interface ComicArchive {
+  chapters: ArchiveChapter[];
+  /** What its `ComicInfo.xml` says it is, if anything. */
+  mangaHint: KindHint;
+}
+
 /**
  * Reads a comic archive (CBZ or ZIP of page images). Folders inside become
  * chapters; a flat archive is one chapter. Pages keep natural order.
  */
-export function readComicArchive(bytes: Uint8Array): ArchiveChapter[] {
+export function readComicArchive(bytes: Uint8Array): ComicArchive {
   const files = unzipSync(bytes);
+  const info = Object.entries(files).find(([path]) => path.toLowerCase().endsWith("comicinfo.xml"));
   const folders = new Map<string, ArchivePage[]>();
   for (const [path, data] of Object.entries(files)) {
     if (path.endsWith("/") || isNoise(path) || path.includes("__MACOSX")) continue;
@@ -39,7 +47,7 @@ export function readComicArchive(bytes: Uint8Array): ArchiveChapter[] {
     pages.push({ name: path, bytes: data, type: pageTypes[ext] ?? "image/jpeg" });
     folders.set(folder, pages);
   }
-  return [...folders.entries()]
+  const chapters = [...folders.entries()]
     .sort(([a], [b]) => naturalCompare(a, b))
     .map(([folder, pages], index) => {
       const parsed = parseName(folder.split("/").pop() ?? "");
@@ -49,4 +57,5 @@ export function readComicArchive(bytes: Uint8Array): ArchiveChapter[] {
         pages: pages.sort((a, b) => naturalCompare(a.name, b.name)),
       };
     });
+  return { chapters, mangaHint: comicInfoHint(info ? strFromU8(info[1]) : null) };
 }

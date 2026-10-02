@@ -502,6 +502,64 @@ export const fr: Messages = {
     untitledNote: "Nouvelle note",
     untitledBook: "Livre sans titre",
   },
+  imports: {
+    open: "Importer des livres, BD ou livres audio",
+    title: "Importer",
+    sheetLabel: "Importer des livres",
+    dropLabel: "Déposez des fichiers ou des dossiers ici",
+    dropTitle: "Déposez des livres, BD ou livres audio",
+    dropBody:
+      "EPUB, PDF, CBZ, dossiers de pages ou fichiers audio. Déposez une série entière d’un coup : les dossiers comme « Volume 2 » ou les noms comme « Book 3 » et « S01E04 » sont mis dans l’ordre pour vous.",
+    chooseFiles: "Choisir des fichiers",
+    chooseFolder: "Choisir un dossier",
+    reading: "Lecture des fichiers…",
+    seriesTitle: "Titre de la série",
+    importAs: "Importer comme",
+    numbered: {
+      book: {
+        one: "Livre {numbers}",
+        other: "Livres {numbers}",
+      },
+      volume: {
+        one: "Tome {numbers}",
+        other: "Tomes {numbers}",
+      },
+      season: {
+        one: "Saison {numbers}",
+        other: "Saisons {numbers}",
+      },
+    },
+    unnumbered: {
+      one: "{count} sans numéro",
+      other: "{count} sans numéro",
+    },
+    adds: "Ajoute {what} à {title}",
+    addsNothing: "Tout est déjà dans {title}",
+    alreadyThere: "Déjà présents, ignorés : {what}",
+    joinFranchise: "Rejoindre la franchise {title}",
+    partCount: {
+      one: "{count} partie",
+      other: "{count} parties",
+    },
+    nothing: "Rien ici ne peut encore être importé.",
+    skippingOthers: {
+      one: "{count} autre fichier ignoré.",
+      other: "{count} autres fichiers ignorés.",
+    },
+    import: "Importer",
+    gettingStarted: "Préparation…",
+    keepOpen: "Laissez Notables ouvert jusqu’à la fin.",
+    imported: {
+      one: "Livre importé",
+      other: "{count} livres importés",
+    },
+    chaptersReady: {
+      one: "{count} chapitre, prêt à lire",
+      other: "{count} chapitres, prêts à lire",
+    },
+    stopped: "Import interrompu",
+    somethingWrong: "Un problème est survenu.",
+  },
   sharing: {
     title: "Partager avec des personnes",
     explainer:
