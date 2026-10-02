@@ -147,3 +147,17 @@
 .book-scrubber {
   accent-color: var(--color-accent-text);
 }
+
+/* Highlights, drawn with the CSS Custom Highlight API. */
+::highlight(nt-highlight-yellow) {
+  background-color: rgb(247 209 84 / 0.45);
+}
+::highlight(nt-highlight-green) {
+  background-color: rgb(143 209 138 / 0.45);
+}
+::highlight(nt-highlight-blue) {
+  background-color: rgb(140 194 242 / 0.45);
+}
+::highlight(nt-highlight-pink) {
+  background-color: rgb(242 155 191 / 0.45);
+}

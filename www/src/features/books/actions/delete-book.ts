@@ -3,6 +3,7 @@ import { confirmDialog, toast } from "@notables/ui";
 import { deleteMedia } from "../../../platform/storage/media-store";
 import { getLibrary } from "../../library/store/library-store";
 import { deleteNote } from "../../notes/actions/delete-note";
+import { getHighlightStore } from "../highlights/store/highlight-store";
 import { type BookEntry, getBookStore } from "../store/book-store";
 import { getSeriesStore } from "../store/series-store";
 
@@ -31,6 +32,7 @@ export async function deleteBook(book: BookEntry): Promise<boolean> {
   if (!confirmed) return false;
 
   getBookStore().remove(book.id);
+  getHighlightStore().removeBook(book.id);
   const coverId = book.cover ? localMediaId(book.cover) : null;
   await Promise.all([
     ...owned.map((id) => deleteNote(id).catch(() => {})),

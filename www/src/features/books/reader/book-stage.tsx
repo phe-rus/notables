@@ -1,4 +1,4 @@
-import { spring } from "@notables/ui";
+import { cn, spring } from "@notables/ui";
 import { animate, type MotionValue, motion, useMotionValue, useTransform } from "motion/react";
 import { type ReactNode, useCallback, useEffect, useRef, useState } from "react";
 import type { PageGeometry } from "./page-geometry";
@@ -20,6 +20,8 @@ export interface BookStageProps {
   position: number;
   onPositionChange: (position: number) => void;
   renderFace: (index: number, side: Side) => ReactNode;
+  /** False while highlighting: pointers select text instead of turning pages. */
+  interactive?: boolean;
 }
 
 /** How far a drag must travel (of a page width) to complete a turn. */
@@ -49,6 +51,7 @@ export function BookStage({
   position,
   onPositionChange,
   renderFace,
+  interactive = true,
 }: BookStageProps) {
   const { spread, pageWidth, pageHeight } = geometry;
   const angle = useMotionValue(0);
@@ -165,12 +168,12 @@ export function BookStage({
       ref={stage}
       role="application"
       aria-label="Book. Use the arrow keys or swipe to turn pages."
-      className="relative touch-none select-none"
+      className={cn("relative", interactive ? "touch-none select-none" : "select-text")}
       style={{ width, height: pageHeight, perspective: pageWidth * 3.2 }}
-      onPointerDown={onPointerDown}
-      onPointerMove={onPointerMove}
-      onPointerUp={onPointerUp}
-      onPointerCancel={onPointerUp}
+      onPointerDown={interactive ? onPointerDown : undefined}
+      onPointerMove={interactive ? onPointerMove : undefined}
+      onPointerUp={interactive ? onPointerUp : undefined}
+      onPointerCancel={interactive ? onPointerUp : undefined}
     >
       {spread ? (
         <SpreadLayers
@@ -199,6 +202,8 @@ interface LayerProps {
   turning: Direction | null;
   angle: MotionValue<number>;
   renderFace: (index: number, side: Side) => ReactNode;
+  /** False while highlighting: pointers select text instead of turning pages. */
+  interactive?: boolean;
 }
 
 function SpreadLayers({ geometry, position: left, turning, angle, renderFace }: LayerProps) {

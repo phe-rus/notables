@@ -38,7 +38,7 @@ export const BookFlow = memo(function BookFlow({
         {book.author && <p className="book-author">{book.author}</p>}
       </section>
       {chapters.map((chapter, index) => (
-        <section key={chapter.noteId} className="book-chapter">
+        <section key={chapter.noteId} className="book-chapter" data-chapter={chapter.noteId}>
           <p className="book-chapter-number">Chapter {index + 1}</p>
           <h2 className="book-chapter-title">{chapter.title}</h2>
           {chapter.document ? (

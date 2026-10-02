@@ -1,7 +1,12 @@
-import { CloseIcon } from "@notables/ui";
+import { ChaptersIcon, CloseIcon, cn, HighlighterIcon } from "@notables/ui";
 import { Link } from "@tanstack/react-router";
 import { motion } from "motion/react";
 import { useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState } from "react";
+import { HighlightPalette } from "../highlights/components/highlight-palette";
+import { HighlightsPanel } from "../highlights/components/highlights-panel";
+import { highlightsSupported, rangesFor } from "../highlights/lib/paint-highlights";
+import { usePaintedHighlights } from "../highlights/lib/use-painted-highlights";
+import { type HighlightEntry, useHighlights } from "../highlights/store/highlight-store";
 import type { BookEntry } from "../store/book-store";
 import { BookFlow } from "./book-flow";
 import { BookPage } from "./book-page";
@@ -41,6 +46,11 @@ export function BookReader({ book }: { book: BookEntry }) {
   const measurer = useRef<HTMLDivElement>(null);
   const [geometry, setGeometry] = useState<PageGeometry | null>(null);
   const [page, setPage] = useReadingPosition(book.id, FRONT_COVER);
+  const root = useRef<HTMLDivElement>(null);
+  const highlights = useHighlights(book.id);
+  const [highlighting, setHighlighting] = useState(false);
+  const [listOpen, setListOpen] = useState(false);
+  usePaintedHighlights(root, highlights);
 
   useLayoutEffect(() => {
     const element = stage.current;
@@ -77,8 +87,20 @@ export function BookReader({ book }: { book: BookEntry }) {
 
   const label = positionLabel(page, total, geometry?.spread ?? false);
 
+  /** Turns to the page a highlight is on, measured in the off-screen flow. */
+  const turnTo = (entry: HighlightEntry) => {
+    const container = measurer.current;
+    const flowElement = container?.querySelector<HTMLElement>(".book-flow");
+    const rect = container && rangesFor(container, entry)[0]?.getClientRects()[0];
+    setListOpen(false);
+    if (!geometry || !flowElement || !rect) return;
+    const column = geometry.textWidth + geometry.columnGap;
+    const index = Math.floor((rect.left - flowElement.getBoundingClientRect().left + 1) / column);
+    setPage(Math.max(0, Math.min(index, total - 1)));
+  };
+
   return (
-    <div className="book-desk fixed inset-0 flex flex-col">
+    <div ref={root} className="book-desk fixed inset-0 flex flex-col">
       <header className="glass-bar flex h-14 shrink-0 items-center justify-between gap-3 px-3 pt-[env(safe-area-inset-top)]">
         <Link
           to="/books/$bookId"
@@ -90,12 +112,46 @@ export function BookReader({ book }: { book: BookEntry }) {
           <CloseIcon size={20} />
         </Link>
         <p className="truncate font-serif text-[17px] font-semibold">{book.title || "Untitled"}</p>
-        <p
-          className="w-24 text-right text-[13px] text-label-secondary tabular-nums"
-          aria-live="polite"
-        >
-          {total ? label : ""}
-        </p>
+        <div className="flex shrink-0 items-center justify-end gap-1">
+          <p
+            className="hidden w-28 text-right text-[13px] text-label-secondary tabular-nums sm:block"
+            aria-live="polite"
+          >
+            {total ? label : ""}
+          </p>
+          {highlightsSupported() && (
+            <button
+              type="button"
+              aria-pressed={highlighting}
+              aria-label={highlighting ? "Stop highlighting" : "Highlight"}
+              data-tooltip={highlighting ? "Stop highlighting" : "Highlight"}
+              onClick={() => {
+                setHighlighting((on) => !on);
+                window.getSelection()?.removeAllRanges();
+              }}
+              className={cn(
+                "flex size-[34px] items-center justify-center rounded-full transition-colors",
+                highlighting ? "bg-accent text-on-accent" : "text-label hover:bg-fill",
+              )}
+            >
+              <HighlighterIcon size={19} />
+            </button>
+          )}
+          <button
+            type="button"
+            aria-label="Highlights"
+            data-tooltip="Highlights"
+            onClick={() => setListOpen(true)}
+            className="relative flex size-[34px] items-center justify-center rounded-full text-label transition-colors hover:bg-fill"
+          >
+            <ChaptersIcon size={19} />
+            {highlights.length > 0 && (
+              <span className="absolute top-0.5 right-0.5 flex min-w-4 items-center justify-center rounded-full bg-accent px-1 text-[10px] leading-4 font-bold text-on-accent">
+                {highlights.length}
+              </span>
+            )}
+          </button>
+        </div>
       </header>
 
       <div
@@ -123,6 +179,7 @@ export function BookReader({ book }: { book: BookEntry }) {
                   total={total}
                   position={geometry.spread ? toSpread(page) : page}
                   onPositionChange={onPositionChange}
+                  interactive={!highlighting}
                   renderFace={(index, side) => (
                     <BookPage
                       index={index}
@@ -139,6 +196,15 @@ export function BookReader({ book }: { book: BookEntry }) {
           </>
         )}
       </div>
+
+      <HighlightPalette root={stage} bookId={book.id} entries={highlights} enabled={highlighting} />
+      <HighlightsPanel
+        open={listOpen}
+        onClose={() => setListOpen(false)}
+        entries={highlights}
+        chapters={chapters ?? []}
+        onChoose={turnTo}
+      />
 
       <footer className="flex shrink-0 items-center gap-3 px-6 pt-2 pb-[max(14px,env(safe-area-inset-bottom))]">
         <label className="sr-only" htmlFor="book-progress">
