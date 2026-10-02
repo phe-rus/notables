@@ -1,0 +1,9 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1024 1024" role="img" aria-label="Notables">
+  <title>Notables</title>
+  <!-- Android adaptive icon monochrome (themed) layer: the N and full stop from
+       app-icon.svg, tinted by the system. -->
+  <g transform="translate(41 -67)">
+    <path d="M282 738V420c0-12 15-17 22-7l232 330c7 10 22 5 22-7V520" fill="none" stroke="#000000" stroke-width="78" stroke-linecap="round" stroke-linejoin="round"/>
+    <circle cx="660" cy="738" r="40" fill="#000000"/>
+  </g>
+</svg>

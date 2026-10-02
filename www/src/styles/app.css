@@ -116,9 +116,39 @@ html[data-window-frame="rounded"] body::after {
 .splash-word {
   animation: splash-rise 0.5s 0.15s ease-out both;
 }
+/* The system activity indicator: shown only when opening takes a moment. */
+@keyframes splash-spoke {
+  from {
+    opacity: 1;
+  }
+  to {
+    opacity: 0.18;
+  }
+}
+.splash-spinner {
+  position: relative;
+  width: 22px;
+  height: 22px;
+  animation: splash-rise 0.4s 0.6s ease-out both;
+}
+.splash-spinner > i {
+  position: absolute;
+  top: 0;
+  left: 50%;
+  width: 2.5px;
+  height: 6.5px;
+  margin-left: -1.25px;
+  border-radius: 2px;
+  background: var(--color-label-secondary);
+  transform-origin: 50% 11px;
+  animation: splash-spoke 0.8s linear infinite;
+}
 @media (prefers-reduced-motion: reduce) {
   .splash-mark,
   .splash-word {
     animation: none;
+  }
+  .splash-spinner > i {
+    animation-duration: 2.4s;
   }
 }

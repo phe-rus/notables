@@ -7,6 +7,8 @@ import { AppMark } from "../brand/app-mark";
 const MIN_VISIBLE_MS = 450;
 /** Never keep anyone waiting on a slow device. */
 const MAX_VISIBLE_MS = 4000;
+/** The eight spokes of the activity indicator, each a step behind the last. */
+const SPOKES = [0, 1, 2, 3, 4, 5, 6, 7];
 
 /**
  * The first thing people see while the app opens: the mark settling in on
@@ -46,6 +48,17 @@ export function SplashScreen() {
           </div>
           <span className="splash-word text-[17px] font-semibold tracking-tight text-label">
             Notables
+          </span>
+          <span className="splash-spinner absolute bottom-[calc(env(safe-area-inset-bottom)+64px)]">
+            {SPOKES.map((spoke) => (
+              <i
+                key={spoke}
+                style={{
+                  transform: `rotate(${spoke * 45}deg)`,
+                  animationDelay: `${(spoke - SPOKES.length) * 0.1}s`,
+                }}
+              />
+            ))}
           </span>
         </motion.div>
       )}
