@@ -100,6 +100,13 @@ Shipped and tested in the browser (Playwright) unless noted:
   Downloads. Whisper now downloads as the `whisper-base` pack. Not live
   until the packs are published (`bun run models:publish <id>`) and the
   Worker is deployed; the bucket and database rename (AC-14) is still open.
+- Four media kinds (spec 0002, built, awaiting `/check verify` and `/test`):
+  every item and series is a book, comic, manga or audiobook
+  (`books/model/media-kind.ts`, read through `getBookStore().kindOf`),
+  with shelves, per kind actions, franchises (`store/franchise-store.ts`),
+  parts over chapters (`lib/chapter-outline.ts`), whole series delete
+  through Recently Deleted (batch ids), and imports that guess the kind,
+  find parts and merge into existing series (`imports/lib/import-targets.ts`).
 - Six languages with RTL for Arabic. Main surfaces are translated; some
   deeper screens (invoice editor, importers, readers' minor labels) are
   still English.

@@ -127,12 +127,12 @@ Desktop and web layouts adapt to tablet widths and to small desktop windows, so 
 Books, comics, manga and audiobooks become four distinct kinds, each with its own shelf and its own tools, instead of formats bolted onto one book type.
 **Done when:** every item in the library is clearly one of the four kinds, imports land in the right one, and each kind shows only the actions that fit it.
 - [x] Design it (spec): `/architect four media kinds`
-- [ ] Build it: `/develop four media kinds`
-  - [ ] Kinds everywhere: stored kind, four shelves, New menu, actions per kind, comic and manga switching, adding files (AC-1, AC-2, AC-3, AC-4, AC-5, AC-6, AC-7, AC-21)
-  - [ ] Delete and restore a whole series through Recently Deleted (AC-16, AC-17, AC-18, AC-19)
-  - [ ] Franchises, parts and loose chapters (AC-8, AC-9, AC-10, AC-11)
-  - [ ] Imports that guess the kind, find parts, merge into series and offer franchises (AC-12, AC-13, AC-14, AC-15)
-  - [ ] Every new string in six languages (AC-20)
+- [x] Build it: `/develop four media kinds`
+  - [x] Kinds everywhere: stored kind, four shelves, New menu, actions per kind, comic and manga switching, adding files (AC-1, AC-2, AC-3, AC-4, AC-5, AC-6, AC-7, AC-21)
+  - [x] Delete and restore a whole series through Recently Deleted (AC-16, AC-17, AC-18, AC-19)
+  - [x] Franchises, parts and loose chapters (AC-8, AC-9, AC-10, AC-11)
+  - [x] Imports that guess the kind, find parts, merge into series and offer franchises (AC-12, AC-13, AC-14, AC-15)
+  - [x] Every new string in six languages (AC-20)
 - [ ] Verify it: `/check verify four media kinds`
 - [ ] Test it: `/test four media kinds`
 spec [0002](../../specs/www/0002-four-media-kinds/index.md)
