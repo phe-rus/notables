@@ -12,3 +12,31 @@
 @theme static {
   --font-serif: "Newsreader Variable", "New York", "Iowan Old Style", Georgia, serif;
 }
+
+/* Printing an invoice or receipt: only the page, at A4, edge to edge. */
+.print-root {
+  display: none;
+}
+
+@media print {
+  @page {
+    size: A4;
+    margin: 0;
+  }
+
+  /* Unlayered, so these win over Tailwind's utilities without !important. */
+  body > *:not(.print-root) {
+    display: none;
+  }
+
+  .print-root {
+    display: block;
+  }
+
+  .print-root .invoice-paper {
+    width: 210mm;
+    min-height: 297mm;
+    print-color-adjust: exact;
+    -webkit-print-color-adjust: exact;
+  }
+}

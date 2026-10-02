@@ -7,6 +7,7 @@ import {
   ChevronRightIcon,
   cn,
   GlobeIcon,
+  InvoiceIcon,
   JournalIcon,
   LessonIcon,
   NoteIcon,
@@ -29,6 +30,7 @@ import { shortcutLabel } from "../../../lib/keyboard/shortcuts";
 import { useAuthorName } from "../../../platform/author-preferences";
 import { windowChrome } from "../../../platform/window-chrome";
 import { useBooks } from "../../books/store/book-store";
+import { useInvoices } from "../../invoices/store/invoice-store";
 import { openSearch } from "../../search/store/search-palette";
 import { toggleSidebarCollapsed, usePreferences } from "../../settings/store/preferences-store";
 import { formatAge } from "../lib/date-format";
@@ -47,6 +49,7 @@ export const sidebarIcons: Record<SidebarItemId, ReactNode> = {
   lesson: <LessonIcon size={17} />,
   plan: <PlanIcon size={17} />,
   books: <BookIcon size={17} />,
+  invoices: <InvoiceIcon size={17} />,
   published: <GlobeIcon size={17} />,
 };
 
@@ -66,6 +69,7 @@ export function Sidebar({
   style?: React.CSSProperties;
 }) {
   const books = useBooks();
+  const invoices = useInvoices();
   const entries = useLibrary();
   const { order, hidden, counts } = usePreferences().sidebar;
   const [editing, setEditing] = useState(false);
@@ -73,12 +77,17 @@ export function Sidebar({
 
   const count = (id: SidebarItemId | "all") => {
     if (id === "books") return books.length;
+    if (id === "invoices") return invoices.length;
     return entries.filter((e) =>
       id === "all" ? true : id === "published" ? e.publicationId : e.kind === (id as NoteKind),
     ).length;
   };
   const link = (id: SidebarItemId): LinkProps =>
-    id === "books" ? { to: "/books" } : { to: "/", search: { view: id } };
+    id === "books"
+      ? { to: "/books" }
+      : id === "invoices"
+        ? { to: "/invoices" }
+        : { to: "/", search: { view: id } };
 
   return (
     <nav

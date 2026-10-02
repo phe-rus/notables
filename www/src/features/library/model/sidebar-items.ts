@@ -4,7 +4,7 @@ import type { ViewId } from "./library-views";
  * Sidebar entries people can reorder or hide. All Notes, Search and
  * Settings are fixed and always present.
  */
-export type SidebarItemId = Exclude<ViewId, "all" | "note"> | "books";
+export type SidebarItemId = Exclude<ViewId, "all" | "note"> | "books" | "invoices";
 
 export const sidebarItemIds: readonly SidebarItemId[] = [
   "journal",
@@ -14,6 +14,7 @@ export const sidebarItemIds: readonly SidebarItemId[] = [
   "lesson",
   "plan",
   "books",
+  "invoices",
   "published",
 ];
 
@@ -25,6 +26,7 @@ export const sidebarItemTitles: Record<SidebarItemId, string> = {
   lesson: "Lessons",
   plan: "Plans",
   books: "Books",
+  invoices: "Invoices",
   published: "Published",
 };
 

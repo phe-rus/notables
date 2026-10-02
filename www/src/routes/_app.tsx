@@ -12,6 +12,7 @@ import { useCallback, useEffect, useMemo, useState } from "react";
 import { setDrawerOpen, useDrawerOpen } from "../components/layout/drawer-store";
 import { ResizeHandle } from "../components/layout/resize-handle";
 import { BooksList } from "../features/books/components/books-list";
+import { InvoicesList } from "../features/invoices/components/invoices-list";
 import { Sidebar, type SidebarLocation } from "../features/library/components/library-sidebar";
 import { NotesList } from "../features/library/components/notes-list";
 import { getView } from "../features/library/model/library-views";
@@ -39,12 +40,15 @@ function AppShell() {
   const navigate = useNavigate();
   const note = useMatch({ from: "/_app/notes/$noteId", shouldThrow: false });
   const book = useMatch({ from: "/_app/books/$bookId", shouldThrow: false });
+  const invoice = useMatch({ from: "/_app/invoices/$invoiceId", shouldThrow: false });
   const pathname = useLocation({ select: (location) => location.pathname });
   const inBooks = pathname.startsWith("/books");
+  const inInvoices = pathname.startsWith("/invoices");
   const inSettings = pathname.startsWith("/settings");
   const noteId = note?.params.noteId;
   const bookId = book?.params.bookId;
-  const detailOpen = Boolean(note || book || inSettings);
+  const invoiceId = invoice?.params.invoiceId;
+  const detailOpen = Boolean(note || book || invoice || inSettings);
   const isPhone = useMediaQuery("(max-width: 767px)");
   const isDesktop = useMediaQuery("(min-width: 1024px)");
   const drawerOpen = useDrawerOpen();
@@ -56,11 +60,13 @@ function AppShell() {
 
   const location: SidebarLocation = inSettings
     ? "settings"
-    : inBooks
-      ? "books"
-      : view.id === "note"
-        ? "all"
-        : view.id;
+    : inInvoices
+      ? "invoices"
+      : inBooks
+        ? "books"
+        : view.id === "note"
+          ? "all"
+          : view.id;
 
   const createNote = useCallback(() => {
     const entry = getLibrary().create(view.kind);
@@ -162,7 +168,13 @@ function AppShell() {
         transition={spring.smooth}
       >
         {!inSettings &&
-          (inBooks ? (
+          (inInvoices ? (
+            <InvoicesList
+              activeId={invoiceId}
+              onOpenSidebar={() => setDrawerOpen(true)}
+              className={cn(detailOpen ? "hidden md:flex" : "flex")}
+            />
+          ) : inBooks ? (
             <BooksList
               activeId={bookId}
               onOpenSidebar={() => setDrawerOpen(true)}
@@ -187,7 +199,12 @@ function AppShell() {
           {/* Screens push in from the right on phones and settle into place on larger displays. */}
           <TranscriptionProvider service={transcription}>
             <motion.div
-              key={noteId ?? bookId ?? (inSettings ? "settings" : inBooks ? "books" : "notes")}
+              key={
+                noteId ??
+                bookId ??
+                invoiceId ??
+                (inSettings ? "settings" : inInvoices ? "invoices" : inBooks ? "books" : "notes")
+              }
               className="flex min-h-0 grow flex-col"
               initial={isPhone ? { x: 56, opacity: 0.6 } : { y: 8, opacity: 0 }}
               animate={{ x: 0, y: 0, opacity: 1 }}

@@ -10,17 +10,25 @@
 
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as AppRouteImport } from './routes/_app'
+import { Route as VerifyRouteImport } from './routes/verify'
 import { Route as AppIndexRouteImport } from './routes/_app/index'
 import { Route as AppSettingsRouteImport } from './routes/_app/settings'
 import { Route as PPublicationIdRouteImport } from './routes/p/$publicationId'
 import { Route as ReadBookIdRouteImport } from './routes/read/$bookId'
 import { Route as AppBooksIndexRouteImport } from './routes/_app/books/index'
 import { Route as AppBooksBookIdRouteImport } from './routes/_app/books/$bookId'
+import { Route as AppInvoicesIndexRouteImport } from './routes/_app/invoices/index'
+import { Route as AppInvoicesInvoiceIdRouteImport } from './routes/_app/invoices/$invoiceId'
 import { Route as AppNotesNoteIdRouteImport } from './routes/_app/notes/$noteId'
 import { Route as MediaPublicationIdMediaIdRouteImport } from './routes/media/$publicationId/$mediaId'
 
 const AppRoute = AppRouteImport.update({
   id: '/_app',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const VerifyRoute = VerifyRouteImport.update({
+  id: '/verify',
+  path: '/verify',
   getParentRoute: () => rootRouteImport,
 } as any)
 const AppIndexRoute = AppIndexRouteImport.update({
@@ -53,6 +61,16 @@ const AppBooksBookIdRoute = AppBooksBookIdRouteImport.update({
   path: '/books/$bookId',
   getParentRoute: () => AppRoute,
 } as any)
+const AppInvoicesIndexRoute = AppInvoicesIndexRouteImport.update({
+  id: '/invoices/',
+  path: '/invoices/',
+  getParentRoute: () => AppRoute,
+} as any)
+const AppInvoicesInvoiceIdRoute = AppInvoicesInvoiceIdRouteImport.update({
+  id: '/invoices/$invoiceId',
+  path: '/invoices/$invoiceId',
+  getParentRoute: () => AppRoute,
+} as any)
 const AppNotesNoteIdRoute = AppNotesNoteIdRouteImport.update({
   id: '/notes/$noteId',
   path: '/notes/$noteId',
@@ -67,72 +85,91 @@ const MediaPublicationIdMediaIdRoute =
 
 export interface FileRoutesByFullPath {
   '/': typeof AppIndexRoute
+  '/verify': typeof VerifyRoute
   '/settings': typeof AppSettingsRoute
   '/p/$publicationId': typeof PPublicationIdRoute
   '/read/$bookId': typeof ReadBookIdRoute
   '/books/$bookId': typeof AppBooksBookIdRoute
+  '/invoices/$invoiceId': typeof AppInvoicesInvoiceIdRoute
   '/notes/$noteId': typeof AppNotesNoteIdRoute
   '/media/$publicationId/$mediaId': typeof MediaPublicationIdMediaIdRoute
   '/books/': typeof AppBooksIndexRoute
+  '/invoices/': typeof AppInvoicesIndexRoute
 }
 export interface FileRoutesByTo {
+  '/verify': typeof VerifyRoute
   '/settings': typeof AppSettingsRoute
   '/p/$publicationId': typeof PPublicationIdRoute
   '/read/$bookId': typeof ReadBookIdRoute
   '/': typeof AppIndexRoute
   '/books/$bookId': typeof AppBooksBookIdRoute
+  '/invoices/$invoiceId': typeof AppInvoicesInvoiceIdRoute
   '/notes/$noteId': typeof AppNotesNoteIdRoute
   '/media/$publicationId/$mediaId': typeof MediaPublicationIdMediaIdRoute
   '/books': typeof AppBooksIndexRoute
+  '/invoices': typeof AppInvoicesIndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/_app': typeof AppRouteWithChildren
+  '/verify': typeof VerifyRoute
   '/_app/settings': typeof AppSettingsRoute
   '/p/$publicationId': typeof PPublicationIdRoute
   '/read/$bookId': typeof ReadBookIdRoute
   '/_app/': typeof AppIndexRoute
   '/_app/books/$bookId': typeof AppBooksBookIdRoute
+  '/_app/invoices/$invoiceId': typeof AppInvoicesInvoiceIdRoute
   '/_app/notes/$noteId': typeof AppNotesNoteIdRoute
   '/media/$publicationId/$mediaId': typeof MediaPublicationIdMediaIdRoute
   '/_app/books/': typeof AppBooksIndexRoute
+  '/_app/invoices/': typeof AppInvoicesIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
     | '/'
+    | '/verify'
     | '/settings'
     | '/p/$publicationId'
     | '/read/$bookId'
     | '/books/$bookId'
+    | '/invoices/$invoiceId'
     | '/notes/$noteId'
     | '/media/$publicationId/$mediaId'
     | '/books/'
+    | '/invoices/'
   fileRoutesByTo: FileRoutesByTo
   to:
+    | '/verify'
     | '/settings'
     | '/p/$publicationId'
     | '/read/$bookId'
     | '/'
     | '/books/$bookId'
+    | '/invoices/$invoiceId'
     | '/notes/$noteId'
     | '/media/$publicationId/$mediaId'
     | '/books'
+    | '/invoices'
   id:
     | '__root__'
     | '/_app'
+    | '/verify'
     | '/_app/settings'
     | '/p/$publicationId'
     | '/read/$bookId'
     | '/_app/'
     | '/_app/books/$bookId'
+    | '/_app/invoices/$invoiceId'
     | '/_app/notes/$noteId'
     | '/media/$publicationId/$mediaId'
     | '/_app/books/'
+    | '/_app/invoices/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   AppRoute: typeof AppRouteWithChildren
+  VerifyRoute: typeof VerifyRoute
   PPublicationIdRoute: typeof PPublicationIdRoute
   ReadBookIdRoute: typeof ReadBookIdRoute
   MediaPublicationIdMediaIdRoute: typeof MediaPublicationIdMediaIdRoute
@@ -145,6 +182,13 @@ declare module '@tanstack/react-router' {
       path: ''
       fullPath: '/'
       preLoaderRoute: typeof AppRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/verify': {
+      id: '/verify'
+      path: '/verify'
+      fullPath: '/verify'
+      preLoaderRoute: typeof VerifyRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/_app/': {
@@ -189,6 +233,20 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AppBooksBookIdRouteImport
       parentRoute: typeof AppRoute
     }
+    '/_app/invoices/': {
+      id: '/_app/invoices/'
+      path: '/invoices'
+      fullPath: '/invoices/'
+      preLoaderRoute: typeof AppInvoicesIndexRouteImport
+      parentRoute: typeof AppRoute
+    }
+    '/_app/invoices/$invoiceId': {
+      id: '/_app/invoices/$invoiceId'
+      path: '/invoices/$invoiceId'
+      fullPath: '/invoices/$invoiceId'
+      preLoaderRoute: typeof AppInvoicesInvoiceIdRouteImport
+      parentRoute: typeof AppRoute
+    }
     '/_app/notes/$noteId': {
       id: '/_app/notes/$noteId'
       path: '/notes/$noteId'
@@ -210,22 +268,27 @@ interface AppRouteChildren {
   AppSettingsRoute: typeof AppSettingsRoute
   AppIndexRoute: typeof AppIndexRoute
   AppBooksBookIdRoute: typeof AppBooksBookIdRoute
+  AppInvoicesInvoiceIdRoute: typeof AppInvoicesInvoiceIdRoute
   AppNotesNoteIdRoute: typeof AppNotesNoteIdRoute
   AppBooksIndexRoute: typeof AppBooksIndexRoute
+  AppInvoicesIndexRoute: typeof AppInvoicesIndexRoute
 }
 
 const AppRouteChildren: AppRouteChildren = {
   AppSettingsRoute: AppSettingsRoute,
   AppIndexRoute: AppIndexRoute,
   AppBooksBookIdRoute: AppBooksBookIdRoute,
+  AppInvoicesInvoiceIdRoute: AppInvoicesInvoiceIdRoute,
   AppNotesNoteIdRoute: AppNotesNoteIdRoute,
   AppBooksIndexRoute: AppBooksIndexRoute,
+  AppInvoicesIndexRoute: AppInvoicesIndexRoute,
 }
 
 const AppRouteWithChildren = AppRoute._addFileChildren(AppRouteChildren)
 
 const rootRouteChildren: RootRouteChildren = {
   AppRoute: AppRouteWithChildren,
+  VerifyRoute: VerifyRoute,
   PPublicationIdRoute: PPublicationIdRoute,
   ReadBookIdRoute: ReadBookIdRoute,
   MediaPublicationIdMediaIdRoute: MediaPublicationIdMediaIdRoute,
