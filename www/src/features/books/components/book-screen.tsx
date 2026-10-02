@@ -41,9 +41,9 @@ export function BookScreen({ bookId, actions }: { bookId: string; actions?: Reac
   if (!book) {
     return (
       <div className="flex grow flex-col items-center justify-center gap-2 p-10 text-center">
-        <p className="font-serif text-[24px] font-semibold">This book isn’t on this device</p>
+        <p className="font-serif text-[24px] font-semibold">{t("books.notOnDevice")}</p>
         <Link to="/books" className="mt-2 font-semibold text-accent-text">
-          Back to books
+          {t("books.backToBooks")}
         </Link>
       </div>
     );
@@ -78,10 +78,10 @@ function BookEditor({ book, actions }: { book: BookEntry; actions?: ReactNode })
           className="flex min-h-11 items-center gap-0.5 px-1 text-[17px] text-accent-text no-underline md:invisible"
         >
           <ChevronLeftIcon size={22} strokeWidth={2.2} />
-          <span className="max-sm:sr-only">Books</span>
+          <span className="max-sm:sr-only">{t("nav.books")}</span>
         </Link>
         <div className="flex items-center gap-1.5 sm:gap-2">
-          <IconButton label="Delete book" onClick={remove}>
+          <IconButton label={t("books.deleteBook")} onClick={remove}>
             <TrashIcon size={19} />
           </IconButton>
           {actions}
@@ -93,22 +93,22 @@ function BookEditor({ book, actions }: { book: BookEntry; actions?: ReactNode })
           <BookCover title={book.title} author={book.author} image={book.cover} className="w-40" />
           <div className="flex w-full flex-col gap-2">
             <input
-              aria-label="Book title"
-              placeholder="Untitled book"
+              aria-label={t("books.bookTitle")}
+              placeholder={t("books.untitled")}
               value={book.title}
               onChange={(e) => store.update(book.id, { title: e.target.value })}
               className="bg-transparent font-serif text-[34px] leading-tight font-semibold tracking-tight outline-none placeholder:text-label-tertiary"
             />
             <input
-              aria-label="Subtitle"
-              placeholder="Subtitle"
+              aria-label={t("books.subtitle")}
+              placeholder={t("books.subtitle")}
               value={book.subtitle}
               onChange={(e) => store.update(book.id, { subtitle: e.target.value })}
               className="bg-transparent text-[17px] text-label-secondary outline-none placeholder:text-label-tertiary"
             />
             <input
-              aria-label="Author"
-              placeholder="Author"
+              aria-label={t("books.author")}
+              placeholder={t("books.author")}
               value={book.author}
               onChange={(e) => store.update(book.id, { author: e.target.value })}
               className="bg-transparent text-[15px] font-medium outline-none placeholder:text-label-tertiary"
@@ -141,7 +141,7 @@ function ChapterList({ book, chapters }: { book: BookEntry; chapters: LibraryEnt
   // E-books, PDFs, comic pages and audiobook tracks become chapters here.
   const addFiles = async (files: File[]) => {
     if (files.length === 0) return;
-    setAdding({ label: "Reading files…", progress: 0 });
+    setAdding({ label: t("imports.reading"), progress: 0 });
     try {
       const result = await appendToBook(
         book.id,
@@ -164,7 +164,7 @@ function ChapterList({ book, chapters }: { book: BookEntry; chapters: LibraryEnt
         });
       }
     } catch (error) {
-      toast.error("Couldn’t add those files", {
+      toast.error(t("books.couldNotAdd"), {
         description: error instanceof Error ? error.message : undefined,
       });
     } finally {
@@ -216,7 +216,7 @@ function ChapterList({ book, chapters }: { book: BookEntry; chapters: LibraryEnt
   return (
     <section className="flex flex-col gap-3">
       <h2 className="text-[13px] font-semibold tracking-[0.04em] text-label-tertiary uppercase">
-        Chapters
+        {t("books.chapters")}
       </h2>
       {chapters.length === 0 && (
         <p className="text-[15px] text-label-secondary">
@@ -224,7 +224,7 @@ function ChapterList({ book, chapters }: { book: BookEntry; chapters: LibraryEnt
             ? t("books.noAudio")
             : drawn
               ? t("books.noPages")
-              : `No chapters yet. Start writing one, or add ${noteKindPlural[kind]} you’ve already written.`}
+              : t("books.noChapters", { kinds: noteKindPlural[kind] })}
         </p>
       )}
       <ol className="flex flex-col gap-1.5">
@@ -318,7 +318,7 @@ function ChapterList({ book, chapters }: { book: BookEntry; chapters: LibraryEnt
             aria-expanded={picking}
             onClick={() => setPicking((open) => !open)}
           >
-            {picking ? "Done adding" : `Add ${noteKindPlural[kind]}…`}
+            {picking ? t("books.doneAdding") : t("books.addNotes", { kinds: noteKindPlural[kind] })}
           </Button>
         )}
         {hasAction(mediaKind, "switchKind") && (
@@ -400,17 +400,17 @@ function ChapterRow({
           {index + 1}
         </span>
         <span className="grow truncate font-serif text-[17px] text-label">
-          {note.title || "Untitled"}
+          {note.title || t("common.untitled")}
         </span>
       </Link>
-      <ChapterButton label="Move up" disabled={index === 0} onClick={() => onMove(-1)}>
+      <ChapterButton label={t("books.moveUp")} disabled={index === 0} onClick={() => onMove(-1)}>
         <ChevronUpIcon size={18} />
       </ChapterButton>
-      <ChapterButton label="Move down" disabled={isLast} onClick={() => onMove(1)}>
+      <ChapterButton label={t("books.moveDown")} disabled={isLast} onClick={() => onMove(1)}>
         <ChevronDownIcon size={18} />
       </ChapterButton>
       <ChapterButton
-        label={note.bookId === book.id ? "Delete chapter" : "Remove from book"}
+        label={note.bookId === book.id ? t("books.deleteChapter") : t("books.removeFromBook")}
         onClick={onRemove}
       >
         <CloseIcon size={17} />
@@ -511,7 +511,7 @@ function ChapterPicker({ book, kind }: { book: BookEntry; kind: NoteKind }) {
     <div className="flex flex-col gap-2 pt-2">
       <SearchField
         value={query}
-        placeholder={`Search ${noteKindPlural[kind]}`}
+        placeholder={t("books.searchNotes", { kinds: noteKindPlural[kind] })}
         onChange={(e) => setQuery(e.target.value)}
       />
       <ul className="flex flex-col">
@@ -527,10 +527,10 @@ function ChapterPicker({ book, kind }: { book: BookEntry; kind: NoteKind }) {
               </span>
               <span className="flex min-w-0 flex-col">
                 <span className="truncate text-[15px] font-semibold">
-                  {note.title || "New Note"}
+                  {note.title || t("notes.newNote")}
                 </span>
                 <span className="truncate text-[13px] text-label-secondary">
-                  {note.excerpt || "No additional text"}
+                  {note.excerpt || t("notes.noText")}
                 </span>
               </span>
             </button>
@@ -539,8 +539,8 @@ function ChapterPicker({ book, kind }: { book: BookEntry; kind: NoteKind }) {
         {available.length === 0 && (
           <li className="px-3 py-2 text-[14px] text-label-tertiary">
             {deferredQuery
-              ? "Nothing matches."
-              : `No other ${noteKindPlural[kind]} to add yet. Ones you write in your library show up here.`}
+              ? t("books.nothingMatches")
+              : t("books.noOthers", { kinds: noteKindPlural[kind] })}
           </li>
         )}
       </ul>

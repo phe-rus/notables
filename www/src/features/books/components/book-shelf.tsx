@@ -1,5 +1,6 @@
 import { Link } from "@tanstack/react-router";
 import { useMemo } from "react";
+import { t } from "../../../i18n/i18n";
 import { arrangeShelf, shelfBooks } from "../lib/arrange-shelf";
 import { kindOfBook } from "../lib/book-kind";
 import type { MediaKind } from "../model/media-kind";
@@ -44,7 +45,7 @@ export function BookShelf({ books, label }: { books: BookEntry[]; label: string 
               className="w-full"
             />
             <span className="line-clamp-2 text-[12px] leading-tight font-medium text-label">
-              {book.title || "Untitled"}
+              {book.title || t("common.untitled")}
             </span>
           </Link>
         ))}

@@ -132,7 +132,7 @@ function BooksListContent({ activeId, onOpenSidebar, className }: BooksListProps
 
   return (
     <section
-      aria-label="Books"
+      aria-label={t("nav.books")}
       className={cn(
         "relative flex w-full flex-col bg-surface md:w-[330px] md:shrink-0 md:border-r md:border-separator/70",
         className,
@@ -151,9 +151,9 @@ function BooksListContent({ activeId, onOpenSidebar, className }: BooksListProps
             <h1 className="text-[22px] font-bold tracking-tight">
               {selecting
                 ? selectedCount === 0
-                  ? "Select Books"
-                  : `${selectedCount} Selected`
-                : "Books"}
+                  ? t("books.selectTitle")
+                  : t("books.selectedCount", { count: selectedCount })
+                : t("nav.books")}
             </h1>
           </div>
           <div className="flex items-center gap-1">
@@ -166,7 +166,7 @@ function BooksListContent({ activeId, onOpenSidebar, className }: BooksListProps
                   selecting ? "font-semibold text-accent-text" : "text-accent-text",
                 )}
               >
-                {selecting ? "Done" : "Select"}
+                {selecting ? t("common.done") : t("books.select")}
               </button>
             )}
             {!selecting && (
@@ -201,15 +201,13 @@ function BooksListContent({ activeId, onOpenSidebar, className }: BooksListProps
       <div className="flex grow flex-col gap-1 overflow-y-auto px-2.5 pt-2 pb-28 md:pb-8">
         {allBooks.length === 0 && (
           <div className="flex flex-col items-center gap-3 px-6 pt-16 text-center">
-            <p className="text-[15px] text-label-secondary">
-              Gather stories, journals or lessons into a book you can read like the real thing.
-            </p>
+            <p className="text-[15px] text-label-secondary">{t("books.emptyBody")}</p>
             <button
               type="button"
               onClick={() => createBook()}
               className="rounded-full bg-accent px-4 py-2 text-[14px] font-semibold text-on-accent transition-transform active:scale-[0.97]"
             >
-              Make a book
+              {t("books.makeBook")}
             </button>
           </div>
         )}
@@ -271,7 +269,7 @@ function BooksListContent({ activeId, onOpenSidebar, className }: BooksListProps
               variant="ghost"
               onClick={() => selection.setAll(allSelected ? [] : books.map((book) => book.id))}
             >
-              {allSelected ? "Deselect All" : "Select All"}
+              {allSelected ? t("books.deselectAll") : t("books.selectAll")}
             </Button>
             <Button
               variant="primary"
@@ -280,7 +278,9 @@ function BooksListContent({ activeId, onOpenSidebar, className }: BooksListProps
               className="bg-danger text-white"
             >
               <TrashIcon size={16} />
-              Delete{selectedCount > 0 ? ` ${selectedCount}` : ""}
+              {selectedCount > 0
+                ? t("books.deleteCount", { count: selectedCount })
+                : t("common.delete")}
             </Button>
           </motion.div>
         )}
@@ -565,7 +565,7 @@ function BookRow({
       <BookCover title={book.title} author={book.author} image={book.cover} className="w-12" />
       <span className="flex min-w-0 flex-col gap-0.5">
         <span className="truncate text-[15px] font-semibold text-label">
-          {(series ? volumeTitle(book, series, mediaKind) : book.title) || "Untitled book"}
+          {(series ? volumeTitle(book, series, mediaKind) : book.title) || t("books.untitled")}
         </span>
         <span className="text-[13px] text-label-secondary">
           {[franchise, kind, count].filter(Boolean).join(" · ")}
