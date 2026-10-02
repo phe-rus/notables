@@ -88,13 +88,11 @@ pub fn normalize_segments(raw: impl IntoIterator<Item = (i64, i64, String)>) -> 
 
 /// Reads little-endian 32-bit float samples sent by the WebView.
 pub fn samples_from_bytes(bytes: &[u8]) -> Result<Vec<f32>> {
-    if !bytes.len().is_multiple_of(4) {
+    let (samples, rest) = bytes.as_chunks::<4>();
+    if !rest.is_empty() {
         return Err(TranscriptionError::InvalidAudio);
     }
-    Ok(bytes
-        .chunks_exact(4)
-        .map(|chunk| f32::from_le_bytes([chunk[0], chunk[1], chunk[2], chunk[3]]))
-        .collect())
+    Ok(samples.iter().copied().map(f32::from_le_bytes).collect())
 }
 
 #[cfg(test)]
