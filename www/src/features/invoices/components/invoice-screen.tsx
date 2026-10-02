@@ -17,6 +17,7 @@ import {
 import { Link, useNavigate } from "@tanstack/react-router";
 import { useCallback, useId, useRef, useState } from "react";
 import { createPortal } from "react-dom";
+import { Field, FormSection, TextArea, TextInput } from "../../../components/form/form-fields";
 import { printPage } from "../../../platform/print-page";
 import { RecentClientPicker } from "../business/recent-client-picker";
 import { exportInvoicePdf } from "../export/export-invoice";
@@ -28,7 +29,6 @@ import {
 import { currencies } from "../lib/currencies";
 import { useInvoiceSeal } from "../lib/use-invoice-seal";
 import { getInvoiceStore } from "../store/invoice-store";
-import { Field, FormSection, TextArea, TextInput } from "./form-fields";
 import { InvoicePaper } from "./invoice-paper";
 import { LineItemsEditor } from "./line-items-editor";
 import { MoneyInput } from "./money-input";
@@ -217,6 +217,7 @@ export function InvoiceScreen({ invoice }: { invoice: InvoiceDocument }) {
                 </Field>
                 <Field label="Currency">
                   <select
+                    aria-label="Currency"
                     value={invoice.currency}
                     onChange={(e) => set({ currency: e.target.value })}
                     className="w-full rounded-[10px] control-field px-3 py-2 text-[14px] text-label"

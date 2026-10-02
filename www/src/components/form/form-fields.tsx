@@ -1,5 +1,10 @@
 import { cn } from "@notables/ui";
-import type { InputHTMLAttributes, ReactNode, TextareaHTMLAttributes } from "react";
+import type {
+  InputHTMLAttributes,
+  ReactNode,
+  SelectHTMLAttributes,
+  TextareaHTMLAttributes,
+} from "react";
 
 export const fieldClass =
   "w-full min-w-0 rounded-[10px] control-field px-3 py-2 text-[14px] text-label placeholder:text-label-tertiary";
@@ -49,4 +54,8 @@ export function FormSection({
       {children}
     </section>
   );
+}
+
+export function SelectInput({ className, ...props }: SelectHTMLAttributes<HTMLSelectElement>) {
+  return <select {...props} className={cn(fieldClass, className)} />;
 }

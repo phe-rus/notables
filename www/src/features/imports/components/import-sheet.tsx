@@ -5,11 +5,12 @@ import {
   cn,
   IconButton,
   SegmentedControl,
+  Sheet,
   spring,
   toast,
 } from "@notables/ui";
 import { useNavigate } from "@tanstack/react-router";
-import { AnimatePresence, motion } from "motion/react";
+import { motion } from "motion/react";
 import { type DragEvent, useRef, useState } from "react";
 import { buildImportPlan, type ImportFile, type ImportPlan } from "../lib/import-plan";
 import { IMPORT_ACCEPT, withPath } from "../lib/picked-files";
@@ -56,34 +57,9 @@ async function droppedFiles(event: DragEvent): Promise<Array<[ImportFile, File]>
  */
 export function ImportSheet({ open, onClose }: { open: boolean; onClose: () => void }) {
   return (
-    <AnimatePresence>
-      {open && (
-        <div className="fixed inset-0 z-[65] flex items-end justify-center sm:items-center sm:p-6">
-          <motion.button
-            type="button"
-            aria-label="Close"
-            tabIndex={-1}
-            className="absolute inset-0 bg-black/30 backdrop-blur-md"
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            onClick={onClose}
-          />
-          <motion.div
-            role="dialog"
-            aria-modal="true"
-            aria-label="Import books"
-            className="glass-menu relative flex max-h-[92dvh] w-full max-w-[620px] flex-col overflow-hidden rounded-t-[28px] sm:rounded-[28px]"
-            initial={{ y: 40, opacity: 0, scale: 0.98 }}
-            animate={{ y: 0, opacity: 1, scale: 1 }}
-            exit={{ y: 30, opacity: 0 }}
-            transition={spring.smooth}
-          >
-            <ImportFlow onClose={onClose} />
-          </motion.div>
-        </div>
-      )}
-    </AnimatePresence>
+    <Sheet open={open} onClose={onClose} label="Import books" className="max-w-[620px]">
+      <ImportFlow onClose={onClose} />
+    </Sheet>
   );
 }
 

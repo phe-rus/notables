@@ -2,8 +2,8 @@ import { formatMoney, type LineItem, lineAmount } from "@notables/core";
 import { CloseIcon, PlusIcon, spring } from "@notables/ui";
 import { AnimatePresence, motion } from "motion/react";
 import { useState } from "react";
+import { TextInput } from "../../../components/form/form-fields";
 import { newLineItem } from "../store/invoice-store";
-import { TextInput } from "./form-fields";
 import { MoneyInput } from "./money-input";
 
 /** What was sold: description, quantity and unit price per line. */

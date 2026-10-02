@@ -5,6 +5,7 @@ import { CollapsedSidebarControls } from "../../../components/window/collapsed-s
 import { setAuthorName, useAuthorName } from "../../../platform/author-preferences";
 import { isTauri } from "../../../platform/runtime";
 import { AiSettingsSection } from "../../ai/components/ai-settings-section";
+import { ReminderSettingsSection } from "../../calendar/components/reminder-settings-section";
 import { sidebarIcons } from "../../library/components/library-sidebar";
 import { SidebarEditor } from "../../library/components/sidebar-editor";
 import { type NoteFont, noteFontLabels, noteFonts } from "../../library/model/note-fonts";
@@ -182,6 +183,8 @@ export function SettingsScreen({ onOpenSidebar }: { onOpenSidebar: () => void })
               />
             </SettingsRow>
           </SettingsGroup>
+
+          <ReminderSettingsSection />
 
           <AiSettingsSection />
 

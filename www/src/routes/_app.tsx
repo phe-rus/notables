@@ -13,6 +13,7 @@ import { setDrawerOpen, useDrawerOpen } from "../components/layout/drawer-store"
 import { ResizeHandle } from "../components/layout/resize-handle";
 import { TabBar } from "../components/layout/tab-bar";
 import { BooksList } from "../features/books/components/books-list";
+import { ReminderRunner } from "../features/calendar/components/reminder-runner";
 import { InvoicesList } from "../features/invoices/components/invoices-list";
 import { Sidebar, type SidebarLocation } from "../features/library/components/library-sidebar";
 import { NotesList } from "../features/library/components/notes-list";
@@ -50,8 +51,9 @@ function AppShell() {
   const inInvoices = pathname.startsWith("/invoices");
   const inSettings = pathname.startsWith("/settings");
   const inTrash = pathname.startsWith("/trash");
-  // Settings and Recently Deleted fill the content area without a list beside them.
-  const fullPage = inSettings || inTrash;
+  const inCalendar = pathname.startsWith("/calendar");
+  // Settings, Calendar and Recently Deleted fill the content area without a list beside them.
+  const fullPage = inSettings || inTrash || inCalendar;
   const noteId = note?.params.noteId;
   const bookId = book?.params.bookId;
   const invoiceId = invoice?.params.invoiceId;
@@ -71,11 +73,13 @@ function AppShell() {
     ? "settings"
     : inTrash
       ? "trash"
-      : inInvoices
-        ? "invoices"
-        : inBooks
-          ? "books"
-          : (groupOf(view.id) ?? (view.id === "published" ? "published" : "all"));
+      : inCalendar
+        ? "calendar"
+        : inInvoices
+          ? "invoices"
+          : inBooks
+            ? "books"
+            : (groupOf(view.id) ?? (view.id === "published" ? "published" : "all"));
 
   const createNote = useCallback(() => {
     const entry = getLibrary().create(view.kind);
@@ -127,6 +131,7 @@ function AppShell() {
   return (
     <div className="flex h-dvh overflow-hidden bg-sidebar">
       <AppearanceSync />
+      {libraryReady && <ReminderRunner />}
       <SearchPalette />
 
       {/* Desktop: the sidebar sits on the window; content floats in an inset card. */}
@@ -236,11 +241,13 @@ function AppShell() {
                   ? "settings"
                   : inTrash
                     ? "trash"
-                    : inInvoices
-                      ? "invoices"
-                      : inBooks
-                        ? "books"
-                        : "notes")
+                    : inCalendar
+                      ? "calendar"
+                      : inInvoices
+                        ? "invoices"
+                        : inBooks
+                          ? "books"
+                          : "notes")
               }
               className="flex min-h-0 grow flex-col"
               initial={isPhone ? { x: 56, opacity: 0.6 } : { y: 8, opacity: 0 }}
@@ -256,13 +263,15 @@ function AppShell() {
       {isPhone && showTabBar && (
         <TabBar
           active={
-            inInvoices
-              ? "invoices"
-              : inBooks || location === "books"
-                ? "books"
-                : inSettings
-                  ? "settings"
-                  : "notes"
+            inCalendar
+              ? null
+              : inInvoices
+                ? "invoices"
+                : inBooks || location === "books"
+                  ? "books"
+                  : inSettings
+                    ? "settings"
+                    : "notes"
           }
         />
       )}

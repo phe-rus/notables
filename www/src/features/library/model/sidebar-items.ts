@@ -3,12 +3,19 @@
  * Settings are fixed and always present. Related kinds share one place
  * (see viewGroups) so the sidebar stays short.
  */
-export type SidebarItemId = "writing" | "books" | "planning" | "invoices" | "published";
+export type SidebarItemId =
+  | "writing"
+  | "books"
+  | "planning"
+  | "calendar"
+  | "invoices"
+  | "published";
 
 export const sidebarItemIds: readonly SidebarItemId[] = [
   "writing",
   "books",
   "planning",
+  "calendar",
   "invoices",
   "published",
 ];
@@ -17,6 +24,7 @@ export const sidebarItemTitles: Record<SidebarItemId, string> = {
   writing: "Writing",
   books: "Books",
   planning: "Plan & learn",
+  calendar: "Calendar",
   invoices: "Invoices",
   published: "Published",
 };

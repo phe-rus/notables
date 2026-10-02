@@ -1,6 +1,6 @@
 import { minorToInput, parseMoney } from "@notables/core";
 import { useEffect, useState } from "react";
-import { TextInput } from "./form-fields";
+import { TextInput } from "../../../components/form/form-fields";
 
 /**
  * An amount typed as a decimal ("12.50") and kept as minor units. Text is

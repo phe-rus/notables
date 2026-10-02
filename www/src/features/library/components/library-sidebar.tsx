@@ -1,5 +1,6 @@
 import {
   BookIcon,
+  CalendarIcon,
   ChevronLeftIcon,
   ChevronRightIcon,
   type ContextMenuItem,
@@ -28,6 +29,7 @@ import { shortcutLabel } from "../../../lib/keyboard/shortcuts";
 import { useAuthorName } from "../../../platform/author-preferences";
 import { windowChrome } from "../../../platform/window-chrome";
 import { useBooks, useTrashedBooks } from "../../books/store/book-store";
+import { useUpcomingCount } from "../../calendar/store/use-upcoming-count";
 import { useInvoices } from "../../invoices/store/invoice-store";
 import { noteMenu } from "../../notes/actions/note-menu";
 import { openSearch } from "../../search/store/search-palette";
@@ -50,6 +52,7 @@ export const sidebarIcons: Record<SidebarItemId, ReactNode> = {
   writing: <StoryIcon size={17} />,
   books: <BookIcon size={17} />,
   planning: <LessonIcon size={17} />,
+  calendar: <CalendarIcon size={17} />,
   invoices: <InvoiceIcon size={17} />,
   published: <GlobeIcon size={17} />,
 };
@@ -71,6 +74,7 @@ export function Sidebar({
 }) {
   const books = useBooks();
   const invoices = useInvoices();
+  const upcoming = useUpcomingCount();
   const library = useLibrary();
   const entries = library.filter(isListedNote);
   const trashedBooks = useTrashedBooks();
@@ -82,6 +86,7 @@ export function Sidebar({
 
   const count = (id: SidebarItemId | "all") => {
     if (id === "invoices") return invoices.length;
+    if (id === "calendar") return upcoming;
     if (id === "books") {
       return books.length + entries.filter((e) => readingKinds.includes(e.kind)).length;
     }
@@ -95,7 +100,9 @@ export function Sidebar({
       ? { to: "/books" }
       : id === "invoices"
         ? { to: "/invoices" }
-        : { to: "/", search: { view: id } };
+        : id === "calendar"
+          ? { to: "/calendar" }
+          : { to: "/", search: { view: id } };
 
   return (
     <nav

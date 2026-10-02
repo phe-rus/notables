@@ -1,5 +1,5 @@
 import type { InvoiceParty } from "@notables/core";
-import { Field, TextArea, TextInput } from "./form-fields";
+import { Field, TextArea, TextInput } from "../../../components/form/form-fields";
 
 /** Name, contact details and tax ID of the issuer or the client. */
 export function PartyFields({

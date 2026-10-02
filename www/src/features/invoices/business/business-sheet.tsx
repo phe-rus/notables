@@ -1,7 +1,6 @@
-import { Button, CloseIcon, IconButton, spring, toast } from "@notables/ui";
-import { AnimatePresence, motion } from "motion/react";
-import { useEffect, useState } from "react";
-import { Field, FormSection, TextArea, TextInput } from "../components/form-fields";
+import { Button, CloseIcon, IconButton, Sheet, toast } from "@notables/ui";
+import { useState } from "react";
+import { Field, FormSection, TextArea, TextInput } from "../../../components/form/form-fields";
 import { PartyFields } from "../components/party-fields";
 import { StylePanel } from "../components/style-panel";
 import {
@@ -16,42 +15,10 @@ import { currencies } from "../lib/currencies";
  * how to pay and the notes every new document starts with.
  */
 export function BusinessSheet({ open, onClose }: { open: boolean; onClose: () => void }) {
-  useEffect(() => {
-    if (!open) return;
-    const onKey = (event: KeyboardEvent) => event.key === "Escape" && onClose();
-    window.addEventListener("keydown", onKey);
-    return () => window.removeEventListener("keydown", onKey);
-  }, [open, onClose]);
-
   return (
-    <AnimatePresence>
-      {open && (
-        <div className="fixed inset-0 z-[65] flex items-end justify-center sm:items-center sm:p-6">
-          <motion.button
-            type="button"
-            aria-label="Close"
-            tabIndex={-1}
-            className="absolute inset-0 bg-black/30 backdrop-blur-md"
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            onClick={onClose}
-          />
-          <motion.div
-            role="dialog"
-            aria-modal="true"
-            aria-label="Your business"
-            className="glass-menu relative flex max-h-[92dvh] w-full max-w-[560px] flex-col overflow-hidden rounded-t-[28px] sm:rounded-[28px]"
-            initial={{ y: 40, opacity: 0, scale: 0.98 }}
-            animate={{ y: 0, opacity: 1, scale: 1 }}
-            exit={{ y: 30, opacity: 0 }}
-            transition={spring.smooth}
-          >
-            <BusinessForm onClose={onClose} />
-          </motion.div>
-        </div>
-      )}
-    </AnimatePresence>
+    <Sheet open={open} onClose={onClose} label="Your business">
+      <BusinessForm onClose={onClose} />
+    </Sheet>
   );
 }
 
@@ -98,6 +65,7 @@ function BusinessForm({ onClose }: { onClose: () => void }) {
           <div className="grid grid-cols-3 gap-2.5">
             <Field label="Currency">
               <select
+                aria-label="Currency"
                 value={profile.currency}
                 onChange={(e) => set({ currency: e.target.value })}
                 className="w-full rounded-[10px] control-field px-3 py-2 text-[14px] text-label"

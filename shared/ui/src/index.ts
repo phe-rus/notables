@@ -13,6 +13,7 @@ export * from "./components/dialog/dialog-host";
 export { type ConfirmOptions, confirmDialog } from "./components/dialog/dialog-store";
 export * from "./components/popover/popover";
 export * from "./components/search-field/search-field";
+export * from "./components/sheet/sheet";
 export * from "./components/sidebar/sidebar";
 export * from "./components/status-indicator/status-indicator";
 export { type ToastOptions, type ToastTone, toast } from "./components/toast/toast-store";

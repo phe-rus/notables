@@ -37,7 +37,8 @@ const tabs: Array<{ id: TabId; label: string; icon: ReactNode; link: LinkProps }
  * Phones: the main places a thumb's reach away, on a floating glass bar,
  * with Search in the middle. Hidden while a note or document is open.
  */
-export function TabBar({ active, className }: { active: TabId; className?: string }) {
+/** `active` is null in places the bar has no tab for. */
+export function TabBar({ active, className }: { active: TabId | null; className?: string }) {
   const [notes, books, invoices, settings] = tabs as [
     (typeof tabs)[0],
     (typeof tabs)[0],
