@@ -10,6 +10,7 @@ export * from "./components/sidebar/sidebar";
 export * from "./components/status-indicator/status-indicator";
 export { type ToastOptions, type ToastTone, toast } from "./components/toast/toast-store";
 export * from "./components/toast/toaster";
+export * from "./components/tooltip/tooltip-host";
 export * from "./hooks/use-dismiss";
 export * from "./hooks/use-media-query";
 export * from "./icons/icons";

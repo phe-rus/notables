@@ -17,7 +17,7 @@ export const IconButton = forwardRef<HTMLButtonElement, IconButtonProps>(functio
       ref={ref}
       type={type}
       aria-label={label}
-      title={label}
+      data-tooltip={label}
       className={cn(
         "group inline-flex shrink-0 items-center justify-center rounded-full transition-[background-color,transform] duration-fast ease-standard active:scale-[0.94] disabled:opacity-40",
         size === "sm" ? "size-[34px]" : "size-11",

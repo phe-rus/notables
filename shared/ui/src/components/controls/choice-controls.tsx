@@ -26,7 +26,7 @@ export function SegmentedControl<T extends string>({
           <label
             key={option.value}
             className={cn(
-              "relative isolate min-w-[64px] cursor-pointer rounded-[8px] px-3 py-1 text-center text-[13px] transition-colors has-[:focus-visible]:ring-2 has-[:focus-visible]:ring-accent/60",
+              "relative isolate min-w-[64px] flex-1 cursor-pointer rounded-[8px] px-3 py-1 text-center text-[13px] whitespace-nowrap transition-colors has-[:focus-visible]:ring-2 has-[:focus-visible]:ring-accent/60",
               selected ? "font-semibold text-label" : "text-label-secondary hover:text-label",
             )}
           >
@@ -105,7 +105,6 @@ export function SwatchPicker<T extends string>({
         return (
           <label
             key={option.value}
-            title={option.label}
             className="group flex cursor-pointer flex-col items-center gap-1.5"
           >
             <input
