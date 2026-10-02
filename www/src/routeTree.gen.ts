@@ -15,6 +15,7 @@ import { Route as WelcomeRouteImport } from './routes/welcome'
 import { Route as WidgetRouteImport } from './routes/widget'
 import { Route as AppIndexRouteImport } from './routes/_app/index'
 import { Route as AppCalendarRouteImport } from './routes/_app/calendar'
+import { Route as AppConnectionsRouteImport } from './routes/_app/connections'
 import { Route as AppSettingsRouteImport } from './routes/_app/settings'
 import { Route as AppTrashRouteImport } from './routes/_app/trash'
 import { Route as ModelsSplatRouteImport } from './routes/models/$'
@@ -55,6 +56,11 @@ const AppIndexRoute = AppIndexRouteImport.update({
 const AppCalendarRoute = AppCalendarRouteImport.update({
   id: '/calendar',
   path: '/calendar',
+  getParentRoute: () => AppRoute,
+} as any)
+const AppConnectionsRoute = AppConnectionsRouteImport.update({
+  id: '/connections',
+  path: '/connections',
   getParentRoute: () => AppRoute,
 } as any)
 const AppSettingsRoute = AppSettingsRouteImport.update({
@@ -125,6 +131,7 @@ export interface FileRoutesByFullPath {
   '/welcome': typeof WelcomeRoute
   '/widget': typeof WidgetRoute
   '/calendar': typeof AppCalendarRoute
+  '/connections': typeof AppConnectionsRoute
   '/settings': typeof AppSettingsRoute
   '/trash': typeof AppTrashRoute
   '/models/$': typeof ModelsSplatRoute
@@ -143,6 +150,7 @@ export interface FileRoutesByTo {
   '/welcome': typeof WelcomeRoute
   '/widget': typeof WidgetRoute
   '/calendar': typeof AppCalendarRoute
+  '/connections': typeof AppConnectionsRoute
   '/settings': typeof AppSettingsRoute
   '/trash': typeof AppTrashRoute
   '/models/$': typeof ModelsSplatRoute
@@ -164,6 +172,7 @@ export interface FileRoutesById {
   '/welcome': typeof WelcomeRoute
   '/widget': typeof WidgetRoute
   '/_app/calendar': typeof AppCalendarRoute
+  '/_app/connections': typeof AppConnectionsRoute
   '/_app/settings': typeof AppSettingsRoute
   '/_app/trash': typeof AppTrashRoute
   '/models/$': typeof ModelsSplatRoute
@@ -186,6 +195,7 @@ export interface FileRouteTypes {
     | '/welcome'
     | '/widget'
     | '/calendar'
+    | '/connections'
     | '/settings'
     | '/trash'
     | '/models/$'
@@ -204,6 +214,7 @@ export interface FileRouteTypes {
     | '/welcome'
     | '/widget'
     | '/calendar'
+    | '/connections'
     | '/settings'
     | '/trash'
     | '/models/$'
@@ -224,6 +235,7 @@ export interface FileRouteTypes {
     | '/welcome'
     | '/widget'
     | '/_app/calendar'
+    | '/_app/connections'
     | '/_app/settings'
     | '/_app/trash'
     | '/models/$'
@@ -293,6 +305,13 @@ declare module '@tanstack/react-router' {
       path: '/calendar'
       fullPath: '/calendar'
       preLoaderRoute: typeof AppCalendarRouteImport
+      parentRoute: typeof AppRoute
+    }
+    '/_app/connections': {
+      id: '/_app/connections'
+      path: '/connections'
+      fullPath: '/connections'
+      preLoaderRoute: typeof AppConnectionsRouteImport
       parentRoute: typeof AppRoute
     }
     '/_app/settings': {
@@ -384,6 +403,7 @@ declare module '@tanstack/react-router' {
 
 interface AppRouteChildren {
   AppCalendarRoute: typeof AppCalendarRoute
+  AppConnectionsRoute: typeof AppConnectionsRoute
   AppSettingsRoute: typeof AppSettingsRoute
   AppTrashRoute: typeof AppTrashRoute
   AppIndexRoute: typeof AppIndexRoute
@@ -396,6 +416,7 @@ interface AppRouteChildren {
 
 const AppRouteChildren: AppRouteChildren = {
   AppCalendarRoute: AppCalendarRoute,
+  AppConnectionsRoute: AppConnectionsRoute,
   AppSettingsRoute: AppSettingsRoute,
   AppTrashRoute: AppTrashRoute,
   AppIndexRoute: AppIndexRoute,

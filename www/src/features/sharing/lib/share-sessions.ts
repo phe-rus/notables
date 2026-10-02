@@ -53,9 +53,9 @@ export function persistenceFor(noteId: string): Persistence {
   };
 }
 
-/** Re-renders as people come and go on shared notes. */
-export function useShareSession(noteId: string): ShareSession | undefined {
-  useSyncExternalStore(
+/** Changes whenever anyone comes or goes, or a member list changes, on any shared note. */
+export function useShareSessionsVersion(): number {
+  return useSyncExternalStore(
     (listener) => {
       listeners.add(listener);
       return () => listeners.delete(listener);
@@ -63,5 +63,10 @@ export function useShareSession(noteId: string): ShareSession | undefined {
     () => version,
     () => 0,
   );
+}
+
+/** Re-renders as people come and go on shared notes. */
+export function useShareSession(noteId: string): ShareSession | undefined {
+  useShareSessionsVersion();
   return sessions.get(noteId);
 }

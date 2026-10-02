@@ -20,6 +20,8 @@ export interface ShareCredentials {
   /** How this device's person is named to the others. */
   name: string;
   role: "owner" | "member";
+  /** Member only: who sent the invitation, as the invitation named them. */
+  from?: string;
   addedAt: number;
   /** Owner only: each invitation's secret, so its link can be copied again. */
   invites?: Record<string, string>;

@@ -123,6 +123,7 @@ export function acceptInvitation(invitation: Invitation): LibraryEntry {
       secret: invitation.secret,
       name: invitation.name || getAuthorName() || "Guest",
       role: "member",
+      from: invitation.from || undefined,
       addedAt: Date.now(),
     });
   }

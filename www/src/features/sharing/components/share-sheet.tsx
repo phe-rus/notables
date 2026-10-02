@@ -14,6 +14,7 @@ import { useEffect, useState } from "react";
 import { t } from "../../../i18n/i18n";
 import { useAuthorName } from "../../../platform/author-preferences";
 import type { LibraryEntry } from "../../library/store/library-store";
+import { handOver } from "../lib/hand-over";
 import {
   invitePerson,
   linkFor,
@@ -25,20 +26,6 @@ import { membersOf } from "../lib/share-members";
 import { useShareSession } from "../lib/share-sessions";
 import { OWNER, type ShareMember } from "../model/share";
 import { useShares } from "../store/share-store";
-
-/** Hands a link over the system share sheet where there is one, or copies it. */
-async function handOver(link: string, title: string) {
-  if (navigator.share) {
-    try {
-      await navigator.share({ title, url: link });
-      return;
-    } catch (error) {
-      if ((error as DOMException).name === "AbortError") return;
-    }
-  }
-  await navigator.clipboard.writeText(link);
-  toast.success(t("sharing.linkCopied"), { description: t("sharing.linkCopiedBody") });
-}
 
 /**
  * Share a note with specific people. Each person gets their own link;

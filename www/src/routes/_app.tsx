@@ -57,8 +57,9 @@ function AppShell() {
   const inSettings = pathname.startsWith("/settings");
   const inTrash = pathname.startsWith("/trash");
   const inCalendar = pathname.startsWith("/calendar");
-  // Settings, Calendar and Recently Deleted fill the content area without a list beside them.
-  const fullPage = inSettings || inTrash || inCalendar;
+  const inConnections = pathname.startsWith("/connections");
+  // Settings, Calendar, Connections and Recently Deleted fill the content area without a list beside them.
+  const fullPage = inSettings || inTrash || inCalendar || inConnections;
   const noteId = note?.params.noteId;
   const bookId = book?.params.bookId;
   const invoiceId = invoice?.params.invoiceId;
@@ -80,11 +81,13 @@ function AppShell() {
       ? "trash"
       : inCalendar
         ? "calendar"
-        : inInvoices
-          ? "invoices"
-          : inBooks
-            ? "books"
-            : (groupOf(view.id) ?? (view.id === "published" ? "published" : "all"));
+        : inConnections
+          ? "connections"
+          : inInvoices
+            ? "invoices"
+            : inBooks
+              ? "books"
+              : (groupOf(view.id) ?? (view.id === "published" ? "published" : "all"));
 
   const createNote = useCallback(() => {
     const entry = getLibrary().create(view.kind);
@@ -252,11 +255,13 @@ function AppShell() {
                       ? "trash"
                       : inCalendar
                         ? "calendar"
-                        : inInvoices
-                          ? "invoices"
-                          : inBooks
-                            ? "books"
-                            : "notes")
+                        : inConnections
+                          ? "connections"
+                          : inInvoices
+                            ? "invoices"
+                            : inBooks
+                              ? "books"
+                              : "notes")
                 }
                 className="flex min-h-0 grow flex-col"
                 initial={isPhone ? { x: 56, opacity: 0.6 } : { y: 8, opacity: 0 }}

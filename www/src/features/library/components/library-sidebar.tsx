@@ -10,6 +10,7 @@ import {
   LessonIcon,
   NoteIcon,
   PenIcon,
+  PeopleIcon,
   PinIcon,
   RecentIcon,
   SearchIcon,
@@ -33,6 +34,7 @@ import { windowChrome } from "../../../platform/window-chrome";
 import { useBooks, useTrashedBooks } from "../../books/store/book-store";
 import { useSeries } from "../../books/store/series-store";
 import { useUpcomingCount } from "../../calendar/store/use-upcoming-count";
+import { usePeople } from "../../connections/lib/use-people";
 import { useInvoices } from "../../invoices/store/invoice-store";
 import { noteMenu } from "../../notes/actions/note-menu";
 import { openSearch } from "../../search/store/search-palette";
@@ -50,7 +52,13 @@ import { RECENT_WINDOW, useOpened } from "../store/recents-store";
 import { SidebarEditor } from "./sidebar-editor";
 
 /** Where the app is: a view of notes, books or settings. */
-export type SidebarLocation = SidebarItemId | "all" | "calendar" | "settings" | "trash";
+export type SidebarLocation =
+  | SidebarItemId
+  | "all"
+  | "calendar"
+  | "connections"
+  | "settings"
+  | "trash";
 
 export const sidebarIcons: Record<SidebarItemId, ReactNode> = {
   writing: <StoryIcon size={17} />,
@@ -79,6 +87,7 @@ export function Sidebar({
   const books = useBooks();
   const invoices = useInvoices();
   const upcoming = useUpcomingCount();
+  const online = usePeople().filter((person) => person.online).length;
   const library = useLibrary();
   const entries = library.filter(isListedNote);
   const trashedBooks = useTrashedBooks();
@@ -152,6 +161,21 @@ export function Sidebar({
             trailing={counts && upcoming > 0 ? upcoming : undefined}
           >
             {t("nav.calendar")}
+          </NavItem>
+          <NavItem
+            to="/connections"
+            active={active === "connections"}
+            icon={<PeopleIcon size={17} />}
+            trailing={
+              online > 0 ? (
+                <span className="flex items-center gap-1 text-success">
+                  <span className="size-1.5 rounded-full bg-success" />
+                  {online}
+                </span>
+              ) : undefined
+            }
+          >
+            {t("nav.connections")}
           </NavItem>
         </div>
 
