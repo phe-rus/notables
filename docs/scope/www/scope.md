@@ -28,7 +28,7 @@ _These are recommendations to keep the build orderly, not requirements. Skip any
 | M | Six languages | Existing | in-progress |
 | N | Widgets | Existing | in-progress |
 | 1 | Loud, clean sound | Slice 1 | in-progress |
-| 2 | Natural voice on the device | Slice 1 | planned |
+| 2 | Natural voice on the device | Slice 1 | in-progress |
 | 3 | Cloud voices with your own key | Slice 1 | planned |
 | 4 | Responsive layout for tablets and small windows | Slice 2 | planned |
 | 5 | Four media kinds | Slice 3 | planned |
@@ -95,10 +95,18 @@ Every sound the app makes plays at full loudness, so the device volume alone dec
 - [ ] Test it: `/test loud, clean sound`
 code in `www/src/features/listening/lib`, `www/src/features/calendar/lib/alert-feedback.ts`
 
-### 2. Natural voice on the device · needs a decision
+### 2. Natural voice on the device · in-progress
 A premium sounding voice you download once that reads offline and privately on every platform, with the calm, Apple like feel you want. It also replaces the robotic built in voice on Linux.
 **Done when:** after one download, read aloud uses a natural voice with no connection and no key, on desktop and phones, and starts speaking within about a second.
-- [ ] Design it (spec): `/architect natural voice on the device`
+- [x] Design it (spec): `/architect natural voice on the device`
+- [ ] Build it: `/develop natural voice on the device`
+  - [ ] Models served from R2 and downloaded, checksummed and resumable in Rust, with the bucket and database renamed (AC-7, AC-11, AC-14)
+  - [ ] Supertonic speaking in read aloud on desktop: Rust synthesis, the natural voice engine, ranking and content language (AC-3, AC-4, AC-5, AC-6, AC-12, AC-13)
+  - [ ] Automatic, manageable and updatable packs in Settings > Listening (AC-1, AC-2, AC-8, AC-9, AC-15)
+  - [ ] Whisper moved onto the same packs, every string in six languages (AC-10, AC-16)
+- [ ] Verify it: `/check verify natural voice on the device`
+- [ ] Test it: `/test natural voice on the device`
+spec [0001](../../specs/www/0001-natural-voice-on-device/index.md)
 
 ### 3. Cloud voices with your own key · needs a decision
 ChatGPT quality voices for people who add their own key, alongside Gemini's. The default should feel like ChatGPT's Juniper: open and upbeat, and speaking whatever language the text is in. Juniper itself is only in the ChatGPT app, so the spec picks the closest voice developers can use (likely `marin`) and steers its tone to match.
@@ -172,6 +180,8 @@ Kept so the plan stays honest; not in this pass.
 - **Freeform canvas**: shapes, stickies and images · needs a decision
 - **Pherus PassID**: optional sign in, cloud backup, and a relay so sharing works when people are not online together (ADR 0005, 0006) · needs a decision · GA
 - **Learning**: lessons, flashcards and tutoring notes · needs a decision
+- **Natural voice in the browser**: the same voice pack on the web build with onnxruntime-web, stored in the Origin Private File System · from spec 0001 · needs a decision
+- **Natural Swahili voice**: when an open Swahili voice with a license that allows commercial use appears · from spec 0001 · needs a decision
 
 ## Legend
 
