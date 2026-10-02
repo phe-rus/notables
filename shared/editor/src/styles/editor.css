@@ -478,3 +478,179 @@
   font-family: var(--font-mono);
   font-size: 14px;
 }
+
+/* ——— Handwriting ——— */
+
+.nt-ink-block {
+  margin: 0.6em 0;
+}
+
+.nt-ink-frame {
+  /* Controls keep the app's type whatever font the note uses. */
+  font-family: var(--font-sans);
+  font-size: 16px;
+  line-height: 1.3;
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.nt-ink-surface {
+  position: relative;
+  border-radius: 14px;
+  user-select: none;
+  -webkit-user-select: none;
+  -webkit-touch-callout: none;
+}
+
+.nt-ink-frame.is-editable .nt-ink-surface {
+  /* Faint ruled lines, like a notebook page. */
+  background-image: repeating-linear-gradient(
+    to bottom,
+    transparent 0,
+    transparent calc(3.2em - 1px),
+    color-mix(in srgb, var(--color-separator) 70%, transparent) calc(3.2em - 1px),
+    color-mix(in srgb, var(--color-separator) 70%, transparent) 3.2em
+  );
+  box-shadow: inset 0 0 0 1px var(--color-separator);
+  cursor: crosshair;
+}
+
+.nt-ink-surface.is-eraser {
+  cursor: cell;
+}
+
+.nt-ink {
+  display: block;
+  width: 100%;
+  height: auto;
+  overflow: visible;
+}
+
+.nt-ink-pen {
+  opacity: 1;
+}
+
+.nt-ink-marker {
+  opacity: 0.38;
+  mix-blend-mode: multiply;
+}
+
+:root[data-theme="dark"] .nt-ink-marker {
+  mix-blend-mode: screen;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) .nt-ink-marker {
+    mix-blend-mode: screen;
+  }
+}
+
+.nt-ink-color-ink,
+.nt-ink-fill-ink {
+  fill: var(--color-label);
+  background: var(--color-label);
+}
+.nt-ink-color-blue,
+.nt-ink-fill-blue {
+  fill: #2f6fdf;
+  background: #2f6fdf;
+}
+.nt-ink-color-red,
+.nt-ink-fill-red {
+  fill: #d6453d;
+  background: #d6453d;
+}
+.nt-ink-color-green,
+.nt-ink-fill-green {
+  fill: #2f9e5b;
+  background: #2f9e5b;
+}
+.nt-ink-color-yellow,
+.nt-ink-fill-yellow {
+  fill: #f2c230;
+  background: #f2c230;
+}
+
+.nt-ink-toolbar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 4px;
+  align-self: flex-start;
+  padding: 4px;
+  border-radius: 999px;
+  background: var(--color-fill);
+  font-size: 13px;
+}
+
+.nt-ink-tool {
+  height: 28px;
+  padding: 0 11px;
+  border-radius: 999px;
+  font-weight: 600;
+  color: var(--color-label-secondary);
+  transition:
+    background-color 0.15s ease,
+    color 0.15s ease;
+}
+
+.nt-ink-tool:hover {
+  color: var(--color-label);
+}
+
+.nt-ink-tool[aria-pressed="true"] {
+  background: var(--color-elevated);
+  color: var(--color-label);
+  box-shadow: 0 1px 3px rgb(0 0 0 / 0.12);
+}
+
+.nt-ink-swatch {
+  width: 20px;
+  height: 20px;
+  margin: 0 2px;
+  border-radius: 999px;
+  box-shadow: inset 0 0 0 1px rgb(0 0 0 / 0.15);
+  transition: transform 0.15s ease;
+}
+
+.nt-ink-swatch[aria-pressed="true"] {
+  transform: scale(1.15);
+  outline: 2px solid var(--color-accent);
+  outline-offset: 2px;
+}
+
+.nt-ink-divider {
+  width: 1px;
+  height: 18px;
+  margin: 0 4px;
+  background: var(--color-separator);
+}
+
+.nt-ink-hint {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0 24px;
+  text-align: center;
+  font-size: 14px;
+  color: var(--color-label-tertiary);
+  pointer-events: none;
+}
+
+.nt-ink-room {
+  align-self: center;
+  padding: 2px 12px;
+  border-radius: 999px;
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--color-label-tertiary);
+}
+
+.nt-ink-room:hover {
+  background: var(--color-fill);
+  color: var(--color-label);
+}

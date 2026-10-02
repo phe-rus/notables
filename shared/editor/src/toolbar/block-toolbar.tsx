@@ -12,7 +12,7 @@ import {
 import { useCallback, useId, useRef, useState } from "react";
 import { type BlockType, blockLabels, setBlockType } from "../blocks/block-types";
 import { useSelectionState } from "../hooks/use-selection-state";
-import { INSERT_IMAGE_COMMAND } from "../plugins/media/media-plugin";
+import { INSERT_IMAGE_COMMAND, INSERT_INK_COMMAND } from "../plugins/media/media-plugin";
 
 const BLOCK_MENU_ORDER: BlockType[] = [
   "title",
@@ -146,7 +146,10 @@ export function BlockToolbar({
       <IconButton label="Record audio" onClick={onRecord} disabled={!onRecord}>
         <MicIcon size={19} />
       </IconButton>
-      <IconButton label="Draw" onClick={onDraw} disabled={!onDraw}>
+      <IconButton
+        label="Write by hand"
+        onClick={onDraw ?? (() => editor.dispatchCommand(INSERT_INK_COMMAND, undefined))}
+      >
         <DrawIcon size={19} />
       </IconButton>
     </div>

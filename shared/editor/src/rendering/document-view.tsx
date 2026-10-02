@@ -3,6 +3,8 @@ import { editorTheme } from "../editor/editor-theme";
 import { sanitizeUrl } from "../lib/sanitize-url";
 import { MediaImage } from "../media/media-image";
 import { AudioClip } from "../nodes/audio-clip/audio-clip-player";
+import { INK_DEFAULT_HEIGHT, type InkStroke, inkBottom } from "../nodes/ink/ink-model";
+import { InkView } from "../nodes/ink/ink-view";
 
 /**
  * Renders a serialized Notables document as plain React elements — no
@@ -211,6 +213,15 @@ function createRenderer(media: Required<MediaRenderers>) {
             })}
           </Fragment>
         );
+      }
+      case "ink": {
+        const strokes = Array.isArray(node.strokes) ? (node.strokes as InkStroke[]) : [];
+        const height = typeof node.height === "number" ? node.height : INK_DEFAULT_HEIGHT;
+        return strokes.length ? (
+          <div key={key} className="nt-ink-block">
+            <InkView strokes={strokes} height={Math.min(height, inkBottom(strokes) + 24)} />
+          </div>
+        ) : null;
       }
       default:
         return null;

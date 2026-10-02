@@ -2,7 +2,7 @@ import { useLexicalComposerContext } from "@lexical/react/LexicalComposerContext
 import { $insertNodeToNearestRoot, mergeRegister } from "@lexical/utils";
 import { COMMAND_PRIORITY_EDITOR, createCommand, type LexicalCommand } from "lexical";
 import { useEffect } from "react";
-import { $createAudioClipNode, $createImageNode } from "../../nodes/node-registry";
+import { $createAudioClipNode, $createImageNode, $createInkNode } from "../../nodes/node-registry";
 
 export const INSERT_IMAGE_COMMAND: LexicalCommand<{ src: string; alt?: string; caption?: string }> =
   createCommand("INSERT_IMAGE_COMMAND");
@@ -13,7 +13,10 @@ export const INSERT_AUDIO_CLIP_COMMAND: LexicalCommand<{
   transcript?: string;
 }> = createCommand("INSERT_AUDIO_CLIP_COMMAND");
 
-/** Inserts photos and recordings as top-level blocks at the caret. */
+/** A handwriting area, ready for a pen, finger or mouse. */
+export const INSERT_INK_COMMAND: LexicalCommand<void> = createCommand("INSERT_INK_COMMAND");
+
+/** Inserts photos, recordings and handwriting as top-level blocks at the caret. */
 export function MediaPlugin() {
   const [editor] = useLexicalComposerContext();
 
@@ -24,6 +27,14 @@ export function MediaPlugin() {
           INSERT_IMAGE_COMMAND,
           (payload) => {
             $insertNodeToNearestRoot($createImageNode(payload));
+            return true;
+          },
+          COMMAND_PRIORITY_EDITOR,
+        ),
+        editor.registerCommand(
+          INSERT_INK_COMMAND,
+          () => {
+            $insertNodeToNearestRoot($createInkNode());
             return true;
           },
           COMMAND_PRIORITY_EDITOR,

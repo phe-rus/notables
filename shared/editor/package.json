@@ -27,6 +27,7 @@
     "@notables/ui": "workspace:*",
     "lexical": "catalog:",
     "motion": "catalog:",
+    "perfect-freehand": "catalog:",
     "yjs": "catalog:"
   },
   "peerDependencies": {
