@@ -62,6 +62,10 @@ export default defineConfig({
       "@notables/sync > y-partyserver/provider",
       "@notables/sync > y-protocols/awareness",
       "yjs",
+      // Loaded on demand by the importers; bundled up front so the first
+      // import doesn't reload the page in development.
+      "fflate",
+      "pdfjs-dist/legacy/build/pdf.mjs",
     ],
   },
   server: {

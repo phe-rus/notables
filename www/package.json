@@ -19,6 +19,7 @@
     "@notables/core": "workspace:*",
     "jsqr": "catalog:",
     "pdf-lib": "catalog:",
+    "pdfjs-dist": "catalog:",
     "uqr": "catalog:",
     "@notables/editor": "workspace:*",
     "@notables/sync": "workspace:*",
