@@ -778,6 +778,12 @@ export const en = {
     badLinkTitle: "This link isn’t complete",
     badLinkBody: "Ask the person who shared it to send the whole link again.",
   },
+  haptics: {
+    title: "Haptics",
+    toggle: "Haptics",
+    hint: "A light tap as you switch, pick and hold things.",
+    tryIt: "Try it",
+  },
   widgets: {
     title: "Widgets",
     today: "Today",
@@ -790,6 +796,8 @@ export const en = {
     webHint: "Widgets come with the Notables app for your computer and phone.",
     preview: "Today at a glance",
     previewHint: "A small page with today’s plans and pinned notes.",
+    addToHome: "Add to Home Screen",
+    addToHomeHint: "Today’s plans and pinned notes, right on your home screen.",
   },
   invoices: {
     title: "Invoices",

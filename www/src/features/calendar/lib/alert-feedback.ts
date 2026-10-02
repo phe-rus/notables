@@ -1,3 +1,4 @@
+import { playHaptic } from "../../../platform/haptics";
 import { getAlertSettings } from "./alert-settings";
 
 let context: AudioContext | undefined;
@@ -29,13 +30,9 @@ export function playChime() {
   }
 }
 
-/** A short double tap on devices that can vibrate. */
+/** A firm double tap, through the system's own haptics where there are any. */
 export function buzz() {
-  try {
-    navigator.vibrate?.([40, 80, 40]);
-  } catch {
-    // Not supported.
-  }
+  playHaptic("warning");
 }
 
 /** Sound and touch for an alert, as the person chose. */

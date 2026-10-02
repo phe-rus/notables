@@ -787,6 +787,12 @@ export const fr: Messages = {
     badLinkTitle: "Ce lien est incomplet",
     badLinkBody: "Demandez à la personne qui l’a partagé de renvoyer le lien en entier.",
   },
+  haptics: {
+    title: "Retour haptique",
+    toggle: "Retour haptique",
+    hint: "Une légère vibration quand vous activez, choisissez ou maintenez un élément.",
+    tryIt: "Essayer",
+  },
   widgets: {
     title: "Widgets",
     today: "Aujourd’hui",
@@ -799,6 +805,8 @@ export const fr: Messages = {
     webHint: "Les widgets sont inclus dans l’app Notables pour ordinateur et téléphone.",
     preview: "Aujourd’hui en un coup d’œil",
     previewHint: "Une petite page avec les projets du jour et les notes épinglées.",
+    addToHome: "Ajouter à l’écran d’accueil",
+    addToHomeHint: "Les projets du jour et les notes épinglées, sur votre écran d’accueil.",
   },
   invoices: {
     title: "Factures",

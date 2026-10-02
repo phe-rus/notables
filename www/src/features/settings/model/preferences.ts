@@ -19,6 +19,8 @@ export interface Preferences {
   sidebar: SidebarPreferences;
   /** The Books list's shelf: everything, or one kind. */
   booksShelf: BooksShelf;
+  /** A light tap from the device as things are switched, picked and finished. */
+  haptics: boolean;
 }
 
 export type BooksShelf = "all" | MediaKind;
@@ -72,6 +74,7 @@ export const defaultPreferences: Preferences = {
     collapsed: false,
   },
   booksShelf: "all",
+  haptics: true,
 };
 
 export const textSizes: Record<TextSize, { readonly label: string; bodyPx: number }> = {
@@ -136,5 +139,6 @@ export function normalizePreferences(raw: unknown): Preferences {
       collapsed: flag(sidebar.collapsed, defaults.sidebar.collapsed),
     },
     booksShelf: isMediaKind(input.booksShelf) ? input.booksShelf : "all",
+    haptics: flag(input.haptics, defaults.haptics),
   };
 }

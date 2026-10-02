@@ -1,4 +1,12 @@
-import { BookIcon, cn, InvoiceIcon, NoteIcon, SearchIcon, SettingsIcon } from "@notables/ui";
+import {
+  BookIcon,
+  cn,
+  haptic,
+  InvoiceIcon,
+  NoteIcon,
+  SearchIcon,
+  SettingsIcon,
+} from "@notables/ui";
 import { Link, type LinkProps } from "@tanstack/react-router";
 import { motion } from "motion/react";
 import type { ReactNode } from "react";
@@ -67,7 +75,10 @@ export function TabBar({ active, className }: { active: TabId | null; className?
       <Tab tab={books} active={active === "books"} />
       <button
         type="button"
-        onClick={openSearch}
+        onClick={() => {
+          haptic("light");
+          openSearch();
+        }}
         aria-label={t("common.search")}
         className="mx-0.5 flex size-[52px] shrink-0 items-center justify-center rounded-full bg-inverse text-on-inverse shadow-[inset_0_1px_0_rgb(255_255_255/0.14),0_4px_12px_-4px_rgb(0_0_0/0.4)] transition-transform duration-fast active:scale-[0.92]"
       >
@@ -84,6 +95,9 @@ function Tab({ tab, active }: { tab: (typeof tabs)[number]; active: boolean }) {
     <Link
       {...tab.link}
       aria-current={active ? "page" : undefined}
+      onClick={() => {
+        if (!active) haptic("selection");
+      }}
       className={cn(
         "relative isolate flex h-[52px] w-[60px] flex-col items-center justify-center gap-[3px] rounded-full text-[10px] font-semibold tracking-[0.01em] no-underline transition-[color,transform] duration-fast active:scale-[0.94]",
         active ? "text-accent-text" : "text-label-tertiary",

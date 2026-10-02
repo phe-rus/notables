@@ -2,16 +2,28 @@ package org.pherus.notables
 
 import android.os.Bundle
 import android.view.View
+import android.webkit.WebView
 import androidx.activity.enableEdgeToEdge
 import androidx.core.graphics.Insets
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
+import org.pherus.notables.widgets.TodayWidgetProvider
 
 class MainActivity : TauriActivity() {
   override fun onCreate(savedInstanceState: Bundle?) {
     enableEdgeToEdge()
     super.onCreate(savedInstanceState)
     fitAboveKeyboard(findViewById(android.R.id.content))
+  }
+
+  override fun onWebViewCreate(webView: WebView) {
+    webView.addJavascriptInterface(AndroidBridge(this, webView), AndroidBridge.NAME)
+  }
+
+  /** Leaving the app shows what changed on the home-screen widget right away. */
+  override fun onPause() {
+    super.onPause()
+    TodayWidgetProvider.refreshAll(this)
   }
 
   /**

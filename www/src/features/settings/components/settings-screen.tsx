@@ -24,6 +24,7 @@ import {
   textSizes,
 } from "../model/preferences";
 import { updatePreferences, usePreferences } from "../store/preferences-store";
+import { HapticsSettingsSection } from "./haptics-settings-section";
 import { SettingsGroup, SettingsRow } from "./settings-controls";
 
 const set = (change: Partial<Preferences>) => updatePreferences((p) => ({ ...p, ...change }));
@@ -226,6 +227,7 @@ export function SettingsScreen({ onOpenSidebar }: { onOpenSidebar: () => void })
           <ModelPacksSection />
 
           <ReminderSettingsSection />
+          <HapticsSettingsSection />
 
           <WidgetsSettingsSection />
 

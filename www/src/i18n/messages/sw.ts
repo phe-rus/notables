@@ -787,6 +787,12 @@ export const sw: Messages = {
     badLinkTitle: "Kiungo hiki hakijakamilika",
     badLinkBody: "Mwombe aliyekishiriki akutumie kiungo kizima tena.",
   },
+  haptics: {
+    title: "Mtetemo wa mguso",
+    toggle: "Mtetemo wa mguso",
+    hint: "Mtetemo mdogo unapowasha, kuchagua au kushikilia kitu.",
+    tryIt: "Jaribu",
+  },
   widgets: {
     title: "Wijeti",
     today: "Leo",
@@ -799,6 +805,8 @@ export const sw: Messages = {
     webHint: "Wijeti huja na programu ya Notables kwa kompyuta na simu.",
     preview: "Leo kwa haraka",
     previewHint: "Ukurasa mdogo wenye mipango ya leo na madokezo yaliyobandikwa.",
+    addToHome: "Ongeza kwenye skrini ya nyumbani",
+    addToHomeHint: "Mipango ya leo na madokezo yaliyobandikwa, kwenye skrini yako ya nyumbani.",
   },
   invoices: {
     title: "Ankara",

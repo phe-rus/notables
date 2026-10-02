@@ -9,14 +9,17 @@ export function SettingsGroup({
 }: {
   title: string;
   footer?: ReactNode;
-  children: ReactNode;
+  children?: ReactNode;
 }) {
   return (
     <section className="flex flex-col gap-2">
       <h2 className="px-4 text-[13px] font-medium text-label-tertiary">{title}</h2>
-      <div className="flex flex-col divide-y divide-separator/60 overflow-hidden rounded-[16px] border border-separator/60 bg-elevated">
-        {children}
-      </div>
+      {/* A group can be only a note, e.g. where to find something on this device. */}
+      {children ? (
+        <div className="flex flex-col divide-y divide-separator/60 overflow-hidden rounded-[16px] border border-separator/60 bg-elevated">
+          {children}
+        </div>
+      ) : null}
       {footer && <p className="px-4 text-[12px] leading-snug text-label-tertiary">{footer}</p>}
     </section>
   );

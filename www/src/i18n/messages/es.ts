@@ -785,6 +785,12 @@ export const es: Messages = {
     badLinkTitle: "Este enlace está incompleto",
     badLinkBody: "Pide a quien lo compartió que vuelva a enviar el enlace completo.",
   },
+  haptics: {
+    title: "Vibración háptica",
+    toggle: "Vibración háptica",
+    hint: "Un toque suave al activar, elegir o mantener pulsado algo.",
+    tryIt: "Probar",
+  },
   widgets: {
     title: "Widgets",
     today: "Hoy",
@@ -797,6 +803,8 @@ export const es: Messages = {
     webHint: "Los widgets vienen con la app Notables para ordenador y teléfono.",
     preview: "Hoy de un vistazo",
     previewHint: "Una página pequeña con los planes de hoy y las notas fijadas.",
+    addToHome: "Añadir a la pantalla de inicio",
+    addToHomeHint: "Los planes de hoy y las notas fijadas, en tu pantalla de inicio.",
   },
   invoices: {
     title: "Facturas",

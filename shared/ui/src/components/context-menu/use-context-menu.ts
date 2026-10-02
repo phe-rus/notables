@@ -1,4 +1,5 @@
 import { type MouseEvent, type PointerEvent, useRef } from "react";
+import { haptic } from "../../lib/haptics";
 import { type ContextMenuItem, openContextMenu } from "./context-menu-store";
 
 const LONG_PRESS_MS = 480;
@@ -33,7 +34,7 @@ export function useContextMenu(items: () => ContextMenuItem[]) {
         timer: setTimeout(() => {
           press.current = null;
           suppressClick.current = true;
-          navigator.vibrate?.(8);
+          haptic("medium");
           openContextMenu(x, y, items(), true);
         }, LONG_PRESS_MS),
       };

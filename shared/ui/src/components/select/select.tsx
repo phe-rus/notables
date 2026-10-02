@@ -13,6 +13,7 @@ import { createPortal } from "react-dom";
 import { FLOATING_LAYER } from "../../hooks/use-dismiss";
 import { CheckIcon, SearchIcon, SelectorIcon } from "../../icons/icons";
 import { cn } from "../../lib/class-names";
+import { haptic } from "../../lib/haptics";
 import { spring } from "../../motion/transitions";
 
 export interface SelectOption<T extends string> {
@@ -116,7 +117,9 @@ export function Select<T extends string>({
                 emptyLabel={emptyLabel}
                 onPick={(next) => {
                   close(true);
-                  if (next !== value) onChange(next);
+                  if (next === value) return;
+                  haptic("selection");
+                  onChange(next);
                 }}
                 onClose={close}
               />

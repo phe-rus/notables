@@ -2,6 +2,7 @@ import { motion } from "motion/react";
 import { useId, useLayoutEffect, useRef, useState } from "react";
 import { CheckIcon } from "../../icons/icons";
 import { cn } from "../../lib/class-names";
+import { haptic } from "../../lib/haptics";
 import { spring } from "../../motion/transitions";
 import { Select } from "../select/select";
 
@@ -73,7 +74,10 @@ export function SegmentedControl<T extends string>({
                   name={id}
                   value={option.value}
                   checked={selected}
-                  onChange={() => onChange(option.value)}
+                  onChange={() => {
+                    haptic("selection");
+                    onChange(option.value);
+                  }}
                   className="sr-only"
                 />
                 {selected && (
@@ -117,7 +121,10 @@ export function Switch({
       role="switch"
       aria-checked={checked}
       aria-label={label}
-      onClick={() => onChange(!checked)}
+      onClick={() => {
+        haptic("selection");
+        onChange(!checked);
+      }}
       className={cn(
         "group/switch flex h-[30px] w-[50px] shrink-0 items-center rounded-full p-[2px] transition-colors duration-normal",
         "shadow-[inset_0_1px_2px_rgb(0_0_0/0.10)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent/70 focus-visible:ring-offset-2 focus-visible:ring-offset-background",
@@ -163,7 +170,10 @@ export function SwatchPicker<T extends string>({
               name={name}
               value={option.value}
               checked={selected}
-              onChange={() => onChange(option.value)}
+              onChange={() => {
+                haptic("selection");
+                onChange(option.value);
+              }}
               className="peer sr-only"
             />
             <span
