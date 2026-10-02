@@ -12,21 +12,13 @@ import { useNavigate } from "@tanstack/react-router";
 import { AnimatePresence, motion } from "motion/react";
 import { type DragEvent, useRef, useState } from "react";
 import { buildImportPlan, type ImportFile, type ImportPlan } from "../lib/import-plan";
+import { IMPORT_ACCEPT, withPath } from "../lib/picked-files";
 import { type ImportOptions, runImport } from "../lib/run-import";
 
 type Stage =
   | { name: "pick" }
   | { name: "review"; plan: ImportPlan; files: Map<string, File> }
   | { name: "importing"; label: string; progress: number };
-
-const ACCEPT = ".epub,.pdf,.cbz,.zip,image/*,audio/*,.m4b";
-
-/** A picked file with the path it had inside a chosen or dropped folder. */
-function withPath(file: File, path?: string): [ImportFile, File] {
-  const relative = path ?? (file as File & { webkitRelativePath?: string }).webkitRelativePath;
-  const fullPath = relative || file.name;
-  return [{ path: fullPath, name: file.name, type: file.type, size: file.size }, file];
-}
 
 /** Walks dropped folders, keeping each file's path. */
 async function droppedFiles(event: DragEvent): Promise<Array<[ImportFile, File]>> {
@@ -207,7 +199,7 @@ function ImportFlow({ onClose }: { onClose: () => void }) {
             ref={filesInput}
             type="file"
             multiple
-            accept={ACCEPT}
+            accept={IMPORT_ACCEPT}
             className="hidden"
             onChange={(event) =>
               review([...(event.target.files ?? [])].map((file) => withPath(file)))

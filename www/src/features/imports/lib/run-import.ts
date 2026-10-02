@@ -8,6 +8,8 @@ import { readComicArchive } from "../importers/read-comic-archive";
 import { readEpub } from "../importers/read-epub";
 import { readPdf } from "../importers/read-pdf";
 import {
+  buildImportPlan,
+  type ImportFile,
   type ImportPlan,
   type PlannedBook,
   type PlannedSeries,
@@ -100,18 +102,10 @@ export async function runImport(plan: ImportPlan, options: ImportOptions): Promi
       const book = getBookStore().create();
       bookIds.push(book.id);
       const chapterIds: string[] = [];
-      const write: WriteChapter = async (title, format, content) => {
-        const note = await writeNote({
-          kind: kindFor(format, options),
-          bookId: book.id,
-          compose: (doc) =>
-            "html" in content
-              ? composeDocumentFromHtml(doc, content.html, title)
-              : composeDocument(doc, () => $appendContent({ title, audioClip: content.audio })),
-        });
-        chapterIds.push(note.id);
+      const write = chapterWriter(book.id, options, (id) => {
+        chapterIds.push(id);
         chapterCount += 1;
-      };
+      });
       const details = await importBookContent(planned, series, options, fileFor, write, step);
       if (seriesEntry && details.author && !seriesEntry.author) {
         getSeriesStore().update(seriesEntry.id, { author: details.author });
@@ -129,6 +123,79 @@ export async function runImport(plan: ImportPlan, options: ImportOptions): Promi
     }
   }
   return { bookIds, chapters: chapterCount };
+}
+
+/** Writes one chapter note into a book and reports its id. */
+function chapterWriter(
+  bookId: string,
+  options: ImportOptions,
+  onWritten: (noteId: string) => void,
+): WriteChapter {
+  return async (title, format, content) => {
+    const note = await writeNote({
+      kind: kindFor(format, options),
+      bookId,
+      compose: (doc) =>
+        "html" in content
+          ? composeDocumentFromHtml(doc, content.html, title)
+          : composeDocument(doc, () => $appendContent({ title, audioClip: content.audio })),
+    });
+    onWritten(note.id);
+  };
+}
+
+/**
+ * Adds the chapters found in files to the end of an existing book: an
+ * e-book's chapters, a PDF's sections or pages, comic pages, or audio
+ * tracks. An empty book takes on the kind and cover of what it receives.
+ */
+export async function appendToBook(
+  bookId: string,
+  files: Array<[ImportFile, File]>,
+  options: Omit<ImportOptions, "files">,
+): Promise<{ chapters: number; skipped: number }> {
+  const plan = buildImportPlan(files.map(([meta]) => meta));
+  const withFiles: ImportOptions = {
+    ...options,
+    files: new Map(files.map(([meta, file]) => [meta.path, file])),
+  };
+  const fileFor = (path: string) => {
+    const file = withFiles.files.get(path);
+    if (!file) throw new Error(`Missing file: ${path}`);
+    return file;
+  };
+  const total = Math.max(1, countSteps(plan));
+  let done = 0;
+  const step = (label: string) => {
+    done += 1;
+    options.onProgress?.(label, done, total);
+  };
+
+  const added: string[] = [];
+  const write = chapterWriter(bookId, withFiles, (id) => added.push(id));
+  let first: BookDetails | null = null;
+  for (const series of plan.series) {
+    for (const book of series.books) {
+      const details = await importBookContent(book, series, withFiles, fileFor, write, step);
+      first ??= details;
+    }
+  }
+
+  const store = getBookStore();
+  const current = store.getSnapshot().find((book) => book.id === bookId);
+  if (current) {
+    const wasEmpty = current.chapterIds.length === 0;
+    const manga = first?.format === "comic" && options.comicKind === "manga";
+    store.update(bookId, {
+      chapterIds: [...current.chapterIds, ...added],
+      ...(wasEmpty && first
+        ? { format: first.format, direction: manga ? ("rtl" as const) : ("ltr" as const) }
+        : {}),
+      ...(!current.cover && first?.cover ? { cover: first.cover } : {}),
+      ...(!current.author && first?.author ? { author: first.author } : {}),
+    });
+  }
+  return { chapters: added.length, skipped: plan.skipped.length };
 }
 
 function needsSeries(series: PlannedSeries): boolean {

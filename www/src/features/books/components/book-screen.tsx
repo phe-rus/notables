@@ -10,15 +10,18 @@ import {
   SearchField,
   spring,
   TrashIcon,
+  toast,
 } from "@notables/ui";
 import { Link, useNavigate } from "@tanstack/react-router";
 import { AnimatePresence, motion } from "motion/react";
-import { type ReactNode, useDeferredValue, useMemo, useState } from "react";
+import { type ReactNode, useDeferredValue, useMemo, useRef, useState } from "react";
+import { IMPORT_ACCEPT, withPath } from "../../imports/lib/picked-files";
+import { appendToBook } from "../../imports/lib/run-import";
 import { noteKindPlural } from "../../library/model/note-kind-labels";
 import { isListedNote, type LibraryEntry, useLibrary } from "../../library/store/library-store";
 import { moveBooksToBin, moveNotesToBin } from "../../trash/lib/recycle-bin";
 import { chapterKind, startChapter } from "../actions/start-chapter";
-import { type BookEntry, getBookStore, useBook } from "../store/book-store";
+import { type BookEntry, bookShelf, getBookStore, useBook } from "../store/book-store";
 import { BookCover } from "./book-cover";
 
 export function BookScreen({ bookId, actions }: { bookId: string; actions?: ReactNode }) {
@@ -107,7 +110,47 @@ function ChapterList({ book, chapters }: { book: BookEntry; chapters: LibraryEnt
   const navigate = useNavigate();
   const [picking, setPicking] = useState(false);
   const [starting, setStarting] = useState(false);
+  const [adding, setAdding] = useState<{ label: string; progress: number } | null>(null);
+  const filesInput = useRef<HTMLInputElement>(null);
   const kind = chapterKind(book);
+
+  // E-books, PDFs, comic pages and audiobook tracks become chapters here.
+  const addFiles = async (files: File[]) => {
+    if (files.length === 0) return;
+    setAdding({ label: "Reading files…", progress: 0 });
+    try {
+      const result = await appendToBook(
+        book.id,
+        files.map((file) => withPath(file)),
+        {
+          comicKind: bookShelf(book) === "comic" ? "comic" : "manga",
+          onProgress: (label, done, total) =>
+            setAdding({ label, progress: total ? done / total : 0 }),
+        },
+      );
+      if (result.chapters === 0) {
+        toast("Nothing to add", {
+          description: "These files didn’t contain chapters Notables can read.",
+        });
+      } else {
+        toast.success(
+          result.chapters === 1 ? "Chapter added" : `${result.chapters} chapters added`,
+          {
+            description:
+              result.skipped > 0
+                ? `Skipped ${result.skipped} ${result.skipped === 1 ? "file" : "files"} it couldn’t read.`
+                : undefined,
+          },
+        );
+      }
+    } catch (error) {
+      toast.error("Couldn’t add those files", {
+        description: error instanceof Error ? error.message : undefined,
+      });
+    } finally {
+      setAdding(null);
+    }
+  };
 
   const newChapter = async () => {
     setStarting(true);
@@ -191,12 +234,43 @@ function ChapterList({ book, chapters }: { book: BookEntry; chapters: LibraryEnt
         </Button>
         <Button
           variant="secondary"
+          disabled={adding !== null}
+          onClick={() => filesInput.current?.click()}
+        >
+          Add from files…
+        </Button>
+        <input
+          ref={filesInput}
+          type="file"
+          multiple
+          accept={IMPORT_ACCEPT}
+          hidden
+          onChange={(event) => {
+            const files = [...(event.target.files ?? [])];
+            event.target.value = "";
+            void addFiles(files);
+          }}
+        />
+        <Button
+          variant="secondary"
           aria-expanded={picking}
           onClick={() => setPicking((open) => !open)}
         >
           {picking ? "Done adding" : `Add ${noteKindPlural[kind]}…`}
         </Button>
       </div>
+      {adding && (
+        <div className="flex flex-col gap-2 rounded-[14px] bg-fill/50 px-4 py-3" aria-live="polite">
+          <p className="truncate text-[14px] text-label-secondary">{adding.label}</p>
+          <div className="h-1.5 overflow-hidden rounded-full bg-fill">
+            <motion.div
+              className="h-full rounded-full bg-accent"
+              animate={{ width: `${Math.max(4, adding.progress * 100)}%` }}
+              transition={spring.smooth}
+            />
+          </div>
+        </div>
+      )}
       <AnimatePresence initial={false}>
         {picking && (
           <motion.div
