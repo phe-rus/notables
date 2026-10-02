@@ -15,6 +15,8 @@ const tauri = Boolean(process.env.TAURI_ENV_PLATFORM);
 export default defineConfig({
   clearScreen: false,
   resolve: {
+    // One copy of each, or Yjs's constructor checks and Lexical's node registry break.
+    dedupe: ["yjs", "lexical", "react", "react-dom"],
     // Server functions run on the deployed Worker, never inside the app.
     alias: tauri
       ? {
