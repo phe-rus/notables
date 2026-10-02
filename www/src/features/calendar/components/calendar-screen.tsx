@@ -11,7 +11,6 @@ import {
   weekday,
 } from "@notables/core";
 import {
-  ChevronDownIcon,
   ChevronLeftIcon,
   ChevronRightIcon,
   cn,
@@ -28,7 +27,7 @@ import {
 } from "@notables/ui";
 import { useNavigate } from "@tanstack/react-router";
 import { motion } from "motion/react";
-import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState } from "react";
 import { Field, SelectInput } from "../../../components/form/form-fields";
 import { CollapsedSidebarControls } from "../../../components/window/collapsed-sidebar-controls";
 import { locale, t } from "../../../i18n/i18n";
@@ -50,8 +49,9 @@ import { YearView } from "./year-view";
 
 export type CalendarView = "day" | "week" | "month" | "year" | "years";
 export const calendarViews: readonly CalendarView[] = ["day", "week", "month", "year", "years"];
-/** Years on one page of the Years view. */
-const YEARS_PAGE = 20;
+/** The Years view runs from here to a few years ahead of now. */
+const YEARS_FROM = 1900;
+const YEARS_AHEAD = 5;
 
 const clampDay = (day: Day): Day =>
   day < `${String(FIRST_YEAR).padStart(4, "0")}-01-01`
@@ -163,14 +163,7 @@ export function CalendarScreen({
           Number(selected.slice(8)),
         ),
       );
-    else
-      go(
-        dayInMonth(
-          year + direction * (view === "years" ? YEARS_PAGE : 1),
-          month,
-          Number(selected.slice(8)),
-        ),
-      );
+    else go(dayInMonth(year + direction, month, Number(selected.slice(8))));
   };
 
   const add = (kind: CalendarEventKind, day: Day = selected, time?: string | null) =>
@@ -195,8 +188,8 @@ export function CalendarScreen({
     return () => window.removeEventListener("keydown", onKey);
   });
 
-  const pageStart = Math.max(FIRST_YEAR, year - ((year - FIRST_YEAR) % YEARS_PAGE));
-  const pageEnd = Math.min(LAST_YEAR, pageStart + YEARS_PAGE - 1);
+  const pageStart = YEARS_FROM;
+  const pageEnd = Number(today.slice(0, 4)) + YEARS_AHEAD;
   const title =
     view === "years"
       ? `${pageStart}\u2013${pageEnd}`
@@ -257,19 +250,25 @@ export function CalendarScreen({
           <div className="flex shrink-0 items-center gap-1">
             <button
               type="button"
-              onClick={() => go(today)}
-              disabled={selected === today}
+              onClick={() => zoomTo(today, view === "day" || view === "week" ? view : "month")}
+              disabled={
+                selected === today && (view === "month" || view === "day" || view === "week")
+              }
               data-tooltip={t("calendar.goToToday")}
               className="rounded-full px-3 py-1.5 text-[14px] font-medium text-accent-text transition-colors hover:bg-fill/60 disabled:text-label-tertiary disabled:hover:bg-transparent"
             >
               {t("calendar.today")}
             </button>
-            <IconButton label={t("calendar.previous")} onClick={() => shift(-1)}>
-              <ChevronLeftIcon size={18} className="rtl:-scale-x-100" />
-            </IconButton>
-            <IconButton label={t("calendar.next")} onClick={() => shift(1)}>
-              <ChevronRightIcon size={18} className="rtl:-scale-x-100" />
-            </IconButton>
+            {view !== "years" && (
+              <>
+                <IconButton label={t("calendar.previous")} onClick={() => shift(-1)}>
+                  <ChevronLeftIcon size={18} className="rtl:-scale-x-100" />
+                </IconButton>
+                <IconButton label={t("calendar.next")} onClick={() => shift(1)}>
+                  <ChevronRightIcon size={18} className="rtl:-scale-x-100" />
+                </IconButton>
+              </>
+            )}
             <HolidayButton />
             <IconButton
               label={t("calendar.newEvent")}
@@ -411,14 +410,9 @@ function ZoomTitle({
           setEditing(true);
         }
       }}
-      className="group flex min-w-0 items-center gap-1 rounded-[10px] px-1 text-start text-[22px] font-bold tracking-tight hover:bg-fill/50"
+      className="min-w-0 rounded-[10px] px-1.5 text-start text-[22px] font-bold tracking-tight transition-colors hover:bg-fill/60 active:bg-fill"
     >
-      <span className="truncate">{title}</span>
-      <ChevronDownIcon
-        size={16}
-        strokeWidth={2.4}
-        className="shrink-0 rotate-180 text-label-tertiary transition-colors group-hover:text-accent-text"
-      />
+      <span className="block truncate">{title}</span>
     </button>
   );
 }
@@ -437,13 +431,19 @@ function YearsView({
   selected: number;
   onYear: (year: number) => void;
 }) {
+  const grid = useRef<HTMLDivElement>(null);
+  // Open on the year you came from, wherever it sits in the list.
+  useLayoutEffect(() => {
+    grid.current?.querySelector(`[data-year="${selected}"]`)?.scrollIntoView({ block: "center" });
+  }, []);
   return (
-    <div className="@container/years min-h-0 grow overflow-y-auto px-4 pb-28 md:pb-8">
+    <div ref={grid} className="@container/years min-h-0 grow overflow-y-auto px-4 pb-28 md:pb-8">
       <div className="grid grid-cols-3 gap-2 @min-[480px]/years:grid-cols-4 @min-[760px]/years:grid-cols-5">
         {Array.from({ length: last - first + 1 }, (_, i) => first + i).map((value) => (
           <button
             key={value}
             type="button"
+            data-year={value}
             onClick={() => onYear(value)}
             className={cn(
               "flex h-16 items-center justify-center rounded-[16px] text-[20px] font-semibold tabular-nums transition-colors",
