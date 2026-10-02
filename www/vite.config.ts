@@ -1,3 +1,4 @@
+import { fileURLToPath } from "node:url";
 import { cloudflare } from "@cloudflare/vite-plugin";
 import tailwindcss from "@tailwindcss/vite";
 import { tanstackStart } from "@tanstack/react-start/plugin/vite";
@@ -13,9 +14,15 @@ const tauri = Boolean(process.env.TAURI_ENV_PLATFORM);
 
 export default defineConfig({
   clearScreen: false,
-  build: {
-    // Server functions run on the deployed Worker, never inside the app bundle.
-    rollupOptions: { external: tauri ? ["cloudflare:workers"] : [] },
+  resolve: {
+    // Server functions run on the deployed Worker, never inside the app.
+    alias: tauri
+      ? {
+          "cloudflare:workers": fileURLToPath(
+            new URL("./src/server/native-shell-env.ts", import.meta.url),
+          ),
+        }
+      : {},
   },
   server: {
     // Tauri mobile dev connects to the host machine over the network.
