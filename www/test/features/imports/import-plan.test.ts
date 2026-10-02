@@ -94,6 +94,50 @@ describe("buildImportPlan", () => {
     ]);
   });
 
+  it("joins volume folders into one series and keeps chapter labels", () => {
+    const plan = buildImportPlan([
+      file("Red Priest - Volume 5/Chapter 948 Night Shift [Ab1].mp3"),
+      file("Red Priest - Volume 5/Chapter 947 House Call [rZtZQmN0jIA].mp3"),
+      file("Red Priest - Volume 6/Chapter 1001 Dawn [x9].mp3"),
+    ]);
+    expect(plan.series).toHaveLength(1);
+    const [series] = plan.series;
+    expect(series?.title).toBe("Red Priest");
+    expect(series?.partLabel).toBe("Volume");
+    expect(series?.books.map((b) => [b.volume, b.title])).toEqual([
+      [5, ""],
+      [6, ""],
+    ]);
+    expect(series?.books[0]?.chapters.map((c) => [c.number, c.title])).toEqual([
+      [947, "Chapter 947 House Call"],
+      [948, "Chapter 948 Night Shift"],
+    ]);
+    const fifth = series?.books[0];
+    expect(series && fifth ? plannedBookTitle(series, fifth) : null).toBe("Red Priest Volume 5");
+  });
+
+  it("reads a volume folder inside a series folder", () => {
+    const plan = buildImportPlan([
+      file("Red Priest/Red Priest - Volume 5/Chapter 947 House Call.mp3"),
+      file("Red Priest/Red Priest - Volume 6/Chapter 1001 Dawn.mp3"),
+    ]);
+    expect(plan.series.map((s) => s.title)).toEqual(["Red Priest"]);
+    expect(plan.series[0]?.books.map((b) => b.volume)).toEqual([5, 6]);
+  });
+
+  it("keeps loose tracks without a volume together as one book", () => {
+    const plan = buildImportPlan([
+      file("Chapter 948 Night Shift [Ab1].mp3"),
+      file("Chapter 947 House Call [rZtZQmN0jIA].mp3"),
+    ]);
+    expect(plan.series).toHaveLength(1);
+    expect(plan.series[0]?.books).toHaveLength(1);
+    expect(plan.series[0]?.books[0]?.chapters.map((c) => c.title)).toEqual([
+      "Chapter 947 House Call",
+      "Chapter 948 Night Shift",
+    ]);
+  });
+
   it("reads seasons and episodes from loose files", () => {
     const plan = buildImportPlan([
       file("Night Stories S01E02.mp3"),

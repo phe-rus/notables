@@ -69,6 +69,23 @@ function splitOnVolume(raw: string): { series: string; title: string; volume: nu
   return { series: series || rest, title: rest, volume: Number(match[1]) };
 }
 
+/**
+ * A track's chapter title and number: "Chapter 947 House Call [rZtZQmN0jIA]"
+ * keeps its label and drops the download id; "01 Opening" drops the track
+ * number.
+ */
+function trackTitle(raw: string): { title: string; number: number | null } {
+  const parsed = parseName(raw);
+  const readable = stripExtension(raw)
+    .replace(/_+/g, " ")
+    .replace(/[[(][^\])]*[\])]/g, " ")
+    .replace(/\s{2,}/g, " ")
+    .replace(/^[\s\-\u2013\u2014:|.]+|[\s\-\u2013\u2014:|.]+$/g, "")
+    .trim();
+  const labelled = /\b(?:chapter|episode)\s*\d/i.test(readable);
+  return { title: labelled ? readable : parsed.title, number: parsed.chapter };
+}
+
 function formatOf(kind: SourceKind): BookFormat {
   if (kind === "image" || kind === "archive") return "comic";
   if (kind === "audio") return "audio";
@@ -168,22 +185,41 @@ export function buildImportPlan(files: ImportFile[]): ImportPlan {
     });
   }
 
-  // Audio: each file is a chapter; folders (or volume numbers in names) are books.
+  // Audio: each file is a chapter. Books come from folders ("Narnia/Book 2/..."),
+  // a volume in the folder name ("Red Priest - Volume 5/..."), or in file names.
   for (const track of tracks) {
     const parts = segments(track.path);
     const named = splitOnVolume(track.name);
-    // "Night Tales Book 1 - 01 Opening": the chapter is what follows the book number.
-    const parsed = parseName(named.volume !== null && named.title ? named.title : track.name);
-    const top = parts.length > 1 ? (parts[0] as string) : named.series || "Audiobook";
-    const entry = seriesFor(top.toLowerCase(), parseName(top).title || top, "audio");
-    const bookFolder = parts.length >= 3 ? (parts[1] as string) : null;
-    const folderParts = bookFolder ? parseName(bookFolder) : null;
-    const volume = folderParts?.volume ?? named.volume;
-    const bookKey = bookFolder ? `${top}/${bookFolder}` : `${top}#${volume ?? ""}`;
-    const book = bookIn(entry, bookKey, folderParts?.title ?? "", volume, "audio");
+    const top = parts.length > 1 ? (parts[0] as string) : null;
+    const topParts = top ? splitOnVolume(top) : null;
+    const bookFolder = parts.length >= 3 ? splitOnVolume(parts[1] as string) : null;
+    const seriesTitle = topParts
+      ? topParts.volume !== null
+        ? topParts.series
+        : parseName(top as string).title || (top as string)
+      : // Loose files without a volume are one book, whatever their names say.
+        named.volume !== null
+        ? named.series
+        : "Audiobook";
+    const volume = bookFolder?.volume ?? topParts?.volume ?? named.volume;
+    const seriesKey = seriesTitle.toLowerCase();
+    const entry = seriesFor(seriesKey, seriesTitle, "audio");
+    if (/\bvol/i.test(parts.slice(0, -1).join("/") || track.name)) entry.partLabel = "Volume";
+    const bookKey = bookFolder ? `${seriesKey}/${parts[1]}` : `${seriesKey}#${volume ?? ""}`;
+    const bookTitle = bookFolder
+      ? bookFolder.volume !== null
+        ? bookFolder.title
+        : bookFolder.series
+      : topParts?.volume !== null
+        ? (topParts?.title ?? "")
+        : "";
+    const book = bookIn(entry, bookKey, bookTitle, volume, "audio");
+    const { title, number } = trackTitle(
+      named.volume !== null && named.title ? named.title : track.name,
+    );
     book.chapters.push({
-      title: parsed.title || `Chapter ${parsed.chapter ?? book.chapters.length + 1}`,
-      number: parsed.chapter,
+      title: title || `Chapter ${number ?? book.chapters.length + 1}`,
+      number,
       files: [track],
     });
   }

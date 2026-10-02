@@ -15,7 +15,7 @@ import {
 } from "@notables/ui";
 import { Link, useNavigate } from "@tanstack/react-router";
 import { AnimatePresence, motion } from "motion/react";
-import { type ReactNode, useDeferredValue, useMemo, useRef, useState } from "react";
+import { type ReactNode, useDeferredValue, useEffect, useMemo, useRef, useState } from "react";
 import { t } from "../../../i18n/i18n";
 import { IMPORT_ACCEPT, withPath } from "../../imports/lib/picked-files";
 import { appendToBook } from "../../imports/lib/run-import";
@@ -24,6 +24,7 @@ import { isListedNote, type LibraryEntry, useLibrary } from "../../library/store
 import { queueDrawing } from "../../studio/lib/pending-drawing";
 import { moveBooksToBin, moveNotesToBin } from "../../trash/lib/recycle-bin";
 import { chapterKind, startChapter } from "../actions/start-chapter";
+import { syncBookFormat } from "../actions/sync-book-format";
 import { type BookEntry, bookShelf, getBookStore, useBook } from "../store/book-store";
 import { BookCover } from "./book-cover";
 
@@ -50,6 +51,11 @@ function BookEditor({ book, actions }: { book: BookEntry; actions?: ReactNode })
   const chapters = book.chapterIds
     .map((id) => notesById.get(id))
     .filter((note): note is LibraryEntry => Boolean(note) && !note?.trashedAt);
+
+  // A book left with only recordings becomes an audiobook.
+  useEffect(() => {
+    if (chapters.length > 0) void syncBookFormat(book.id);
+  }, [book.id, chapters.length]);
 
   const remove = () => {
     moveBooksToBin([book]);

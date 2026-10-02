@@ -48,3 +48,22 @@ export function chapterRecordings(document: unknown): ChapterRecording[] {
   });
   return recordings;
 }
+
+/** True when a chapter is a recording: audio clips, and no writing outside headings. */
+export function isRecordingChapter(document: unknown): boolean {
+  let recordings = 0;
+  let writing = false;
+  const visit = (node: unknown, inHeading: boolean) => {
+    if (!node || typeof node !== "object") return;
+    const current = node as SerializedNode & { text?: unknown };
+    if (current.type === "audio-clip") recordings += 1;
+    if (current.type === "image") writing = true;
+    if (!inHeading && typeof current.text === "string" && current.text.trim()) writing = true;
+    const heading = inHeading || current.type === "heading";
+    if (current.root) visit(current.root, heading);
+    if (Array.isArray(current.children))
+      for (const child of current.children) visit(child, heading);
+  };
+  visit(document, false);
+  return recordings > 0 && !writing;
+}

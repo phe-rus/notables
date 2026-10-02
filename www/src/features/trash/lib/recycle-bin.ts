@@ -1,5 +1,6 @@
 import { toast } from "@notables/ui";
 import { eraseBook, ownChapters } from "../../books/actions/erase-book";
+import { syncBookFormat } from "../../books/actions/sync-book-format";
 import { type BookEntry, getBookStore } from "../../books/store/book-store";
 import { getLibrary, type LibraryEntry } from "../../library/store/library-store";
 import { deleteNote } from "../../notes/actions/delete-note";
@@ -32,6 +33,10 @@ export function moveNotesToBin(entries: LibraryEntry[]) {
   if (entries.length === 0) return;
   const ids = entries.map((entry) => entry.id);
   setNotesTrashed(ids, Date.now());
+  // A book left with only recordings becomes an audiobook.
+  for (const bookId of new Set(entries.map((entry) => entry.bookId).filter(Boolean))) {
+    void syncBookFormat(bookId as string);
+  }
   toast(entries.length === 1 ? "Moved to Recently Deleted" : `${entries.length} notes deleted`, {
     description:
       entries.length === 1

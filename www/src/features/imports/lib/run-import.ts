@@ -1,6 +1,7 @@
 import type { NoteKind } from "@notables/core";
 import { $appendContent, composeDocument, composeDocumentFromHtml } from "@notables/editor";
 import { saveMedia } from "../../../platform/storage/media-store";
+import { syncBookFormat } from "../../books/actions/sync-book-format";
 import { type BookFormat, getBookStore } from "../../books/store/book-store";
 import { getSeriesStore } from "../../books/store/series-store";
 import { writeNote } from "../../library/lib/write-note";
@@ -196,6 +197,7 @@ export async function appendToBook(
       ...(!current.author && first?.author ? { author: first.author } : {}),
     });
   }
+  await syncBookFormat(bookId);
   return { chapters: added.length, skipped: plan.skipped.length };
 }
 
