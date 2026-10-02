@@ -146,9 +146,8 @@ pub fn decode_windows(
         };
         let spec = *decoded.spec();
         let channels = spec.channels.count().max(1);
-        let samples = buffer.get_or_insert_with(|| {
-            SampleBuffer::<f32>::new(decoded.capacity() as u64, spec)
-        });
+        let samples =
+            buffer.get_or_insert_with(|| SampleBuffer::<f32>::new(decoded.capacity() as u64, spec));
         if samples.capacity() < decoded.capacity() * channels {
             *samples = SampleBuffer::<f32>::new(decoded.capacity() as u64, spec);
         }
@@ -185,7 +184,7 @@ mod tests {
     fn resamples_to_sixteen_kilohertz() {
         let mut resampler = Resampler::new(48_000);
         let mut out = Vec::new();
-        let input: Vec<f32> = (0..48_000).map(|i| (i as f32 / 48_000.0)).collect();
+        let input: Vec<f32> = (0..48_000).map(|i| i as f32 / 48_000.0).collect();
         // Fed in uneven packets, as decoders do.
         for chunk in input.chunks(1_151) {
             resampler.push(chunk, &mut out);
@@ -214,7 +213,8 @@ mod tests {
         bytes.extend_from_slice(b"data");
         bytes.extend_from_slice(&data_len.to_le_bytes());
         for i in 0..frames {
-            let value = ((i as f32 / rate as f32 * 440.0 * std::f32::consts::TAU).sin() * 8_000.0) as i16;
+            let value =
+                ((i as f32 / rate as f32 * 440.0 * std::f32::consts::TAU).sin() * 8_000.0) as i16;
             bytes.extend_from_slice(&value.to_le_bytes());
             bytes.extend_from_slice(&value.to_le_bytes());
         }

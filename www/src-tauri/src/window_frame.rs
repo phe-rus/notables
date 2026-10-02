@@ -13,11 +13,7 @@ pub struct WindowFrame {
 /// "rounded" when the page should draw rounded corners, otherwise "system".
 #[tauri::command]
 pub fn window_frame(state: State<'_, WindowFrame>) -> &'static str {
-    if state.rounded {
-        "rounded"
-    } else {
-        "system"
-    }
+    if state.rounded { "rounded" } else { "system" }
 }
 
 #[cfg(target_os = "linux")]
