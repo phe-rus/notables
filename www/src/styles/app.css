@@ -126,7 +126,6 @@ html[data-window-frame="rounded"] body::after {
   }
 }
 .splash-spinner {
-  position: relative;
   width: 22px;
   height: 22px;
   animation: splash-rise 0.4s 0.6s ease-out both;

@@ -169,14 +169,15 @@ function AppShell() {
         )}
       </AnimatePresence>
 
-      {/* Phones and tablets: a drawer over blurred content, dismissed by tap or swipe. */}
+      {/* Phones and tablets: a drawer over dimmed content, dismissed by tap or swipe. A dim,
+          not a blur: re-blurring the whole screen every frame is what made it stutter on phones. */}
       <AnimatePresence>
         {!isDesktop && drawerOpen && (
           <div className="fixed inset-0 z-40 flex">
             <motion.button
               type="button"
               aria-label="Close library"
-              className="absolute inset-0 bg-black/25 backdrop-blur-md"
+              className="absolute inset-0 bg-black/35"
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
@@ -202,15 +203,12 @@ function AppShell() {
         )}
       </AnimatePresence>
 
-      <motion.div
+      <div
         className={cn(
           "flex min-w-0 grow overflow-hidden bg-background lg:my-2 lg:mr-2 lg:rounded-[16px] lg:border lg:border-separator/70 lg:shadow-[0_1px_2px_rgba(0,0,0,0.04),0_8px_28px_rgba(0,0,0,0.05)]",
           // With the sidebar tucked away, the card sits evenly inside the window.
           collapsed && "lg:ml-2",
         )}
-        // A drawer on smaller screens nudges the content back for depth.
-        animate={!isDesktop && drawerOpen ? { scale: 0.97, x: 24 } : { scale: 1, x: 0 }}
-        transition={spring.smooth}
       >
         {!fullPage &&
           (inInvoices ? (
@@ -273,7 +271,7 @@ function AppShell() {
             </TranscriptionProvider>
           </StudioHost>
         </main>
-      </motion.div>
+      </div>
 
       {/* On phones an open note's toolbar takes the bottom edge. */}
       {(!isPhone || showTabBar) && (
