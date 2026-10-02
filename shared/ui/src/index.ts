@@ -1,6 +1,7 @@
 export * from "./components/button/button";
 export * from "./components/button/icon-button";
 export * from "./components/chip/chip";
+export * from "./components/controls/choice-controls";
 export * from "./components/dialog/dialog-host";
 export { type ConfirmOptions, confirmDialog } from "./components/dialog/dialog-store";
 export * from "./components/popover/popover";

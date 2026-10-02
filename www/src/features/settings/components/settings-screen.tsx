@@ -1,5 +1,5 @@
 import { accents } from "@notables/tokens";
-import { IconButton, SidebarIcon } from "@notables/ui";
+import { IconButton, SegmentedControl, SidebarIcon, SwatchPicker, Switch } from "@notables/ui";
 import { AppMark } from "../../../components/brand/app-mark";
 import { CollapsedSidebarControls } from "../../../components/window/collapsed-sidebar-controls";
 import { setAuthorName, useAuthorName } from "../../../platform/author-preferences";
@@ -15,13 +15,7 @@ import {
   textSizes,
 } from "../model/preferences";
 import { updatePreferences, usePreferences } from "../store/preferences-store";
-import {
-  SegmentedControl,
-  SettingsGroup,
-  SettingsRow,
-  SwatchPicker,
-  Switch,
-} from "./settings-controls";
+import { SettingsGroup, SettingsRow } from "./settings-controls";
 
 const set = (change: Partial<Preferences>) => updatePreferences((p) => ({ ...p, ...change }));
 const setList = (change: Partial<ListPreferences>) =>
