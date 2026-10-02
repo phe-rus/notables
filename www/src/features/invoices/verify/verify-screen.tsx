@@ -1,10 +1,12 @@
-import { extractSeal, type SealCheck, verifySeal } from "@notables/core";
+import { extractSeal, hiddenMarkFor, type SealCheck, verifySeal } from "@notables/core";
 import { PhotoIcon, ScanCodeIcon, spring } from "@notables/ui";
 import { Link } from "@tanstack/react-router";
 import { AnimatePresence, motion } from "motion/react";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { AppMark } from "../../../components/brand/app-mark";
 import { sealFromPdf } from "../export/invoice-pdf";
+import { checkByNumber } from "./check-by-number";
+import { HiddenMarkCheck, type MarkSource } from "./hidden-mark-check";
 import { QrScanner, readCodeFromImage } from "./qr-scanner";
 import { SealResult } from "./seal-result";
 
@@ -16,21 +18,30 @@ import { SealResult } from "./seal-result";
  */
 export function VerifyScreen() {
   const [check, setCheck] = useState<SealCheck | null>(null);
+  const [seal, setSeal] = useState<string | null>(null);
+  const [source, setSource] = useState<MarkSource>({ kind: "none" });
+  const [matchedNumber, setMatchedNumber] = useState<string | null>(null);
   const [scanning, setScanning] = useState(false);
   const [problem, setProblem] = useState<string | null>(null);
   const [pasted, setPasted] = useState("");
   const fileInput = useRef<HTMLInputElement>(null);
 
-  const evaluate = useCallback((text: string) => {
-    const seal = extractSeal(text);
+  const evaluate = useCallback((text: string, from: MarkSource = { kind: "none" }) => {
+    const found = extractSeal(text);
     setScanning(false);
-    if (!seal) {
+    if (!found) {
       setProblem("That isn’t a Notables verification code.");
       return;
     }
     setProblem(null);
-    setCheck(verifySeal(seal));
+    setSeal(found);
+    setSource(from);
+    setCheck(verifySeal(found));
   }, []);
+  const onCameraScan = useCallback(
+    (text: string) => evaluate(text, { kind: "camera" }),
+    [evaluate],
+  );
 
   useEffect(() => {
     const fromLink = () => {
@@ -43,6 +54,8 @@ export function VerifyScreen() {
 
   const reset = () => {
     setCheck(null);
+    setSeal(null);
+    setMatchedNumber(null);
     setPasted("");
     setProblem(null);
     if (window.location.hash) history.replaceState(null, "", window.location.pathname);
@@ -70,7 +83,22 @@ export function VerifyScreen() {
         <AnimatePresence mode="wait">
           {check ? (
             <motion.div key="result" exit={{ opacity: 0, y: -8 }} transition={spring.snappy}>
-              <SealResult check={check} onReset={reset} />
+              <SealResult
+                check={check}
+                onReset={reset}
+                extra={
+                  <>
+                    {matchedNumber && (
+                      <p className="rounded-[14px] bg-success/10 px-4 py-2.5 text-center text-[14px] font-medium">
+                        The number and check code match {matchedNumber} as issued from this device.
+                      </p>
+                    )}
+                    {check.valid && seal && (
+                      <HiddenMarkCheck expected={hiddenMarkFor(seal)} source={source} />
+                    )}
+                  </>
+                }
+              />
             </motion.div>
           ) : (
             <motion.div
@@ -90,7 +118,7 @@ export function VerifyScreen() {
               </div>
 
               {scanning ? (
-                <QrScanner onScan={evaluate} onUnavailable={onUnavailable} />
+                <QrScanner onScan={onCameraScan} onUnavailable={onUnavailable} />
               ) : (
                 <div className="grid grid-cols-2 gap-3">
                   <ChoiceButton icon={<ScanCodeIcon size={26} />} onClick={() => setScanning(true)}>
@@ -121,7 +149,7 @@ export function VerifyScreen() {
                     return;
                   }
                   const text = await readCodeFromImage(file).catch(() => null);
-                  if (text) evaluate(text);
+                  if (text) evaluate(text, { kind: "photo", file });
                   else setProblem("No code found in that picture. Try a sharper, closer photo.");
                 }}
               />
@@ -149,6 +177,14 @@ export function VerifyScreen() {
                 </button>
               </form>
 
+              <NumberCheckForm
+                onMatch={(number, found) => {
+                  evaluate(found);
+                  setMatchedNumber(number);
+                }}
+                onProblem={setProblem}
+              />
+
               {problem && (
                 <p role="alert" className="text-center text-[14px] text-danger">
                   {problem}
@@ -163,6 +199,79 @@ export function VerifyScreen() {
         Checked on this device. Nothing you scan is sent anywhere.
       </footer>
     </div>
+  );
+}
+
+/**
+ * For the issuer at a desk: type the number and check code printed on a
+ * paper copy to confirm it against what this device issued.
+ */
+function NumberCheckForm({
+  onMatch,
+  onProblem,
+}: {
+  onMatch: (number: string, seal: string) => void;
+  onProblem: (problem: string | null) => void;
+}) {
+  const [number, setNumber] = useState("");
+  const [code, setCode] = useState("");
+  const [busy, setBusy] = useState(false);
+
+  return (
+    <details className="group rounded-[18px] border border-separator/70 bg-elevated px-4 py-3 open:pb-4">
+      <summary className="cursor-pointer list-none text-[14px] font-semibold text-label marker:hidden">
+        Check by number instead
+        <span className="block text-[13px] font-normal text-label-secondary">
+          For documents issued from this device: type the number and check code on the paper.
+        </span>
+      </summary>
+      <form
+        className="mt-3 grid grid-cols-[1fr_1fr_auto] gap-2 max-sm:grid-cols-2"
+        onSubmit={async (event) => {
+          event.preventDefault();
+          if (!number.trim() || !code.trim()) return;
+          setBusy(true);
+          onProblem(null);
+          try {
+            const result = await checkByNumber(number, code);
+            if (result.status === "match") onMatch(number.trim(), result.seal);
+            else if (result.status === "code-mismatch")
+              onProblem(
+                `The check code doesn’t match ${number.trim()} as issued. The paper may have been changed, or the code was mistyped.`,
+              );
+            else
+              onProblem(
+                `${number.trim()} wasn’t issued from this device. Scan its code with a phone to check it anywhere.`,
+              );
+          } finally {
+            setBusy(false);
+          }
+        }}
+      >
+        <input
+          value={number}
+          onChange={(event) => setNumber(event.target.value)}
+          placeholder="Number, e.g. INV-0042"
+          aria-label="Document number"
+          className="min-w-0 rounded-[12px] control-field px-3 py-2.5 text-[14px]"
+        />
+        <input
+          value={code}
+          onChange={(event) => setCode(event.target.value)}
+          placeholder="Check code"
+          aria-label="Check code"
+          autoCapitalize="characters"
+          className="min-w-0 rounded-[12px] control-field px-3 py-2.5 font-mono text-[14px] uppercase"
+        />
+        <button
+          type="submit"
+          disabled={busy || !number.trim() || !code.trim()}
+          className="rounded-[12px] bg-inverse px-4 py-2.5 text-[14px] font-semibold text-on-inverse disabled:opacity-40 max-sm:col-span-2"
+        >
+          {busy ? "Checking…" : "Check"}
+        </button>
+      </form>
+    </details>
   );
 }
 

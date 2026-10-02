@@ -19,7 +19,16 @@ type Verdict = "genuine" | "impostor" | "invalid";
  * The outcome of a check, in plain words: genuine (and from whom), signed
  * by someone else than the name it claims, or altered.
  */
-export function SealResult({ check, onReset }: { check: SealCheck; onReset: () => void }) {
+export function SealResult({
+  check,
+  onReset,
+  extra,
+}: {
+  check: SealCheck;
+  onReset: () => void;
+  /** Further checks shown under the verdict, such as the hidden mark. */
+  extra?: React.ReactNode;
+}) {
   const [remembered, setRemembered] = useState(() =>
     check.valid ? knownIssuer(check.issuerId) !== null : false,
   );
@@ -78,6 +87,7 @@ export function SealResult({ check, onReset }: { check: SealCheck; onReset: () =
         <h1 className="text-[28px] font-bold tracking-tight">{tone.title}</h1>
         <p className="max-w-[420px] text-[15px] leading-snug text-label-secondary">{explanation}</p>
       </div>
+      {extra}
 
       {check.summary && (
         <dl className="grid w-full grid-cols-[auto_1fr] gap-x-6 gap-y-2.5 rounded-[20px] border border-separator/70 bg-elevated p-5 text-[14px]">

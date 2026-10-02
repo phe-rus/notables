@@ -1,13 +1,17 @@
 import {
+  checkCodeFor,
   computeTotals,
+  extractSeal,
   formatMoney,
+  hiddenMarkFor,
   type InvoiceDocument,
   invoiceKindLabels,
   lineAmount,
 } from "@notables/core";
 import { useMediaSource } from "@notables/editor";
 import { cn } from "@notables/ui";
-import type { CSSProperties, ReactNode } from "react";
+import { type CSSProperties, type ReactNode, useMemo } from "react";
+import { HiddenMark } from "../hidden-mark/hidden-mark";
 import { SealCode } from "./seal-code";
 
 /** A4 at 96 dpi: the paper is laid out at this size and scaled to fit. */
@@ -45,6 +49,11 @@ export function InvoicePaper({ invoice, verifyLink, issuerId, className }: Invoi
   const money = (minor: number) => formatMoney(minor, invoice.currency);
   const { layout, font, accent, logo } = invoice.style;
   const label = invoiceKindLabels[invoice.kind];
+  // Both come from the seal, so they change exactly when the contents do.
+  const codes = useMemo(() => {
+    const seal = verifyLink ? extractSeal(verifyLink) : null;
+    return seal ? { check: checkCodeFor(seal), mark: hiddenMarkFor(seal) } : null;
+  }, [verifyLink]);
   const amountLine =
     invoice.kind === "receipt"
       ? `${money(totals.total)} paid on ${formatDate(invoice.issuedOn)}`
@@ -56,7 +65,7 @@ export function InvoicePaper({ invoice, verifyLink, issuerId, className }: Invoi
     <article
       className={cn(
         // Sized by class, not inline, so the print stylesheet can resize it.
-        "invoice-paper relative flex min-h-[1123px] w-[794px] flex-col bg-white text-[#1f1d1a] antialiased",
+        "invoice-paper relative isolate flex min-h-[1123px] w-[794px] flex-col bg-white text-[#1f1d1a] antialiased",
         font === "serif" ? "font-serif" : "font-sans",
         className,
       )}
@@ -69,6 +78,13 @@ export function InvoicePaper({ invoice, verifyLink, issuerId, className }: Invoi
     >
       {layout === "classic" && (
         <div className="absolute inset-x-0 top-0 h-2.5" style={{ background: accent }} />
+      )}
+      {/* The hidden mark sits under the content, low on the page, for cameras to find. */}
+      {codes && (
+        <HiddenMark
+          value={codes.mark}
+          className="pointer-events-none absolute bottom-[150px] left-[52px] -z-10"
+        />
       )}
 
       <header
@@ -218,6 +234,14 @@ export function InvoicePaper({ invoice, verifyLink, issuerId, className }: Invoi
             <span className="font-mono text-[#1f1d1a]">{issuerId ?? "…"}</span>
           </span>
           <span>Any change to this document breaks the seal.</span>
+          {codes && (
+            <span>
+              Check code{" "}
+              <span className="font-mono font-semibold tracking-wide text-[#1f1d1a]">
+                {codes.check}
+              </span>
+            </span>
+          )}
         </div>
         {verifyLink ? (
           <SealCode value={verifyLink} size={108} />

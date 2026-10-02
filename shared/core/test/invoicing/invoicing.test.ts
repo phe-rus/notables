@@ -1,14 +1,18 @@
 import { describe, expect, it } from "bun:test";
 import {
   canonicalJson,
+  checkCodeFor,
   computeTotals,
   createSeal,
   createSigningKey,
   emptyParty,
   extractSeal,
   formatMoney,
+  HIDDEN_MARK_PREFIX,
+  hiddenMarkFor,
   type InvoiceDocument,
   issuerIdFor,
+  normalizeCheckCode,
   parseMoney,
   sealMatchesDocument,
   toBase64Url,
@@ -115,5 +119,37 @@ describe("seal", () => {
     expect(extractSeal(`https://notables.example/verify#${seal}`)).toBe(seal);
     expect(extractSeal(seal)).toBe(seal);
     expect(extractSeal("https://example.com/other")).toBeNull();
+  });
+});
+
+describe("check code and hidden mark", () => {
+  const key = createSigningKey();
+  const seal = createSeal(invoice(), key);
+
+  it("gives a short code that only changes with the contents", () => {
+    expect(checkCodeFor(seal)).toMatch(/^[0-9A-Z]{4}-[0-9A-Z]{4}$/);
+    expect(checkCodeFor(createSeal(invoice(), key))).toBe(checkCodeFor(seal));
+    expect(checkCodeFor(createSeal(invoice({ notes: "Changed" }), key))).not.toBe(
+      checkCodeFor(seal),
+    );
+  });
+
+  it("accepts a code typed loosely", () => {
+    const code = checkCodeFor(seal);
+    expect(normalizeCheckCode(code.toLowerCase().replace("-", " "))).toBe(code);
+    expect(normalizeCheckCode("o1il-2345")).toBe("0111-2345");
+  });
+
+  it("derives a hidden mark that differs from the check code", () => {
+    const mark = hiddenMarkFor(seal);
+    expect(mark.startsWith(HIDDEN_MARK_PREFIX)).toBe(true);
+    expect(mark).toHaveLength(HIDDEN_MARK_PREFIX.length + 24);
+    expect(mark).not.toContain(checkCodeFor(seal).replace("-", ""));
+  });
+
+  it("keeps issuer IDs as they were", () => {
+    const publicKey = new Uint8Array(32).fill(7);
+    expect(issuerIdFor(publicKey)).toBe(issuerIdFor(publicKey));
+    expect(issuerIdFor(publicKey)).toMatch(/^[0-9A-Z]{4}(-[0-9A-Z]{4}){3}$/);
   });
 });

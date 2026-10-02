@@ -1,6 +1,8 @@
 import {
+  checkCodeFor,
   computeTotals,
   formatMoney,
+  hiddenMarkFor,
   type InvoiceDocument,
   invoiceKindLabels,
   lineAmount,
@@ -17,6 +19,7 @@ import {
   StandardFonts,
 } from "pdf-lib";
 import { encode } from "uqr";
+import { HIDDEN_INK } from "../hidden-mark/reveal-hidden-mark";
 
 /**
  * The invoice as a real PDF: vector text that stays sharp and selectable,
@@ -131,6 +134,8 @@ export async function buildInvoicePdf(input: InvoicePdfInput): Promise<Uint8Arra
 
   let page: PDFPage = pdf.addPage([A4.width, A4.height]);
   let y = A4.height - MARGIN;
+  // The hidden mark first, so everything else prints over it (see hidden-mark).
+  drawHiddenMark(page, hiddenMarkFor(seal));
   const right = A4.width - MARGIN;
   const contentWidth = right - MARGIN;
 
@@ -337,6 +342,15 @@ export async function buildInvoicePdf(input: InvoicePdfInput): Promise<Uint8Arra
   page.drawText(issuerId, { x: MARGIN + prefixWidth, y, size: 8.5, font: mono, color: INK });
   y -= 13;
   text("Any change to this document breaks the seal.", MARGIN, 8.5, { color: MUTED });
+  y -= 13;
+  text("Check code ", MARGIN, 8.5, { color: MUTED });
+  page.drawText(checkCodeFor(seal), {
+    x: MARGIN + regular.widthOfTextAtSize("Check code ", 8.5),
+    y,
+    size: 8.5,
+    font: mono,
+    color: INK,
+  });
 
   const { data, size } = encode(verifyLink, { ecc: "M", border: 0 });
   const cell = qrSize / size;
@@ -395,6 +409,29 @@ export async function buildInvoicePdf(input: InvoicePdfInput): Promise<Uint8Arra
 }
 
 /** Finds the seal stored in a Notables PDF, without parsing the whole file. */
+/** The hidden mark at the same place and size as on screen: low on the left. */
+function drawHiddenMark(page: PDFPage, value: string) {
+  const { data, size } = encode(value, { ecc: "Q", border: 0 });
+  const scale = A4.width / 794;
+  const extent = 230 * scale;
+  const cell = extent / (size + 6);
+  const left = 52 * scale + cell * 3;
+  const top = (150 + 230) * scale - cell * 3;
+  const ink = hexToRgb(HIDDEN_INK);
+  data.forEach((row, rowIndex) => {
+    row.forEach((dark, column) => {
+      if (!dark) return;
+      page.drawRectangle({
+        x: left + column * cell,
+        y: top - (rowIndex + 1) * cell,
+        width: cell + 0.05,
+        height: cell + 0.05,
+        color: ink,
+      });
+    });
+  });
+}
+
 export function sealFromPdf(bytes: Uint8Array): string | null {
   const text = new TextDecoder("latin1").decode(bytes);
   const match = new RegExp(`/${PDF_SEAL_KEY}\\s*\\(([A-Za-z0-9_\\-.]+)\\)`).exec(text);

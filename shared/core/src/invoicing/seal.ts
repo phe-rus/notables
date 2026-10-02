@@ -118,19 +118,53 @@ const CROCKFORD = "0123456789ABCDEFGHJKMNPQRSTVWXYZ";
  * "7F3A-91C2-K8QZ-M2PD". Printed on documents and compared by readers.
  */
 export function issuerIdFor(publicKey: Uint8Array): string {
-  const digest = sha256(publicKey);
+  return grouped(crockford(sha256(publicKey).subarray(0, 10)));
+}
+
+/** Crockford base32: no I, L, O or U, so it reads aloud and types cleanly. */
+function crockford(bytes: Uint8Array): string {
   let bits = 0;
   let value = 0;
   let out = "";
-  for (const byte of digest.subarray(0, 10)) {
-    value = (value << 8) | byte;
+  for (const byte of bytes) {
+    value = ((value << 8) | byte) & 0xffff;
     bits += 8;
     while (bits >= 5) {
       out += CROCKFORD[(value >>> (bits - 5)) & 31];
       bits -= 5;
     }
   }
-  return out.match(/.{4}/g)?.join("-") ?? out;
+  return out;
+}
+
+const grouped = (text: string) => text.match(/.{4}/g)?.join("-") ?? text;
+
+/**
+ * A short code printed beside the document number, e.g. "7KQ2-MX9D". With
+ * the number, it lets an issuer confirm a paper copy by typing it in, no
+ * camera needed. Signatures are deterministic, so it only changes when the
+ * signed contents do.
+ */
+export function checkCodeFor(seal: string): string {
+  return grouped(crockford(sha256(encoder.encode(`check:${seal}`)).subarray(0, 5)));
+}
+
+/** Normalises a typed check code: case, spaces, dashes and look-alike letters. */
+export function normalizeCheckCode(text: string): string {
+  const clean = text.toUpperCase().replace(/[\s-]/g, "").replace(/[IL]/g, "1").replace(/O/g, "0");
+  return grouped(clean);
+}
+
+/** Prefix of the hidden mark's text, so scanners can tell it from other codes. */
+export const HIDDEN_MARK_PREFIX = "NTM1:";
+
+/**
+ * The text of the faint mark printed into a document, readable by a camera
+ * but hard to see. It is derived from the seal, so a copy that was retyped,
+ * regenerated or edited carries no mark, or one that doesn't match.
+ */
+export function hiddenMarkFor(seal: string): string {
+  return HIDDEN_MARK_PREFIX + crockford(sha256(encoder.encode(`mark:${seal}`)).subarray(0, 15));
 }
 
 export interface SigningKey {
