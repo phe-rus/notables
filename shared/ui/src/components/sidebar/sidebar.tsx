@@ -14,7 +14,7 @@ export function SidebarSection({ title, children }: { title: string; children: R
 export function sidebarItemClass(active?: boolean): string {
   return cn(
     "group flex items-center gap-2.5 rounded-lg px-2.5 py-[7px] text-[14px] text-label no-underline transition-colors duration-fast",
-    active ? "bg-accent font-medium text-on-accent" : "hover:bg-fill",
+    active ? "bg-accent-soft font-medium text-label" : "hover:bg-fill/70",
   );
 }
 
@@ -31,10 +31,22 @@ export function SidebarItemContent({
 }) {
   return (
     <>
-      <span className={cn("flex", active ? "text-on-accent" : "text-accent-text")}>{icon}</span>
+      <span
+        className={cn(
+          "flex transition-colors",
+          active ? "text-accent-text" : "text-label-secondary",
+        )}
+      >
+        {icon}
+      </span>
       <span className="grow truncate">{children}</span>
       {count !== undefined && (
-        <span className={cn("text-[13px]", active ? "text-on-accent" : "text-label-tertiary")}>
+        <span
+          className={cn(
+            "text-[13px] tabular-nums",
+            active ? "text-accent-text" : "text-label-tertiary",
+          )}
+        >
           {count}
         </span>
       )}

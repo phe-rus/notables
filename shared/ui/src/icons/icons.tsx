@@ -1,5 +1,6 @@
 import {
   Add01Icon,
+  Alert02Icon,
   ArrowDown01Icon,
   ArrowLeft01Icon,
   ArrowRight01Icon,
@@ -8,9 +9,12 @@ import {
   BookOpen01Icon,
   Cancel01Icon,
   CheckListIcon,
+  CheckmarkBadge01Icon,
   CheckmarkCircle02Icon,
   Comment01Icon,
   Delete02Icon,
+  Download01Icon,
+  DragDropVerticalIcon,
   FavouriteIcon,
   Globe02Icon,
   CanvasIcon as HugeCanvasIcon,
@@ -19,6 +23,7 @@ import {
   StarIcon as HugeStarIcon,
   ThumbsUpIcon as HugeThumbsUpIcon,
   Image01Icon,
+  Invoice03Icon,
   Link01Icon,
   Mic01Icon,
   Mortarboard01Icon,
@@ -27,10 +32,17 @@ import {
   PencilEdit02Icon,
   PencilIcon,
   Pin02Icon,
+  PrinterIcon,
+  QrCodeIcon,
   QuillWrite02Icon,
+  ScanIcon,
   Search01Icon,
+  Settings02Icon,
   Share08Icon,
   SidebarLeftIcon,
+  Tick02Icon,
+  ViewIcon,
+  ViewOffSlashIcon,
 } from "@hugeicons/core-free-icons";
 import { HugeiconsIcon, type IconSvgElement } from "@hugeicons/react";
 import type { SVGProps } from "react";
@@ -87,6 +99,18 @@ export const CommentIcon = icon(Comment01Icon, "CommentIcon");
 export const TrashIcon = icon(Delete02Icon, "TrashIcon");
 export const PinIcon = icon(Pin02Icon, "PinIcon");
 export const SidebarIcon = icon(SidebarLeftIcon, "SidebarIcon");
+export const SettingsIcon = icon(Settings02Icon, "SettingsIcon");
+export const DragHandleIcon = icon(DragDropVerticalIcon, "DragHandleIcon");
+export const VisibleIcon = icon(ViewIcon, "VisibleIcon");
+export const HiddenIcon = icon(ViewOffSlashIcon, "HiddenIcon");
+export const CheckIcon = icon(Tick02Icon, "CheckIcon");
+export const InvoiceIcon = icon(Invoice03Icon, "InvoiceIcon");
+export const QrCodeGlyph = icon(QrCodeIcon, "QrCodeGlyph");
+export const ScanCodeIcon = icon(ScanIcon, "ScanCodeIcon");
+export const VerifiedIcon = icon(CheckmarkBadge01Icon, "VerifiedIcon");
+export const WarningIcon = icon(Alert02Icon, "WarningIcon");
+export const PrintIcon = icon(PrinterIcon, "PrintIcon");
+export const DownloadIcon = icon(Download01Icon, "DownloadIcon");
 export const PlayIcon = icon(HugePlayIcon, "PlayIcon");
 export const PauseIcon = icon(HugePauseIcon, "PauseIcon");
 export const ThumbsUpIcon = toggleIcon(HugeThumbsUpIcon, "ThumbsUpIcon");
