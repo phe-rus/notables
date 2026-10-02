@@ -4,6 +4,10 @@ export const fontFamily = {
     '-apple-system, BlinkMacSystemFont, "SF Pro Display", "Inter", "Segoe UI", Roboto, sans-serif',
   /** Reading and writing. Newsreader is bundled; New York is used where present. */
   serif: '"Newsreader", "New York", "Iowan Old Style", Georgia, serif',
+  /** Handwriting, for notes and books written in a script hand. */
+  script: '"Caveat Variable", "Caveat", "Bradley Hand", "Segoe Print", cursive',
+  /** Neat printed handwriting. */
+  print: '"Patrick Hand", "Chalkboard SE", "Segoe Print", cursive',
   mono: 'ui-monospace, "SF Mono", "JetBrains Mono", Menlo, monospace',
 } as const;
 

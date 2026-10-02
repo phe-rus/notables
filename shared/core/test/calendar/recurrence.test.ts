@@ -86,6 +86,6 @@ describe("alerts", () => {
       new Date(2026, 9, 2, 9, 30),
     );
     expect(due.map((alert) => alert.event.title)).toEqual(["Flight", "Bins"]);
-    expect(due[1].at).toEqual(new Date(2026, 9, 2, 9, 0));
+    expect(due[1]?.at).toEqual(new Date(2026, 9, 2, 9, 0));
   });
 });
