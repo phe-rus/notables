@@ -22,5 +22,5 @@ export async function exportBookAsEpub(book: BookEntry): Promise<void> {
     loadMedia,
     language: window.document.documentElement.lang || "en",
   });
-  saveFile(epub, fileNameFor(book.title, "epub"), "application/epub+zip");
+  await saveFile(epub, fileNameFor(book.title, "epub"), "application/epub+zip");
 }

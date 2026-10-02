@@ -4,6 +4,7 @@ import { Link } from "@tanstack/react-router";
 import { AnimatePresence, motion } from "motion/react";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { AppMark } from "../../../components/brand/app-mark";
+import { sealFromPdf } from "../export/invoice-pdf";
 import { QrScanner, readCodeFromImage } from "./qr-scanner";
 import { SealResult } from "./seal-result";
 
@@ -99,19 +100,26 @@ export function VerifyScreen() {
                     icon={<PhotoIcon size={26} />}
                     onClick={() => fileInput.current?.click()}
                   >
-                    Choose photo
+                    Photo or PDF
                   </ChoiceButton>
                 </div>
               )}
               <input
                 ref={fileInput}
                 type="file"
-                accept="image/*"
+                accept="image/*,application/pdf"
                 className="hidden"
                 onChange={async (event) => {
                   const file = event.target.files?.[0];
                   event.target.value = "";
                   if (!file) return;
+                  // A Notables PDF carries its seal inside; a photo or screenshot shows the code.
+                  if (file.type === "application/pdf" || file.name.endsWith(".pdf")) {
+                    const seal = sealFromPdf(new Uint8Array(await file.arrayBuffer()));
+                    if (seal) evaluate(seal);
+                    else setProblem("This PDF wasn’t made with Notables, or its seal was removed.");
+                    return;
+                  }
                   const text = await readCodeFromImage(file).catch(() => null);
                   if (text) evaluate(text);
                   else setProblem("No code found in that picture. Try a sharper, closer photo.");

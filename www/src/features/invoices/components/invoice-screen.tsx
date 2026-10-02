@@ -4,6 +4,7 @@ import {
   ChevronLeftIcon,
   cn,
   confirmDialog,
+  DownloadIcon,
   IconButton,
   Popover,
   PrintIcon,
@@ -15,6 +16,8 @@ import {
 import { Link, useNavigate } from "@tanstack/react-router";
 import { useCallback, useId, useRef, useState } from "react";
 import { createPortal } from "react-dom";
+import { printPage } from "../../../platform/print-page";
+import { exportInvoicePdf } from "../export/export-invoice";
 import { useInvoiceSeal } from "../lib/use-invoice-seal";
 import { getInvoiceStore } from "../store/invoice-store";
 import { Field, FormSection, TextArea, TextInput } from "./form-fields";
@@ -57,8 +60,29 @@ export function InvoiceScreen({ invoice }: { invoice: InvoiceDocument }) {
   );
   const totals = computeTotals(invoice);
 
+  const [exporting, setExporting] = useState(false);
+
+  const downloadPdf = async () => {
+    if (!link || !issuerId) return;
+    setExporting(true);
+    const id = toast.loading("Preparing your PDF…");
+    try {
+      const outcome = await exportInvoicePdf(invoice, link, issuerId);
+      if (outcome === "saved") {
+        toast.update(id, "success", "PDF saved", { description: "Signed and ready to send." });
+      } else toast.dismiss(id);
+    } catch (error) {
+      console.error(error);
+      toast.update(id, "error", "Couldn’t create the PDF", { description: "Please try again." });
+    } finally {
+      setExporting(false);
+    }
+  };
+
   const print = () => {
-    window.print();
+    printPage().catch(() =>
+      toast.error("Printing isn’t available here. Download the PDF instead."),
+    );
   };
 
   const remove = async () => {
@@ -144,9 +168,17 @@ export function InvoiceScreen({ invoice }: { invoice: InvoiceDocument }) {
           <IconButton label="Delete" onClick={remove}>
             <TrashIcon size={19} />
           </IconButton>
-          <Button variant="primary" onClick={print} aria-label="Print or save as PDF">
-            <PrintIcon size={16} />
-            <span className="max-sm:hidden">Print or PDF</span>
+          <IconButton label="Print" onClick={print}>
+            <PrintIcon size={19} />
+          </IconButton>
+          <Button
+            variant="primary"
+            onClick={downloadPdf}
+            disabled={exporting || !link}
+            aria-label="Download PDF"
+          >
+            <DownloadIcon size={16} />
+            <span className="max-sm:hidden">{exporting ? "Preparing…" : "Download PDF"}</span>
           </Button>
         </div>
       </header>

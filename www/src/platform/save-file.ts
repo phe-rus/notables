@@ -1,8 +1,29 @@
+import { invoke } from "@tauri-apps/api/core";
+import { isTauri } from "./runtime";
+
+export type SaveOutcome = "saved" | "cancelled";
+
 /**
- * Saves a generated file. Browsers download it; the native apps will route
- * this through the system save dialog from the Rust core.
+ * Saves a generated file the way the system expects: the native apps show
+ * the system save dialog (through the Rust core); browsers download it.
  */
-export function saveFile(data: Uint8Array | Blob, fileName: string, type: string): void {
+export async function saveFile(
+  data: Uint8Array | Blob,
+  fileName: string,
+  type: string,
+): Promise<SaveOutcome> {
+  if (isTauri()) {
+    const bytes = data instanceof Blob ? new Uint8Array(await data.arrayBuffer()) : data;
+    const path = await invoke<string | null>("export_save_file", bytes, {
+      headers: { "x-file-name": fileName },
+    });
+    return path ? "saved" : "cancelled";
+  }
+  downloadInBrowser(data, fileName, type);
+  return "saved";
+}
+
+function downloadInBrowser(data: Uint8Array | Blob, fileName: string, type: string): void {
   const blob = data instanceof Blob ? data : new Blob([data as BlobPart], { type });
   const url = URL.createObjectURL(blob);
   const link = window.document.createElement("a");
