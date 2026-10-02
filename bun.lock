@@ -115,6 +115,7 @@
         "@tanstack/react-start": "1.168.60",
         "@tauri-apps/api": "2.12.1",
         "@tauri-apps/plugin-deep-link": "2.6.1",
+        "@tauri-apps/plugin-notification": "2.5.1",
         "fflate": "0.8.3",
         "jsqr": "catalog:",
         "motion": "catalog:",
@@ -628,6 +629,8 @@
     "@tauri-apps/cli-win32-x64-msvc": ["@tauri-apps/cli-win32-x64-msvc@2.12.1", "", { "os": "win32", "cpu": "x64" }, "sha512-dIFaKslrzcbesb+bBh+E1R9km241pHyj32w6D9FPtvQeYpRUFbiCLEa/2S+S0UnIytfxepp4P+X8IerGqnXeYg=="],
 
     "@tauri-apps/plugin-deep-link": ["@tauri-apps/plugin-deep-link@2.6.1", "", { "dependencies": { "@tauri-apps/api": "^2.12.0" } }, "sha512-yomIOIoiiDwXW3Bgy/V5c4frWo9sfWM9WZQew2s7vr7hXtDdbLDCLzvytIMCjMxbnln9O0oJsTI3XdDd2T9XlA=="],
+
+    "@tauri-apps/plugin-notification": ["@tauri-apps/plugin-notification@2.5.1", "", { "dependencies": { "@tauri-apps/api": "^2.12.0" } }, "sha512-i0nD48YsLov18siENevC3X7SmJpQE1cImq+JUsjrUPdu73J8cTIOyNIS8H0qxftFAc1k2w6s1E74DoFE02Jirw=="],
 
     "@turbo/darwin-64": ["@turbo/darwin-64@2.11.5", "", { "os": "darwin", "cpu": "x64" }, "sha512-KdY4y7BBjIisl+jAkb3FFaRjClGqHyaeHCcVcCT8LBzFFwUu6thgfxyRZAx0uL4KoxLmH+iOan8UhVf/aDDcaA=="],
 

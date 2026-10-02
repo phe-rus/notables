@@ -67,6 +67,8 @@ export default defineConfig({
       // Loaded on demand by the importers; bundled up front so the first
       // import doesn't reload the page in development.
       "@anthropic-ai/sdk",
+      "@tauri-apps/plugin-deep-link",
+      "@tauri-apps/plugin-notification",
       "fflate",
       "pdfjs-dist/legacy/build/pdf.mjs",
     ],

@@ -26,6 +26,7 @@ pub fn run() {
     }));
     builder
         .plugin(tauri_plugin_deep_link::init())
+        .plugin(tauri_plugin_notification::init())
         .plugin(tauri_plugin_dialog::init())
         .manage(Transcriber::default())
         .register_asynchronous_uri_scheme_protocol(

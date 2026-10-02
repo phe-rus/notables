@@ -38,6 +38,7 @@ import {
   NextIcon,
   Note01Icon,
   NotebookIcon,
+  Notification03Icon,
   PencilEdit02Icon,
   PencilIcon,
   Pin02Icon,
@@ -133,6 +134,7 @@ export const ChaptersIcon = icon(LeftToRightListBulletIcon, "ChaptersIcon");
 export const SleepIcon = icon(Moon02Icon, "SleepIcon");
 export const ExpandIcon = icon(FullScreenIcon, "ExpandIcon");
 export const SparkleIcon = icon(AiMagicIcon, "SparkleIcon");
+export const BellIcon = icon(Notification03Icon, "BellIcon");
 export const ThumbsUpIcon = toggleIcon(HugeThumbsUpIcon, "ThumbsUpIcon");
 export const HeartIcon = toggleIcon(FavouriteIcon, "HeartIcon");
 export const StarIcon = toggleIcon(HugeStarIcon, "StarIcon");

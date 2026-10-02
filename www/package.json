@@ -28,6 +28,7 @@
     "@tanstack/react-start": "1.168.60",
     "@tauri-apps/api": "2.12.1",
     "@tauri-apps/plugin-deep-link": "2.6.1",
+    "@tauri-apps/plugin-notification": "2.5.1",
     "fflate": "0.8.3",
     "jsqr": "catalog:",
     "motion": "catalog:",

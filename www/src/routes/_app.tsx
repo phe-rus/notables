@@ -23,8 +23,10 @@ import { SearchPalette } from "../features/search/components/search-palette";
 import { AppearanceSync } from "../features/settings/components/appearance-sync";
 import { sidebarWidth } from "../features/settings/model/preferences";
 import { updatePreferences, usePreferences } from "../features/settings/store/preferences-store";
+import { needsSetup } from "../features/setup/lib/setup-state";
 import { eraseExpired } from "../features/trash/lib/recycle-bin";
 import { isShortcut } from "../lib/keyboard/shortcuts";
+import { markAppReady } from "../platform/app-ready";
 import { createNativeTranscription } from "../platform/native-transcription";
 
 export const Route = createFileRoute("/_app")({
@@ -90,6 +92,14 @@ function AppShell() {
     window.addEventListener("keydown", onKey);
     return () => window.removeEventListener("keydown", onKey);
   }, [createNote]);
+
+  // A new device starts with setup; the splash waits for the library.
+  useEffect(() => {
+    if (needsSetup()) void navigate({ to: "/welcome", replace: true });
+  }, [navigate]);
+  useEffect(() => {
+    if (libraryReady) markAppReady();
+  }, [libraryReady]);
 
   // A first visit finds a short guide and a few examples instead of nothing.
   useEffect(() => {

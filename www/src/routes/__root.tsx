@@ -1,9 +1,16 @@
 import { MediaResolverProvider } from "@notables/editor";
 import { ContextMenuHost, DialogHost, Toaster, TooltipHost } from "@notables/ui";
-import { createRootRoute, HeadContent, Outlet, Scripts } from "@tanstack/react-router";
+import {
+  createRootRoute,
+  HeadContent,
+  Outlet,
+  Scripts,
+  useRouterState,
+} from "@tanstack/react-router";
 import { MotionConfig } from "motion/react";
 import { type ReactNode, useEffect } from "react";
 import { AppLinkListener } from "../components/app-links/app-link-listener";
+import { SplashScreen } from "../components/splash/splash-screen";
 import { resolveMediaUrl } from "../platform/storage/media-store";
 import { startWindowFrame } from "../platform/window-frame";
 import styles from "../styles/app.css?url";
@@ -41,6 +48,9 @@ function RootComponent() {
 
 function RootDocument({ children }: { children: ReactNode }) {
   useEffect(startWindowFrame, []);
+  const pathname = useRouterState({ select: (state) => state.location.pathname });
+  // Shared pages and document checks open instantly, without the app's splash.
+  const publicPage = pathname.startsWith("/p/") || pathname.startsWith("/verify");
   return (
     <html lang="en">
       <head>
@@ -55,6 +65,7 @@ function RootDocument({ children }: { children: ReactNode }) {
           <DialogHost />
           <TooltipHost />
           <ContextMenuHost />
+          {!publicPage && <SplashScreen />}
           <AppLinkListener />
         </MotionConfig>
         <Scripts />

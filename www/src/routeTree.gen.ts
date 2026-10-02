@@ -11,6 +11,7 @@
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as AppRouteImport } from './routes/_app'
 import { Route as VerifyRouteImport } from './routes/verify'
+import { Route as WelcomeRouteImport } from './routes/welcome'
 import { Route as AppIndexRouteImport } from './routes/_app/index'
 import { Route as AppSettingsRouteImport } from './routes/_app/settings'
 import { Route as AppTrashRouteImport } from './routes/_app/trash'
@@ -30,6 +31,11 @@ const AppRoute = AppRouteImport.update({
 const VerifyRoute = VerifyRouteImport.update({
   id: '/verify',
   path: '/verify',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const WelcomeRoute = WelcomeRouteImport.update({
+  id: '/welcome',
+  path: '/welcome',
   getParentRoute: () => rootRouteImport,
 } as any)
 const AppIndexRoute = AppIndexRouteImport.update({
@@ -92,6 +98,7 @@ const MediaPublicationIdMediaIdRoute =
 export interface FileRoutesByFullPath {
   '/': typeof AppIndexRoute
   '/verify': typeof VerifyRoute
+  '/welcome': typeof WelcomeRoute
   '/settings': typeof AppSettingsRoute
   '/trash': typeof AppTrashRoute
   '/p/$publicationId': typeof PPublicationIdRoute
@@ -105,6 +112,7 @@ export interface FileRoutesByFullPath {
 }
 export interface FileRoutesByTo {
   '/verify': typeof VerifyRoute
+  '/welcome': typeof WelcomeRoute
   '/settings': typeof AppSettingsRoute
   '/trash': typeof AppTrashRoute
   '/p/$publicationId': typeof PPublicationIdRoute
@@ -121,6 +129,7 @@ export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/_app': typeof AppRouteWithChildren
   '/verify': typeof VerifyRoute
+  '/welcome': typeof WelcomeRoute
   '/_app/settings': typeof AppSettingsRoute
   '/_app/trash': typeof AppTrashRoute
   '/p/$publicationId': typeof PPublicationIdRoute
@@ -138,6 +147,7 @@ export interface FileRouteTypes {
   fullPaths:
     | '/'
     | '/verify'
+    | '/welcome'
     | '/settings'
     | '/trash'
     | '/p/$publicationId'
@@ -151,6 +161,7 @@ export interface FileRouteTypes {
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/verify'
+    | '/welcome'
     | '/settings'
     | '/trash'
     | '/p/$publicationId'
@@ -166,6 +177,7 @@ export interface FileRouteTypes {
     | '__root__'
     | '/_app'
     | '/verify'
+    | '/welcome'
     | '/_app/settings'
     | '/_app/trash'
     | '/p/$publicationId'
@@ -182,6 +194,7 @@ export interface FileRouteTypes {
 export interface RootRouteChildren {
   AppRoute: typeof AppRouteWithChildren
   VerifyRoute: typeof VerifyRoute
+  WelcomeRoute: typeof WelcomeRoute
   PPublicationIdRoute: typeof PPublicationIdRoute
   ReadBookIdRoute: typeof ReadBookIdRoute
   MediaPublicationIdMediaIdRoute: typeof MediaPublicationIdMediaIdRoute
@@ -201,6 +214,13 @@ declare module '@tanstack/react-router' {
       path: '/verify'
       fullPath: '/verify'
       preLoaderRoute: typeof VerifyRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/welcome': {
+      id: '/welcome'
+      path: '/welcome'
+      fullPath: '/welcome'
+      preLoaderRoute: typeof WelcomeRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/_app/': {
@@ -310,6 +330,7 @@ const AppRouteWithChildren = AppRoute._addFileChildren(AppRouteChildren)
 const rootRouteChildren: RootRouteChildren = {
   AppRoute: AppRouteWithChildren,
   VerifyRoute: VerifyRoute,
+  WelcomeRoute: WelcomeRoute,
   PPublicationIdRoute: PPublicationIdRoute,
   ReadBookIdRoute: ReadBookIdRoute,
   MediaPublicationIdMediaIdRoute: MediaPublicationIdMediaIdRoute,

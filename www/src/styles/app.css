@@ -84,3 +84,41 @@ html[data-window-frame="rounded"] body::after {
 [data-note-font] .nt-ink-frame * {
   font-family: var(--font-sans);
 }
+
+/* Splash screen: plays on the first paint, before any code has loaded. */
+@keyframes splash-settle {
+  from {
+    opacity: 0;
+    transform: translateY(6px) scale(0.86);
+  }
+  60% {
+    opacity: 1;
+    transform: translateY(0) scale(1.02);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+@keyframes splash-rise {
+  from {
+    opacity: 0;
+    transform: translateY(4px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+.splash-mark {
+  animation: splash-settle 0.7s cubic-bezier(0.2, 0.8, 0.2, 1) both;
+}
+.splash-word {
+  animation: splash-rise 0.5s 0.15s ease-out both;
+}
+@media (prefers-reduced-motion: reduce) {
+  .splash-mark,
+  .splash-word {
+    animation: none;
+  }
+}
