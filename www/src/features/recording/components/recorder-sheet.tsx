@@ -1,11 +1,14 @@
 import type { TranscriptSegment } from "@notables/core";
 import { cn, confirmDialog, PauseIcon, PlayIcon, spring } from "@notables/ui";
 import { AnimatePresence, motion } from "motion/react";
-import { useEffect, useRef, useSyncExternalStore } from "react";
+import { useEffect, useRef, useState, useSyncExternalStore } from "react";
 import { createPortal } from "react-dom";
+import { devicePlatform } from "../../../platform/device-platform";
+import { openMicrophoneSettings } from "../../../platform/system-settings";
 import { useAudioRecorder } from "../hooks/use-audio-recorder";
 import { useLiveTranscription } from "../hooks/use-live-transcription";
 import { formatDuration } from "../lib/format-duration";
+import { type MicrophoneProblem, microphoneHelp } from "../lib/microphone-help";
 import { LevelMeter } from "./level-meter";
 
 export interface FinishedRecording {
@@ -141,6 +144,9 @@ function RecorderSession({ title, onCancel, onFinish }: Omit<RecorderSheetProps,
       <LevelMeter levels={recorder.levels} active={recording} className="px-5" />
 
       <div className="mx-4 mt-5 flex min-h-0 grow flex-col gap-3.5 overflow-y-auto rounded-[22px] bg-[#1f1d1a] p-5">
+        {recorder.state === "unavailable" && recorder.problem && (
+          <MicrophoneHelpCard problem={recorder.problem} onRetry={recorder.start} />
+        )}
         <span className="text-[12px] font-semibold tracking-[0.04em] text-[#8f887b]">
           LIVE TRANSCRIPT
         </span>
@@ -203,11 +209,46 @@ function statusLine(
       return transcribing ? "Recording · transcribing live" : "Recording";
     case "paused":
       return "Paused";
-    case "denied":
-      return "Microphone access was declined. Allow it in Settings to record.";
+    case "unavailable":
+      return "Microphone unavailable";
     case "unsupported":
       return "Recording isn’t supported on this device.";
     default:
       return "";
   }
+}
+
+function MicrophoneHelpCard({
+  problem,
+  onRetry,
+}: {
+  problem: MicrophoneProblem;
+  onRetry: () => void;
+}) {
+  const help = microphoneHelp(problem, devicePlatform());
+  const [opened, setOpened] = useState(false);
+  return (
+    <div role="alert" className="flex flex-col gap-3 rounded-[16px] bg-[#2c2a26] p-4">
+      <p className="text-[15px] font-semibold text-[#f5f2ec]">{help.title}</p>
+      <p className="text-[14px] leading-snug text-[#b5aea2]">{help.steps}</p>
+      <div className="flex flex-wrap gap-2">
+        {help.canOpenSettings && (
+          <button
+            type="button"
+            onClick={async () => setOpened(await openMicrophoneSettings())}
+            className="rounded-full bg-[#f5f2ec] px-4 py-2 text-[14px] font-semibold text-[#1c1c1e] transition-transform active:scale-[0.97]"
+          >
+            {opened ? "Settings opened" : "Open Settings"}
+          </button>
+        )}
+        <button
+          type="button"
+          onClick={onRetry}
+          className="rounded-full bg-[#3a3732] px-4 py-2 text-[14px] font-semibold text-[#f5f2ec] transition-transform active:scale-[0.97]"
+        >
+          Try again
+        </button>
+      </div>
+    </div>
+  );
 }

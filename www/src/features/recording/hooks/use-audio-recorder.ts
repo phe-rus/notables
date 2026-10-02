@@ -1,6 +1,13 @@
 import { useCallback, useEffect, useRef, useState } from "react";
+import { type MicrophoneProblem, microphoneProblem } from "../lib/microphone-help";
 
-export type RecorderState = "idle" | "starting" | "recording" | "paused" | "denied" | "unsupported";
+export type RecorderState =
+  | "idle"
+  | "starting"
+  | "recording"
+  | "paused"
+  | "unavailable"
+  | "unsupported";
 
 export interface Recording {
   blob: Blob;
@@ -23,6 +30,8 @@ function pickMimeType(): string | undefined {
  */
 export function useAudioRecorder() {
   const [state, setState] = useState<RecorderState>("idle");
+  /** Why recording couldn't start, when state is "unavailable". */
+  const [problem, setProblem] = useState<MicrophoneProblem | null>(null);
   const [elapsedMs, setElapsedMs] = useState(0);
   const [levels, setLevels] = useState<number[]>(() => Array(LEVEL_HISTORY).fill(0));
 
@@ -93,9 +102,10 @@ export function useAudioRecorder() {
       recorder.current = media;
       clock.current = { accumulated: 0, since: performance.now() };
       setState("recording");
-    } catch {
+    } catch (error) {
       release();
-      setState("denied");
+      setProblem(microphoneProblem(error));
+      setState("unavailable");
     }
   }, [elapsed, release]);
 
@@ -137,5 +147,5 @@ export function useAudioRecorder() {
     setElapsedMs(0);
   }, [release]);
 
-  return { state, elapsedMs, levels, elapsed, start, pause, resume, stop, cancel };
+  return { state, problem, elapsedMs, levels, elapsed, start, pause, resume, stop, cancel };
 }
