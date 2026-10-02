@@ -26,6 +26,42 @@ export default defineConfig({
         }
       : {},
   },
+  optimizeDeps: {
+    // Pre-bundle the whole Lexical and Yjs family in one pass. Discovering
+    // one of them later re-bundles it on its own, and an open page then holds
+    // two copies ("…is not a constructor that subclasses LexicalNode").
+    include: [
+      "@lexical/code",
+      "@lexical/link",
+      "@lexical/list",
+      "@lexical/markdown",
+      "@lexical/react/LexicalCheckListPlugin",
+      "@lexical/react/LexicalClickableLinkPlugin",
+      "@lexical/react/LexicalCollaborationContext",
+      "@lexical/react/LexicalCollaborationPlugin",
+      "@lexical/react/LexicalComposer",
+      "@lexical/react/LexicalComposerContext",
+      "@lexical/react/LexicalContentEditable",
+      "@lexical/react/LexicalErrorBoundary",
+      "@lexical/react/LexicalHistoryPlugin",
+      "@lexical/react/LexicalHorizontalRuleNode",
+      "@lexical/react/LexicalHorizontalRulePlugin",
+      "@lexical/react/LexicalLinkPlugin",
+      "@lexical/react/LexicalListPlugin",
+      "@lexical/react/LexicalMarkdownShortcutPlugin",
+      "@lexical/react/LexicalRichTextPlugin",
+      "@lexical/react/LexicalTabIndentationPlugin",
+      "@lexical/rich-text",
+      "@lexical/selection",
+      "@lexical/utils",
+      "@lexical/yjs",
+      "lexical",
+      "y-indexeddb",
+      "y-partyserver/provider",
+      "y-protocols/awareness",
+      "yjs",
+    ],
+  },
   server: {
     // Tauri mobile dev connects to the host machine over the network.
     host: process.env.TAURI_DEV_HOST || false,
