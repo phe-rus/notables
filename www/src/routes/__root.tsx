@@ -54,6 +54,8 @@ function RootDocument({ children }: { children: ReactNode }) {
   const pathname = useRouterState({ select: (state) => state.location.pathname });
   // Shared pages and document checks open instantly, without the app's splash.
   const publicPage = pathname.startsWith("/p/") || pathname.startsWith("/verify");
+  // The desktop widget is its own small window; the app's services run in the main one.
+  const widget = pathname === "/widget";
   const language = useLanguage();
   const direction = languages.find((entry) => entry.id === language)?.dir ?? "ltr";
   return (
@@ -69,14 +71,14 @@ function RootDocument({ children }: { children: ReactNode }) {
             {/* A new language redraws every screen in it. */}
             <Fragment key={language}>{children}</Fragment>
             {/* Audiobooks keep playing from page to page. */}
-            <ListeningSession />
+            {!widget && <ListeningSession />}
           </MediaResolverProvider>
           <Toaster />
           <DialogHost />
           <TooltipHost />
           <ContextMenuHost />
-          {!publicPage && <SplashScreen />}
-          <AppLinkListener />
+          {!publicPage && !widget && <SplashScreen />}
+          {!widget && <AppLinkListener />}
         </MotionConfig>
         <Scripts />
       </body>

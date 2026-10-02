@@ -2,7 +2,7 @@
   "name": "@notables/www",
   "version": "0.0.0",
   "private": true,
-  "description": "Notables \u2014 the app. TanStack Start on Cloudflare Workers, and the frontend of every Tauri target.",
+  "description": "Notables, the app: TanStack Start on Cloudflare Workers, and the frontend of every Tauri target.",
   "type": "module",
   "scripts": {
     "dev": "vite dev --port 3000",

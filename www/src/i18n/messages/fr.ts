@@ -388,6 +388,19 @@ export const fr: Messages = {
     badLinkTitle: "Ce lien est incomplet",
     badLinkBody: "Demandez à la personne qui l’a partagé de renvoyer le lien en entier.",
   },
+  widgets: {
+    title: "Widgets",
+    today: "Aujourd’hui",
+    open: "Ouvrir Notables",
+    recent: "Récentes",
+    desktop: "Widget de bureau",
+    desktopHint: "Les projets du jour et les notes épinglées, au-dessus de vos fenêtres.",
+    phoneHint:
+      "Ajoutez Notables depuis la galerie de widgets de l’écran d’accueil : touchez longuement l’écran d’accueil, puis Modifier ou Widgets.",
+    webHint: "Les widgets sont inclus dans l’app Notables pour ordinateur et téléphone.",
+    preview: "Aujourd’hui en un coup d’œil",
+    previewHint: "Une petite page avec les projets du jour et les notes épinglées.",
+  },
   invoices: {
     title: "Factures",
     yourBusiness: "Votre entreprise",

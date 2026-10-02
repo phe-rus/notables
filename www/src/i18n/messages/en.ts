@@ -382,6 +382,19 @@ export const en = {
     badLinkTitle: "This link isn’t complete",
     badLinkBody: "Ask the person who shared it to send the whole link again.",
   },
+  widgets: {
+    title: "Widgets",
+    today: "Today",
+    open: "Open Notables",
+    recent: "Recent",
+    desktop: "Desktop widget",
+    desktopHint: "Today’s plans and pinned notes, floating above your windows.",
+    phoneHint:
+      "Add Notables from your home screen’s widget gallery: touch and hold the home screen, then tap Edit or Widgets.",
+    webHint: "Widgets come with the Notables app for your computer and phone.",
+    preview: "Today at a glance",
+    previewHint: "A small page with today’s plans and pinned notes.",
+  },
   invoices: {
     title: "Invoices",
     yourBusiness: "Your business",

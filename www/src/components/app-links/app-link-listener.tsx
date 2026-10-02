@@ -6,7 +6,7 @@ import { isTauri } from "../../platform/runtime";
 /**
  * Opens `notables://` links in the installed app: the one that launched
  * it, and any opened while it runs (on desktop, a second launch hands its
- * link to this window).
+ * link to this window), and places picked in the desktop widget.
  */
 export function AppLinkListener() {
   const router = useRouter();
@@ -25,9 +25,19 @@ export function AppLinkListener() {
       if (cancelled) unlisten();
       else stop = unlisten;
     });
+    // The desktop widget asks the main window to open places.
+    let stopWidget: (() => void) | undefined;
+    void import("@tauri-apps/api/event").then(async ({ listen }) => {
+      const unlisten = await listen<string>("widget-open", (event) => {
+        if (event.payload.startsWith("/")) router.history.push(event.payload);
+      });
+      if (cancelled) unlisten();
+      else stopWidget = unlisten;
+    });
     return () => {
       cancelled = true;
       stop?.();
+      stopWidget?.();
     };
   }, [router]);
 

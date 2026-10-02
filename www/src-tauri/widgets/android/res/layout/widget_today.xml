@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/widget_root"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@drawable/widget_background"
+    android:orientation="vertical"
+    android:padding="14dp">
+
+    <TextView
+        android:id="@+id/widget_heading"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textAllCaps="true"
+        android:textColor="#FF8A5A00"
+        android:textSize="11sp"
+        android:textStyle="bold" />
+
+    <TextView
+        android:id="@+id/agenda_empty"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="6dp"
+        android:textColor="#FF6E6A64"
+        android:textSize="13sp"
+        android:visibility="gone" />
+
+    <LinearLayout android:id="@+id/agenda_row_1" style="@style/NotablesWidgetRow">
+        <TextView android:id="@+id/agenda_title_1" style="@style/NotablesWidgetTitle" />
+        <TextView android:id="@+id/agenda_when_1" style="@style/NotablesWidgetDetail" />
+    </LinearLayout>
+
+    <LinearLayout android:id="@+id/agenda_row_2" style="@style/NotablesWidgetRow">
+        <TextView android:id="@+id/agenda_title_2" style="@style/NotablesWidgetTitle" />
+        <TextView android:id="@+id/agenda_when_2" style="@style/NotablesWidgetDetail" />
+    </LinearLayout>
+
+    <LinearLayout android:id="@+id/agenda_row_3" style="@style/NotablesWidgetRow">
+        <TextView android:id="@+id/agenda_title_3" style="@style/NotablesWidgetTitle" />
+        <TextView android:id="@+id/agenda_when_3" style="@style/NotablesWidgetDetail" />
+    </LinearLayout>
+
+    <LinearLayout android:id="@+id/pinned_row" style="@style/NotablesWidgetRow">
+        <TextView android:id="@+id/pinned_title" style="@style/NotablesWidgetTitle" />
+    </LinearLayout>
+</LinearLayout>

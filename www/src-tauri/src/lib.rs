@@ -1,7 +1,7 @@
 //! The Notables native shell: hosts the `www` app on iOS, Android, macOS,
 //! Windows and Linux, and provides device capabilities the WebView lacks:
-//! durable on-device storage, on-device transcription, and native saving
-//! and printing.
+//! durable on-device storage, on-device transcription, native saving and
+//! printing, and widgets.
 
 mod deep_links;
 mod export;
@@ -9,6 +9,7 @@ mod media_permissions;
 mod storage;
 mod system_settings;
 mod transcription;
+mod widgets;
 mod window_frame;
 
 use tauri::Manager;
@@ -53,6 +54,11 @@ pub fn run() {
             transcription::commands::whisper_transcribe,
             transcription::commands::whisper_transcribe_media,
             window_frame::window_frame,
+            widgets::widgets_publish,
+            #[cfg(desktop)]
+            widgets::widgets_desktop,
+            #[cfg(desktop)]
+            widgets::widgets_open,
         ])
         .setup(|app| {
             if cfg!(debug_assertions) {

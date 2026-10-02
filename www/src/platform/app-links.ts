@@ -42,6 +42,13 @@ export function routeForAppLink(link: string): string | null {
     case "settings":
     case "trash":
       return `/${place}`;
+    case "calendar": {
+      const day = url.searchParams.get("day");
+      return day && /^\d{4}-\d{2}-\d{2}$/.test(day) ? `/calendar?day=${day}` : "/calendar";
+    }
+    // Share invitations keep their #fragment, which holds the invitation.
+    case "s":
+      return id && /^[\w-]{8,64}$/.test(id) ? `/s/${id}${url.hash}` : null;
     case undefined:
     case "home":
       return "/";

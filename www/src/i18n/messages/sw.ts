@@ -394,6 +394,19 @@ export const sw: Messages = {
     badLinkTitle: "Kiungo hiki hakijakamilika",
     badLinkBody: "Mwombe aliyekishiriki akutumie kiungo kizima tena.",
   },
+  widgets: {
+    title: "Wijeti",
+    today: "Leo",
+    open: "Fungua Notables",
+    recent: "Ya hivi karibuni",
+    desktop: "Wijeti ya eneo-kazi",
+    desktopHint: "Mipango ya leo na madokezo yaliyobandikwa, yakielea juu ya madirisha yako.",
+    phoneHint:
+      "Ongeza Notables kutoka kwenye maktaba ya wijeti ya skrini ya nyumbani: shikilia skrini ya nyumbani, kisha gusa Hariri au Wijeti.",
+    webHint: "Wijeti huja na programu ya Notables kwa kompyuta na simu.",
+    preview: "Leo kwa haraka",
+    previewHint: "Ukurasa mdogo wenye mipango ya leo na madokezo yaliyobandikwa.",
+  },
   invoices: {
     title: "Ankara",
     yourBusiness: "Biashara yako",

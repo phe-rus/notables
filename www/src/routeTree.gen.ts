@@ -12,6 +12,7 @@ import { Route as rootRouteImport } from './routes/__root'
 import { Route as AppRouteImport } from './routes/_app'
 import { Route as VerifyRouteImport } from './routes/verify'
 import { Route as WelcomeRouteImport } from './routes/welcome'
+import { Route as WidgetRouteImport } from './routes/widget'
 import { Route as AppIndexRouteImport } from './routes/_app/index'
 import { Route as AppCalendarRouteImport } from './routes/_app/calendar'
 import { Route as AppSettingsRouteImport } from './routes/_app/settings'
@@ -38,6 +39,11 @@ const VerifyRoute = VerifyRouteImport.update({
 const WelcomeRoute = WelcomeRouteImport.update({
   id: '/welcome',
   path: '/welcome',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const WidgetRoute = WidgetRouteImport.update({
+  id: '/widget',
+  path: '/widget',
   getParentRoute: () => rootRouteImport,
 } as any)
 const AppIndexRoute = AppIndexRouteImport.update({
@@ -111,6 +117,7 @@ export interface FileRoutesByFullPath {
   '/': typeof AppIndexRoute
   '/verify': typeof VerifyRoute
   '/welcome': typeof WelcomeRoute
+  '/widget': typeof WidgetRoute
   '/calendar': typeof AppCalendarRoute
   '/settings': typeof AppSettingsRoute
   '/trash': typeof AppTrashRoute
@@ -127,6 +134,7 @@ export interface FileRoutesByFullPath {
 export interface FileRoutesByTo {
   '/verify': typeof VerifyRoute
   '/welcome': typeof WelcomeRoute
+  '/widget': typeof WidgetRoute
   '/calendar': typeof AppCalendarRoute
   '/settings': typeof AppSettingsRoute
   '/trash': typeof AppTrashRoute
@@ -146,6 +154,7 @@ export interface FileRoutesById {
   '/_app': typeof AppRouteWithChildren
   '/verify': typeof VerifyRoute
   '/welcome': typeof WelcomeRoute
+  '/widget': typeof WidgetRoute
   '/_app/calendar': typeof AppCalendarRoute
   '/_app/settings': typeof AppSettingsRoute
   '/_app/trash': typeof AppTrashRoute
@@ -166,6 +175,7 @@ export interface FileRouteTypes {
     | '/'
     | '/verify'
     | '/welcome'
+    | '/widget'
     | '/calendar'
     | '/settings'
     | '/trash'
@@ -182,6 +192,7 @@ export interface FileRouteTypes {
   to:
     | '/verify'
     | '/welcome'
+    | '/widget'
     | '/calendar'
     | '/settings'
     | '/trash'
@@ -200,6 +211,7 @@ export interface FileRouteTypes {
     | '/_app'
     | '/verify'
     | '/welcome'
+    | '/widget'
     | '/_app/calendar'
     | '/_app/settings'
     | '/_app/trash'
@@ -219,6 +231,7 @@ export interface RootRouteChildren {
   AppRoute: typeof AppRouteWithChildren
   VerifyRoute: typeof VerifyRoute
   WelcomeRoute: typeof WelcomeRoute
+  WidgetRoute: typeof WidgetRoute
   PPublicationIdRoute: typeof PPublicationIdRoute
   ReadBookIdRoute: typeof ReadBookIdRoute
   SShareIdRoute: typeof SShareIdRoute
@@ -246,6 +259,13 @@ declare module '@tanstack/react-router' {
       path: '/welcome'
       fullPath: '/welcome'
       preLoaderRoute: typeof WelcomeRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/widget': {
+      id: '/widget'
+      path: '/widget'
+      fullPath: '/widget'
+      preLoaderRoute: typeof WidgetRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/_app/': {
@@ -372,6 +392,7 @@ const rootRouteChildren: RootRouteChildren = {
   AppRoute: AppRouteWithChildren,
   VerifyRoute: VerifyRoute,
   WelcomeRoute: WelcomeRoute,
+  WidgetRoute: WidgetRoute,
   PPublicationIdRoute: PPublicationIdRoute,
   ReadBookIdRoute: ReadBookIdRoute,
   SShareIdRoute: SShareIdRoute,

@@ -1,7 +1,7 @@
 {
   "name": "notables",
   "private": true,
-  "description": "Local-first notes, journals, audio stories and books \u2014 one app for iOS, Android, desktop and the web.",
+  "description": "Local-first notes, journals, audio stories and books: one app for iOS, Android, desktop and the web.",
   "license": "MIT",
   "packageManager": "bun@1.3.11",
   "workspaces": {

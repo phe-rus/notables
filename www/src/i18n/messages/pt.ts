@@ -386,6 +386,19 @@ export const pt: Messages = {
     badLinkTitle: "Esta ligação está incompleta",
     badLinkBody: "Peça a quem a partilhou que envie a ligação completa outra vez.",
   },
+  widgets: {
+    title: "Widgets",
+    today: "Hoje",
+    open: "Abrir o Notables",
+    recent: "Recentes",
+    desktop: "Widget de secretária",
+    desktopHint: "Os planos de hoje e as notas afixadas, a flutuar sobre as janelas.",
+    phoneHint:
+      "Adicione o Notables a partir da galeria de widgets do ecrã principal: toque sem soltar no ecrã principal e depois em Editar ou Widgets.",
+    webHint: "Os widgets vêm com a app Notables para computador e telemóvel.",
+    preview: "Hoje num relance",
+    previewHint: "Uma página pequena com os planos de hoje e as notas afixadas.",
+  },
   invoices: {
     title: "Faturas",
     yourBusiness: "O seu negócio",

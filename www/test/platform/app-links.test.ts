@@ -22,3 +22,13 @@ describe("app links", () => {
     expect(routeForAppLink("not a url")).toBeNull();
   });
 });
+
+describe("widget and sharing links", () => {
+  it("opens a calendar day and keeps a share invitation's fragment", () => {
+    expect(routeForAppLink("notables://calendar?day=2026-10-02")).toBe("/calendar?day=2026-10-02");
+    expect(routeForAppLink("notables://calendar?day=nope")).toBe("/calendar");
+    expect(routeForAppLink("notables://s/PZF4qjqqsUpkjuv3ZjspQQ#n=1&k=2")).toBe(
+      "/s/PZF4qjqqsUpkjuv3ZjspQQ#n=1&k=2",
+    );
+  });
+});

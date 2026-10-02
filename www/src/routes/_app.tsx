@@ -29,6 +29,7 @@ import { needsSetup } from "../features/setup/lib/setup-state";
 import { ShareSessionsRunner } from "../features/sharing/components/share-sessions-runner";
 import { StudioHost } from "../features/studio/components/studio-host";
 import { eraseExpired } from "../features/trash/lib/recycle-bin";
+import { WidgetPublisher } from "../features/widgets/components/widget-publisher";
 import { isShortcut } from "../lib/keyboard/shortcuts";
 import { markAppReady } from "../platform/app-ready";
 import { createNativeTranscription } from "../platform/native-transcription";
@@ -136,6 +137,7 @@ function AppShell() {
       <AppearanceSync />
       {libraryReady && <ReminderRunner />}
       {libraryReady && <ShareSessionsRunner />}
+      {libraryReady && <WidgetPublisher />}
       <SearchPalette />
 
       {/* Desktop: the sidebar sits on the window; content floats in an inset card. */}
