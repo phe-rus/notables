@@ -54,15 +54,11 @@
   "plugins": {
     "deep-link": {
       "desktop": {
-        "schemes": [
-          "notables"
-        ]
+        "schemes": ["notables"]
       },
       "mobile": [
         {
-          "scheme": [
-            "notables"
-          ],
+          "scheme": ["notables"],
           "appLink": false
         }
       ]
