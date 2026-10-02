@@ -8,6 +8,7 @@ import {
 import { useSyncExternalStore } from "react";
 import type * as Y from "yjs";
 import { getLibrary } from "../../library/store/library-store";
+import { getBusinessProfile } from "../lib/business-profile";
 import { addDays, nextDocumentNumber, today } from "../lib/document-number";
 import { getIssuerDefaults, rememberIssuerDefaults } from "../lib/issuer-profile";
 
@@ -42,7 +43,9 @@ class InvoiceStore {
 
   create(kind: InvoiceKind = "invoice"): InvoiceDocument {
     const now = Date.now();
-    const defaults = getIssuerDefaults();
+    // A saved business profile wins; otherwise start from the last document.
+    const profile = getBusinessProfile();
+    const defaults = profile ?? getIssuerDefaults();
     const issuedOn = today();
     const invoice: InvoiceDocument = {
       id: createId(now),
@@ -53,13 +56,16 @@ class InvoiceStore {
       ),
       currency: defaults.currency,
       issuedOn,
-      dueOn: kind === "invoice" ? addDays(issuedOn, 14) : null,
+      dueOn: kind === "invoice" ? addDays(issuedOn, profile?.dueDays ?? 14) : null,
       issuer: { ...defaults.issuer },
       client: emptyParty(),
       items: [newLineItem()],
       taxRate: defaults.taxRate,
       discount: 0,
-      notes: kind === "receipt" ? "Paid in full. Thank you!" : "Thank you for your business.",
+      notes:
+        kind === "receipt"
+          ? (profile?.receiptNotes ?? "Paid in full. Thank you!")
+          : (profile?.invoiceNotes ?? "Thank you for your business."),
       paymentDetails: defaults.paymentDetails,
       style: { ...defaults.style },
       createdAt: now,
@@ -74,7 +80,9 @@ class InvoiceStore {
     if (!current) return;
     const next = { ...current, ...patch, updatedAt: Date.now() };
     this.invoices.set(id, next);
-    // The next document starts from the details used most recently.
+    // Without a saved business profile, the next document starts from the
+    // details used most recently.
+    if (getBusinessProfile()) return;
     rememberIssuerDefaults({
       issuer: next.issuer,
       currency: next.currency,

@@ -1,13 +1,16 @@
 import {
   Add01Icon,
   AiMagicIcon,
+  AlarmClockIcon,
   Alert02Icon,
   ArrowDown01Icon,
   ArrowLeft01Icon,
   ArrowRight01Icon,
   ArrowUp01Icon,
+  BirthdayCakeIcon,
   Book02Icon,
   BookOpen01Icon,
+  Calendar03Icon,
   Cancel01Icon,
   CheckListIcon,
   CheckmarkBadge01Icon,
@@ -26,6 +29,7 @@ import {
   HighlighterIcon as HugeHighlighterIcon,
   PauseIcon as HugePauseIcon,
   PlayIcon as HugePlayIcon,
+  RepeatIcon as HugeRepeatIcon,
   StarIcon as HugeStarIcon,
   ThumbsUpIcon as HugeThumbsUpIcon,
   Image01Icon,
@@ -51,6 +55,7 @@ import {
   Settings02Icon,
   Share08Icon,
   SidebarLeftIcon,
+  Store01Icon,
   Tick02Icon,
   ViewIcon,
   ViewOffSlashIcon,
@@ -135,6 +140,11 @@ export const SleepIcon = icon(Moon02Icon, "SleepIcon");
 export const ExpandIcon = icon(FullScreenIcon, "ExpandIcon");
 export const SparkleIcon = icon(AiMagicIcon, "SparkleIcon");
 export const BellIcon = icon(Notification03Icon, "BellIcon");
+export const BusinessIcon = icon(Store01Icon, "BusinessIcon");
+export const CalendarIcon = icon(Calendar03Icon, "CalendarIcon");
+export const BirthdayIcon = icon(BirthdayCakeIcon, "BirthdayIcon");
+export const AlarmIcon = icon(AlarmClockIcon, "AlarmIcon");
+export const RepeatIcon = icon(HugeRepeatIcon, "RepeatIcon");
 export const ThumbsUpIcon = toggleIcon(HugeThumbsUpIcon, "ThumbsUpIcon");
 export const HeartIcon = toggleIcon(FavouriteIcon, "HeartIcon");
 export const StarIcon = toggleIcon(HugeStarIcon, "StarIcon");

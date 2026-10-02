@@ -6,6 +6,7 @@ import {
   invoiceKindLabels,
 } from "@notables/core";
 import {
+  BusinessIcon,
   Chip,
   cn,
   confirmDialog,
@@ -22,6 +23,8 @@ import { AnimatePresence, motion } from "motion/react";
 import { useState } from "react";
 import { CollapsedSidebarControls } from "../../../components/window/collapsed-sidebar-controls";
 import { usePreferences } from "../../settings/store/preferences-store";
+import { BusinessSheet } from "../business/business-sheet";
+import { useBusinessProfile } from "../lib/business-profile";
 import { getInvoiceStore, useInvoices } from "../store/invoice-store";
 import { InvoicePaper, PAPER_HEIGHT, PAPER_WIDTH } from "./invoice-paper";
 
@@ -45,6 +48,8 @@ export function InvoicesList({
   const invoices = filter === "all" ? all : all.filter((invoice) => invoice.kind === filter);
   const navigate = useNavigate();
   const { collapsed } = usePreferences().sidebar;
+  const business = useBusinessProfile();
+  const [businessOpen, setBusinessOpen] = useState(false);
 
   const create = (kind: InvoiceKind) => {
     const invoice = getInvoiceStore().create(kind);
@@ -71,23 +76,33 @@ export function InvoicesList({
             </IconButton>
             <h1 className="text-[22px] font-bold tracking-tight">Invoices</h1>
           </div>
-          <IconButton
-            label="New invoice, receipt or quote"
-            tone="accent"
-            onClick={(event) => {
-              const rect = event.currentTarget.getBoundingClientRect();
-              openContextMenu(
-                rect.right - 200,
-                rect.bottom + 6,
-                (["invoice", "receipt", "quote"] as const).map((kind) => ({
-                  label: `New ${invoiceKindLabels[kind].toLowerCase()}`,
-                  onSelect: () => create(kind),
-                })),
-              );
-            }}
-          >
-            <PlusIcon size={20} strokeWidth={2} />
-          </IconButton>
+          <div className="flex items-center gap-1">
+            <IconButton
+              label={
+                business ? `Business details: ${business.issuer.name}` : "Set up your business"
+              }
+              onClick={() => setBusinessOpen(true)}
+            >
+              <BusinessIcon size={20} />
+            </IconButton>
+            <IconButton
+              label="New invoice, receipt or quote"
+              tone="accent"
+              onClick={(event) => {
+                const rect = event.currentTarget.getBoundingClientRect();
+                openContextMenu(
+                  rect.right - 200,
+                  rect.bottom + 6,
+                  (["invoice", "receipt", "quote"] as const).map((kind) => ({
+                    label: `New ${invoiceKindLabels[kind].toLowerCase()}`,
+                    onSelect: () => create(kind),
+                  })),
+                );
+              }}
+            >
+              <PlusIcon size={20} strokeWidth={2} />
+            </IconButton>
+          </div>
         </div>
         <nav
           aria-label="Document type"
@@ -127,6 +142,23 @@ export function InvoicesList({
       </header>
 
       <div className="flex grow flex-col overflow-y-auto px-2.5 pb-28 md:pb-8">
+        {!business && all.length > 0 && (
+          <button
+            type="button"
+            onClick={() => setBusinessOpen(true)}
+            className="mx-1.5 mb-2 flex items-center gap-3 rounded-[16px] bg-accent/10 px-3.5 py-3 text-left transition-colors hover:bg-accent/15"
+          >
+            <span className="flex size-9 shrink-0 items-center justify-center rounded-full bg-accent text-on-accent">
+              <BusinessIcon size={18} />
+            </span>
+            <span className="flex flex-col">
+              <span className="text-[14px] font-semibold">Set up your business</span>
+              <span className="text-[12.5px] leading-snug text-label-secondary">
+                Name, logo, currency and payment details, filled in for you.
+              </span>
+            </span>
+          </button>
+        )}
         {all.length > 0 && invoices.length === 0 && (
           <p className="px-6 pt-12 text-center text-[14px] text-label-secondary">
             No {filter === "all" ? "documents" : `${invoiceKindLabels[filter].toLowerCase()}s`} yet.
@@ -156,6 +188,7 @@ export function InvoicesList({
           ))}
         </AnimatePresence>
       </div>
+      <BusinessSheet open={businessOpen} onClose={() => setBusinessOpen(false)} />
     </section>
   );
 }

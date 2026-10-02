@@ -18,7 +18,14 @@ import { Link, useNavigate } from "@tanstack/react-router";
 import { useCallback, useId, useRef, useState } from "react";
 import { createPortal } from "react-dom";
 import { printPage } from "../../../platform/print-page";
+import { RecentClientPicker } from "../business/recent-client-picker";
 import { exportInvoicePdf } from "../export/export-invoice";
+import {
+  draftBusinessProfile,
+  saveBusinessProfile,
+  useBusinessProfile,
+} from "../lib/business-profile";
+import { currencies } from "../lib/currencies";
 import { useInvoiceSeal } from "../lib/use-invoice-seal";
 import { getInvoiceStore } from "../store/invoice-store";
 import { Field, FormSection, TextArea, TextInput } from "./form-fields";
@@ -29,23 +36,6 @@ import { PaperFullscreen } from "./paper-fullscreen";
 import { PaperPreview } from "./paper-preview";
 import { PartyFields } from "./party-fields";
 import { StylePanel } from "./style-panel";
-
-const currencies = [
-  "USD",
-  "EUR",
-  "GBP",
-  "UGX",
-  "KES",
-  "TZS",
-  "RWF",
-  "NGN",
-  "ZAR",
-  "GHS",
-  "CAD",
-  "AUD",
-  "INR",
-  "JPY",
-];
 
 /**
  * Write an invoice, receipt or quote on the left and watch the signed page
@@ -257,7 +247,7 @@ export function InvoiceScreen({ invoice }: { invoice: InvoiceDocument }) {
               </div>
             </FormSection>
 
-            <FormSection title="From">
+            <FormSection title="From" aside={<SaveAsBusiness invoice={invoice} />}>
               <PartyFields
                 party={invoice.issuer}
                 namePlaceholder="Your name or business"
@@ -266,6 +256,7 @@ export function InvoiceScreen({ invoice }: { invoice: InvoiceDocument }) {
             </FormSection>
 
             <FormSection title={invoice.kind === "receipt" ? "Received from" : "Bill to"}>
+              <RecentClientPicker invoice={invoice} onPick={(client) => set({ client })} />
               <PartyFields
                 party={invoice.client}
                 namePlaceholder="Client name"
@@ -429,5 +420,42 @@ function StyleButton({
         <StylePanel style={invoice.style} onChange={onChange} />
       </Popover>
     </div>
+  );
+}
+
+/**
+ * Keeps this document's sender, look and payment details as the business
+ * every new document starts with. Hidden once they already match.
+ */
+function SaveAsBusiness({ invoice }: { invoice: InvoiceDocument }) {
+  const business = useBusinessProfile();
+  const same =
+    business !== null &&
+    JSON.stringify(business.issuer) === JSON.stringify(invoice.issuer) &&
+    JSON.stringify(business.style) === JSON.stringify(invoice.style) &&
+    business.paymentDetails === invoice.paymentDetails &&
+    business.currency === invoice.currency &&
+    business.taxRate === invoice.taxRate;
+  if (same || !invoice.issuer.name.trim()) return null;
+  return (
+    <button
+      type="button"
+      onClick={() => {
+        saveBusinessProfile({
+          ...draftBusinessProfile(),
+          issuer: { ...invoice.issuer },
+          style: { ...invoice.style },
+          paymentDetails: invoice.paymentDetails,
+          currency: invoice.currency,
+          taxRate: invoice.taxRate,
+        });
+        toast.success(business ? "Business details updated" : "Saved as your business", {
+          description: "New documents start with these details.",
+        });
+      }}
+      className="text-[13px] font-medium text-accent-text"
+    >
+      {business ? "Update my business" : "Save as my business"}
+    </button>
   );
 }
