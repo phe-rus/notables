@@ -65,6 +65,12 @@
   -webkit-column-break-inside: avoid;
 }
 
+/* Italic overhangs the last letter; justified lines would clip it at the page edge. */
+.book-flow blockquote {
+  text-align: left;
+  padding-right: 0.25em;
+}
+
 .book-flow .nt-image {
   max-height: 260px;
 }
