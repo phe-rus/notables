@@ -1,6 +1,6 @@
 import { collectLocalMedia } from "../../../lib/documents/collect-local-media";
-import { deleteMedia } from "../../../platform/media-store";
-import { deleteNoteContent, loadNoteContent } from "../../../platform/note-content-cache";
+import { deleteMedia } from "../../../platform/storage/media-store";
+import { deleteNoteContent, loadNoteContent } from "../../../platform/storage/note-content-cache";
 import { getBookStore } from "../../books/store/book-store";
 import { getLibrary } from "../../library/store/library-store";
 

@@ -4,8 +4,8 @@ import { useCallback, useState } from "react";
 import type * as Y from "yjs";
 import { collectLocalMedia } from "../../../lib/documents/collect-local-media";
 import { setAuthorName } from "../../../platform/author-preferences";
-import { loadMedia } from "../../../platform/media-store";
 import { publicUrl } from "../../../platform/public-url";
+import { loadMedia } from "../../../platform/storage/media-store";
 import { publishNote, unpublishNote } from "../../../server/publications/publications.functions";
 import { getLibrary, type LibraryEntry } from "../../library/store/library-store";
 

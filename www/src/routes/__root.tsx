@@ -2,7 +2,7 @@ import { MediaResolverProvider } from "@notables/editor";
 import { createRootRoute, HeadContent, Outlet, Scripts } from "@tanstack/react-router";
 import { MotionConfig } from "motion/react";
 import type { ReactNode } from "react";
-import { resolveMediaUrl } from "../platform/media-store";
+import { resolveMediaUrl } from "../platform/storage/media-store";
 import styles from "../styles/app.css?url";
 
 export const Route = createRootRoute({

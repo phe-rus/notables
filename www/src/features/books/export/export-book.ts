@@ -1,6 +1,6 @@
-import { loadMedia } from "../../../platform/media-store";
-import { loadNoteContent } from "../../../platform/note-content-cache";
 import { fileNameFor, saveFile } from "../../../platform/save-file";
+import { loadMedia } from "../../../platform/storage/media-store";
+import { loadNoteContent } from "../../../platform/storage/note-content-cache";
 import { getLibrary } from "../../library/store/library-store";
 import type { BookChapter } from "../reader/use-book-content";
 import type { BookEntry } from "../store/book-store";

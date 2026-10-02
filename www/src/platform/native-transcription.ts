@@ -2,8 +2,8 @@ import { localMediaId } from "@notables/core";
 import type { TranscriptionService } from "@notables/editor";
 import { Channel, invoke } from "@tauri-apps/api/core";
 import { decodeForSpeech } from "../features/recording/lib/decode-audio";
-import { loadMedia } from "./media-store";
 import { isTauri } from "./runtime";
+import { loadMedia } from "./storage/media-store";
 
 interface ModelStatus {
   downloaded: boolean;

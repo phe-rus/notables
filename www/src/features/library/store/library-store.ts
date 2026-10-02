@@ -2,7 +2,7 @@ import { createId, type NoteKind } from "@notables/core";
 import { useSyncExternalStore } from "react";
 import * as Y from "yjs";
 import { getDeviceId } from "../../../platform/device-identity";
-import { getPersistence } from "../../../platform/note-storage";
+import { getPersistence } from "../../../platform/storage/document-storage";
 
 export interface LibraryEntry {
   id: string;

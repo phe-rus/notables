@@ -1,68 +1,37 @@
 import { createId } from "@notables/core";
+import { isTauri } from "../runtime";
+import { browserMedia } from "./backends/browser/browser-media";
+import { nativeMedia } from "./backends/native/native-backends";
+import type { MediaBackend } from "./backends/storage-backend";
 
 /**
- * Recordings and photos stored on this device (IndexedDB). Documents refer
- * to them as `media:<id>`; the native Rust core will take over storage
- * behind the same functions.
+ * Recordings and photos stored on this device. Documents refer to them as
+ * `media:<id>`. Native apps keep them as files; browsers use IndexedDB.
  */
-const DB_NAME = "notables:media";
-const STORE = "files";
-
-interface StoredMedia {
-  blob: Blob;
-  createdAt: number;
-}
-
-let database: Promise<IDBDatabase> | undefined;
-const objectUrls = new Map<string, string>();
-
-function open(): Promise<IDBDatabase> {
-  database ??= new Promise((resolve, reject) => {
-    const request = indexedDB.open(DB_NAME, 1);
-    request.onupgradeneeded = () => request.result.createObjectStore(STORE);
-    request.onsuccess = () => resolve(request.result);
-    request.onerror = () => reject(request.error);
-  });
-  return database;
-}
-
-async function run<T>(mode: IDBTransactionMode, work: (store: IDBObjectStore) => IDBRequest<T>) {
-  const db = await open();
-  return new Promise<T>((resolve, reject) => {
-    const request = work(db.transaction(STORE, mode).objectStore(STORE));
-    request.onsuccess = () => resolve(request.result);
-    request.onerror = () => reject(request.error);
-  });
-}
+let backend: MediaBackend | undefined;
+const media = () => {
+  backend ??= isTauri() ? nativeMedia : browserMedia;
+  return backend;
+};
 
 /** Stores a file and returns its media id. */
-export async function saveMedia(blob: Blob): Promise<string> {
+export async function saveMedia(file: Blob): Promise<string> {
   const id = createId();
-  await run("readwrite", (store) =>
-    store.put({ blob, createdAt: Date.now() } satisfies StoredMedia, id),
-  );
+  await media().save(id, file);
   return id;
 }
 
-export async function loadMedia(id: string): Promise<Blob | null> {
-  const stored = await run<StoredMedia | undefined>("readonly", (store) => store.get(id));
-  return stored?.blob ?? null;
+export function loadMedia(id: string): Promise<Blob | null> {
+  return media().load(id);
 }
 
-export async function deleteMedia(id: string): Promise<void> {
-  const url = objectUrls.get(id);
-  if (url) URL.revokeObjectURL(url);
-  objectUrls.delete(id);
-  await run("readwrite", (store) => store.delete(id));
+export function deleteMedia(id: string): Promise<void> {
+  return media().remove(id);
 }
 
-/** A playable URL for a stored file, cached for the session. */
-export async function resolveMediaUrl(id: string): Promise<string | null> {
-  const cached = objectUrls.get(id);
-  if (cached) return cached;
-  const blob = await loadMedia(id).catch(() => null);
-  if (!blob) return null;
-  const url = URL.createObjectURL(blob);
-  objectUrls.set(id, url);
-  return url;
+/** A URL to display or play a stored file. */
+export function resolveMediaUrl(id: string): Promise<string | null> {
+  return media()
+    .url(id)
+    .catch(() => null);
 }

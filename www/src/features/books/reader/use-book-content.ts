@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { loadNoteContent } from "../../../platform/note-content-cache";
+import { loadNoteContent } from "../../../platform/storage/note-content-cache";
 import { useLibrary } from "../../library/store/library-store";
 import type { BookEntry } from "../store/book-store";
 
