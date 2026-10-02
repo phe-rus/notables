@@ -1,0 +1,4 @@
+[env]
+# whisper.cpp uses std::filesystem, available from macOS 10.15; matches
+# bundle.macOS.minimumSystemVersion in tauri.conf.json.
+MACOSX_DEPLOYMENT_TARGET = "10.15"
