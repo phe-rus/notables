@@ -72,6 +72,7 @@ export default defineConfig({
       "@anthropic-ai/sdk",
       "@tauri-apps/plugin-deep-link",
       "@tauri-apps/plugin-notification",
+      "date-holidays",
       "fflate",
       "pdfjs-dist/legacy/build/pdf.mjs",
     ],

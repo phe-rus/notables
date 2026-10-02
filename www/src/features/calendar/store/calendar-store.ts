@@ -1,13 +1,35 @@
-import { type CalendarEvent, type CalendarEventKind, createId, localDay } from "@notables/core";
+import {
+  addDaysTo,
+  type CalendarEvent,
+  type CalendarEventKind,
+  createId,
+  daysBetween,
+  isYearlyKind,
+  localDay,
+} from "@notables/core";
 import { useSyncExternalStore } from "react";
 import type * as Y from "yjs";
 import { getLibrary } from "../../library/store/library-store";
 
 export const eventColors: Record<CalendarEventKind, string> = {
   plan: "#2C6193",
-  birthday: "#B4405A",
   reminder: "#E39A2E",
+  birthday: "#B4405A",
+  anniversary: "#8A4FB0",
+  deadline: "#C2412D",
+  trip: "#2E8A6E",
 };
+
+/** Colours anyone can give an event, beside its kind's own. */
+export const paletteColors = [
+  "#2C6193",
+  "#2E8A6E",
+  "#E39A2E",
+  "#C2412D",
+  "#B4405A",
+  "#8A4FB0",
+  "#5B6470",
+];
 
 /**
  * Plans, birthdays and reminders live in the library document beside
@@ -40,19 +62,28 @@ class CalendarStore {
 
   getSnapshot = () => this.#snapshot;
 
-  /** A new, unsaved event with sensible defaults for its kind. */
-  draft(kind: CalendarEventKind, date = localDay()): CalendarEvent {
+  /** A new, unsaved event with sensible defaults for its kind, optionally at a time. */
+  draft(kind: CalendarEventKind, date = localDay(), time?: string | null): CalendarEvent {
     const now = Date.now();
+    const yearly = isYearlyKind(kind);
+    const allDay = yearly || kind === "trip";
     return {
       id: createId(now),
       kind,
       title: "",
       date,
-      time: kind === "birthday" ? null : nextHalfHour(),
+      time: allDay ? null : time === undefined ? nextHalfHour() : time,
       duration: 60,
-      repeat: kind === "birthday" ? "yearly" : "never",
+      repeat: yearly ? "yearly" : "never",
       until: null,
-      alert: kind === "birthday" ? 0 : kind === "reminder" ? 0 : 15,
+      alert:
+        yearly || kind === "reminder"
+          ? 0
+          : kind === "trip"
+            ? null
+            : kind === "deadline"
+              ? 1440
+              : 15,
       notes: "",
       color: eventColors[kind],
       skipped: [],
@@ -70,6 +101,31 @@ class CalendarStore {
     const event = this.events.get(id);
     if (!event) return;
     this.save({ ...event, skipped: [...new Set([...event.skipped, day])] });
+  }
+
+  /** Ticks a reminder's occurrence on a day off, or back on. */
+  toggleDone(id: string, day: string) {
+    const event = this.events.get(id);
+    if (!event) return;
+    const done = event.done ?? [];
+    this.save({
+      ...event,
+      done: done.includes(day) ? done.filter((d) => d !== day) : [...done, day],
+    });
+  }
+
+  /** Moves one occurrence's start; the whole event moves, as in Apple's calendar for one-offs. */
+  move(id: string, date: string, time: string | null, duration?: number) {
+    const event = this.events.get(id);
+    if (!event) return;
+    const shift = event.endDate ? daysBetween(event.date, date) : 0;
+    this.save({
+      ...event,
+      date,
+      time: event.time === null ? null : time,
+      ...(duration ? { duration } : {}),
+      ...(event.endDate ? { endDate: addDaysTo(event.endDate, shift) } : {}),
+    });
   }
 
   remove(id: string): CalendarEvent | undefined {

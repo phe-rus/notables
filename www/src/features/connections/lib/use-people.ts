@@ -9,7 +9,6 @@ import { markSeen } from "../store/last-seen-store";
 export function usePeople(): Person[] {
   const shares = useShares();
   const version = useShareSessionsVersion();
-  // biome-ignore lint/correctness/useExhaustiveDependencies: `version` changes when sessions do.
   const people = useMemo(() => {
     const snapshots: ShareSnapshot[] = shares.map((share) => {
       const session = sessionFor(share.noteId);
@@ -25,7 +24,6 @@ export function usePeople(): Person[] {
   // Whoever is here now was seen now; the list shows when the others last were.
   const online = people.filter((person) => person.online).map((person) => person.key);
   const onlineKey = online.join("|");
-  // biome-ignore lint/correctness/useExhaustiveDependencies: keyed by who is online.
   useEffect(() => {
     markSeen(online);
     if (online.length === 0) return;

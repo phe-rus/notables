@@ -27,6 +27,8 @@ export function occursOn(event: CalendarEvent, day: Day): boolean {
     }
     case "weekly":
       return daysBetween(event.date, day) % 7 === 0;
+    case "fortnightly":
+      return daysBetween(event.date, day) % 14 === 0;
     case "monthly":
       return day === dayInMonth(target.getUTCFullYear(), target.getUTCMonth(), start.getUTCDate());
     case "yearly":
@@ -64,17 +66,57 @@ export function occurrencesBetween(event: CalendarEvent, from: Day, to: Day): Da
   return days;
 }
 
+/** How many days after its start an occurrence ends: 0 for one day. */
+export function spanDays(event: CalendarEvent): number {
+  return event.endDate && event.endDate > event.date ? daysBetween(event.date, event.endDate) : 0;
+}
+
+export interface Occurrence {
+  event: CalendarEvent;
+  /** The day this occurrence starts. */
+  start: Day;
+  /** The day it ends; the start for a one-day event. */
+  end: Day;
+}
+
+/**
+ * Occurrences that cover any day from `from` to `to`, including ones that
+ * began earlier and run into the range, such as a trip.
+ */
+export function occurrencesTouching(event: CalendarEvent, from: Day, to: Day): Occurrence[] {
+  const span = spanDays(event);
+  return occurrencesBetween(event, addDaysTo(from, -span), to).map((start) => ({
+    event,
+    start,
+    end: addDaysTo(start, span),
+  }));
+}
+
+/** Whether a reminder's occurrence on this day has been ticked off. */
+export const isDone = (event: CalendarEvent, day: Day): boolean =>
+  event.done?.includes(day) ?? false;
+
 /** The first day on or after `from` the event happens, if any. */
 export function nextOccurrence(event: CalendarEvent, from: Day, horizonDays = 800): Day | null {
   return occurrencesBetween(event, from, addDaysTo(from, horizonDays))[0] ?? null;
 }
 
-/** When an occurrence's alert goes off. */
-export function alertMoment(event: CalendarEvent, day: Day): Date | null {
-  if (event.alert === null) return null;
+/** When an occurrence's alert goes off; `lead` defaults to its first alert. */
+export function alertMoment(
+  event: CalendarEvent,
+  day: Day,
+  lead: number | null = event.alert,
+): Date | null {
+  if (lead === null) return null;
   const start = localMoment(day, event.time, ALL_DAY_ALERT_HOUR);
-  return new Date(start.getTime() - event.alert * 60_000);
+  return new Date(start.getTime() - lead * 60_000);
 }
+
+/** An event's alerts, first then second, without repeats. */
+export const alertLeads = (event: CalendarEvent): number[] =>
+  [...new Set([event.alert, event.secondAlert ?? null])].filter(
+    (lead): lead is number => lead !== null,
+  );
 
 export interface DueAlert {
   event: CalendarEvent;
@@ -91,11 +133,14 @@ export function alertsBetween(events: CalendarEvent[], after: Date, until: Date)
   const pad = (moment: Date, days: number) => addDaysTo(localDay(moment), days);
   const alerts: DueAlert[] = [];
   for (const event of events) {
-    if (event.alert === null) continue;
-    const lead = Math.ceil(event.alert / 1440) + 1;
-    for (const day of occurrencesBetween(event, pad(after, -1), pad(until, lead))) {
-      const at = alertMoment(event, day);
-      if (at && at > after && at <= until) alerts.push({ event, day, at });
+    const leads = alertLeads(event);
+    if (leads.length === 0) continue;
+    const ahead = Math.ceil(Math.max(...leads) / 1440) + 1;
+    for (const day of occurrencesBetween(event, pad(after, -1), pad(until, ahead))) {
+      for (const lead of leads) {
+        const at = alertMoment(event, day, lead);
+        if (at && at > after && at <= until) alerts.push({ event, day, at });
+      }
     }
   }
   return alerts.sort((a, b) => a.at.getTime() - b.at.getTime());
@@ -103,7 +148,8 @@ export function alertsBetween(events: CalendarEvent[], after: Date, until: Date)
 
 /** How old someone turns on a birthday occurrence, when the birth year is known. */
 export function ageOn(event: CalendarEvent, day: Day): number | null {
-  if (event.kind !== "birthday") return null;
+  if (event.kind !== "birthday" && event.kind !== "anniversary") return null;
+  if (event.yearKnown === false) return null;
   const age = Number(day.slice(0, 4)) - Number(event.date.slice(0, 4));
   return age > 0 ? age : null;
 }

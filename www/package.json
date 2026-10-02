@@ -29,6 +29,7 @@
     "@tauri-apps/api": "2.12.1",
     "@tauri-apps/plugin-deep-link": "2.6.1",
     "@tauri-apps/plugin-notification": "2.5.1",
+    "date-holidays": "3.37.0",
     "fflate": "0.8.3",
     "jsqr": "catalog:",
     "motion": "catalog:",

@@ -1,7 +1,33 @@
 /** What an entry on the calendar is for. */
-export type CalendarEventKind = "plan" | "birthday" | "reminder";
+export type CalendarEventKind =
+  | "plan"
+  | "reminder"
+  | "birthday"
+  | "anniversary"
+  | "deadline"
+  | "trip";
 
-export type Repeat = "never" | "daily" | "weekdays" | "weekly" | "monthly" | "yearly";
+export const calendarKinds: readonly CalendarEventKind[] = [
+  "plan",
+  "reminder",
+  "birthday",
+  "anniversary",
+  "deadline",
+  "trip",
+];
+
+/** Kinds that come back every year from a date in the past. */
+export const isYearlyKind = (kind: CalendarEventKind) =>
+  kind === "birthday" || kind === "anniversary";
+
+export type Repeat =
+  | "never"
+  | "daily"
+  | "weekdays"
+  | "weekly"
+  | "fortnightly"
+  | "monthly"
+  | "yearly";
 
 /**
  * One entry on the calendar. Dates and times are wall-clock values in the
@@ -27,14 +53,27 @@ export interface CalendarEvent {
   color: string;
   /** Days, YYYY-MM-DD, removed from a repeating event. */
   skipped: string[];
+  /** Last day of an event that runs over several days (a trip), YYYY-MM-DD. */
+  endDate?: string | null;
+  /** Where it happens. */
+  location?: string;
+  /** Reminders: the occurrence days ticked off, YYYY-MM-DD. */
+  done?: string[];
+  /** Birthdays and anniversaries: false when only the day and month are known. */
+  yearKnown?: boolean;
+  /** A second alert, in minutes before the start: a week ahead and on the day. */
+  secondAlert?: number | null;
   createdAt: number;
   updatedAt: number;
 }
 
 export const calendarKindLabels: Record<CalendarEventKind, string> = {
   plan: "Plan",
-  birthday: "Birthday",
   reminder: "Reminder",
+  birthday: "Birthday",
+  anniversary: "Anniversary",
+  deadline: "Deadline",
+  trip: "Trip",
 };
 
 export const repeatLabels: Record<Repeat, string> = {
@@ -42,6 +81,7 @@ export const repeatLabels: Record<Repeat, string> = {
   daily: "Every day",
   weekdays: "Weekdays",
   weekly: "Every week",
+  fortnightly: "Every 2 weeks",
   monthly: "Every month",
   yearly: "Every year",
 };

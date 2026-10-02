@@ -3,6 +3,8 @@ import { cn, spring } from "@notables/ui";
 import { motion } from "motion/react";
 import { t } from "../../../i18n/i18n";
 import { formatClock } from "../lib/describe-alert";
+import { eventTitle } from "../lib/event-display";
+import type { Holiday } from "../lib/holidays";
 import { weekdayNames } from "../lib/month-grid";
 
 const MAX_PILLS = 3;
@@ -18,7 +20,9 @@ export function MonthView({
   selected,
   weekStart,
   onDay,
+  onZoomIn,
   byDay,
+  holidays,
   onSwipe,
 }: {
   weeks: Day[][];
@@ -28,7 +32,10 @@ export function MonthView({
   selected: Day;
   weekStart: number;
   onDay: (day: Day) => void;
+  /** Double-click: into that day's hours. */
+  onZoomIn: (day: Day) => void;
   byDay: Map<Day, CalendarEvent[]>;
+  holidays: Map<Day, Holiday[]>;
   onSwipe: (direction: 1 | -1) => void;
 }) {
   const names = weekdayNames(weekStart);
@@ -70,7 +77,9 @@ export function MonthView({
                 isToday={day === today}
                 isSelected={day === selected}
                 events={byDay.get(day) ?? []}
+                holidays={holidays.get(day) ?? []}
                 onSelect={() => onDay(day)}
+                onZoomIn={() => onZoomIn(day)}
               />
             ))}
           </div>
@@ -86,21 +95,27 @@ function DayCell({
   isToday,
   isSelected,
   events,
+  holidays,
   onSelect,
+  onZoomIn,
 }: {
   day: Day;
   outside: boolean;
   isToday: boolean;
   isSelected: boolean;
   events: CalendarEvent[];
+  holidays: Holiday[];
   onSelect: () => void;
+  onZoomIn: () => void;
 }) {
   const date = Number(day.slice(8));
-  const extra = events.length - MAX_PILLS;
+  const closed = holidays.some((holiday) => holiday.closed);
+  const extra = events.length + holidays.length - MAX_PILLS;
   return (
     <button
       type="button"
       onClick={onSelect}
+      onDoubleClick={onZoomIn}
       aria-pressed={isSelected}
       aria-label={`${day}${events.length ? `, ${t("calendar.eventsCount", { count: events.length })}` : ""}`}
       className={cn(
@@ -116,7 +131,9 @@ function DayCell({
             ? "bg-accent font-semibold text-on-accent"
             : isSelected
               ? "bg-inverse font-semibold text-on-inverse md:bg-transparent md:text-accent-text"
-              : "text-label",
+              : closed
+                ? "text-danger"
+                : "text-label",
         )}
       >
         {date}
@@ -135,7 +152,15 @@ function DayCell({
 
       {/* Larger screens: what's on. */}
       <span className="hidden min-w-0 flex-col gap-0.5 md:flex">
-        {events.slice(0, MAX_PILLS).map((event) => (
+        {holidays.slice(0, MAX_PILLS).map((holiday) => (
+          <span
+            key={holiday.name}
+            className="truncate px-1.5 text-[11.5px] leading-[16px] font-medium text-danger"
+          >
+            {holiday.name}
+          </span>
+        ))}
+        {events.slice(0, Math.max(0, MAX_PILLS - holidays.length)).map((event) => (
           <span
             key={event.id}
             className="flex min-w-0 items-center gap-1 truncate rounded-[5px] px-1.5 py-px text-[11.5px] leading-[16px]"
@@ -149,7 +174,7 @@ function DayCell({
                 {formatClock(event.time)}
               </span>
             )}
-            <span className="truncate font-medium">{event.title || "Untitled"}</span>
+            <span className="truncate font-medium">{eventTitle(event, day)}</span>
           </span>
         ))}
         {extra > 0 && (

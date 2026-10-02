@@ -3,9 +3,12 @@ import {
   ageOn,
   alertsBetween,
   type CalendarEvent,
+  isDone,
   nextOccurrence,
   occurrencesBetween,
+  occurrencesTouching,
   occursOn,
+  spanDays,
 } from "../../src";
 
 const event = (patch: Partial<CalendarEvent>): CalendarEvent => ({
@@ -87,5 +90,59 @@ describe("alerts", () => {
     );
     expect(due.map((alert) => alert.event.title)).toEqual(["Flight", "Bins"]);
     expect(due[1]?.at).toEqual(new Date(2026, 9, 2, 9, 0));
+  });
+});
+
+describe("spans and fortnights", () => {
+  it("repeats every other week", () => {
+    const fortnightly = event({ date: "2026-01-05", repeat: "fortnightly" });
+    expect(occurrencesBetween(fortnightly, "2026-01-01", "2026-02-10")).toEqual([
+      "2026-01-05",
+      "2026-01-19",
+      "2026-02-02",
+    ]);
+  });
+
+  it("finds a trip that started before the range and runs into it", () => {
+    const trip = event({ kind: "trip", date: "2026-03-28", endDate: "2026-04-03", time: null });
+    expect(spanDays(trip)).toBe(6);
+    expect(occurrencesTouching(trip, "2026-04-01", "2026-04-30")).toEqual([
+      { event: trip, start: "2026-03-28", end: "2026-04-03" },
+    ]);
+    expect(occurrencesTouching(trip, "2026-04-04", "2026-04-30")).toEqual([]);
+  });
+
+  it("treats an end before the start as a one-day event", () => {
+    expect(spanDays(event({ endDate: "2026-01-01" }))).toBe(0);
+  });
+
+  it("ticks off one occurrence of a repeating reminder", () => {
+    const daily = event({ kind: "reminder", repeat: "daily", done: ["2026-02-01"] });
+    expect(isDone(daily, "2026-02-01")).toBe(true);
+    expect(isDone(daily, "2026-02-02")).toBe(false);
+  });
+});
+
+describe("birthdays", () => {
+  it("has no age when only the day and month are known", () => {
+    const birthday = event({ kind: "birthday", date: "1990-05-04", repeat: "yearly" });
+    expect(ageOn(birthday, "2026-05-04")).toBe(36);
+    expect(ageOn({ ...birthday, yearKnown: false }, "2026-05-04")).toBeNull();
+  });
+
+  it("alerts a week ahead and on the day", () => {
+    const birthday = event({
+      kind: "birthday",
+      date: "1990-05-04",
+      time: null,
+      repeat: "yearly",
+      alert: 0,
+      secondAlert: 7 * 1440,
+    });
+    const due = alertsBetween([birthday], new Date(2026, 3, 20), new Date(2026, 4, 5));
+    expect(due.map((alert) => [alert.day, alert.at.getDate()])).toEqual([
+      ["2026-05-04", 27],
+      ["2026-05-04", 4],
+    ]);
   });
 });
