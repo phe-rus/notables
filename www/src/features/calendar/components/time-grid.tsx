@@ -70,6 +70,7 @@ export function TimeGrid({
   onCreate,
   onOpen,
   onDayTitle,
+  dayNames = true,
 }: {
   days: Day[];
   today: Day;
@@ -78,6 +79,8 @@ export function TimeGrid({
   onCreate: (day: Day, time: string | null) => void;
   onOpen: (event: CalendarEvent, day: Day) => void;
   onDayTitle: (day: Day) => void;
+  /** The row of day names; phones show their week strip instead. */
+  dayNames?: boolean;
 }) {
   const scroller = useRef<HTMLDivElement>(null);
   const columns = useRef<HTMLDivElement>(null);
@@ -239,7 +242,7 @@ export function TimeGrid({
   return (
     <div className="flex min-h-0 grow flex-col">
       {/* Day names and dates, then the all-day row, both above the hours. */}
-      <div className="flex border-b border-separator/70 ps-14">
+      <div className={cn("flex border-b border-separator/70 ps-14", !dayNames && "hidden")}>
         <div className="grid grow" style={gridColumns}>
           {days.map((day) => {
             const isToday = day === today;

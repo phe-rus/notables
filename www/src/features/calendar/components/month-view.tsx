@@ -145,7 +145,7 @@ export function MonthView({
       <div
         ref={scroller}
         onScroll={onScroll}
-        className="min-h-0 grow overflow-y-auto px-2 [overflow-anchor:none] md:px-4 md:pb-4"
+        className="min-h-0 grow overflow-y-auto px-2 [overflow-anchor:none] max-md:pb-[calc(env(safe-area-inset-bottom)+96px)] md:px-4 md:pb-4"
       >
         {Array.from({ length: range.last - range.first + 1 }, (_, i) => range.first + i).map(
           (index) => {

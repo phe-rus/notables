@@ -46,6 +46,7 @@ import { EventSheet } from "./event-sheet";
 import { MonthView } from "./month-view";
 import { QuickAddSheet } from "./quick-add-sheet";
 import { TimeGrid } from "./time-grid";
+import { WeekStrip } from "./week-strip";
 import { YearView } from "./year-view";
 
 export type CalendarView = "day" | "week" | "month" | "year" | "years";
@@ -190,6 +191,16 @@ export function CalendarScreen({
               )
             : format({ month: "long", year: "numeric" }).format(asDate(selected));
 
+  // On a phone the title is the way back out, as the scroll and the strip say
+  // where you are: a day goes back to its month, a month to its year.
+  const backToMonth = phone && (view === "day" || view === "week");
+  const scrollsItself = phone && (view === "month" || view === "year" || view === "years");
+  const backTitle = backToMonth ? null : phone && view === "month" ? String(scrolledYear) : null;
+  const monthTitle = format({
+    month: "long",
+    ...(year === Number(today.slice(0, 4)) ? {} : { year: "numeric" }),
+  }).format(asDate(selected));
+
   // Apple's way through time: the title zooms out a level, a tap zooms back in.
   const outer: Record<CalendarView, CalendarView | null> = {
     day: "month",
@@ -224,7 +235,8 @@ export function CalendarScreen({
               <SidebarIcon size={20} />
             </IconButton>
             <ZoomTitle
-              title={title}
+              title={backToMonth ? monthTitle : (backTitle ?? title)}
+              back={backToMonth || backTitle !== null}
               year={view === "year" ? scrolledYear : year}
               zoomOut={
                 outer[view]
@@ -254,10 +266,18 @@ export function CalendarScreen({
             </button>
             {view !== "years" && (
               <>
-                <IconButton label={t("calendar.previous")} onClick={() => shift(-1)}>
+                <IconButton
+                  label={t("calendar.previous")}
+                  className="max-sm:hidden"
+                  onClick={() => shift(-1)}
+                >
                   <ChevronLeftIcon size={18} className="rtl:-scale-x-100" />
                 </IconButton>
-                <IconButton label={t("calendar.next")} onClick={() => shift(1)}>
+                <IconButton
+                  label={t("calendar.next")}
+                  className="max-sm:hidden"
+                  onClick={() => shift(1)}
+                >
                   <ChevronRightIcon size={18} className="rtl:-scale-x-100" />
                 </IconButton>
               </>
@@ -286,13 +306,33 @@ export function CalendarScreen({
         </div>
       </header>
 
-      <div className="flex min-h-0 grow flex-col overflow-y-auto md:flex-row md:overflow-hidden">
+      {backToMonth && (
+        <WeekStrip
+          weekFirst={weekFirst}
+          selected={selected}
+          today={today}
+          onDay={(day) => go(day)}
+        />
+      )}
+
+      {/* Phones scroll the hours and the day's list together, clear of the tab bar. */}
+      <div
+        className={cn(
+          "flex min-h-0 grow flex-col overflow-y-auto md:flex-row md:overflow-hidden",
+          !scrollsItself && "max-md:pb-[calc(env(safe-area-inset-bottom)+96px)]",
+        )}
+      >
         <motion.div
           key={`${view}:${view === "day" || view === "week" ? weekFirst : jumps}`}
           initial={{ opacity: 0, scale: zoom === "in" ? 0.94 : zoom === "out" ? 1.06 : 1 }}
           animate={{ opacity: 1, scale: 1 }}
           transition={spring.smooth}
-          className="flex shrink-0 flex-col md:min-h-0 md:shrink md:grow"
+          className={cn(
+            "flex flex-col md:min-h-0 md:shrink md:grow",
+            // On a phone the months and years fill the screen and scroll themselves;
+            // a day's hours and its list scroll together.
+            scrollsItself ? "min-h-0 shrink grow" : "shrink-0",
+          )}
         >
           {view === "years" ? (
             <YearsView
@@ -336,12 +376,16 @@ export function CalendarScreen({
               onCreate={(day, time) => add("plan", day, time)}
               onOpen={open}
               onDayTitle={(day) => zoomTo(day, "day")}
+              dayNames={!(backToMonth && view === "day")}
             />
           )}
         </motion.div>
         <aside
           aria-label={t("calendar.day")}
-          className="border-t border-separator/60 md:w-[340px] md:shrink-0 md:overflow-y-auto md:border-t-0 md:border-l"
+          className={cn(
+            "border-t border-separator/60 md:w-[340px] md:shrink-0 md:overflow-y-auto md:border-t-0 md:border-l",
+            scrollsItself && "hidden md:block",
+          )}
         >
           {agenda}
         </aside>
@@ -364,11 +408,14 @@ export function CalendarScreen({
  */
 function ZoomTitle({
   title,
+  back = false,
   year,
   zoomOut,
   onYear,
 }: {
   title: string;
+  /** Shown as the way back out ("‹ October"), as on a phone's day. */
+  back?: boolean;
   year: number;
   zoomOut: (() => void) | null;
   onYear: (year: number) => void;
@@ -408,8 +455,16 @@ function ZoomTitle({
           setEditing(true);
         }
       }}
-      className="min-w-0 rounded-[10px] px-1.5 text-start text-[22px] font-bold tracking-tight transition-colors hover:bg-fill/60 active:bg-fill"
+      className={cn(
+        "min-w-0 rounded-[10px] px-1.5 text-start transition-colors hover:bg-fill/60 active:bg-fill",
+        back
+          ? "flex min-h-11 items-center gap-0.5 text-[17px] text-accent-text"
+          : "text-[22px] font-bold tracking-tight",
+      )}
     >
+      {back && (
+        <ChevronLeftIcon size={22} strokeWidth={2.2} className="shrink-0 rtl:-scale-x-100" />
+      )}
       <span className="block truncate">{title}</span>
     </button>
   );
