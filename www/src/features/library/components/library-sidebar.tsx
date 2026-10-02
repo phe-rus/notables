@@ -11,6 +11,7 @@ import {
   NoteIcon,
   PenIcon,
   PinIcon,
+  RecentIcon,
   SearchIcon,
   SettingsIcon,
   SidebarIcon,
@@ -45,21 +46,22 @@ import { formatAge } from "../lib/date-format";
 import { planningKinds, readingKinds, writingKinds } from "../model/library-views";
 import { type SidebarItemId, sidebarItemTitles } from "../model/sidebar-items";
 import { isListedNote, useLibrary } from "../store/library-store";
+import { RECENT_WINDOW, useOpened } from "../store/recents-store";
 import { SidebarEditor } from "./sidebar-editor";
 
 /** Where the app is: a view of notes, books or settings. */
-export type SidebarLocation = SidebarItemId | "all" | "settings" | "trash";
+export type SidebarLocation = SidebarItemId | "all" | "calendar" | "settings" | "trash";
 
 export const sidebarIcons: Record<SidebarItemId, ReactNode> = {
   writing: <StoryIcon size={17} />,
   books: <BookIcon size={17} />,
   planning: <LessonIcon size={17} />,
-  calendar: <CalendarIcon size={17} />,
   invoices: <InvoiceIcon size={17} />,
   published: <GlobeIcon size={17} />,
 };
 
 const PINNED_LIMIT = 8;
+const RECENTS_LIMIT = 8;
 
 export function Sidebar({
   active,
@@ -87,10 +89,16 @@ export function Sidebar({
   const [editing, setEditing] = useState(false);
   const navigate = useNavigate();
   const pinned = entries.filter((entry) => entry.pinned).slice(0, PINNED_LIMIT);
+  // Notes opened on this device in the last two days; pinned ones already show above.
+  const opened = useOpened();
+  const now = Date.now();
+  const recents = entries
+    .filter((entry) => !entry.pinned && now - (opened[entry.id] ?? 0) < RECENT_WINDOW)
+    .sort((a, b) => (opened[b.id] ?? 0) - (opened[a.id] ?? 0))
+    .slice(0, RECENTS_LIMIT);
 
   const count = (id: SidebarItemId | "all") => {
     if (id === "invoices") return invoices.length;
-    if (id === "calendar") return upcoming;
     if (id === "books") {
       return books.length + entries.filter((e) => readingKinds.includes(e.kind)).length;
     }
@@ -104,9 +112,7 @@ export function Sidebar({
       ? { to: "/books" }
       : id === "invoices"
         ? { to: "/invoices" }
-        : id === "calendar"
-          ? { to: "/calendar" }
-          : { to: "/", search: { view: id } };
+        : { to: "/", search: { view: id } };
 
   return (
     <nav
@@ -138,6 +144,14 @@ export function Sidebar({
             trailing={counts ? count("all") : undefined}
           >
             {t("nav.allNotes")}
+          </NavItem>
+          <NavItem
+            to="/calendar"
+            active={active === "calendar"}
+            icon={<CalendarIcon size={17} />}
+            trailing={counts && upcoming > 0 ? upcoming : undefined}
+          >
+            {t("nav.calendar")}
           </NavItem>
         </div>
 
@@ -236,6 +250,28 @@ export function Sidebar({
                   icon={<PinIcon size={15} />}
                   menu={() => noteMenu(entry, navigate)}
                   trailing={formatAge(entry.updatedAt)}
+                >
+                  {entry.title || t("notes.newNote")}
+                </NavItem>
+              ))}
+            </div>
+          </section>
+        )}
+
+        {recents.length > 0 && (
+          <section aria-label={t("nav.recents")} className="flex flex-col">
+            <SectionHeader title={t("nav.recents")} />
+            <div className="flex flex-col gap-px">
+              {recents.map((entry) => (
+                <NavItem
+                  key={entry.id}
+                  to="/notes/$noteId"
+                  params={{ noteId: entry.id }}
+                  search={(s) => s}
+                  active={entry.id === activeNoteId}
+                  icon={<RecentIcon size={15} />}
+                  menu={() => noteMenu(entry, navigate)}
+                  trailing={formatAge(opened[entry.id] ?? entry.updatedAt)}
                 >
                   {entry.title || t("notes.newNote")}
                 </NavItem>

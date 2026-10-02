@@ -1,23 +1,16 @@
 import { t } from "../../../i18n/i18n";
 
 /**
- * Sidebar places people can reorder or hide. All Notes, Search and
- * Settings are fixed and always present. Related kinds share one place
+ * Sidebar places people can reorder or hide. All Notes, Calendar,
+ * Search and Settings are fixed and always present. Related kinds share one place
  * (see viewGroups) so the sidebar stays short.
  */
-export type SidebarItemId =
-  | "writing"
-  | "books"
-  | "planning"
-  | "calendar"
-  | "invoices"
-  | "published";
+export type SidebarItemId = "writing" | "books" | "planning" | "invoices" | "published";
 
 export const sidebarItemIds: readonly SidebarItemId[] = [
   "writing",
   "books",
   "planning",
-  "calendar",
   "invoices",
   "published",
 ];
@@ -31,9 +24,6 @@ export const sidebarItemTitles: Record<SidebarItemId, string> = {
   },
   get planning() {
     return t("nav.planning");
-  },
-  get calendar() {
-    return t("nav.calendar");
   },
   get invoices() {
     return t("nav.invoices");

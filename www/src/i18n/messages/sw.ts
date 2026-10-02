@@ -30,6 +30,7 @@ export const sw: Messages = {
     allNotes: "Madokezo yote",
     library: "Maktaba",
     pinned: "Yaliyobandikwa",
+    recents: "Za hivi karibuni",
     recentlyDeleted: "Yaliyofutwa hivi karibuni",
     hideFromSidebar: "Ficha kwenye utepe",
     editSidebar: "Hariri utepe…",

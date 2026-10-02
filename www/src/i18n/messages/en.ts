@@ -32,6 +32,7 @@ export const en = {
     allNotes: "All Notes",
     library: "Library",
     pinned: "Pinned",
+    recents: "Recents",
     recentlyDeleted: "Recently Deleted",
     hideFromSidebar: "Hide from sidebar",
     editSidebar: "Edit sidebar…",

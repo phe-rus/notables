@@ -30,6 +30,7 @@ export const ar: Messages = {
     allNotes: "كل الملاحظات",
     library: "المكتبة",
     pinned: "المثبّتة",
+    recents: "الأخيرة",
     recentlyDeleted: "المحذوفة مؤخرًا",
     hideFromSidebar: "إخفاء من الشريط الجانبي",
     editSidebar: "تعديل الشريط الجانبي…",

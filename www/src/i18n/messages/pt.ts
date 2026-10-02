@@ -30,6 +30,7 @@ export const pt: Messages = {
     allNotes: "Todas as notas",
     library: "Biblioteca",
     pinned: "Afixadas",
+    recents: "Recentes",
     recentlyDeleted: "Apagados recentemente",
     hideFromSidebar: "Ocultar da barra lateral",
     editSidebar: "Editar barra lateral…",

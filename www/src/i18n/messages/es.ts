@@ -30,6 +30,7 @@ export const es: Messages = {
     allNotes: "Todas las notas",
     library: "Biblioteca",
     pinned: "Fijadas",
+    recents: "Recientes",
     recentlyDeleted: "Eliminado recientemente",
     hideFromSidebar: "Ocultar de la barra lateral",
     editSidebar: "Editar barra lateral…",

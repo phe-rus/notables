@@ -30,6 +30,7 @@ export const fr: Messages = {
     allNotes: "Toutes les notes",
     library: "Bibliothèque",
     pinned: "Épinglées",
+    recents: "Récents",
     recentlyDeleted: "Supprimés récemment",
     hideFromSidebar: "Masquer de la barre latérale",
     editSidebar: "Modifier la barre latérale…",

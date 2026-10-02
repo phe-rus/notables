@@ -21,7 +21,7 @@ import {
 } from "@notables/ui";
 import { Link, useNavigate } from "@tanstack/react-router";
 import { motion } from "motion/react";
-import { useCallback, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { t } from "../../../i18n/i18n";
 import { getDeviceId } from "../../../platform/device-identity";
 import { saveNoteContent } from "../../../platform/storage/note-content-cache";
@@ -36,6 +36,7 @@ import {
   useEntry,
   useLibraryReady,
 } from "../../library/store/library-store";
+import { recordOpened } from "../../library/store/recents-store";
 import { ReadAloudButton } from "../../listening/components/read-aloud-button";
 import { PublishControl } from "../../publishing/components/publish-control";
 import { NoteRecorder } from "../../recording/components/note-recorder";
@@ -87,6 +88,8 @@ function NoteEditorScreen({ entry, viewId }: { entry: LibraryEntry; viewId?: str
   const [sharing, setSharing] = useState(false);
   const shareSession = useShareSession(entry.id);
   const startRecording = useCallback(() => setRecording(true), []);
+
+  useEffect(() => recordOpened(entry.id), [entry.id]);
 
   const onDocumentChange = useCallback(
     ({ document, text }: DocumentSnapshot) => {
