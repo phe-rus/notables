@@ -1,6 +1,7 @@
 import { NoteKind } from "@notables/core";
 import { type ContextMenuItem, toast } from "@notables/ui";
 import type { useNavigate } from "@tanstack/react-router";
+import { appLinkFor } from "../../../platform/app-links";
 import { publicUrl } from "../../../platform/public-url";
 import { noteFontLabels, noteFonts } from "../../library/model/note-fonts";
 import { noteKindLabels } from "../../library/model/note-kind-labels";
@@ -38,6 +39,16 @@ export function noteMenu(entry: LibraryEntry, navigate: Navigate): ContextMenuIt
     {
       label: entry.pinned ? "Unpin" : "Pin",
       onSelect: () => library.update(entry.id, { pinned: !entry.pinned }),
+    },
+    {
+      label: "Copy app link",
+      onSelect: () => {
+        void navigator.clipboard
+          .writeText(appLinkFor(`notes/${entry.id}`))
+          .then(() =>
+            toast.success("App link copied", { description: "Opens this note in Notables." }),
+          );
+      },
     },
     ...(entry.publicationId
       ? [

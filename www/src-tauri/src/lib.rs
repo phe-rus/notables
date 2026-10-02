@@ -3,6 +3,7 @@
 //! durable on-device storage, on-device transcription, and native saving
 //! and printing.
 
+mod deep_links;
 mod export;
 mod media_permissions;
 mod storage;
@@ -17,7 +18,14 @@ use transcription::Transcriber;
 
 #[cfg_attr(mobile, tauri::mobile_entry_point)]
 pub fn run() {
-    tauri::Builder::default()
+    let builder = tauri::Builder::default();
+    // First, so a second launch (say, from a link) hands over to this one.
+    #[cfg(desktop)]
+    let builder = builder.plugin(tauri_plugin_single_instance::init(|app, _args, _cwd| {
+        deep_links::focus_main(app);
+    }));
+    builder
+        .plugin(tauri_plugin_deep_link::init())
         .plugin(tauri_plugin_dialog::init())
         .manage(Transcriber::default())
         .register_asynchronous_uri_scheme_protocol(
@@ -65,6 +73,7 @@ pub fn run() {
             }
             media_permissions::allow_microphone(app)?;
             window_frame::setup(app)?;
+            deep_links::register(app);
             let data_dir = app.path().app_data_dir()?;
             app.manage(Storage::open(&data_dir)?);
             Ok(())
