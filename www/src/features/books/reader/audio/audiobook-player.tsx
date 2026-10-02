@@ -93,7 +93,7 @@ function PlayerScreen({ book, player }: { book: BookEntry; player: AudiobookPlay
       )}
       <div className="pointer-events-none absolute inset-0 bg-gradient-to-b from-surface/40 via-surface/70 to-surface" />
 
-      <header className="relative flex h-14 shrink-0 items-center justify-between px-3 pt-[env(safe-area-inset-top)]">
+      <header className="relative flex box-content h-14 shrink-0 items-center justify-between px-3 pt-[env(safe-area-inset-top)]">
         <Link
           to="/books/$bookId"
           params={{ bookId: book.id }}

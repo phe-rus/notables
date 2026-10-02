@@ -161,7 +161,7 @@ export function BookReader({ book }: { book: BookEntry }) {
 
   return (
     <div ref={root} className="book-desk fixed inset-0 flex flex-col">
-      <header className="glass-bar flex h-14 shrink-0 items-center justify-between gap-3 px-3 pt-[env(safe-area-inset-top)]">
+      <header className="glass-bar flex box-content h-14 shrink-0 items-center justify-between gap-3 px-3 pt-[env(safe-area-inset-top)]">
         <Link
           to="/books/$bookId"
           params={{ bookId: book.id }}

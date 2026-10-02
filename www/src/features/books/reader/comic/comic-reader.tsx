@@ -123,7 +123,7 @@ export function ComicReader({ book }: { book: BookEntry }) {
         animate={{ opacity: chrome ? 1 : 0, y: chrome ? 0 : -12 }}
         transition={{ duration: 0.2 }}
         className={cn(
-          "absolute inset-x-0 top-0 z-10 flex h-14 items-center justify-between gap-3 bg-gradient-to-b from-black/70 to-transparent px-3 pt-[env(safe-area-inset-top)]",
+          "absolute inset-x-0 top-0 z-10 flex box-content h-14 items-center justify-between gap-3 bg-gradient-to-b from-black/70 to-transparent px-3 pt-[env(safe-area-inset-top)]",
           !chrome && "pointer-events-none",
         )}
       >

@@ -130,7 +130,7 @@ function NoteEditorScreen({ entry, viewId }: { entry: LibraryEntry; viewId?: str
     <NotesEditor id={entry.id} provider={provider} bootstrap={entry.origin === getDeviceId()}>
       <div className="@container/note relative flex min-h-0 grow flex-col">
         <div className="relative flex min-h-0 grow flex-col overflow-y-auto">
-          <header className="glass-bar sticky top-0 z-20 flex h-14 shrink-0 items-center justify-between gap-2 px-3 pt-[env(safe-area-inset-top)] @min-[600px]/note:px-5">
+          <header className="glass-bar sticky top-0 z-20 flex box-content h-14 shrink-0 items-center justify-between gap-2 px-3 pt-[env(safe-area-inset-top)] @min-[600px]/note:px-5">
             {book ? (
               // A chapter leads back to its book, on every screen size.
               <Link

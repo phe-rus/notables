@@ -120,7 +120,7 @@ export function InvoiceScreen({ invoice }: { invoice: InvoiceDocument }) {
     <div className="flex min-h-0 grow flex-col">
       <header
         data-tauri-drag-region
-        className="glass-bar sticky top-0 z-20 flex h-14 shrink-0 items-center gap-2 px-3 pt-[env(safe-area-inset-top)] md:px-5"
+        className="glass-bar sticky top-0 z-20 flex box-content h-14 shrink-0 items-center gap-2 px-3 pt-[env(safe-area-inset-top)] md:px-5"
       >
         <Link
           to="/invoices"
