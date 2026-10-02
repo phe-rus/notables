@@ -1,11 +1,7 @@
 import { composeDocumentFromMarkdown } from "@notables/editor";
-import * as Y from "yjs";
-import { getPersistence } from "../../../platform/storage/document-storage";
-import { saveNoteContent } from "../../../platform/storage/note-content-cache";
 import { getBookStore } from "../../books/store/book-store";
-import { summarize } from "../../library/model/library-views";
+import { writeNote } from "../../library/lib/write-note";
 import { getLibrary } from "../../library/store/library-store";
-import { documentText } from "../../search/lib/document-text";
 import { welcomeBook, welcomeNotes } from "../content/welcome-library";
 
 const WELCOMED = "notables:welcomed";
@@ -42,30 +38,17 @@ export function seedWelcomeLibrary(): Promise<void> {
 }
 
 async function seed() {
-  const library = getLibrary();
-  const persistence = getPersistence();
   const now = Date.now();
   const ids = new Map<string, string>();
 
   for (const note of welcomeNotes) {
-    const entry = library.create(note.kind);
-    ids.set(note.key, entry.id);
-
-    const doc = new Y.Doc();
-    const binding = await persistence.bind(`note:${entry.id}`, doc);
-    const document = composeDocumentFromMarkdown(doc, note.markdown);
-    await binding.flush?.();
-    binding.destroy();
-    await saveNoteContent(entry.id, document);
-
-    const { title, excerpt } = summarize(documentText(document));
-    const at = now - note.hoursAgo * HOUR;
-    library.update(entry.id, {
-      title,
-      excerpt,
-      pinned: note.pinned ?? false,
-      updatedAt: at,
+    const entry = await writeNote({
+      kind: note.kind,
+      pinned: note.pinned,
+      updatedAt: now - note.hoursAgo * HOUR,
+      compose: (doc) => composeDocumentFromMarkdown(doc, note.markdown),
     });
+    ids.set(note.key, entry.id);
   }
 
   const books = getBookStore();
