@@ -179,11 +179,18 @@ function chapterWriter(
 export async function appendToBook(
   bookId: string,
   files: Array<[ImportFile, File]>,
-  options: Pick<ImportOptions, "onProgress">,
-): Promise<{ chapters: number; skipped: string[] }> {
+  options: Pick<ImportOptions, "onProgress"> & {
+    /**
+     * Names a part for each book found in the files (a picked folder's
+     * subfolders), so each becomes a group of this item. Given the book's
+     * own title and its place among them.
+     */
+    groupEach?: (title: string, index: number) => string;
+  },
+): Promise<{ chapters: number; added: string[]; skipped: string[] }> {
   const store = getBookStore();
   const target = store.getSnapshot().find((book) => book.id === bookId);
-  if (!target) return { chapters: 0, skipped: [] };
+  if (!target) return { chapters: 0, added: [], skipped: [] };
   const kind = store.kindOf(target);
   const fits = formatOf(kind);
   const plan = buildImportPlan(files.map(([meta]) => meta));
@@ -219,13 +226,20 @@ export async function appendToBook(
   const parts: Part[] = [];
   const write = chapterWriter(bookId, noteKindFor(kind), (id) => added.push(id));
   let first: BookDetails | null = null;
-  for (const book of fitting) {
+  // One book found is just more chapters; several become a group each when asked.
+  const grouping = fitting.length > 1 ? options.groupEach : undefined;
+  for (const [index, book] of fitting.entries()) {
+    const before = added.length;
     const details = await importBookContent(book, withFiles, fileFor, write, step, fits);
     if (!details) {
       skipped.push(nameOf(book));
       continue;
     }
     first ??= details;
+    const opening = added[before];
+    if (grouping && opening && details.parts.length === 0) {
+      parts.push({ id: createId(), title: grouping(book.title, index), startsAt: opening });
+    }
     parts.push(...details.parts);
   }
 
@@ -242,7 +256,7 @@ export async function appendToBook(
     });
   }
   await syncBookFormat(bookId);
-  return { chapters: added.length, skipped };
+  return { chapters: added.length, added, skipped };
 }
 
 function needsSeries(series: PlannedSeries): boolean {

@@ -33,6 +33,10 @@ export interface BookEntry {
   cover?: string | null;
   /** Parts over the chapters, in chapter order; reading order ignores them. */
   parts?: Part[];
+  /** What its parts are called here: a known unit ("season", "arc") or a typed word. */
+  groupLabel?: string;
+  /** What each chapter is called here: "episode", "volume", "track" or a typed word. */
+  entryLabel?: string;
   /** When it went to Recently Deleted; cleared on restore. */
   trashedAt?: number | null;
   /** The series delete that took it, while it waits in Recently Deleted with its series. */

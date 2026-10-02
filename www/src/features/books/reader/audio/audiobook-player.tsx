@@ -1,5 +1,6 @@
 import { useMediaSource } from "@notables/editor";
 import {
+  ChevronRightIcon,
   CloseIcon,
   cn,
   NextTrackIcon,
@@ -19,8 +20,9 @@ import { t } from "../../../../i18n/i18n";
 import { ReadAlong } from "../../../listening/components/read-along";
 import { useAudiobookSession } from "../../../listening/store/listening-store";
 import { BookCover } from "../../components/book-cover";
+import { structureOf, unitName } from "../../model/structure-labels";
 import type { BookEntry } from "../../store/book-store";
-import { type AudiobookPlayback, type SleepTimer, SPEEDS } from "./use-audiobook";
+import { type AudiobookPlayback, type SleepTimer, SPEEDS, type Track } from "./use-audiobook";
 
 const SLEEP_CHOICES: SleepTimer[] = [null, 15, 30, 60, "chapter"];
 
@@ -227,7 +229,7 @@ function PlayerScreen({ book, player }: { book: BookEntry; player: AudiobookPlay
               value={panel}
               onChange={setPanel}
               options={[
-                { value: "chapters", label: "Chapters" },
+                { value: "chapters", label: unitName(structureOf(book, "audiobook").entry, true) },
                 { value: "words", label: "Read along" },
               ]}
             />
@@ -247,52 +249,7 @@ function PlayerScreen({ book, player }: { book: BookEntry; player: AudiobookPlay
                   No recordings in this book on this device yet.
                 </p>
               )}
-              <ol className="flex flex-col">
-                {player.tracks.map((entry, index) => {
-                  const current = index === player.index;
-                  return [
-                    entry.part && (
-                      <li
-                        key={`part-${entry.chapter}`}
-                        className="px-3 pt-4 pb-1 text-[13px] font-semibold text-label-secondary"
-                      >
-                        {entry.part}
-                      </li>
-                    ),
-                    <li key={`${entry.chapter}-${entry.src}`}>
-                      <button
-                        type="button"
-                        aria-current={current ? "true" : undefined}
-                        onClick={() => (current ? player.toggle() : player.playTrack(index))}
-                        className={cn(
-                          "flex w-full items-center gap-3 rounded-[12px] px-3 py-2.5 text-left transition-colors",
-                          current ? "bg-fill/80" : "hover:bg-fill/50",
-                        )}
-                      >
-                        <span
-                          className={cn(
-                            "w-6 shrink-0 text-center text-[13px] tabular-nums",
-                            current ? "text-accent-text" : "text-label-tertiary",
-                          )}
-                        >
-                          {current && player.playing ? <Equalizer /> : index + 1}
-                        </span>
-                        <span
-                          className={cn(
-                            "min-w-0 grow truncate text-[15px]",
-                            current && "font-semibold",
-                          )}
-                        >
-                          {entry.title}
-                        </span>
-                        <span className="shrink-0 text-[13px] text-label-tertiary tabular-nums">
-                          {entry.durationMs ? clock(entry.durationMs / 1000) : ""}
-                        </span>
-                      </button>
-                    </li>,
-                  ];
-                })}
-              </ol>
+              <TrackList player={player} />
             </>
           )}
         </section>
@@ -369,5 +326,117 @@ function Equalizer() {
         />
       ))}
     </span>
+  );
+}
+
+/** Tracks gathered into the parts they open, like playlists, with the playing one open. */
+function TrackList({ player }: { player: AudiobookPlayback }) {
+  const sections: { title?: string; start: number; tracks: Track[] }[] = [];
+  player.tracks.forEach((track, index) => {
+    const last = sections.at(-1);
+    if (track.part || !last) sections.push({ title: track.part, start: index, tracks: [track] });
+    else last.tracks.push(track);
+  });
+  const playing = sections.findIndex(
+    (section) =>
+      player.index >= section.start && player.index < section.start + section.tracks.length,
+  );
+  const [open, setOpen] = useState<Set<number>>(() => new Set([Math.max(0, playing)]));
+  // Moving on to the next part opens it.
+  useEffect(() => {
+    if (playing >= 0) setOpen((current) => new Set(current).add(playing));
+  }, [playing]);
+
+  const rows = (section: (typeof sections)[number]) =>
+    section.tracks.map((entry, offset) => {
+      const index = section.start + offset;
+      const current = index === player.index;
+      return (
+        <li key={`${entry.chapter}-${entry.src}`}>
+          <button
+            type="button"
+            aria-current={current ? "true" : undefined}
+            onClick={() => (current ? player.toggle() : player.playTrack(index))}
+            className={cn(
+              "flex w-full items-center gap-3 rounded-[12px] px-3 py-2.5 text-start transition-colors",
+              current ? "bg-fill/80" : "hover:bg-fill/50",
+            )}
+          >
+            <span
+              className={cn(
+                "w-6 shrink-0 text-center text-[13px] tabular-nums",
+                current ? "text-accent-text" : "text-label-tertiary",
+              )}
+            >
+              {current && player.playing ? <Equalizer /> : offset + 1}
+            </span>
+            <span className={cn("min-w-0 grow truncate text-[15px]", current && "font-semibold")}>
+              {entry.title}
+            </span>
+            <span className="shrink-0 text-[13px] text-label-tertiary tabular-nums">
+              {entry.durationMs ? clock(entry.durationMs / 1000) : ""}
+            </span>
+          </button>
+        </li>
+      );
+    });
+
+  return (
+    <ol className="flex flex-col gap-1">
+      {sections.map((section, number) => {
+        if (!section.title) return rows(section);
+        const expanded = open.has(number);
+        const total = section.tracks.reduce((sum, track) => sum + (track.durationMs ?? 0), 0);
+        return (
+          <li key={`part-${section.start}`} className="flex flex-col">
+            <button
+              type="button"
+              aria-expanded={expanded}
+              onClick={() =>
+                setOpen((current) => {
+                  const next = new Set(current);
+                  if (expanded) next.delete(number);
+                  else next.add(number);
+                  return next;
+                })
+              }
+              className="flex items-center gap-2.5 rounded-[12px] px-3 py-2.5 text-start transition-colors hover:bg-fill/50"
+            >
+              <motion.span
+                animate={{ rotate: expanded ? 90 : 0 }}
+                transition={spring.snappy}
+                className="flex text-label-secondary rtl:-scale-x-100"
+              >
+                <ChevronRightIcon size={16} strokeWidth={2.2} />
+              </motion.span>
+              <span
+                className={cn(
+                  "min-w-0 grow truncate text-[15px] font-semibold",
+                  number === playing && "text-accent-text",
+                )}
+              >
+                {section.title}
+              </span>
+              <span className="shrink-0 text-[13px] text-label-tertiary tabular-nums">
+                {total ? clock(total / 1000) : section.tracks.length}
+              </span>
+            </button>
+            <AnimatePresence initial={false}>
+              {expanded && (
+                <motion.ol
+                  initial={{ height: 0, opacity: 0 }}
+                  animate={{ height: "auto", opacity: 1 }}
+                  exit={{ height: 0, opacity: 0 }}
+                  transition={spring.smooth}
+                  className="flex flex-col overflow-hidden ps-4"
+                >
+                  {rows(section)}
+                </motion.ol>
+              )}
+            </AnimatePresence>
+          </li>
+        );
+      })}
+    </ol>
   );
 }

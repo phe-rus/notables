@@ -414,10 +414,96 @@ export const pt: Messages = {
     noOthers:
       "Ainda não há outros {kinds} para adicionar. Os que escrever na sua biblioteca aparecem aqui.",
     part: {
-      defaultTitle: "Parte {number}",
-      startHere: "Começar uma parte aqui",
       title: "Título da parte",
-      remove: "Remover a parte",
+    },
+    unit: {
+      part: {
+        one: "Parte",
+        other: "Partes",
+      },
+      volume: {
+        one: "Volume",
+        other: "Volumes",
+      },
+      season: {
+        one: "Temporada",
+        other: "Temporadas",
+      },
+      arc: {
+        one: "Arco",
+        other: "Arcos",
+      },
+      book: {
+        one: "Livro",
+        other: "Livros",
+      },
+      release: {
+        one: "Lançamento",
+        other: "Lançamentos",
+      },
+      spinoff: {
+        one: "Spin-off",
+        other: "Spin-offs",
+      },
+      collection: {
+        one: "Coleção",
+        other: "Coleções",
+      },
+      disc: {
+        one: "Disco",
+        other: "Discos",
+      },
+      chapter: {
+        one: "Capítulo",
+        other: "Capítulos",
+      },
+      episode: {
+        one: "Episódio",
+        other: "Episódios",
+      },
+      track: {
+        one: "Faixa",
+        other: "Faixas",
+      },
+      issue: {
+        one: "Edição",
+        other: "Edições",
+      },
+      page: {
+        one: "Página",
+        other: "Páginas",
+      },
+      file: {
+        one: "Arquivo",
+        other: "Arquivos",
+      },
+    },
+    structure: {
+      groups: "Grupos",
+      entries: "Itens",
+      custom: "Personalizado…",
+      customName: "Sua própria palavra",
+    },
+    group: {
+      new: "Novo: {name}…",
+      addHere: "Adicionar arquivos aqui…",
+      addFolder: "Adicionar pasta…",
+      rename: "Renomear",
+      ungroup: "Desagrupar",
+      delete: "Apagar com o conteúdo…",
+      deleteTitle: "Apagar “{title}”?",
+      deleteBody: {
+        one: "Seu {count} item vai para Apagados recentemente.",
+        other: "Seus {count} itens vão para Apagados recentemente.",
+      },
+      moveTo: "Mover para",
+      outside: "Fora de qualquer grupo",
+      startHere: "Começar aqui: {name}",
+      count: {
+        one: "{count} item",
+        other: "{count} itens",
+      },
+      empty: "Nada neste grupo neste dispositivo.",
     },
     franchise: {
       add: "Adicionar a uma franquia…",
@@ -482,7 +568,7 @@ export const pt: Messages = {
     drawPage: "Desenhar uma página",
     addAudio: "Adicionar ficheiros de áudio…",
     noAudio: "Ainda não há áudio. Adicione ficheiros de áudio para os ouvir aqui.",
-    newChapter: "Novo capítulo",
+    newEntry: "Novo: {name}",
     addFromFiles: "Adicionar de ficheiros…",
     chapters: "Capítulos",
     noPages: "Ainda sem páginas. Desenhe a primeira, ou adicione páginas a partir de imagens.",

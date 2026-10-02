@@ -421,10 +421,96 @@ export const sw: Messages = {
     noOthers:
       "Bado hakuna {kinds} nyingine za kuongeza. Unazoandika kwenye maktaba yako huonekana hapa.",
     part: {
-      defaultTitle: "Sehemu ya {number}",
-      startHere: "Anza sehemu hapa",
       title: "Jina la sehemu",
-      remove: "Ondoa sehemu",
+    },
+    unit: {
+      part: {
+        one: "Sehemu",
+        other: "Sehemu",
+      },
+      volume: {
+        one: "Juzuu",
+        other: "Juzuu",
+      },
+      season: {
+        one: "Msimu",
+        other: "Misimu",
+      },
+      arc: {
+        one: "Sakata",
+        other: "Masakata",
+      },
+      book: {
+        one: "Kitabu",
+        other: "Vitabu",
+      },
+      release: {
+        one: "Toleo",
+        other: "Matoleo",
+      },
+      spinoff: {
+        one: "Hadithi tanzu",
+        other: "Hadithi tanzu",
+      },
+      collection: {
+        one: "Mkusanyiko",
+        other: "Mikusanyiko",
+      },
+      disc: {
+        one: "Diski",
+        other: "Diski",
+      },
+      chapter: {
+        one: "Sura",
+        other: "Sura",
+      },
+      episode: {
+        one: "Kipindi",
+        other: "Vipindi",
+      },
+      track: {
+        one: "Wimbo",
+        other: "Nyimbo",
+      },
+      issue: {
+        one: "Nakala",
+        other: "Nakala",
+      },
+      page: {
+        one: "Ukurasa",
+        other: "Kurasa",
+      },
+      file: {
+        one: "Faili",
+        other: "Faili",
+      },
+    },
+    structure: {
+      groups: "Makundi",
+      entries: "Vipengele",
+      custom: "Jina lako…",
+      customName: "Neno lako mwenyewe",
+    },
+    group: {
+      new: "{name} mpya…",
+      addHere: "Ongeza faili hapa…",
+      addFolder: "Ongeza folda…",
+      rename: "Badilisha jina",
+      ungroup: "Ondoa kundi",
+      delete: "Futa pamoja na yaliyomo…",
+      deleteTitle: "Futa “{title}”?",
+      deleteBody: {
+        one: "Kipengele {count} kitahamia Vilivyofutwa Hivi Karibuni.",
+        other: "Vipengele {count} vitahamia Vilivyofutwa Hivi Karibuni.",
+      },
+      moveTo: "Hamishia",
+      outside: "Nje ya kundi lolote",
+      startHere: "Anzisha {name} hapa",
+      count: {
+        one: "Kipengele {count}",
+        other: "Vipengele {count}",
+      },
+      empty: "Hakuna kitu katika kundi hili kwenye kifaa hiki.",
     },
     franchise: {
       add: "Ongeza kwenye franchise…",
@@ -489,7 +575,7 @@ export const sw: Messages = {
     drawPage: "Chora ukurasa",
     addAudio: "Ongeza faili za sauti…",
     noAudio: "Bado hakuna sauti. Ongeza faili za sauti ili uzisikilize hapa.",
-    newChapter: "Sura mpya",
+    newEntry: "{name} mpya",
     addFromFiles: "Ongeza kutoka faili…",
     chapters: "Sura",
     noPages: "Bado hakuna kurasa. Chora ya kwanza, au ongeza kurasa kutoka faili za picha.",

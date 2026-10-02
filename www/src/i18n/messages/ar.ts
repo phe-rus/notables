@@ -435,10 +435,96 @@ export const ar: Messages = {
     nothingMatches: "لا توجد نتائج.",
     noOthers: "لا توجد {kinds} أخرى لإضافتها بعد. ما تكتبه في مكتبتك يظهر هنا.",
     part: {
-      defaultTitle: "الجزء {number}",
-      startHere: "ابدأ جزءًا هنا",
       title: "عنوان الجزء",
-      remove: "إزالة الجزء",
+    },
+    unit: {
+      part: {
+        one: "جزء",
+        other: "أجزاء",
+      },
+      volume: {
+        one: "مجلد",
+        other: "مجلدات",
+      },
+      season: {
+        one: "موسم",
+        other: "مواسم",
+      },
+      arc: {
+        one: "قوس",
+        other: "أقواس",
+      },
+      book: {
+        one: "كتاب",
+        other: "كتب",
+      },
+      release: {
+        one: "إصدار",
+        other: "إصدارات",
+      },
+      spinoff: {
+        one: "عمل جانبي",
+        other: "أعمال جانبية",
+      },
+      collection: {
+        one: "مجموعة",
+        other: "مجموعات",
+      },
+      disc: {
+        one: "قرص",
+        other: "أقراص",
+      },
+      chapter: {
+        one: "فصل",
+        other: "فصول",
+      },
+      episode: {
+        one: "حلقة",
+        other: "حلقات",
+      },
+      track: {
+        one: "مقطع",
+        other: "مقاطع",
+      },
+      issue: {
+        one: "عدد",
+        other: "أعداد",
+      },
+      page: {
+        one: "صفحة",
+        other: "صفحات",
+      },
+      file: {
+        one: "ملف",
+        other: "ملفات",
+      },
+    },
+    structure: {
+      groups: "المجموعات",
+      entries: "العناصر",
+      custom: "مخصص…",
+      customName: "كلمتك الخاصة",
+    },
+    group: {
+      new: "{name} جديد…",
+      addHere: "إضافة ملفات هنا…",
+      addFolder: "إضافة مجلد…",
+      rename: "إعادة التسمية",
+      ungroup: "فك التجميع",
+      delete: "حذف مع المحتوى…",
+      deleteTitle: "حذف «{title}»؟",
+      deleteBody: {
+        one: "ينتقل عنصره الوحيد إلى المحذوفة مؤخرًا.",
+        other: "تنتقل عناصره ({count}) إلى المحذوفة مؤخرًا.",
+      },
+      moveTo: "نقل إلى",
+      outside: "خارج أي مجموعة",
+      startHere: "ابدأ {name} هنا",
+      count: {
+        one: "عنصر واحد",
+        other: "{count} عناصر",
+      },
+      empty: "لا شيء في هذه المجموعة على هذا الجهاز.",
     },
     franchise: {
       add: "إضافة إلى سلسلة عالم…",
@@ -526,7 +612,7 @@ export const ar: Messages = {
     drawPage: "ارسم صفحة",
     addAudio: "إضافة ملفات صوتية…",
     noAudio: "لا يوجد صوت بعد. أضف ملفات صوتية لتستمع إليها هنا.",
-    newChapter: "فصل جديد",
+    newEntry: "{name} جديد",
     addFromFiles: "إضافة من ملفات…",
     chapters: "الفصول",
     noPages: "لا صفحات بعد. ارسم الأولى، أو أضف صفحات من ملفات صور.",

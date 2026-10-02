@@ -1,5 +1,6 @@
 import { AnimatePresence, motion } from "motion/react";
 import { useEffect, useLayoutEffect, useRef, useState, useSyncExternalStore } from "react";
+import { FLOATING_LAYER } from "../../hooks/use-dismiss";
 import { CheckIcon } from "../../icons/icons";
 import { cn } from "../../lib/class-names";
 import { spring } from "../../motion/transitions";
@@ -92,6 +93,7 @@ function Menu({ menu }: { menu: OpenMenu }) {
     <motion.div
       ref={ref}
       role="menu"
+      {...{ [FLOATING_LAYER]: "" }}
       className={cn(
         "glass-menu fixed z-[75] flex min-w-[200px] max-w-[280px] flex-col rounded-[16px] p-1.5",
         menu.touch && "min-w-[240px]",

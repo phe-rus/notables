@@ -409,10 +409,96 @@ export const en = {
     nothingMatches: "Nothing matches.",
     noOthers: "No other {kinds} to add yet. Ones you write in your library show up here.",
     part: {
-      defaultTitle: "Part {number}",
-      startHere: "Start Part Here",
       title: "Part title",
-      remove: "Remove part",
+    },
+    unit: {
+      part: {
+        one: "Part",
+        other: "Parts",
+      },
+      volume: {
+        one: "Volume",
+        other: "Volumes",
+      },
+      season: {
+        one: "Season",
+        other: "Seasons",
+      },
+      arc: {
+        one: "Arc",
+        other: "Arcs",
+      },
+      book: {
+        one: "Book",
+        other: "Books",
+      },
+      release: {
+        one: "Release",
+        other: "Releases",
+      },
+      spinoff: {
+        one: "Spin-off",
+        other: "Spin-offs",
+      },
+      collection: {
+        one: "Collection",
+        other: "Collections",
+      },
+      disc: {
+        one: "Disc",
+        other: "Discs",
+      },
+      chapter: {
+        one: "Chapter",
+        other: "Chapters",
+      },
+      episode: {
+        one: "Episode",
+        other: "Episodes",
+      },
+      track: {
+        one: "Track",
+        other: "Tracks",
+      },
+      issue: {
+        one: "Issue",
+        other: "Issues",
+      },
+      page: {
+        one: "Page",
+        other: "Pages",
+      },
+      file: {
+        one: "File",
+        other: "Files",
+      },
+    },
+    structure: {
+      groups: "Groups",
+      entries: "Items",
+      custom: "Custom…",
+      customName: "Your own word",
+    },
+    group: {
+      new: "New {name}…",
+      addHere: "Add Files Here…",
+      addFolder: "Add Folder…",
+      rename: "Rename",
+      ungroup: "Ungroup",
+      delete: "Delete with Contents…",
+      deleteTitle: "Delete “{title}”?",
+      deleteBody: {
+        one: "Its {count} item moves to Recently Deleted.",
+        other: "Its {count} items move to Recently Deleted.",
+      },
+      moveTo: "Move To",
+      outside: "Outside Any Group",
+      startHere: "Start {name} Here",
+      count: {
+        one: "{count} item",
+        other: "{count} items",
+      },
+      empty: "Nothing in this group on this device.",
     },
     franchise: {
       add: "Add to Franchise…",
@@ -477,7 +563,7 @@ export const en = {
     drawPage: "Draw a page",
     addAudio: "Add audio files…",
     noAudio: "No audio yet. Add audio files to listen to them here.",
-    newChapter: "New chapter",
+    newEntry: "New {name}",
     addFromFiles: "Add from files…",
     chapters: "Chapters",
     noPages: "No pages yet. Draw the first one, or add pages from image files.",

@@ -10,6 +10,7 @@ import {
   useState,
 } from "react";
 import { createPortal } from "react-dom";
+import { FLOATING_LAYER } from "../../hooks/use-dismiss";
 import { CheckIcon, SearchIcon, SelectorIcon } from "../../icons/icons";
 import { cn } from "../../lib/class-names";
 import { spring } from "../../motion/transitions";
@@ -285,6 +286,7 @@ function SelectList<T extends string>({
         transformOrigin: placement.above ? "50% 100%" : "50% 0%",
       }}
       className="glass-menu fixed z-[80] flex flex-col overflow-hidden rounded-[16px]"
+      {...{ [FLOATING_LAYER]: "" }}
       onKeyDown={onKeyDown}
     >
       {searchable && (
