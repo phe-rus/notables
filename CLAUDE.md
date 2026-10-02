@@ -86,9 +86,10 @@ Shipped and tested in the browser (Playwright) unless noted:
 - `notables://` deep links; splash and first-run setup.
 - Calendar: plans, reminders (ticked off per day), birthdays and
   anniversaries (year optional, two alerts), deadlines, trips over
-  several days; Day/Week hour grids with drag to move and resize, Month,
-  a continuous Year scroll and Years paging over 1 to 9999; the title
-  zooms out, a tap zooms in. Public holidays per country from
+  several days; Day/Week hour grids (drag to move and resize, pinch to
+  zoom), continuous Month and Year scrolls, Years from 1990; the title
+  zooms out, a tap zooms in, Today zooms home; Type It... adds from a
+  sentence (English). Public holidays per country from
   `date-holidays`, computed on the device. Phones schedule natively (not
   yet tried on a device).
 - Books contents are playlists: groups (parts) and entries carry each
@@ -133,9 +134,8 @@ Shipped and tested in the browser (Playwright) unless noted:
 
 ## Next
 
-- Calendar: Month as a continuous scroll too, pinch to zoom hours, and
-  quick add by typing a sentence (removed for now, it cluttered the
-  header).
+- Mobile testing: calendar pinch zoom, month and year scrolling, the
+  note top bar and book contents on real phones.
 - Translate the remaining screens.
 - Whisper while recording (streaming, native).
 - Pherus PassID: optional sign-in, cloud backup, and a relay for sharing
