@@ -1,5 +1,6 @@
 import { Switch } from "@notables/ui";
 import { useEffect, useState } from "react";
+import { t } from "../../../i18n/i18n";
 import {
   type PermissionState,
   permissionState,
@@ -9,12 +10,13 @@ import { SettingsGroup, SettingsRow } from "../../settings/components/settings-c
 import { alertFeedback } from "../lib/alert-feedback";
 import { setAlertSettings, useAlertSettings } from "../lib/alert-settings";
 
-const permissionWords: Record<PermissionState, string> = {
-  granted: "Allowed",
-  denied: "Turned off in system settings",
-  prompt: "Not asked yet",
-  unsupported: "Not available here",
-};
+const permissionWords = (state: PermissionState): string =>
+  ({
+    granted: t("reminders.permissionGranted"),
+    denied: t("reminders.permissionDenied"),
+    prompt: t("reminders.permissionPrompt"),
+    unsupported: t("reminders.permissionUnsupported"),
+  })[state];
 
 /** How calendar reminders reach you on this device. */
 export function ReminderSettingsSection() {
@@ -26,13 +28,10 @@ export function ReminderSettingsSection() {
   }, []);
 
   return (
-    <SettingsGroup
-      title="Reminders"
-      footer="Reminders from your calendar. Phones deliver them even when Notables is closed; on computers and in the browser, Notables needs to be open."
-    >
+    <SettingsGroup title={t("reminders.title")} footer={t("reminders.footer")}>
       <SettingsRow
-        label="Notifications"
-        description={permission ? permissionWords[permission] : " "}
+        label={t("reminders.notifications")}
+        description={permission ? permissionWords(permission) : " "}
       >
         {permission === "prompt" ? (
           <button
@@ -40,7 +39,7 @@ export function ReminderSettingsSection() {
             onClick={() => void requestPermission("notifications").then(setPermission)}
             className="text-[14px] font-medium text-accent-text"
           >
-            Allow
+            {t("common.allow")}
           </button>
         ) : (
           <button
@@ -48,16 +47,20 @@ export function ReminderSettingsSection() {
             onClick={alertFeedback}
             className="text-[14px] font-medium text-accent-text"
           >
-            Try it
+            {t("reminders.tryIt")}
           </button>
         )}
       </SettingsRow>
-      <SettingsRow label="Sound" description="A soft chime when a reminder goes off.">
-        <Switch label="Sound" checked={sound} onChange={(on) => setAlertSettings({ sound: on })} />
-      </SettingsRow>
-      <SettingsRow label="Vibrate" description="On devices that can.">
+      <SettingsRow label={t("reminders.sound")} description={t("reminders.soundHint")}>
         <Switch
-          label="Vibrate"
+          label={t("reminders.sound")}
+          checked={sound}
+          onChange={(on) => setAlertSettings({ sound: on })}
+        />
+      </SettingsRow>
+      <SettingsRow label={t("reminders.vibrate")} description={t("reminders.vibrateHint")}>
+        <Switch
+          label={t("reminders.vibrate")}
           checked={haptics}
           onChange={(on) => setAlertSettings({ haptics: on })}
         />

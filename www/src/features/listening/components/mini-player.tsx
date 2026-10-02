@@ -1,6 +1,7 @@
 import { CloseIcon, cn, IconButton, PauseIcon, PlayIcon, spring } from "@notables/ui";
 import { Link } from "@tanstack/react-router";
 import { AnimatePresence, motion } from "motion/react";
+import { t } from "../../../i18n/i18n";
 import { BookCover } from "../../books/components/book-cover";
 import { useBook } from "../../books/store/book-store";
 import { closeAudiobook, useListening } from "../store/listening-store";
@@ -20,7 +21,7 @@ export function MiniPlayer({ className }: { className?: string }) {
       {show && book && playback && (
         <motion.div
           role="region"
-          aria-label="Now playing"
+          aria-label={t("listening.nowPlaying")}
           initial={{ y: 24, opacity: 0 }}
           animate={{ y: 0, opacity: 1 }}
           exit={{ y: 24, opacity: 0 }}
@@ -46,14 +47,17 @@ export function MiniPlayer({ className }: { className?: string }) {
                 {playback.track?.title}
               </span>
               <span className="truncate text-[12px] text-label-secondary">
-                {book.title || "Audiobook"}
+                {book.title || t("common.untitled")}
               </span>
             </span>
           </Link>
-          <IconButton label={playback.playing ? "Pause" : "Play"} onClick={playback.toggle}>
+          <IconButton
+            label={playback.playing ? t("listening.pause") : t("listening.play")}
+            onClick={playback.toggle}
+          >
             {playback.playing ? <PauseIcon size={20} /> : <PlayIcon size={20} />}
           </IconButton>
-          <IconButton label="Stop listening" onClick={closeAudiobook}>
+          <IconButton label={t("listening.stopListening")} onClick={closeAudiobook}>
             <CloseIcon size={17} />
           </IconButton>
           <span

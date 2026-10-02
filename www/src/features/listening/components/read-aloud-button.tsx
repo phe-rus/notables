@@ -2,6 +2,7 @@ import { cn, HeadphonesIcon, IconButton, toast } from "@notables/ui";
 import { AnimatePresence } from "motion/react";
 import { type RefObject, useEffect, useRef } from "react";
 import { createPortal } from "react-dom";
+import { t } from "../../../i18n/i18n";
 import { buildScript, type ScriptLine } from "../lib/narration-script";
 import { clearReading, paintReading, rangesForLine } from "../lib/reading-highlight";
 import { useNarration } from "../lib/use-narration";
@@ -21,7 +22,7 @@ export function ReadAloudButton({
   className?: string;
 }) {
   const lang = document.documentElement.lang || navigator.language || "en";
-  const narration = useNarration(lang, title || "Note");
+  const narration = useNarration(lang, title || t("notes.newNote"));
   const script = useRef<ScriptLine[]>([]);
   const index = narration.state?.index ?? -1;
 
@@ -46,7 +47,7 @@ export function ReadAloudButton({
     if (!element) return;
     const lines = buildScript(element, lang, "data-read-aloud-section");
     if (lines.length === 0) {
-      toast("Nothing to read aloud yet");
+      toast(t("listening.nothingToRead"));
       return;
     }
     script.current = lines;
@@ -56,7 +57,7 @@ export function ReadAloudButton({
         0,
       )
       .catch((error: unknown) =>
-        toast.error("Couldn’t read aloud", {
+        toast.error(t("listening.couldNotRead"), {
           description: error instanceof Error ? error.message : undefined,
         }),
       );
@@ -65,7 +66,7 @@ export function ReadAloudButton({
   return (
     <>
       <IconButton
-        label={narration.state ? "Stop reading aloud" : "Read aloud"}
+        label={narration.state ? t("notes.stopReading") : t("notes.readAloud")}
         tone={narration.state ? "accent" : "default"}
         className={cn(narration.state && "bg-accent/15", className)}
         onClick={() => (narration.state ? narration.close() : start())}

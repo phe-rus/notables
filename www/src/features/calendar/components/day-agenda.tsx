@@ -17,16 +17,18 @@ import {
   useContextMenu,
 } from "@notables/ui";
 import type { ReactNode } from "react";
+import { locale, t } from "../../../i18n/i18n";
 import { describeDay, formatClock } from "../lib/describe-alert";
 import { getCalendarStore } from "../store/calendar-store";
 
-const longDate = new Intl.DateTimeFormat(undefined, {
-  weekday: "long",
-  day: "numeric",
-  month: "long",
-  year: "numeric",
-  timeZone: "UTC",
-});
+const longDate = () =>
+  new Intl.DateTimeFormat(locale(), {
+    weekday: "long",
+    day: "numeric",
+    month: "long",
+    year: "numeric",
+    timeZone: "UTC",
+  });
 
 const kindIcons: Record<CalendarEventKind, ReactNode> = {
   plan: <CalendarIcon size={14} />,
@@ -68,27 +70,27 @@ export function DayAgenda({
 
   return (
     <div className="flex flex-col gap-6 px-4 pt-4 pb-32 md:px-5 md:pb-8">
-      <section aria-label="Selected day" className="flex flex-col gap-2">
+      <section aria-label={t("calendar.day")} className="flex flex-col gap-2">
         <div className="flex flex-col">
           <h2 className="text-[17px] font-semibold tracking-tight">
             {describeDay(day, new Date(`${today}T12:00:00`))}
           </h2>
           <p className="text-[13px] text-label-secondary">
-            {longDate.format(new Date(`${day}T00:00:00Z`))}
+            {longDate().format(new Date(`${day}T00:00:00Z`))}
           </p>
         </div>
         {dayEvents.length === 0 ? (
           <div className="flex flex-col gap-3 rounded-[16px] bg-fill/40 px-4 py-4">
-            <p className="text-[14px] text-label-secondary">Nothing planned.</p>
+            <p className="text-[14px] text-label-secondary">{t("calendar.nothingPlanned")}</p>
             <div className="flex flex-wrap gap-1.5">
               <QuickAdd icon={kindIcons.plan} onClick={() => onAdd("plan")}>
-                Plan
+                {t("calendar.kind.plan")}
               </QuickAdd>
               <QuickAdd icon={kindIcons.reminder} onClick={() => onAdd("reminder")}>
-                Reminder
+                {t("calendar.kind.reminder")}
               </QuickAdd>
               <QuickAdd icon={kindIcons.birthday} onClick={() => onAdd("birthday")}>
-                Birthday
+                {t("calendar.kind.birthday")}
               </QuickAdd>
             </div>
           </div>
@@ -104,8 +106,10 @@ export function DayAgenda({
       </section>
 
       {upcoming.length > 0 && (
-        <section aria-label="Coming up" className="flex flex-col gap-2">
-          <h2 className="text-[13px] font-semibold text-label-secondary">Coming up</h2>
+        <section aria-label={t("calendar.comingUp")} className="flex flex-col gap-2">
+          <h2 className="text-[13px] font-semibold text-label-secondary">
+            {t("calendar.comingUp")}
+          </h2>
           <ul className="flex flex-col gap-1">
             {upcoming.map(({ event, on }) => (
               <li key={`${event.id}:${on}`}>
@@ -154,26 +158,29 @@ function EventRow({
   const store = getCalendarStore();
   const age = ageOn(event, day);
   const menu = useContextMenu(() => [
-    { label: "Edit", onSelect: onOpen },
+    { label: t("common.edit"), onSelect: onOpen },
     ...(event.repeat !== "never"
-      ? [{ label: "Skip this day", onSelect: () => store.skip(event.id, day) }]
+      ? [{ label: t("calendar.skipDay"), onSelect: () => store.skip(event.id, day) }]
       : []),
     "divider" as const,
     {
-      label: event.repeat !== "never" ? "Delete every time" : "Delete",
+      label: event.repeat !== "never" ? t("calendar.deleteEvery") : t("common.delete"),
       destructive: true,
       onSelect: () => {
         const removed = store.remove(event.id);
         if (removed) {
-          toast("Deleted", {
+          toast(t("common.deleted"), {
             description: removed.title || undefined,
-            action: { label: "Undo", onClick: () => store.save(removed) },
+            action: { label: t("common.undo"), onClick: () => store.save(removed) },
           });
         }
       },
     },
   ]);
-  const when = [showDay ? describeDay(day) : null, event.time ? formatClock(event.time) : "All day"]
+  const when = [
+    showDay ? describeDay(day) : null,
+    event.time ? formatClock(event.time) : t("calendar.allDay"),
+  ]
     .filter(Boolean)
     .join(" · ");
 
@@ -188,13 +195,13 @@ function EventRow({
       <span className="flex min-w-0 grow flex-col gap-0.5">
         <span className="truncate text-[15px] font-medium">
           {event.kind === "birthday"
-            ? `${event.title || "Someone"}’s birthday`
-            : event.title || "Untitled"}
+            ? t("calendar.birthdayOf", { name: event.title || t("calendar.someone") })
+            : event.title || t("common.untitled")}
         </span>
         <span className="flex items-center gap-1.5 text-[12.5px] text-label-secondary">
           <span className="text-label-tertiary">{kindIcons[event.kind]}</span>
           {when}
-          {age && <span>· turning {age}</span>}
+          {age && <span>· {t("calendar.turning", { age })}</span>}
         </span>
       </span>
       <span className="flex shrink-0 items-center gap-1 self-center text-label-tertiary">

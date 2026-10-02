@@ -20,6 +20,7 @@ import {
 import { Link, useNavigate } from "@tanstack/react-router";
 import { motion } from "motion/react";
 import { useCallback, useRef, useState } from "react";
+import { t } from "../../../i18n/i18n";
 import { getDeviceId } from "../../../platform/device-identity";
 import { saveNoteContent } from "../../../platform/storage/note-content-cache";
 import { AiAssist } from "../../ai/components/ai-assist";
@@ -130,14 +131,14 @@ function NoteEditorScreen({ entry, viewId }: { entry: LibraryEntry; viewId?: str
             <ReadAloudButton root={articleRef} title={entry.title} />
             <AiAssist />
             <IconButton
-              label={entry.pinned ? "Unpin" : "Pin"}
+              label={entry.pinned ? t("notes.unpin") : t("notes.pin")}
               tone={entry.pinned ? "accent" : "default"}
               onClick={() => getLibrary().update(entry.id, { pinned: !entry.pinned })}
             >
               <PinIcon size={19} />
             </IconButton>
             <IconButton
-              label="Font"
+              label={t("notes.font")}
               onClick={(event) => {
                 const rect = event.currentTarget.getBoundingClientRect();
                 openContextMenu(rect.left, rect.bottom + 6, noteFontItems(entry));
@@ -147,7 +148,7 @@ function NoteEditorScreen({ entry, viewId }: { entry: LibraryEntry; viewId?: str
                 Aa
               </span>
             </IconButton>
-            <IconButton label="Delete note" onClick={remove}>
+            <IconButton label={t("notes.deleteNote")} onClick={remove}>
               <TrashIcon size={19} />
             </IconButton>
             <Button
@@ -177,8 +178,8 @@ function NoteEditorScreen({ entry, viewId }: { entry: LibraryEntry; viewId?: str
             </p>
             <div className="relative">
               <NotesEditorContent
-                label={entry.title || "New note"}
-                placeholder="Title"
+                label={entry.title || t("notes.newNote")}
+                placeholder={t("notes.title")}
                 onDocumentChange={onDocumentChange}
               />
             </div>

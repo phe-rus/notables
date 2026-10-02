@@ -1,5 +1,6 @@
 import { Button, cn, toast } from "@notables/ui";
 import { useEffect, useRef, useState } from "react";
+import { t } from "../../../i18n/i18n";
 import { canTranscribeRecordings, transcribeRecording } from "../lib/transcribe-recording";
 import { phraseAt, useTimedTranscript } from "../store/transcript-store";
 
@@ -41,11 +42,11 @@ export function ReadAlong({
     setProgress({ fraction: 0, status: "Getting ready…" });
     try {
       await transcribeRecording(src, (fraction, status) => setProgress({ fraction, status }));
-      toast.success("Transcript ready", {
-        description: "The words now follow along as you listen.",
+      toast.success(t("listening.transcriptReady"), {
+        description: t("listening.transcriptReadyBody"),
       });
     } catch (error) {
-      toast.error("Couldn’t transcribe this chapter", {
+      toast.error(t("listening.couldNotTranscribe"), {
         description: error instanceof Error ? error.message : undefined,
       });
     } finally {
@@ -60,7 +61,7 @@ export function ReadAlong({
       {working && (
         <div className="flex flex-col gap-1.5 rounded-[14px] bg-fill/50 px-3.5 py-3">
           <div className="flex justify-between text-[13px] text-label-secondary">
-            <span>{progress?.status ?? "Transcribing…"}</span>
+            <span>{progress?.status ?? t("listening.transcribing")}</span>
             {progress?.fraction != null && (
               <span className="tabular-nums">{Math.round(progress.fraction * 100)}%</span>
             )}
@@ -75,7 +76,7 @@ export function ReadAlong({
       )}
 
       {phrases.length > 0 ? (
-        <ol ref={list} className="flex flex-col gap-0.5" aria-label="Transcript">
+        <ol ref={list} className="flex flex-col gap-0.5" aria-label={t("listening.transcript")}>
           {phrases.map(([start, , text], index) => (
             <li key={`${start}-${index}`}>
               <button
@@ -106,12 +107,12 @@ export function ReadAlong({
         <div className="flex flex-col items-start gap-2 px-3">
           <p className="text-[14px] text-label-secondary">
             {canTranscribeRecordings()
-              ? "Read along: Notables can write out this chapter on this device, and highlight each line as it’s spoken."
-              : "Read along works with transcripts made in the Notables app on your computer or phone."}
+              ? t("listening.readAlongHint")
+              : t("listening.readAlongWebHint")}
           </p>
           {canTranscribeRecordings() && (
             <Button variant="secondary" onClick={() => void transcribe()}>
-              Transcribe this chapter
+              {t("listening.transcribe")}
             </Button>
           )}
         </div>

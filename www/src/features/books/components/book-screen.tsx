@@ -16,6 +16,7 @@ import {
 import { Link, useNavigate } from "@tanstack/react-router";
 import { AnimatePresence, motion } from "motion/react";
 import { type ReactNode, useDeferredValue, useMemo, useRef, useState } from "react";
+import { t } from "../../../i18n/i18n";
 import { IMPORT_ACCEPT, withPath } from "../../imports/lib/picked-files";
 import { appendToBook } from "../../imports/lib/run-import";
 import { noteKindPlural } from "../../library/model/note-kind-labels";
@@ -192,7 +193,7 @@ function ChapterList({ book, chapters }: { book: BookEntry; chapters: LibraryEnt
       {chapters.length === 0 && (
         <p className="text-[15px] text-label-secondary">
           {drawn
-            ? "No pages yet. Draw the first one, or add pages from image files."
+            ? t("books.noPages")
             : `No chapters yet. Start writing one, or add ${noteKindPlural[kind]} you’ve already written.`}
         </p>
       )}
@@ -248,19 +249,19 @@ function ChapterList({ book, chapters }: { book: BookEntry; chapters: LibraryEnt
         {drawn && (
           <Button variant="primary" disabled={starting} onClick={drawPage}>
             <CanvasIcon size={16} />
-            Draw a page
+            {t("books.drawPage")}
           </Button>
         )}
         <Button variant={drawn ? "secondary" : "primary"} disabled={starting} onClick={newChapter}>
           <PlusIcon size={16} strokeWidth={2.2} />
-          New chapter
+          {t("books.newChapter")}
         </Button>
         <Button
           variant="secondary"
           disabled={adding !== null}
           onClick={() => filesInput.current?.click()}
         >
-          Add from files…
+          {t("books.addFromFiles")}
         </Button>
         <input
           ref={filesInput}

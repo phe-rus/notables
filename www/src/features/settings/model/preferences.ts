@@ -1,4 +1,5 @@
 import { type AccentId, defaultAccent, isAccentId } from "@notables/tokens";
+import { t } from "../../../i18n/i18n";
 import { type NoteFont, noteFonts } from "../../library/model/note-fonts";
 import {
   isSidebarItemId,
@@ -67,10 +68,25 @@ export const defaultPreferences: Preferences = {
   },
 };
 
-export const textSizes: Record<TextSize, { label: string; bodyPx: number }> = {
-  small: { label: "Small", bodyPx: 18 },
-  medium: { label: "Default", bodyPx: 20 },
-  large: { label: "Large", bodyPx: 23 },
+export const textSizes: Record<TextSize, { readonly label: string; bodyPx: number }> = {
+  small: {
+    get label() {
+      return t("settings.textSmall");
+    },
+    bodyPx: 18,
+  },
+  medium: {
+    get label() {
+      return t("settings.textMedium");
+    },
+    bodyPx: 20,
+  },
+  large: {
+    get label() {
+      return t("settings.textLarge");
+    },
+    bodyPx: 23,
+  },
 };
 
 const oneOf = <T extends string>(value: unknown, options: readonly T[], fallback: T): T =>

@@ -17,6 +17,7 @@ import {
 import { useNavigate } from "@tanstack/react-router";
 import { useEffect, useMemo, useState } from "react";
 import { CollapsedSidebarControls } from "../../../components/window/collapsed-sidebar-controls";
+import { locale, t } from "../../../i18n/i18n";
 import { usePreferences } from "../../settings/store/preferences-store";
 import { firstWeekday, monthGrid } from "../lib/month-grid";
 import { getCalendarStore, useCalendarEvents } from "../store/calendar-store";
@@ -24,11 +25,12 @@ import { byStart, DayAgenda } from "./day-agenda";
 import { EventSheet, type EventSheetTarget } from "./event-sheet";
 import { MonthView } from "./month-view";
 
-const monthFormat = new Intl.DateTimeFormat(undefined, {
-  month: "long",
-  year: "numeric",
-  timeZone: "UTC",
-});
+const monthFormat = () =>
+  new Intl.DateTimeFormat(locale(), {
+    month: "long",
+    year: "numeric",
+    timeZone: "UTC",
+  });
 
 /** Plans, birthdays and reminders on a month, with the chosen day beside it. */
 export function CalendarScreen({
@@ -93,7 +95,7 @@ export function CalendarScreen({
     setSheet({ event: getCalendarStore().draft(kind, selected), day: selected, isNew: true });
   const open = (event: CalendarEvent, day: Day) => setSheet({ event, day, isNew: false });
 
-  const label = monthFormat.format(new Date(Date.UTC(shown.year, shown.month, 1)));
+  const label = monthFormat().format(new Date(Date.UTC(shown.year, shown.month, 1)));
   const showingToday = selected === today && Number(today.slice(5, 7)) - 1 === shown.month;
 
   return (
@@ -105,7 +107,7 @@ export function CalendarScreen({
         {collapsed && <CollapsedSidebarControls />}
         <div data-tauri-drag-region className="flex items-center justify-between gap-2">
           <div className="flex min-w-0 items-center gap-1">
-            <IconButton label="Show library" className="lg:hidden" onClick={onOpenSidebar}>
+            <IconButton label={t("nav.showLibrary")} className="lg:hidden" onClick={onOpenSidebar}>
               <SidebarIcon size={20} />
             </IconButton>
             <h1 className="truncate text-[22px] font-bold tracking-tight">{label}</h1>
@@ -120,16 +122,16 @@ export function CalendarScreen({
               }}
               className="rounded-full px-3 py-1.5 text-[14px] font-medium text-accent-text transition-colors hover:bg-fill/60 disabled:text-label-tertiary disabled:hover:bg-transparent"
             >
-              Today
+              {t("calendar.today")}
             </button>
-            <IconButton label="Previous month" onClick={() => shift(-1)}>
+            <IconButton label={t("calendar.previousMonth")} onClick={() => shift(-1)}>
               <ChevronLeftIcon size={18} />
             </IconButton>
-            <IconButton label="Next month" onClick={() => shift(1)}>
+            <IconButton label={t("calendar.nextMonth")} onClick={() => shift(1)}>
               <ChevronRightIcon size={18} />
             </IconButton>
             <IconButton
-              label="New plan, birthday or reminder"
+              label={t("calendar.newEvent")}
               tone="accent"
               onClick={(event) => {
                 const rect = event.currentTarget.getBoundingClientRect();
@@ -137,7 +139,7 @@ export function CalendarScreen({
                   rect.right - 200,
                   rect.bottom + 6,
                   (["plan", "reminder", "birthday"] as const).map((kind) => ({
-                    label: `New ${calendarKindLabels[kind].toLowerCase()}`,
+                    label: t(`calendar.newOf.${kind}`),
                     onSelect: () => add(kind),
                   })),
                 );
@@ -163,7 +165,7 @@ export function CalendarScreen({
           />
         </div>
         <aside
-          aria-label="Day"
+          aria-label={t("calendar.day")}
           className="border-t border-separator/60 md:w-[340px] md:shrink-0 md:overflow-y-auto md:border-t-0 md:border-l"
         >
           <DayAgenda

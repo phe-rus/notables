@@ -1,6 +1,7 @@
 import type { CalendarEvent, Day } from "@notables/core";
 import { cn, spring } from "@notables/ui";
 import { motion } from "motion/react";
+import { t } from "../../../i18n/i18n";
 import { formatClock } from "../lib/describe-alert";
 import { weekdayNames } from "../lib/month-grid";
 
@@ -101,7 +102,7 @@ function DayCell({
       type="button"
       onClick={onSelect}
       aria-pressed={isSelected}
-      aria-label={`${day}${events.length ? `, ${events.length} events` : ""}`}
+      aria-label={`${day}${events.length ? `, ${t("calendar.eventsCount", { count: events.length })}` : ""}`}
       className={cn(
         "group relative flex min-w-0 flex-col items-center gap-1 overflow-hidden rounded-[12px] py-1 text-left transition-colors md:items-stretch md:rounded-[10px] md:px-1.5 md:py-1.5",
         isSelected ? "md:bg-accent/8" : "hover:bg-fill/50",
@@ -151,7 +152,11 @@ function DayCell({
             <span className="truncate font-medium">{event.title || "Untitled"}</span>
           </span>
         ))}
-        {extra > 0 && <span className="px-1.5 text-[11px] text-label-tertiary">{extra} more</span>}
+        {extra > 0 && (
+          <span className="px-1.5 text-[11px] text-label-tertiary">
+            {t("calendar.more", { count: extra })}
+          </span>
+        )}
       </span>
     </button>
   );

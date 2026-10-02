@@ -25,6 +25,7 @@ import { type ReactNode, useState } from "react";
 import { AppMark } from "../../../components/brand/app-mark";
 import { ToolbarButton } from "../../../components/layout/toolbar-button";
 import { WindowControls } from "../../../components/window/window-controls";
+import { t } from "../../../i18n/i18n";
 import { shortcutLabel } from "../../../lib/keyboard/shortcuts";
 import { useAuthorName } from "../../../platform/author-preferences";
 import { windowChrome } from "../../../platform/window-chrome";
@@ -114,14 +115,14 @@ export function Sidebar({
 
       <div className="flex flex-col gap-px pb-4">
         <ActionRow icon={<PenIcon size={17} />} shortcut={shortcutLabel("N")} onClick={onNewNote}>
-          New note
+          {t("nav.newNote")}
         </ActionRow>
         <ActionRow
           icon={<SearchIcon size={17} />}
           shortcut={shortcutLabel("K")}
           onClick={openSearch}
         >
-          Search
+          {t("common.search")}
         </ActionRow>
       </div>
 
@@ -133,13 +134,13 @@ export function Sidebar({
             icon={<NoteIcon size={17} />}
             trailing={counts ? count("all") : undefined}
           >
-            All Notes
+            {t("nav.allNotes")}
           </NavItem>
         </div>
 
-        <section aria-label="Library" className="flex flex-col">
+        <section aria-label={t("nav.library")} className="flex flex-col">
           <SectionHeader
-            title="Library"
+            title={t("nav.library")}
             action={
               <button
                 type="button"
@@ -149,7 +150,7 @@ export function Sidebar({
                   editing ? "text-accent-text" : "text-label-tertiary hover:text-label",
                 )}
               >
-                {editing ? "Done" : "Edit"}
+                {editing ? t("common.done") : t("common.edit")}
               </button>
             }
           />
@@ -164,8 +165,7 @@ export function Sidebar({
               >
                 <SidebarEditor icons={sidebarIcons} />
                 <p className="px-2.5 pt-2 text-[12px] leading-snug text-label-tertiary">
-                  Drag to reorder, or hide what you don’t use. All Notes, Search and Settings always
-                  stay.
+                  {t("nav.sidebarHint")}
                 </p>
               </motion.div>
             ) : (
@@ -188,14 +188,14 @@ export function Sidebar({
                       trailing={counts ? count(id) : undefined}
                       menu={() => [
                         {
-                          label: "Hide from sidebar",
+                          label: t("nav.hideFromSidebar"),
                           onSelect: () =>
                             updatePreferences((p) => ({
                               ...p,
                               sidebar: { ...p.sidebar, hidden: [...p.sidebar.hidden, id] },
                             })),
                         },
-                        { label: "Edit sidebar…", onSelect: () => setEditing(true) },
+                        { label: t("nav.editSidebar"), onSelect: () => setEditing(true) },
                       ]}
                     >
                       {sidebarItemTitles[id]}
@@ -214,14 +214,14 @@ export function Sidebar({
               icon={<TrashIcon size={17} />}
               trailing={counts ? binCount : undefined}
             >
-              Recently Deleted
+              {t("nav.recentlyDeleted")}
             </NavItem>
           </div>
         )}
 
         {pinned.length > 0 && (
-          <section aria-label="Pinned" className="flex flex-col">
-            <SectionHeader title="Pinned" />
+          <section aria-label={t("nav.pinned")} className="flex flex-col">
+            <SectionHeader title={t("nav.pinned")} />
             <div className="flex flex-col gap-px">
               {pinned.map((entry) => (
                 <NavItem
@@ -234,7 +234,7 @@ export function Sidebar({
                   menu={() => noteMenu(entry, navigate)}
                   trailing={formatAge(entry.updatedAt)}
                 >
-                  {entry.title || "New Note"}
+                  {entry.title || t("notes.newNote")}
                 </NavItem>
               ))}
             </div>
@@ -267,16 +267,16 @@ function SidebarTopBar() {
         className={cn("flex items-center gap-0.5", chrome !== "none" && "grow")}
       >
         <ToolbarButton
-          label="Hide sidebar"
+          label={t("nav.hideSidebar")}
           onClick={toggleSidebarCollapsed}
           className="max-lg:hidden"
         >
           <SidebarIcon size={17} />
         </ToolbarButton>
-        <ToolbarButton label="Back" onClick={() => router.history.back()}>
+        <ToolbarButton label={t("common.back")} onClick={() => router.history.back()}>
           <ChevronLeftIcon size={17} />
         </ToolbarButton>
-        <ToolbarButton label="Forward" onClick={() => router.history.forward()}>
+        <ToolbarButton label={t("nav.forward")} onClick={() => router.history.forward()}>
           <ChevronRightIcon size={17} />
         </ToolbarButton>
       </div>
@@ -384,13 +384,13 @@ function ProfileRow({ active }: { active: boolean }) {
         {(name || "N").slice(0, 1).toUpperCase()}
       </span>
       <span className="flex min-w-0 grow flex-col">
-        <span className="truncate text-[14px] font-medium">{name || "On this device"}</span>
-        <span className="truncate text-[12px] text-label-tertiary">No account needed</span>
+        <span className="truncate text-[14px] font-medium">{name || t("nav.onThisDevice")}</span>
+        <span className="truncate text-[12px] text-label-tertiary">{t("nav.noAccount")}</span>
       </span>
       <Link
         to="/settings"
-        aria-label="Settings"
-        data-tooltip="Settings"
+        aria-label={t("common.settings")}
+        data-tooltip={t("common.settings")}
         className={cn(
           "flex size-8 items-center justify-center rounded-lg transition-colors duration-fast",
           active

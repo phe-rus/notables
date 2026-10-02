@@ -1,3 +1,5 @@
+import { t } from "../../../i18n/i18n";
+
 /**
  * Sidebar places people can reorder or hide. All Notes, Search and
  * Settings are fixed and always present. Related kinds share one place
@@ -21,12 +23,24 @@ export const sidebarItemIds: readonly SidebarItemId[] = [
 ];
 
 export const sidebarItemTitles: Record<SidebarItemId, string> = {
-  writing: "Writing",
-  books: "Books",
-  planning: "Plan & learn",
-  calendar: "Calendar",
-  invoices: "Invoices",
-  published: "Published",
+  get writing() {
+    return t("nav.writing");
+  },
+  get books() {
+    return t("nav.books");
+  },
+  get planning() {
+    return t("nav.planning");
+  },
+  get calendar() {
+    return t("nav.calendar");
+  },
+  get invoices() {
+    return t("nav.invoices");
+  },
+  get published() {
+    return t("nav.published");
+  },
 };
 
 export function isSidebarItemId(value: unknown): value is SidebarItemId {

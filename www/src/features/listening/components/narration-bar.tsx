@@ -10,6 +10,7 @@ import {
   spring,
 } from "@notables/ui";
 import { motion } from "motion/react";
+import { t } from "../../../i18n/i18n";
 import {
   NARRATION_RATES,
   setNarrationSettings,
@@ -48,9 +49,9 @@ export function NarrationBar({
       Math.max(12, rect.left - 120),
       Math.max(12, rect.top - Math.min(voices.length, 9) * 38 - 20),
       voices.length === 0
-        ? [{ label: "No voices on this device", disabled: true, onSelect: () => {} }]
+        ? [{ label: t("listening.noVoices"), disabled: true, onSelect: () => {} }]
         : voices.slice(0, 12).map((voice) => ({
-            label: `${voice.name}${voice.natural ? " · Natural" : ""}${voice.provider === "gemini" ? " · Gemini" : ""}`,
+            label: `${voice.name}${voice.natural ? ` · ${t("listening.natural")}` : ""}${voice.provider === "gemini" ? " · Gemini" : ""}`,
             checked: voice.id === current,
             onSelect: () => setNarrationSettings({ voiceId: voice.id }),
           })),
@@ -60,7 +61,7 @@ export function NarrationBar({
   return (
     <motion.div
       role="region"
-      aria-label="Reading aloud"
+      aria-label={t("listening.readingAloud")}
       initial={{ y: 30, opacity: 0 }}
       animate={{ y: 0, opacity: 1 }}
       exit={{ y: 30, opacity: 0 }}
@@ -68,17 +69,21 @@ export function NarrationBar({
       className={cn("glass-menu flex items-center gap-1 rounded-full px-2 py-1.5", className)}
     >
       <IconButton
-        label="Previous sentence"
+        label={t("listening.previousSentence")}
         disabled={state.index <= 0}
         onClick={() => onSeek(state.index - 1)}
       >
         <PreviousTrackIcon size={18} />
       </IconButton>
-      <IconButton label={state.playing ? "Pause" : "Read aloud"} tone="accent" onClick={onToggle}>
+      <IconButton
+        label={state.playing ? t("listening.pause") : t("notes.readAloud")}
+        tone="accent"
+        onClick={onToggle}
+      >
         {state.playing ? <PauseIcon size={20} /> : <PlayIcon size={20} />}
       </IconButton>
       <IconButton
-        label="Next sentence"
+        label={t("listening.nextSentence")}
         disabled={state.index + 1 >= state.total}
         onClick={() => onSeek(state.index + 1)}
       >
@@ -87,7 +92,7 @@ export function NarrationBar({
       <button
         type="button"
         onClick={() => setNarrationSettings({ rate: nextRate })}
-        aria-label={`Speed ${nextRate}×`}
+        aria-label={`${t("listening.speed")} ${nextRate}×`}
         className="rounded-full px-2.5 py-1 text-[13px] font-semibold tabular-nums transition-colors hover:bg-fill/60"
       >
         {settings.rate}×
@@ -97,14 +102,14 @@ export function NarrationBar({
         onClick={(event) => void chooseVoice(event.currentTarget)}
         className="rounded-full px-2.5 py-1 text-[13px] font-medium text-label-secondary transition-colors hover:bg-fill/60"
       >
-        Voice
+        {t("listening.voice")}
       </button>
       {state.error && (
         <span className="max-w-[180px] truncate px-1 text-[12px] text-danger" title={state.error}>
           {state.error}
         </span>
       )}
-      <IconButton label="Stop reading aloud" onClick={onClose}>
+      <IconButton label={t("notes.stopReading")} onClick={onClose}>
         <CloseIcon size={16} />
       </IconButton>
     </motion.div>

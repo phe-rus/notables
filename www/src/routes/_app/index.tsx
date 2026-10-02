@@ -1,4 +1,5 @@
 import { createFileRoute } from "@tanstack/react-router";
+import { t } from "../../i18n/i18n";
 
 export const Route = createFileRoute("/_app/")({
   component: NoNoteSelected,
@@ -7,12 +8,8 @@ export const Route = createFileRoute("/_app/")({
 function NoNoteSelected() {
   return (
     <div className="flex grow flex-col items-center justify-center gap-2 p-10 text-center">
-      <p className="font-serif text-[26px] font-semibold text-label">
-        Every story starts somewhere.
-      </p>
-      <p className="text-[15px] text-label-secondary">
-        Pick a note, or press the pen to start a new one.
-      </p>
+      <p className="font-serif text-[26px] font-semibold text-label">{t("notes.emptyTitle")}</p>
+      <p className="text-[15px] text-label-secondary">{t("notes.emptyBody")}</p>
     </div>
   );
 }

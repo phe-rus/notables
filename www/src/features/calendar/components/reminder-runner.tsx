@@ -2,6 +2,7 @@ import { addDaysTo, alertsBetween, type DueAlert, localDay } from "@notables/cor
 import { toast } from "@notables/ui";
 import { useNavigate } from "@tanstack/react-router";
 import { useEffect, useRef } from "react";
+import { t } from "../../../i18n/i18n";
 import { alertFeedback } from "../lib/alert-feedback";
 import { describeAlert } from "../lib/describe-alert";
 import { notifyNow, scheduleNatively, schedulesNatively } from "../lib/system-notifications";
@@ -48,7 +49,7 @@ export function ReminderRunner() {
         toast(title, {
           description: body,
           duration: 12_000,
-          action: { label: "Open", onClick: () => open(alert) },
+          action: { label: t("common.open"), onClick: () => open(alert) },
         });
         // Phones already show their own scheduled notification.
         if (!schedulesNatively()) void notifyNow(alert, () => open(alert));
@@ -57,11 +58,13 @@ export function ReminderRunner() {
       const first = missed[0];
       if (first) {
         toast(
-          missed.length === 1 ? describeAlert(first).title : `${missed.length} missed reminders`,
+          missed.length === 1
+            ? describeAlert(first).title
+            : t("reminders.missed", { count: missed.length }),
           {
-            description: missed.length === 1 ? "While Notables was closed" : undefined,
+            description: missed.length === 1 ? t("reminders.whileClosed") : undefined,
             duration: 12_000,
-            action: { label: "Open", onClick: () => open(first) },
+            action: { label: t("common.open"), onClick: () => open(first) },
           },
         );
       }

@@ -1,4 +1,6 @@
 import type { NoteKind } from "@notables/core";
+import { t } from "../../../i18n/i18n";
+import type { Messages } from "../../../i18n/messages/en";
 import type { LibraryEntry } from "../store/library-store";
 
 export type GroupId = "writing" | "books" | "planning";
@@ -12,16 +14,25 @@ export interface View {
   matches: (entry: LibraryEntry) => boolean;
 }
 
-const byKind = (id: NoteKind, title: string): View => ({
+type ViewTitleKey = keyof Messages["views"];
+
+/** Titles are read when shown, so they follow the app's language. */
+const titled = (key: ViewTitleKey) => ({
+  get title() {
+    return t(`views.${key}`);
+  },
+});
+
+const byKind = (id: NoteKind & ViewTitleKey): View => ({
   id,
-  title,
+  ...titled(id),
   kind: id,
   matches: (entry) => entry.kind === id,
 });
 
-const anyOf = (id: ViewId, title: string, kinds: NoteKind[]): View => ({
+const anyOf = (id: ViewId & ViewTitleKey, kinds: NoteKind[]): View => ({
   id,
-  title,
+  ...titled(id),
   kind: kinds[0] ?? "note",
   matches: (entry) => kinds.includes(entry.kind),
 });
@@ -31,19 +42,19 @@ export const readingKinds: NoteKind[] = ["manga", "comic"];
 export const planningKinds: NoteKind[] = ["lesson", "plan"];
 
 export const views: View[] = [
-  { id: "all", title: "All Notes", kind: "note", matches: () => true },
-  anyOf("writing", "Writing", writingKinds),
-  byKind("journal", "Journal"),
-  byKind("story", "Stories"),
-  byKind("article", "Articles"),
-  byKind("manga", "Manga"),
-  byKind("comic", "Comics"),
-  anyOf("planning", "Plan & learn", planningKinds),
-  byKind("lesson", "Lessons"),
-  byKind("plan", "Plans"),
+  { id: "all", ...titled("all"), kind: "note", matches: () => true },
+  anyOf("writing", writingKinds),
+  byKind("journal"),
+  byKind("story"),
+  byKind("article"),
+  byKind("manga"),
+  byKind("comic"),
+  anyOf("planning", planningKinds),
+  byKind("lesson"),
+  byKind("plan"),
   {
     id: "published",
-    title: "Published",
+    ...titled("published"),
     kind: "article",
     matches: (entry) => entry.publicationId !== null,
   },
@@ -65,35 +76,38 @@ export interface ViewGroup {
   options: Array<{ id: ViewId | "books"; label: string }>;
 }
 
+const option = (id: ViewId | "books", key: ViewTitleKey) => ({
+  id,
+  get label() {
+    return t(`views.${key}`);
+  },
+});
+
+const group = (id: GroupId, key: ViewTitleKey, options: ViewGroup["options"]): ViewGroup => ({
+  id,
+  get title() {
+    return t(`views.${key}`);
+  },
+  options,
+});
+
 export const viewGroups: Record<GroupId, ViewGroup> = {
-  writing: {
-    id: "writing",
-    title: "Writing",
-    options: [
-      { id: "writing", label: "All" },
-      { id: "journal", label: "Journal" },
-      { id: "story", label: "Stories" },
-      { id: "article", label: "Articles" },
-    ],
-  },
-  books: {
-    id: "books",
-    title: "Books",
-    options: [
-      { id: "books", label: "Books" },
-      { id: "manga", label: "Manga" },
-      { id: "comic", label: "Comics" },
-    ],
-  },
-  planning: {
-    id: "planning",
-    title: "Plan & learn",
-    options: [
-      { id: "planning", label: "All" },
-      { id: "lesson", label: "Lessons" },
-      { id: "plan", label: "Plans" },
-    ],
-  },
+  writing: group("writing", "writing", [
+    option("writing", "allShort"),
+    option("journal", "journal"),
+    option("story", "story"),
+    option("article", "article"),
+  ]),
+  books: group("books", "books", [
+    option("books", "books"),
+    option("manga", "manga"),
+    option("comic", "comic"),
+  ]),
+  planning: group("planning", "planning", [
+    option("planning", "allShort"),
+    option("lesson", "lesson"),
+    option("plan", "plan"),
+  ]),
 };
 
 /** The group a view belongs to, if any. */

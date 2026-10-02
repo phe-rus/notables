@@ -1,4 +1,5 @@
 import { addDaysTo, type Day, dayInMonth, weekday } from "@notables/core";
+import { locale } from "../../../i18n/i18n";
 
 /** 0 for Sunday through 6 for Saturday, following the person's region. */
 export function firstWeekday(): number {
@@ -27,7 +28,7 @@ export function monthGrid(year: number, month: number, weekStart: number): Day[]
 
 /** Short weekday names in grid order: "Mon", "Tue"… */
 export function weekdayNames(weekStart: number, style: "short" | "narrow" = "short"): string[] {
-  const format = new Intl.DateTimeFormat(undefined, { weekday: style, timeZone: "UTC" });
+  const format = new Intl.DateTimeFormat(locale(), { weekday: style, timeZone: "UTC" });
   // 4 January 1970 was a Sunday.
   return Array.from({ length: 7 }, (_, index) =>
     format.format(new Date(Date.UTC(1970, 0, 4 + ((weekStart + index) % 7)))),

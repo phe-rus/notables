@@ -22,6 +22,7 @@ import { Link, useNavigate } from "@tanstack/react-router";
 import { AnimatePresence, motion } from "motion/react";
 import { useState } from "react";
 import { CollapsedSidebarControls } from "../../../components/window/collapsed-sidebar-controls";
+import { t } from "../../../i18n/i18n";
 import { usePreferences } from "../../settings/store/preferences-store";
 import { BusinessSheet } from "../business/business-sheet";
 import { useBusinessProfile } from "../lib/business-profile";
@@ -71,15 +72,17 @@ export function InvoicesList({
         {collapsed && <CollapsedSidebarControls />}
         <div data-tauri-drag-region className="flex items-center justify-between">
           <div className="flex items-center gap-1">
-            <IconButton label="Show library" className="lg:hidden" onClick={onOpenSidebar}>
+            <IconButton label={t("nav.showLibrary")} className="lg:hidden" onClick={onOpenSidebar}>
               <SidebarIcon size={20} />
             </IconButton>
-            <h1 className="text-[22px] font-bold tracking-tight">Invoices</h1>
+            <h1 className="text-[22px] font-bold tracking-tight">{t("invoices.title")}</h1>
           </div>
           <div className="flex items-center gap-1">
             <IconButton
               label={
-                business ? `Business details: ${business.issuer.name}` : "Set up your business"
+                business
+                  ? `${t("invoices.yourBusiness")}: ${business.issuer.name}`
+                  : t("invoices.setUpBusiness")
               }
               onClick={() => setBusinessOpen(true)}
             >
@@ -152,9 +155,9 @@ export function InvoicesList({
               <BusinessIcon size={18} />
             </span>
             <span className="flex flex-col">
-              <span className="text-[14px] font-semibold">Set up your business</span>
+              <span className="text-[14px] font-semibold">{t("invoices.setUpBusiness")}</span>
               <span className="text-[12.5px] leading-snug text-label-secondary">
-                Name, logo, currency and payment details, filled in for you.
+                {t("invoices.setUpBusinessBody")}
               </span>
             </span>
           </button>

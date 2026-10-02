@@ -15,6 +15,7 @@ import { Link, useNavigate } from "@tanstack/react-router";
 import { AnimatePresence, motion } from "motion/react";
 import { type MouseEvent, useEffect, useMemo, useRef, useState } from "react";
 import { CollapsedSidebarControls } from "../../../components/window/collapsed-sidebar-controls";
+import { t } from "../../../i18n/i18n";
 import { ImportSheet } from "../../imports/components/import-sheet";
 import { GroupSwitcher } from "../../library/components/group-switcher";
 import { usePreferences } from "../../settings/store/preferences-store";
@@ -64,9 +65,9 @@ function BooksListContent({ activeId, onOpenSidebar, className }: BooksListProps
   const chooseNewBook = (event: MouseEvent<HTMLElement>) => {
     const rect = event.currentTarget.getBoundingClientRect();
     openContextMenu(rect.right - 200, rect.bottom + 6, [
-      { label: "New book", onSelect: () => createBook("books") },
-      { label: "New manga", onSelect: () => createBook("manga") },
-      { label: "New comic", onSelect: () => createBook("comic") },
+      { label: t("books.newBook"), onSelect: () => createBook("books") },
+      { label: t("books.newManga"), onSelect: () => createBook("manga") },
+      { label: t("books.newComic"), onSelect: () => createBook("comic") },
     ]);
   };
 
@@ -101,7 +102,7 @@ function BooksListContent({ activeId, onOpenSidebar, className }: BooksListProps
         {collapsed && <CollapsedSidebarControls />}
         <div data-tauri-drag-region className="flex items-center justify-between">
           <div className="flex items-center gap-1">
-            <IconButton label="Show library" className="lg:hidden" onClick={onOpenSidebar}>
+            <IconButton label={t("nav.showLibrary")} className="lg:hidden" onClick={onOpenSidebar}>
               <SidebarIcon size={20} />
             </IconButton>
             <h1 className="text-[22px] font-bold tracking-tight">
@@ -133,7 +134,7 @@ function BooksListContent({ activeId, onOpenSidebar, className }: BooksListProps
                 >
                   <DownloadIcon size={20} />
                 </IconButton>
-                <IconButton label="New book, manga or comic" tone="accent" onClick={chooseNewBook}>
+                <IconButton label={t("books.newMenu")} tone="accent" onClick={chooseNewBook}>
                   <BookIcon size={20} />
                 </IconButton>
               </>
@@ -248,7 +249,7 @@ function BookRow({
 }) {
   const chapters = book.chapterIds.length;
   const kind = series ? null : bookKindLabel(book);
-  const count = chapters === 1 ? "1 chapter" : `${chapters} chapters`;
+  const count = t("books.chapterCount", { count: chapters });
   const navigate = useNavigate();
   const selection = useBookSelection();
   // Where the menu opened, so the export formats can open in the same place.
@@ -258,7 +259,7 @@ function BookRow({
   };
   const menu = useContextMenu(() => [
     {
-      label: "Open",
+      label: t("common.open"),
       onSelect: () => void navigate({ to: "/books/$bookId", params: { bookId: book.id } }),
     },
     {
@@ -267,7 +268,7 @@ function BookRow({
       onSelect: () => void navigate({ to: "/read/$bookId", params: { bookId: book.id } }),
     },
     {
-      label: "Export…",
+      label: `${t("books.export")}…`,
       disabled: chapters === 0,
       onSelect: () =>
         // Formats get their own menu where this one was.
@@ -280,9 +281,9 @@ function BookRow({
         ),
     },
     "divider",
-    { label: "Select", onSelect: () => selection.start(book.id) },
+    { label: t("books.select"), onSelect: () => selection.start(book.id) },
     {
-      label: "Delete",
+      label: t("common.delete"),
       destructive: true,
       onSelect: () => moveBooksToBin([book]),
     },

@@ -3,31 +3,40 @@ import { Link, type LinkProps } from "@tanstack/react-router";
 import { motion } from "motion/react";
 import type { ReactNode } from "react";
 import { openSearch } from "../../features/search/store/search-palette";
+import { t } from "../../i18n/i18n";
 
 export type TabId = "notes" | "books" | "invoices" | "settings";
 
-const tabs: Array<{ id: TabId; label: string; icon: ReactNode; link: LinkProps }> = [
+const tabs: Array<{ id: TabId; readonly label: string; icon: ReactNode; link: LinkProps }> = [
   {
     id: "notes",
-    label: "Notes",
+    get label() {
+      return t("nav.notes");
+    },
     icon: <NoteIcon size={21} strokeWidth={1.8} />,
     link: { to: "/" },
   },
   {
     id: "books",
-    label: "Books",
+    get label() {
+      return t("nav.books");
+    },
     icon: <BookIcon size={21} strokeWidth={1.8} />,
     link: { to: "/books" },
   },
   {
     id: "invoices",
-    label: "Invoices",
+    get label() {
+      return t("nav.invoices");
+    },
     icon: <InvoiceIcon size={21} strokeWidth={1.8} />,
     link: { to: "/invoices" },
   },
   {
     id: "settings",
-    label: "Settings",
+    get label() {
+      return t("common.settings");
+    },
     icon: <SettingsIcon size={21} strokeWidth={1.8} />,
     link: { to: "/settings" },
   },
@@ -59,7 +68,7 @@ export function TabBar({ active, className }: { active: TabId | null; className?
       <button
         type="button"
         onClick={openSearch}
-        aria-label="Search"
+        aria-label={t("common.search")}
         className="mx-0.5 flex size-[52px] shrink-0 items-center justify-center rounded-full bg-inverse text-on-inverse shadow-[inset_0_1px_0_rgb(255_255_255/0.14),0_4px_12px_-4px_rgb(0_0_0/0.4)] transition-transform duration-fast active:scale-[0.92]"
       >
         <SearchIcon size={22} strokeWidth={2} />

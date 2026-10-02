@@ -17,6 +17,8 @@ import { useNavigate } from "@tanstack/react-router";
 import { AnimatePresence, motion } from "motion/react";
 import { type ReactNode, useEffect, useState } from "react";
 import { AppMark } from "../../../components/brand/app-mark";
+import { currentLanguage, setLanguageChoice, t, useLanguageChoice } from "../../../i18n/i18n";
+import { languages } from "../../../i18n/languages";
 import { markAppReady } from "../../../platform/app-ready";
 import { setAuthorName, useAuthorName } from "../../../platform/author-preferences";
 import { type DevicePlatform, devicePlatform } from "../../../platform/device-platform";
@@ -36,7 +38,7 @@ import {
 import { AppearanceSync } from "../../settings/components/appearance-sync";
 import type { Preferences, ThemePreference } from "../../settings/model/preferences";
 import { updatePreferences, usePreferences } from "../../settings/store/preferences-store";
-import { LANGUAGE_KEY, markSetupDone } from "../lib/setup-state";
+import { markSetupDone } from "../lib/setup-state";
 
 type StepId = "intro" | "licence" | "name" | "look" | "language" | "permissions" | "ai" | "done";
 const steps: StepId[] = [
@@ -58,14 +60,34 @@ const set = (change: Partial<Preferences>) => updatePreferences((p) => ({ ...p, 
  * language, the device permissions that unlock features, and optional AI.
  * Everything can be changed later in Settings.
  */
+const STEP_KEY = "notables:setup-step";
+
+function savedStep(): number {
+  try {
+    const step = Number(sessionStorage.getItem(STEP_KEY));
+    return Number.isInteger(step) && step > 0 && step < steps.length ? step : 0;
+  } catch {
+    return 0;
+  }
+}
+
 export function SetupFlow() {
   const navigate = useNavigate();
-  const [index, setIndex] = useState(0);
+  const [index, setIndex] = useState(savedStep);
   const [heading, setHeading] = useState<1 | -1>(1);
   const [agreed, setAgreed] = useState(false);
   const step = steps[index] ?? "intro";
 
   useEffect(() => markAppReady(), []);
+
+  // Changing language redraws the app; carry on from the same step.
+  useEffect(() => {
+    try {
+      sessionStorage.setItem(STEP_KEY, String(index));
+    } catch {
+      // Starts over after a language change.
+    }
+  }, [index]);
 
   const go = (delta: 1 | -1) => {
     setHeading(delta);
@@ -73,6 +95,11 @@ export function SetupFlow() {
   };
   const finish = () => {
     markSetupDone();
+    try {
+      sessionStorage.removeItem(STEP_KEY);
+    } catch {
+      // Nothing to clear.
+    }
     void navigate({ to: "/", replace: true });
   };
 
@@ -83,7 +110,7 @@ export function SetupFlow() {
       {/* Theme and accent choices take effect as they're picked. */}
       <AppearanceSync />
       <header className="flex items-center justify-between px-5 pt-[max(18px,env(safe-area-inset-top))]">
-        <p className="sr-only">{`Step ${index + 1} of ${steps.length}`}</p>
+        <p className="sr-only">{t("setup.stepOf", { step: index + 1, total: steps.length })}</p>
         <div className="flex gap-1.5" aria-hidden="true">
           {steps.map((id, position) => (
             <motion.span
@@ -109,7 +136,7 @@ export function SetupFlow() {
               index < steps.indexOf("licence") + 1 && "invisible",
             )}
           >
-            Skip setup
+            {t("setup.skip")}
           </button>
         )}
       </header>
@@ -144,15 +171,19 @@ export function SetupFlow() {
 
       <footer className="mx-auto flex w-full max-w-[540px] items-center justify-between gap-3 px-6 pb-[max(24px,env(safe-area-inset-bottom))]">
         <Button variant="ghost" onClick={() => go(-1)} className={cn(index === 0 && "invisible")}>
-          Back
+          {t("common.back")}
         </Button>
         {step === "done" ? (
           <Button variant="primary" size="md" onClick={finish}>
-            Start writing
+            {t("setup.startWriting")}
           </Button>
         ) : (
           <Button variant="primary" size="md" disabled={!canContinue} onClick={() => go(1)}>
-            {step === "intro" ? "Get started" : step === "ai" ? "Continue without AI" : "Continue"}
+            {step === "intro"
+              ? t("setup.getStarted")
+              : step === "ai"
+                ? t("setup.continueWithoutAi")
+                : t("common.continue")}
           </Button>
         )}
       </footer>
@@ -173,23 +204,23 @@ function IntroStep() {
   const highlights: Array<{ icon: ReactNode; title: string; body: string }> = [
     {
       icon: <PenIcon size={20} />,
-      title: "Write anything",
-      body: "Notes, journals, stories, lessons and plans, typed or by hand.",
+      title: t("setup.writeAnything"),
+      body: t("setup.writeAnythingBody"),
     },
     {
       icon: <BookIcon size={20} />,
-      title: "Make books",
-      body: "Turn writing into books, or import e-books, comics and audiobooks.",
+      title: t("setup.makeBooks"),
+      body: t("setup.makeBooksBody"),
     },
     {
       icon: <MicIcon size={20} />,
-      title: "Record and transcribe",
-      body: "Speak, and Notables writes it down on this device.",
+      title: t("setup.record"),
+      body: t("setup.recordBody"),
     },
     {
       icon: <InvoiceIcon size={20} />,
-      title: "Invoices you can prove",
-      body: "Signed receipts and invoices anyone can check.",
+      title: t("setup.invoices"),
+      body: t("setup.invoicesBody"),
     },
   ];
   return (
@@ -198,9 +229,7 @@ function IntroStep() {
         <div className="splash-mark drop-shadow-[0_18px_40px_rgba(120,80,0,0.18)]">
           <AppMark size={84} />
         </div>
-        <StepTitle title="Welcome to Notables">
-          A calm place for everything you write, kept on your own devices.
-        </StepTitle>
+        <StepTitle title={t("setup.welcome")}>{t("setup.welcomeBody")}</StepTitle>
       </div>
       <ul className="grid gap-2.5 sm:grid-cols-2">
         {highlights.map((item, position) => (
@@ -228,22 +257,18 @@ function IntroStep() {
 function LicenceStep({ agreed, onAgree }: { agreed: boolean; onAgree: (value: boolean) => void }) {
   return (
     <>
-      <StepTitle title="Your words stay yours">
-        Before you start, here is what you can count on, and the licence Notables comes with.
-      </StepTitle>
+      <StepTitle title={t("setup.yours")}>{t("setup.yoursBody")}</StepTitle>
       <ul className="flex flex-col gap-2.5 text-[15px] leading-snug">
-        {[
-          "Everything you write is stored on this device. No account is needed.",
-          "Nothing is sent anywhere unless you publish it, share it, or turn on AI with your own key.",
-          "Deleted things wait in Recently Deleted for 7 days, then they're gone for good.",
-        ].map((line) => (
-          <li key={line} className="flex gap-2.5">
-            <span className="mt-0.5 flex size-5 shrink-0 items-center justify-center rounded-full bg-success text-white">
-              <CheckIcon size={12} strokeWidth={3} />
-            </span>
-            {line}
-          </li>
-        ))}
+        {[t("setup.promiseDevice"), t("setup.promiseNothingSent"), t("setup.promiseBin")].map(
+          (line) => (
+            <li key={line} className="flex gap-2.5">
+              <span className="mt-0.5 flex size-5 shrink-0 items-center justify-center rounded-full bg-success text-white">
+                <CheckIcon size={12} strokeWidth={3} />
+              </span>
+              {line}
+            </li>
+          ),
+        )}
       </ul>
       <div className="max-h-[180px] overflow-y-auto rounded-[16px] bg-fill/60 p-4 text-[12px] leading-relaxed text-label-secondary">
         <p className="mb-2 font-semibold text-label">MIT License. Copyright (c) 2026 Pherus.</p>
@@ -283,7 +308,7 @@ function LicenceStep({ agreed, onAgree }: { agreed: boolean; onAgree: (value: bo
         >
           {agreed && <CheckIcon size={14} strokeWidth={2.8} />}
         </span>
-        <span className="text-[15px] font-medium">I’ve read this and agree to the licence</span>
+        <span className="text-[15px] font-medium">{t("setup.agree")}</span>
       </label>
     </>
   );
@@ -293,9 +318,7 @@ function NameStep({ onSubmit }: { onSubmit: () => void }) {
   const name = useAuthorName();
   return (
     <>
-      <StepTitle title="What should we call you?">
-        Your name goes on books you make and pages you publish. It stays on this device.
-      </StepTitle>
+      <StepTitle title={t("setup.nameTitle")}>{t("setup.nameBody")}</StepTitle>
       <form
         onSubmit={(event) => {
           event.preventDefault();
@@ -307,8 +330,8 @@ function NameStep({ onSubmit }: { onSubmit: () => void }) {
           autoFocus
           value={name}
           onChange={(event) => setAuthorName(event.target.value)}
-          placeholder="Your name"
-          aria-label="Your name"
+          placeholder={t("setup.namePlaceholder")}
+          aria-label={t("setup.namePlaceholder")}
           autoComplete="name"
           className="w-full rounded-[14px] control-field px-4 py-3.5 text-[19px]"
         />
@@ -321,24 +344,24 @@ function LookStep() {
   const preferences = usePreferences();
   return (
     <>
-      <StepTitle title="Make it yours">
-        Pick how Notables looks. Auto follows your device.
-      </StepTitle>
+      <StepTitle title={t("setup.lookTitle")}>{t("setup.lookBody")}</StepTitle>
       <div className="flex flex-col gap-5">
         <SegmentedControl<ThemePreference>
-          label="Theme"
+          label={t("settings.theme")}
           value={preferences.theme}
           onChange={(theme) => set({ theme })}
           options={[
-            { value: "system", label: "Auto" },
-            { value: "light", label: "Light" },
-            { value: "dark", label: "Dark" },
+            { value: "system", label: t("settings.themeAuto") },
+            { value: "light", label: t("settings.themeLight") },
+            { value: "dark", label: t("settings.themeDark") },
           ]}
         />
         <div className="flex flex-col gap-2">
-          <span className="text-[13px] font-medium text-label-secondary">Accent colour</span>
+          <span className="text-[13px] font-medium text-label-secondary">
+            {t("setup.accentColour")}
+          </span>
           <SwatchPicker
-            label="Accent colour"
+            label={t("setup.accentColour")}
             value={preferences.accent}
             onChange={(accent) => set({ accent })}
             options={Object.values(accents).map((accent) => ({
@@ -350,7 +373,9 @@ function LookStep() {
           />
         </div>
         <div className="flex flex-col gap-2">
-          <span className="text-[13px] font-medium text-label-secondary">Writing font</span>
+          <span className="text-[13px] font-medium text-label-secondary">
+            {t("setup.writingFont")}
+          </span>
           <div className="grid grid-cols-2 gap-2">
             {noteFonts.map((font) => (
               <FontChoice
@@ -400,57 +425,36 @@ function FontChoice({
   );
 }
 
-const languages = [
-  { id: "en", name: "English", ready: true },
-  { id: "fr", name: "Français", ready: false },
-  { id: "es", name: "Español", ready: false },
-  { id: "sw", name: "Kiswahili", ready: false },
-  { id: "pt", name: "Português", ready: false },
-  { id: "ar", name: "العربية", ready: false },
-];
-
 function LanguageStep() {
-  const [language, setLanguage] = useState(() => {
-    try {
-      return localStorage.getItem(LANGUAGE_KEY) ?? "en";
-    } catch {
-      return "en";
-    }
-  });
-  const choose = (id: string) => {
-    setLanguage(id);
-    try {
-      localStorage.setItem(LANGUAGE_KEY, id);
-    } catch {
-      // The choice lasts for this session only.
-    }
-  };
+  const choice = useLanguageChoice();
+  const current = currentLanguage();
   return (
     <>
-      <StepTitle title="Language">
-        Notables speaks English for now. More languages are on the way; pick yours and it will
-        switch as soon as it’s ready.
-      </StepTitle>
+      <StepTitle title={t("setup.languageTitle")}>{t("setup.languageBody")}</StepTitle>
       <div className="grid grid-cols-2 gap-2">
-        {languages.map((option) => (
-          <label
-            key={option.id}
-            className={cn(
-              "flex cursor-pointer items-center justify-between rounded-[14px] px-4 py-3 transition-colors has-[:focus-visible]:ring-2 has-[:focus-visible]:ring-accent/70",
-              language === option.id ? "bg-accent-soft" : "bg-fill/60 hover:bg-fill",
-            )}
-          >
-            <input
-              type="radio"
-              name="setup-language"
-              className="sr-only"
-              checked={language === option.id}
-              onChange={() => choose(option.id)}
-            />
-            <span className="text-[15px] font-medium">{option.name}</span>
-            {!option.ready && <span className="text-[11px] text-label-tertiary">Soon</span>}
-          </label>
-        ))}
+        {languages.map((option) => {
+          const selected = choice === "system" ? current === option.id : choice === option.id;
+          return (
+            <label
+              key={option.id}
+              lang={option.id}
+              className={cn(
+                "flex cursor-pointer items-center justify-between rounded-[14px] px-4 py-3 transition-colors has-[:focus-visible]:ring-2 has-[:focus-visible]:ring-accent/70",
+                selected ? "bg-accent-soft" : "bg-fill/60 hover:bg-fill",
+              )}
+            >
+              <input
+                type="radio"
+                name="setup-language"
+                className="sr-only"
+                checked={selected}
+                onChange={() => setLanguageChoice(option.id)}
+              />
+              <span className="text-[15px] font-medium">{option.name}</span>
+              {selected && <CheckIcon size={16} strokeWidth={2.6} className="text-accent-text" />}
+            </label>
+          );
+        })}
       </div>
     </>
   );
@@ -458,7 +462,7 @@ function LanguageStep() {
 
 /** Where people change a permission later, in their own system's words. */
 function settingsPlace(device: DevicePlatform): string {
-  if (!device.app) return "your browser’s site settings (the icon beside the address)";
+  if (!device.app) return t("setup.placeBrowser");
   switch (device.os) {
     case "macos":
       return "System Settings › Privacy & Security";
@@ -469,35 +473,35 @@ function settingsPlace(device: DevicePlatform): string {
     case "android":
       return "Settings › Apps › Notables › Permissions";
     default:
-      return "your system settings";
+      return t("setup.placeSystem");
   }
 }
 
-const permissionCopy: Record<PermissionKind, { title: string; body: string; icon: ReactNode }> = {
-  microphone: {
-    title: "Microphone",
-    body: "Record voice notes and have them written down, on this device.",
-    icon: <MicIcon size={20} />,
-  },
-  camera: {
-    title: "Camera",
-    body: "Scan receipts and invoices to check they’re genuine.",
-    icon: <ScanCodeIcon size={20} />,
-  },
-  notifications: {
-    title: "Notifications",
-    body: "Reminders for plans, birthdays and things you schedule.",
-    icon: <BellIcon size={20} />,
-  },
-};
+const permissionCopy = (kind: PermissionKind): { title: string; body: string; icon: ReactNode } =>
+  ({
+    microphone: {
+      title: t("setup.microphone"),
+      body: t("setup.microphoneBody"),
+      icon: <MicIcon size={20} />,
+    },
+    camera: {
+      title: t("setup.camera"),
+      body: t("setup.cameraBody"),
+      icon: <ScanCodeIcon size={20} />,
+    },
+    notifications: {
+      title: t("setup.notifications"),
+      body: t("setup.notificationsBody"),
+      icon: <BellIcon size={20} />,
+    },
+  })[kind];
 
 function PermissionsStep() {
   const device = devicePlatform();
   return (
     <>
-      <StepTitle title="Allow what you’ll use">
-        Each is optional and only asked for here. You can change them later in{" "}
-        {settingsPlace(device)}.
+      <StepTitle title={t("setup.permissionsTitle")}>
+        {t("setup.permissionsBody", { place: settingsPlace(device) })}
       </StepTitle>
       <div className="flex flex-col gap-2.5">
         {(["microphone", "camera", "notifications"] as const).map((kind) => (
@@ -513,7 +517,7 @@ function PermissionRow({ kind, device }: { kind: PermissionKind; device: DeviceP
   useEffect(() => {
     void permissionState(kind).then(setState);
   }, [kind]);
-  const copy = permissionCopy[kind];
+  const copy = permissionCopy(kind);
   const ask = async () => {
     setState("asking");
     setState(await requestPermission(kind));
@@ -527,20 +531,20 @@ function PermissionRow({ kind, device }: { kind: PermissionKind; device: DeviceP
         <span className="text-[15px] font-semibold">{copy.title}</span>
         <span className="text-[13px] leading-snug text-label-secondary">
           {state === "denied"
-            ? `Turned off. To allow it, open ${settingsPlace(device)}.`
+            ? t("setup.permissionDenied", { place: settingsPlace(device) })
             : state === "unsupported"
-              ? "Not available on this device."
+              ? t("common.notAvailable")
               : copy.body}
         </span>
       </span>
       {state === "granted" ? (
         <span className="flex items-center gap-1 text-[14px] font-semibold text-success">
           <CheckIcon size={16} strokeWidth={2.6} />
-          Allowed
+          {t("common.allowed")}
         </span>
       ) : state === "prompt" || state === "asking" ? (
         <Button variant="secondary" disabled={state === "asking"} onClick={() => void ask()}>
-          {state === "asking" ? "Asking…" : "Allow"}
+          {state === "asking" ? t("common.asking") : t("common.allow")}
         </Button>
       ) : null}
     </div>
@@ -550,10 +554,7 @@ function PermissionRow({ kind, device }: { kind: PermissionKind; device: DeviceP
 function AiStep() {
   return (
     <>
-      <StepTitle title="Writing help, if you want it">
-        Notables works fully without AI. If you like, bring your own key from Claude, Gemini or
-        OpenRouter to summarize, improve and continue your writing.
-      </StepTitle>
+      <StepTitle title={t("setup.aiTitle")}>{t("setup.aiBody")}</StepTitle>
       <AiSettingsSection />
     </>
   );
@@ -571,8 +572,12 @@ function DoneStep() {
       >
         <CheckIcon size={36} strokeWidth={3} />
       </motion.span>
-      <StepTitle title={name ? `You’re all set, ${name.split(" ")[0]}` : "You’re all set"}>
-        Your library has a few examples to explore. Everything here can be changed in Settings.
+      <StepTitle
+        title={
+          name ? t("setup.allSetName", { name: name.split(" ")[0] ?? name }) : t("setup.allSet")
+        }
+      >
+        {t("setup.allSetBody")}
       </StepTitle>
     </div>
   );

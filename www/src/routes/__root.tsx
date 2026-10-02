@@ -8,10 +8,12 @@ import {
   useRouterState,
 } from "@tanstack/react-router";
 import { MotionConfig } from "motion/react";
-import { type ReactNode, useEffect } from "react";
+import { Fragment, type ReactNode, useEffect } from "react";
 import { AppLinkListener } from "../components/app-links/app-link-listener";
 import { SplashScreen } from "../components/splash/splash-screen";
 import { ListeningSession } from "../features/listening/components/listening-session";
+import { useLanguage } from "../i18n/i18n";
+import { languages } from "../i18n/languages";
 import { resolveMediaUrl } from "../platform/storage/media-store";
 import { startWindowFrame } from "../platform/window-frame";
 import styles from "../styles/app.css?url";
@@ -52,8 +54,10 @@ function RootDocument({ children }: { children: ReactNode }) {
   const pathname = useRouterState({ select: (state) => state.location.pathname });
   // Shared pages and document checks open instantly, without the app's splash.
   const publicPage = pathname.startsWith("/p/") || pathname.startsWith("/verify");
+  const language = useLanguage();
+  const direction = languages.find((entry) => entry.id === language)?.dir ?? "ltr";
   return (
-    <html lang="en">
+    <html lang={language} dir={direction} suppressHydrationWarning>
       <head>
         <HeadContent />
       </head>
@@ -62,7 +66,8 @@ function RootDocument({ children }: { children: ReactNode }) {
         <MotionConfig reducedMotion="user">
           {/* Recordings and photos stored on this device play from local URLs. */}
           <MediaResolverProvider resolve={resolveMediaUrl}>
-            {children}
+            {/* A new language redraws every screen in it. */}
+            <Fragment key={language}>{children}</Fragment>
             {/* Audiobooks keep playing from page to page. */}
             <ListeningSession />
           </MediaResolverProvider>

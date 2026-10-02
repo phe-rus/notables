@@ -1,5 +1,6 @@
 import { SegmentedControl } from "@notables/ui";
 import { useEffect, useState } from "react";
+import { t } from "../../../i18n/i18n";
 import { SettingsGroup, SettingsRow } from "../../settings/components/settings-controls";
 import {
   NARRATION_RATES,
@@ -23,36 +24,35 @@ export function ListeningSettingsSection() {
   }, [lang]);
 
   return (
-    <SettingsGroup
-      title="Listening"
-      footer="Natural voices sound most like a person. Device voices work offline; Gemini voices use your Gemini key."
-    >
-      <SettingsRow label="Voice" stacked>
+    <SettingsGroup title={t("listening.title")} footer={t("listening.footer")}>
+      <SettingsRow label={t("listening.voice")} stacked>
         {voices && voices.length === 0 ? (
-          <p className="text-[14px] text-label-secondary">
-            This device has no voices for reading aloud.
-          </p>
+          <p className="text-[14px] text-label-secondary">{t("listening.noVoices")}</p>
         ) : (
           <select
-            aria-label="Voice"
+            aria-label={t("listening.voice")}
             value={settings.voiceId ?? ""}
             onChange={(event) => setNarrationSettings({ voiceId: event.target.value || null })}
             className="w-full rounded-[10px] control-field px-3 py-2 text-[15px] text-label"
           >
-            <option value="">Best available</option>
+            <option value="">{t("listening.bestVoice")}</option>
             {(voices ?? []).map((voice) => (
               <option key={voice.id} value={voice.id}>
                 {voice.name}
-                {voice.natural ? " · Natural" : ""}
-                {voice.provider === "gemini" ? " · Gemini" : voice.offline ? "" : " · Online"}
+                {voice.natural ? ` · ${t("listening.natural")}` : ""}
+                {voice.provider === "gemini"
+                  ? " · Gemini"
+                  : voice.offline
+                    ? ""
+                    : ` · ${t("listening.online")}`}
               </option>
             ))}
           </select>
         )}
       </SettingsRow>
-      <SettingsRow label="Speed" wide>
+      <SettingsRow label={t("listening.speed")} wide>
         <SegmentedControl<string>
-          label="Reading speed"
+          label={t("listening.speed")}
           value={String(settings.rate)}
           onChange={(rate) => setNarrationSettings({ rate: Number(rate) })}
           options={NARRATION_RATES.map((rate) => ({ value: String(rate), label: `${rate}×` }))}
