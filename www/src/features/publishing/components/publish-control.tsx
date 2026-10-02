@@ -66,7 +66,7 @@ export function PublishControl({ entry, doc }: { entry: LibraryEntry; doc: Y.Doc
       <IconButton
         label={published ? "Published" : "Publish"}
         tone={published ? "accent" : "default"}
-        className="md:hidden"
+        className="@min-[600px]/note:hidden"
         aria-expanded={open}
         aria-controls={panelId}
         onClick={() => setOpen((v) => !v)}
@@ -75,7 +75,7 @@ export function PublishControl({ entry, doc }: { entry: LibraryEntry; doc: Y.Doc
       </IconButton>
       <Button
         variant={published ? "secondary" : "primary"}
-        className="max-md:hidden"
+        className="@max-[600px]/note:hidden"
         aria-expanded={open}
         aria-controls={panelId}
         onClick={() => setOpen((v) => !v)}

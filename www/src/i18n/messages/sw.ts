@@ -82,6 +82,14 @@ export const sw: Messages = {
     pin: "Bandika",
     unpin: "Bandua",
     deleteNote: "Futa dokezo",
+    more: "Zaidi",
+    status: {
+      loading: "Inafunguliwa…",
+      local: "Imehifadhiwa kwenye kifaa hiki",
+      connecting: "Inasawazisha…",
+      synced: "Imesawazishwa",
+      offline: "Nje ya mtandao, imehifadhiwa kwenye kifaa hiki",
+    },
     title: "Kichwa",
   },
   kinds: {

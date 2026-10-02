@@ -9,7 +9,9 @@ import type { SyncStatus } from "@notables/sync";
 import {
   Button,
   ChevronLeftIcon,
+  type ContextMenuItem,
   IconButton,
+  MoreIcon,
   openContextMenu,
   PinIcon,
   riseMotion,
@@ -46,13 +48,15 @@ import { moveNotesToBin } from "../../trash/lib/recycle-bin";
 import { noteFontItems } from "../actions/note-menu";
 import { useNoteProvider } from "../hooks/use-note-provider";
 
-const statusLabel: Record<SyncStatus, string> = {
-  loading: "Opening…",
-  local: "Saved on this device",
-  connecting: "Syncing…",
-  synced: "Synced",
-  offline: "Offline · saved on this device",
-};
+const statusLabel = (status: SyncStatus) => t(`notes.status.${status}`);
+
+/*
+ * The top bar answers to the width of the note's own pane, not the window:
+ * with the sidebar and list open, a wide window can still leave the note
+ * narrow. Below 860px the formatting tools float at the bottom; below
+ * 600px Share and Publish become icons; below 520px Pin, Font and Delete
+ * move into More. The save status shows its words only where they fit.
+ */
 
 export function NoteScreen({ noteId, viewId }: { noteId: string; viewId?: string }) {
   const entry = useEntry(noteId);
@@ -102,115 +106,162 @@ function NoteEditorScreen({ entry, viewId }: { entry: LibraryEntry; viewId?: str
     else void navigate({ to: "/", search: (s) => s });
   };
 
+  const moreItems = (): ContextMenuItem[] => [
+    {
+      label: entry.pinned ? t("notes.unpin") : t("notes.pin"),
+      icon: <PinIcon size={16} />,
+      onSelect: () => getLibrary().update(entry.id, { pinned: !entry.pinned }),
+    },
+    "divider",
+    ...noteFontItems(entry),
+    "divider",
+    {
+      label: t("notes.deleteNote"),
+      icon: <TrashIcon size={16} />,
+      destructive: true,
+      onSelect: remove,
+    },
+  ];
+
   return (
     <NotesEditor id={entry.id} provider={provider} bootstrap={entry.origin === getDeviceId()}>
-      <div className="relative flex min-h-0 grow flex-col overflow-y-auto">
-        <header className="glass-bar sticky top-0 z-20 flex h-14 shrink-0 items-center justify-between gap-2 px-3 pt-[env(safe-area-inset-top)] md:px-5">
-          {book ? (
-            // A chapter leads back to its book, on every screen size.
-            <Link
-              to="/books/$bookId"
-              params={{ bookId: book.id }}
-              className="flex min-h-11 min-w-0 items-center gap-0.5 px-1 text-[17px] text-accent-text no-underline"
-            >
-              <ChevronLeftIcon size={22} strokeWidth={2.2} className="shrink-0" />
-              <span className="max-w-[180px] truncate">{book.title || "Book"}</span>
-            </Link>
-          ) : (
-            <Link
-              to="/"
-              search={(s) => s}
-              className="flex min-h-11 items-center gap-0.5 px-1 text-[17px] text-accent-text no-underline md:hidden"
-            >
-              <ChevronLeftIcon size={22} strokeWidth={2.2} />
-              {view.title}
-            </Link>
-          )}
-          <BlockToolbar onRecord={startRecording} className="hidden md:flex" />
-          <div className="flex items-center gap-1.5 md:gap-2.5">
-            <StatusIndicator
-              state={
-                status === "connecting" || status === "loading"
-                  ? "syncing"
-                  : status === "offline"
-                    ? "offline"
-                    : "saved"
-              }
-              className="hidden lg:flex"
-            >
-              {statusLabel[status]}
-            </StatusIndicator>
-            <ReadAloudButton root={articleRef} title={entry.title} />
-            <AiAssist />
-            <IconButton
-              label={entry.pinned ? t("notes.unpin") : t("notes.pin")}
-              tone={entry.pinned ? "accent" : "default"}
-              onClick={() => getLibrary().update(entry.id, { pinned: !entry.pinned })}
-            >
-              <PinIcon size={19} />
-            </IconButton>
-            <IconButton
-              label={t("notes.font")}
-              onClick={(event) => {
-                const rect = event.currentTarget.getBoundingClientRect();
-                openContextMenu(rect.left, rect.bottom + 6, noteFontItems(entry));
-              }}
-            >
-              <span className="font-[family-name:var(--font-script)] text-[21px] leading-none font-semibold">
-                Aa
-              </span>
-            </IconButton>
-            <IconButton label={t("notes.deleteNote")} onClick={remove}>
-              <TrashIcon size={19} />
-            </IconButton>
-            <Button
-              variant="secondary"
-              className="max-md:hidden"
-              onClick={() => setSharing(true)}
-              data-tooltip={t("sharing.tooltip")}
-            >
-              <ShareIcon size={16} />
-              {shareSession
-                ? t("sharing.shared", { count: shareSession.peers.length + 1 })
-                : t("sharing.share")}
-            </Button>
-            <PublishControl entry={entry} doc={provider.doc} />
-          </div>
-        </header>
-
-        <article
-          ref={articleRef}
-          data-note-font={entry.font ?? noteFont}
-          className="flex grow justify-center px-6 pt-6 pb-36 md:pt-11"
-        >
-          <div className="flex w-full max-w-[640px] flex-col gap-4">
-            <p
-              data-read-aloud-skip
-              className="text-center font-sans text-[12px] text-label-tertiary md:text-left md:text-[13px]"
-            >
-              {formatFull(entry.createdAt)}
-            </p>
-            <div className="relative">
-              <NotesEditorContent
-                label={entry.title || t("notes.newNote")}
-                placeholder={t("notes.title")}
-                onDocumentChange={onDocumentChange}
-              />
+      <div className="@container/note relative flex min-h-0 grow flex-col">
+        <div className="relative flex min-h-0 grow flex-col overflow-y-auto">
+          <header className="glass-bar sticky top-0 z-20 flex h-14 shrink-0 items-center justify-between gap-2 px-3 pt-[env(safe-area-inset-top)] @min-[600px]/note:px-5">
+            {book ? (
+              // A chapter leads back to its book, on every screen size.
+              <Link
+                to="/books/$bookId"
+                params={{ bookId: book.id }}
+                className="flex min-h-11 min-w-0 items-center gap-0.5 px-1 text-[17px] text-accent-text no-underline"
+              >
+                <ChevronLeftIcon size={22} strokeWidth={2.2} className="shrink-0" />
+                <span className="max-w-[min(180px,30cqw)] truncate">{book.title || "Book"}</span>
+              </Link>
+            ) : (
+              <Link
+                to="/"
+                search={(s) => s}
+                className="flex min-h-11 min-w-0 items-center gap-0.5 px-1 text-[17px] text-accent-text no-underline md:hidden"
+              >
+                <ChevronLeftIcon size={22} strokeWidth={2.2} className="shrink-0" />
+                <span className="truncate @max-[420px]/note:sr-only">{view.title}</span>
+              </Link>
+            )}
+            <BlockToolbar onRecord={startRecording} className="@max-[860px]/note:hidden" />
+            <div className="ms-auto flex shrink-0 items-center gap-1 @min-[600px]/note:gap-2">
+              <StatusIndicator
+                state={
+                  status === "connecting" || status === "loading"
+                    ? "syncing"
+                    : status === "offline"
+                      ? "offline"
+                      : "saved"
+                }
+                className="px-1.5 whitespace-nowrap"
+                data-tooltip={statusLabel(status)}
+              >
+                <span className="sr-only @min-[600px]/note:not-sr-only @min-[860px]/note:sr-only @min-[1100px]/note:not-sr-only">
+                  {statusLabel(status)}
+                </span>
+              </StatusIndicator>
+              <ReadAloudButton root={articleRef} title={entry.title} />
+              <AiAssist />
+              <IconButton
+                label={entry.pinned ? t("notes.unpin") : t("notes.pin")}
+                tone={entry.pinned ? "accent" : "default"}
+                className="@max-[520px]/note:hidden"
+                onClick={() => getLibrary().update(entry.id, { pinned: !entry.pinned })}
+              >
+                <PinIcon size={19} />
+              </IconButton>
+              <IconButton
+                label={t("notes.font")}
+                className="@max-[520px]/note:hidden"
+                onClick={(event) => {
+                  const rect = event.currentTarget.getBoundingClientRect();
+                  openContextMenu(rect.left, rect.bottom + 6, noteFontItems(entry));
+                }}
+              >
+                <span className="font-[family-name:var(--font-script)] text-[21px] leading-none font-semibold">
+                  Aa
+                </span>
+              </IconButton>
+              <IconButton
+                label={t("notes.deleteNote")}
+                className="@max-[520px]/note:hidden"
+                onClick={remove}
+              >
+                <TrashIcon size={19} />
+              </IconButton>
+              <IconButton
+                label={t("sharing.share")}
+                tone={shareSession ? "accent" : "default"}
+                className="@min-[600px]/note:hidden"
+                onClick={() => setSharing(true)}
+              >
+                <ShareIcon size={19} />
+              </IconButton>
+              <Button
+                variant="secondary"
+                className="@max-[600px]/note:hidden"
+                onClick={() => setSharing(true)}
+                data-tooltip={t("sharing.tooltip")}
+              >
+                <ShareIcon size={16} />
+                {shareSession
+                  ? t("sharing.shared", { count: shareSession.peers.length + 1 })
+                  : t("sharing.share")}
+              </Button>
+              <PublishControl entry={entry} doc={provider.doc} />
+              <IconButton
+                label={t("notes.more")}
+                className="@min-[520px]/note:hidden"
+                onClick={(event) => {
+                  const rect = event.currentTarget.getBoundingClientRect();
+                  openContextMenu(rect.right - 220, rect.bottom + 6, moreItems());
+                }}
+              >
+                <MoreIcon size={20} />
+              </IconButton>
             </div>
-          </div>
-        </article>
-      </div>
+          </header>
 
-      <motion.footer
-        {...riseMotion}
-        className="glass-menu fixed inset-x-3 bottom-[max(12px,env(safe-area-inset-bottom))] z-20 flex rounded-full px-2 py-1 md:hidden"
-      >
-        <BlockToolbar
-          onRecord={startRecording}
-          menuPlacement="above"
-          className="w-full justify-around"
-        />
-      </motion.footer>
+          <article
+            ref={articleRef}
+            data-note-font={entry.font ?? noteFont}
+            className="flex grow justify-center px-6 pt-6 pb-36 @min-[600px]/note:pt-11"
+          >
+            <div className="flex w-full max-w-[640px] flex-col gap-4">
+              <p
+                data-read-aloud-skip
+                className="text-center font-sans text-[12px] text-label-tertiary @min-[600px]/note:text-start @min-[600px]/note:text-[13px]"
+              >
+                {formatFull(entry.createdAt)}
+              </p>
+              <div className="relative">
+                <NotesEditorContent
+                  label={entry.title || t("notes.newNote")}
+                  placeholder={t("notes.title")}
+                  onDocumentChange={onDocumentChange}
+                />
+              </div>
+            </div>
+          </article>
+        </div>
+
+        {/* The formatting tools float at the bottom wherever the top bar has no room for them. */}
+        <motion.footer
+          {...riseMotion}
+          className="glass-menu absolute inset-x-3 bottom-[max(12px,env(safe-area-inset-bottom))] z-20 mx-auto flex max-w-[480px] rounded-full px-2 py-1 @min-[860px]/note:hidden"
+        >
+          <BlockToolbar
+            onRecord={startRecording}
+            menuPlacement="above"
+            className="w-full justify-around"
+          />
+        </motion.footer>
+      </div>
 
       <ShareSheet entry={entry} open={sharing} onClose={() => setSharing(false)} />
       <NoteRecorder open={recording} title={entry.title} onClose={() => setRecording(false)} />

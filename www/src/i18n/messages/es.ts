@@ -82,6 +82,14 @@ export const es: Messages = {
     pin: "Fijar",
     unpin: "Dejar de fijar",
     deleteNote: "Eliminar nota",
+    more: "Más",
+    status: {
+      loading: "Abriendo…",
+      local: "Guardado en este dispositivo",
+      connecting: "Sincronizando…",
+      synced: "Sincronizado",
+      offline: "Sin conexión, guardado en este dispositivo",
+    },
     title: "Título",
   },
   kinds: {

@@ -82,6 +82,14 @@ export const ar: Messages = {
     pin: "تثبيت",
     unpin: "إلغاء التثبيت",
     deleteNote: "حذف الملاحظة",
+    more: "المزيد",
+    status: {
+      loading: "جارٍ الفتح…",
+      local: "محفوظ على هذا الجهاز",
+      connecting: "جارٍ المزامنة…",
+      synced: "تمت المزامنة",
+      offline: "غير متصل، محفوظ على هذا الجهاز",
+    },
     title: "العنوان",
   },
   kinds: {

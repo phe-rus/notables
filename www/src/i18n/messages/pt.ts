@@ -82,6 +82,14 @@ export const pt: Messages = {
     pin: "Afixar",
     unpin: "Desafixar",
     deleteNote: "Apagar nota",
+    more: "Mais",
+    status: {
+      loading: "Abrindo…",
+      local: "Salvo neste dispositivo",
+      connecting: "Sincronizando…",
+      synced: "Sincronizado",
+      offline: "Offline, salvo neste dispositivo",
+    },
     title: "Título",
   },
   kinds: {

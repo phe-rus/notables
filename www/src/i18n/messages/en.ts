@@ -84,6 +84,14 @@ export const en = {
     pin: "Pin",
     unpin: "Unpin",
     deleteNote: "Delete note",
+    more: "More",
+    status: {
+      loading: "Opening…",
+      local: "Saved on this device",
+      connecting: "Syncing…",
+      synced: "Synced",
+      offline: "Offline, saved on this device",
+    },
     title: "Title",
   },
   kinds: {

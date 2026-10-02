@@ -82,6 +82,14 @@ export const fr: Messages = {
     pin: "Épingler",
     unpin: "Désépingler",
     deleteNote: "Supprimer la note",
+    more: "Plus",
+    status: {
+      loading: "Ouverture…",
+      local: "Enregistré sur cet appareil",
+      connecting: "Synchronisation…",
+      synced: "Synchronisé",
+      offline: "Hors ligne, enregistré sur cet appareil",
+    },
     title: "Titre",
   },
   kinds: {
