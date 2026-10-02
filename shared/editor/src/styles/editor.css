@@ -688,6 +688,14 @@
     box-shadow 0.15s ease;
 }
 
+/* The colour well: the current colour, with a ring that says it opens choices. */
+.nt-ink-swatch.is-well > span {
+  box-shadow:
+    inset 0 0 0 1px rgb(0 0 0 / 0.15),
+    0 0 0 2px var(--color-background),
+    0 0 0 3.5px var(--color-separator);
+}
+
 /* The chosen colour wears a ring, as in the system colour pickers. */
 .nt-ink-swatch[aria-pressed="true"] > span {
   transform: scale(0.82);

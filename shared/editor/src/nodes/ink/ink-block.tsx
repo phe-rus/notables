@@ -40,6 +40,13 @@ const GROW_MARGIN = 80;
 const GROW_STEP = 240;
 const ERASER_RADIUS = 14;
 
+let insertedAt = 0;
+
+/** A page added just now opens with its tools; one already in a note waits for a tap. */
+export function markInkInserted() {
+  insertedAt = Date.now();
+}
+
 function penSeen(): boolean {
   try {
     return localStorage.getItem(PEN_SEEN) !== null;
@@ -84,7 +91,8 @@ export function InkBlock({
   const nextFrame = useRef(0);
   const frame = useRef<HTMLDivElement>(null);
   // The tools show while this page is being written on, and a new page starts with them.
-  const [active, setActive] = useState(strokes.length === 0);
+  const [active, setActive] = useState(() => Date.now() - insertedAt < 1000);
+  const [choosingColor, setChoosingColor] = useState(false);
 
   // A tap on the page brings the tools; scrolling past it doesn't (no click).
   useEffect(() => {
@@ -98,7 +106,9 @@ export function InkBlock({
   useEffect(() => {
     if (!active) return;
     const away = (event: globalThis.PointerEvent) => {
-      if (!frame.current?.contains(event.target as Node)) setActive(false);
+      if (frame.current?.contains(event.target as Node)) return;
+      setActive(false);
+      setChoosingColor(false);
     };
     document.addEventListener("pointerdown", away, true);
     return () => document.removeEventListener("pointerdown", away, true);
@@ -236,59 +246,75 @@ export function InkBlock({
             exit={{ opacity: 0, y: -6, scale: 0.97 }}
             transition={{ duration: 0.18, ease: [0.2, 0.8, 0.2, 1] }}
           >
-            {tools.map(({ id, label, Icon }) => (
-              <button
-                key={id}
-                type="button"
-                aria-label={label}
-                title={label}
-                aria-pressed={tool === id}
-                onClick={() => pick(() => setTool(id))}
-                className="nt-ink-tool"
-              >
-                <Icon size={20} />
-              </button>
-            ))}
-            <span className="nt-ink-divider" />
-            {inkColors.map((option) => (
-              <button
-                key={option}
-                type="button"
-                aria-label={inkColorLabels[option]}
-                title={inkColorLabels[option]}
-                aria-pressed={color === option && tool !== "eraser"}
-                onClick={() =>
-                  pick(() => {
-                    setColor(option);
-                    if (tool === "eraser") setTool("pen");
-                  })
-                }
-                className="nt-ink-swatch"
-              >
-                <span className={`nt-ink-fill-${option}`} />
-              </button>
-            ))}
-            <span className="nt-ink-divider" />
-            <button
-              type="button"
-              aria-label="Undo"
-              title="Undo"
-              className="nt-ink-tool"
-              onClick={() => editor.dispatchCommand(UNDO_COMMAND, undefined)}
-            >
-              <UndoIcon size={20} />
-            </button>
-            {touchDevice && (
-              <button
-                type="button"
-                aria-label="Draw with finger"
-                title="Draw with finger"
-                aria-pressed={fingerDraws}
-                onClick={() => pick(() => setFingerDraws((value) => !value))}
-                className="nt-ink-tool"
-              >
-                <TouchIcon size={20} />
-              </button>
+            {choosingColor ? (
+              // The colours take the palette's place until one is picked.
+              inkColors.map((option) => (
+                <button
+                  key={option}
+                  type="button"
+                  aria-label={inkColorLabels[option]}
+                  title={inkColorLabels[option]}
+                  aria-pressed={color === option}
+                  onClick={() =>
+                    pick(() => {
+                      setColor(option);
+                      if (tool === "eraser") setTool("pen");
+                      setChoosingColor(false);
+                    })
+                  }
+                  className="nt-ink-swatch"
+                >
+                  <span className={`nt-ink-fill-${option}`} />
+                </button>
+              ))
+            ) : (
+              <>
+                {tools.map(({ id, label, Icon }) => (
+                  <button
+                    key={id}
+                    type="button"
+                    aria-label={label}
+                    title={label}
+                    aria-pressed={tool === id}
+                    onClick={() => pick(() => setTool(id))}
+                    className="nt-ink-tool"
+                  >
+                    <Icon size={20} />
+                  </button>
+                ))}
+                <span className="nt-ink-divider" />
+                <button
+                  type="button"
+                  aria-label={`Colour: ${inkColorLabels[color]}`}
+                  title="Colour"
+                  onClick={() => pick(() => setChoosingColor(true))}
+                  className="nt-ink-swatch is-well"
+                >
+                  <span className={`nt-ink-fill-${color}`} />
+                </button>
+                <span className="nt-ink-divider" />
+                <button
+                  type="button"
+                  aria-label="Undo"
+                  title="Undo"
+                  className="nt-ink-tool"
+                  onClick={() => editor.dispatchCommand(UNDO_COMMAND, undefined)}
+                >
+                  <UndoIcon size={20} />
+                </button>
+                {touchDevice && (
+                  <button
+                    type="button"
+                    aria-label="Draw with finger"
+                    title="Draw with finger"
+                    aria-pressed={fingerDraws}
+                    onClick={() => pick(() => setFingerDraws((value) => !value))}
+                    className="nt-ink-tool"
+                  >
+                    <TouchIcon size={20} />
+                  </button>
+                )}
+              </>
             )}
           </motion.div>
         )}

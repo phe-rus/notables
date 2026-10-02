@@ -2,6 +2,7 @@ import { useLexicalComposerContext } from "@lexical/react/LexicalComposerContext
 import { $insertNodeToNearestRoot, mergeRegister } from "@lexical/utils";
 import { COMMAND_PRIORITY_EDITOR, createCommand, type LexicalCommand } from "lexical";
 import { useEffect } from "react";
+import { markInkInserted } from "../../nodes/ink/ink-block";
 import {
   $createAudioClipNode,
   $createImageNode,
@@ -39,7 +40,12 @@ export function MediaPlugin() {
         editor.registerCommand(
           INSERT_INK_COMMAND,
           () => {
+            markInkInserted();
             $insertNodeToNearestRoot($createInkNode());
+            // On a touch screen the page is for the pen or finger: no keyboard over it.
+            if (window.matchMedia("(pointer: coarse)").matches) {
+              setTimeout(() => editor.blur(), 0);
+            }
             return true;
           },
           COMMAND_PRIORITY_EDITOR,
