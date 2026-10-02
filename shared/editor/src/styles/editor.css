@@ -11,7 +11,8 @@
   min-height: 60vh;
   outline: none;
   font-family: var(--font-serif);
-  font-size: 20px;
+  /* The app may set --nt-body-size for people who prefer larger or smaller text. */
+  font-size: var(--nt-body-size, 20px);
   line-height: 1.6;
   color: var(--color-ink);
   caret-color: var(--color-accent-text);
@@ -37,7 +38,7 @@
   pointer-events: none;
   user-select: none;
   font-family: var(--font-serif);
-  font-size: 20px;
+  font-size: var(--nt-body-size, 20px);
   line-height: 1.6;
   color: var(--color-label-tertiary);
 }
