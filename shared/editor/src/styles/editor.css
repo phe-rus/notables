@@ -618,54 +618,87 @@
 }
 
 .nt-ink-toolbar {
+  /* One row of tools that stays in reach above a long page, under the top bar. */
+  position: sticky;
+  top: calc(env(safe-area-inset-top) + 64px);
+  z-index: 5;
   display: flex;
-  flex-wrap: wrap;
   align-items: center;
-  gap: 4px;
+  gap: 2px;
   align-self: flex-start;
+  max-width: 100%;
+  overflow-x: auto;
+  scrollbar-width: none;
   padding: 4px;
   border-radius: 999px;
-  background: var(--color-fill);
-  font-size: 13px;
+  background: color-mix(in srgb, var(--color-elevated) 82%, transparent);
+  backdrop-filter: blur(20px) saturate(1.6);
+  -webkit-backdrop-filter: blur(20px) saturate(1.6);
+  box-shadow:
+    inset 0 0 0 0.5px var(--color-separator),
+    0 6px 20px -8px rgb(0 0 0 / 0.28);
+}
+
+.nt-ink-toolbar::-webkit-scrollbar {
+  display: none;
 }
 
 .nt-ink-tool {
-  height: 28px;
-  padding: 0 11px;
+  display: grid;
+  flex: none;
+  place-items: center;
+  width: 40px;
+  height: 40px;
   border-radius: 999px;
-  font-weight: 600;
   color: var(--color-label-secondary);
   transition:
     background-color 0.15s ease,
-    color 0.15s ease;
+    color 0.15s ease,
+    transform 0.15s ease;
 }
 
 .nt-ink-tool:hover {
   color: var(--color-label);
 }
 
+.nt-ink-tool:active {
+  transform: scale(0.92);
+}
+
 .nt-ink-tool[aria-pressed="true"] {
-  background: var(--color-elevated);
-  color: var(--color-label);
-  box-shadow: 0 1px 3px rgb(0 0 0 / 0.12);
+  background: var(--color-accent-soft);
+  color: var(--color-accent-text);
 }
 
 .nt-ink-swatch {
-  width: 20px;
-  height: 20px;
-  margin: 0 2px;
-  border-radius: 999px;
-  box-shadow: inset 0 0 0 1px rgb(0 0 0 / 0.15);
-  transition: transform 0.15s ease;
+  display: grid;
+  flex: none;
+  place-items: center;
+  width: 36px;
+  height: 40px;
 }
 
-.nt-ink-swatch[aria-pressed="true"] {
-  transform: scale(1.15);
-  outline: 2px solid var(--color-accent);
-  outline-offset: 2px;
+.nt-ink-swatch > span {
+  width: 22px;
+  height: 22px;
+  border-radius: 999px;
+  box-shadow: inset 0 0 0 1px rgb(0 0 0 / 0.15);
+  transition:
+    transform 0.15s ease,
+    box-shadow 0.15s ease;
+}
+
+/* The chosen colour wears a ring, as in the system colour pickers. */
+.nt-ink-swatch[aria-pressed="true"] > span {
+  transform: scale(0.82);
+  box-shadow:
+    inset 0 0 0 1px rgb(0 0 0 / 0.15),
+    0 0 0 3px var(--color-background),
+    0 0 0 5px var(--color-label-tertiary);
 }
 
 .nt-ink-divider {
+  flex: none;
   width: 1px;
   height: 18px;
   margin: 0 4px;

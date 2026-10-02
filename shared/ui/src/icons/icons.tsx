@@ -71,6 +71,7 @@ import {
   Task01Icon,
   Tick02Icon,
   Time04Icon,
+  Touch01Icon,
   UnfoldMoreIcon,
   UserAdd01Icon,
   UserMultipleIcon,
@@ -166,6 +167,7 @@ export const UndoIcon = icon(HugeUndoIcon, "UndoIcon");
 export const RedoIcon = icon(HugeRedoIcon, "RedoIcon");
 export const PointerIcon = icon(Cursor01Icon, "PointerIcon");
 export const EraserIcon = icon(Eraser01Icon, "EraserIcon");
+export const TouchIcon = icon(Touch01Icon, "TouchIcon");
 export const BubbleIcon = icon(BubbleChatIcon, "BubbleIcon");
 export const BrushIcon = icon(PaintBrush02Icon, "BrushIcon");
 export const LayoutIcon = icon(LayoutGridIcon, "LayoutIcon");

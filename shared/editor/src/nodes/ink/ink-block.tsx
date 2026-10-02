@@ -1,7 +1,16 @@
 import { useLexicalComposerContext } from "@lexical/react/LexicalComposerContext";
 import { useLexicalEditable } from "@lexical/react/useLexicalEditable";
-import { cn } from "@notables/ui";
+import {
+  cn,
+  EraserIcon,
+  HighlighterIcon,
+  haptic,
+  PenIcon,
+  TouchIcon,
+  UndoIcon,
+} from "@notables/ui";
 import { $getNodeByKey, type NodeKey, UNDO_COMMAND } from "lexical";
+import { AnimatePresence, motion } from "motion/react";
 import { type PointerEvent, useEffect, useRef, useState } from "react";
 import {
   INK_WIDTH,
@@ -19,6 +28,12 @@ import { $isInkNode } from "./ink-node";
 import { InkView } from "./ink-view";
 
 type Tool = InkTool | "eraser";
+
+const tools: Array<{ id: Tool; label: string; Icon: typeof PenIcon }> = [
+  { id: "pen", label: "Pen", Icon: PenIcon },
+  { id: "marker", label: "Marker", Icon: HighlighterIcon },
+  { id: "eraser", label: "Eraser", Icon: EraserIcon },
+];
 
 const PEN_SEEN = "notables:pen-seen";
 const GROW_MARGIN = 80;
@@ -66,7 +81,33 @@ export function InkBlock({
   const [live, setLive] = useState<InkStroke | null>(null);
   const [erased, setErased] = useState<Set<number>>(new Set());
   const drawing = useRef<{ pointerId: number; stroke: InkStroke | null } | null>(null);
-  const frame = useRef(0);
+  const nextFrame = useRef(0);
+  const frame = useRef<HTMLDivElement>(null);
+  // The tools show while this page is being written on, and a new page starts with them.
+  const [active, setActive] = useState(strokes.length === 0);
+
+  // A tap on the page brings the tools; scrolling past it doesn't (no click).
+  useEffect(() => {
+    const element = frame.current;
+    if (!element || !editable) return;
+    const tapped = () => setActive(true);
+    element.addEventListener("click", tapped);
+    return () => element.removeEventListener("click", tapped);
+  }, [editable]);
+
+  useEffect(() => {
+    if (!active) return;
+    const away = (event: globalThis.PointerEvent) => {
+      if (!frame.current?.contains(event.target as Node)) setActive(false);
+    };
+    document.addEventListener("pointerdown", away, true);
+    return () => document.removeEventListener("pointerdown", away, true);
+  }, [active]);
+
+  const pick = (choose: () => void) => {
+    haptic("selection");
+    choose();
+  };
 
   useEffect(() => setTouchDevice(navigator.maxTouchPoints > 0), []);
 
@@ -103,6 +144,7 @@ export function InkBlock({
   const onPointerDown = (event: PointerEvent<HTMLDivElement>) => {
     if (drawing.current || !accepts(event)) return;
     event.preventDefault();
+    setActive(true);
     try {
       // Keep the stroke even if the pen strays outside the area.
       event.currentTarget.setPointerCapture(event.pointerId);
@@ -135,8 +177,8 @@ export function InkBlock({
     }
     const stroke = current.stroke;
     if (stroke) {
-      cancelAnimationFrame(frame.current);
-      frame.current = requestAnimationFrame(() =>
+      cancelAnimationFrame(nextFrame.current);
+      nextFrame.current = requestAnimationFrame(() =>
         setLive({ ...stroke, points: [...stroke.points] }),
       );
     }
@@ -146,7 +188,7 @@ export function InkBlock({
     const current = drawing.current;
     if (!current || current.pointerId !== event.pointerId) return;
     drawing.current = null;
-    cancelAnimationFrame(frame.current);
+    cancelAnimationFrame(nextFrame.current);
     setLive(null);
     if (current.stroke) {
       if (current.stroke.points.length >= 3) commit([...strokes, current.stroke]);
@@ -178,54 +220,79 @@ export function InkBlock({
   const visible = erased.size ? strokes.filter((_, index) => !erased.has(index)) : strokes;
 
   return (
-    <div className={cn("nt-ink-frame", editable && "is-editable")}>
-      {editable && (
-        <div className="nt-ink-toolbar" role="toolbar" aria-label="Handwriting tools">
-          {(["pen", "marker", "eraser"] as const).map((option) => (
-            <button
-              key={option}
-              type="button"
-              aria-pressed={tool === option}
-              onClick={() => setTool(option)}
-              className="nt-ink-tool"
-            >
-              {option === "pen" ? "Pen" : option === "marker" ? "Marker" : "Eraser"}
-            </button>
-          ))}
-          <span className="nt-ink-divider" />
-          {inkColors.map((option) => (
-            <button
-              key={option}
-              type="button"
-              aria-label={inkColorLabels[option]}
-              aria-pressed={color === option && tool !== "eraser"}
-              onClick={() => {
-                setColor(option);
-                if (tool === "eraser") setTool("pen");
-              }}
-              className={`nt-ink-swatch nt-ink-fill-${option}`}
-            />
-          ))}
-          <span className="nt-ink-divider" />
-          <button
-            type="button"
-            className="nt-ink-tool"
-            onClick={() => editor.dispatchCommand(UNDO_COMMAND, undefined)}
+    <div
+      ref={frame}
+      className={cn("nt-ink-frame", editable && "is-editable", active && "is-active")}
+    >
+      <AnimatePresence>
+        {editable && active && (
+          <motion.div
+            key="tools"
+            className="nt-ink-toolbar"
+            role="toolbar"
+            aria-label="Handwriting tools"
+            initial={{ opacity: 0, y: -6, scale: 0.97 }}
+            animate={{ opacity: 1, y: 0, scale: 1 }}
+            exit={{ opacity: 0, y: -6, scale: 0.97 }}
+            transition={{ duration: 0.18, ease: [0.2, 0.8, 0.2, 1] }}
           >
-            Undo
-          </button>
-          {touchDevice && (
+            {tools.map(({ id, label, Icon }) => (
+              <button
+                key={id}
+                type="button"
+                aria-label={label}
+                title={label}
+                aria-pressed={tool === id}
+                onClick={() => pick(() => setTool(id))}
+                className="nt-ink-tool"
+              >
+                <Icon size={20} />
+              </button>
+            ))}
+            <span className="nt-ink-divider" />
+            {inkColors.map((option) => (
+              <button
+                key={option}
+                type="button"
+                aria-label={inkColorLabels[option]}
+                title={inkColorLabels[option]}
+                aria-pressed={color === option && tool !== "eraser"}
+                onClick={() =>
+                  pick(() => {
+                    setColor(option);
+                    if (tool === "eraser") setTool("pen");
+                  })
+                }
+                className="nt-ink-swatch"
+              >
+                <span className={`nt-ink-fill-${option}`} />
+              </button>
+            ))}
+            <span className="nt-ink-divider" />
             <button
               type="button"
-              aria-pressed={fingerDraws}
-              onClick={() => setFingerDraws((value) => !value)}
+              aria-label="Undo"
+              title="Undo"
               className="nt-ink-tool"
+              onClick={() => editor.dispatchCommand(UNDO_COMMAND, undefined)}
             >
-              Draw with finger
+              <UndoIcon size={20} />
             </button>
-          )}
-        </div>
-      )}
+            {touchDevice && (
+              <button
+                type="button"
+                aria-label="Draw with finger"
+                title="Draw with finger"
+                aria-pressed={fingerDraws}
+                onClick={() => pick(() => setFingerDraws((value) => !value))}
+                className="nt-ink-tool"
+              >
+                <TouchIcon size={20} />
+              </button>
+            )}
+          </motion.div>
+        )}
+      </AnimatePresence>
       <div
         ref={surface}
         className={cn("nt-ink-surface", editable && `is-${tool}`)}
@@ -241,7 +308,7 @@ export function InkBlock({
           <p className="nt-ink-hint">Write or draw here with a pen, your finger or the mouse.</p>
         )}
       </div>
-      {editable && (
+      {editable && active && (
         <button type="button" className="nt-ink-room" onClick={addRoom}>
           More room
         </button>
