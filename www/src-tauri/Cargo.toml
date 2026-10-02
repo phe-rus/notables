@@ -42,4 +42,5 @@ strip = true
 
 # Linux: WebKitGTK refuses the microphone unless the app approves the request.
 [target.'cfg(target_os = "linux")'.dependencies]
+gtk = "0.18"
 webkit2gtk = "2.0.2"

@@ -8,6 +8,7 @@ mod media_permissions;
 mod storage;
 mod system_settings;
 mod transcription;
+mod window_frame;
 
 use tauri::Manager;
 
@@ -41,6 +42,7 @@ pub fn run() {
             transcription::commands::whisper_model_status,
             transcription::commands::whisper_download_model,
             transcription::commands::whisper_transcribe,
+            window_frame::window_frame,
         ])
         .setup(|app| {
             if cfg!(debug_assertions) {
@@ -62,6 +64,7 @@ pub fn run() {
                 window.set_shadow(true)?;
             }
             media_permissions::allow_microphone(app)?;
+            window_frame::setup(app)?;
             let data_dir = app.path().app_data_dir()?;
             app.manage(Storage::open(&data_dir)?);
             Ok(())
