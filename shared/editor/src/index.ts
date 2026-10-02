@@ -16,6 +16,7 @@ export { NotesEditorContent, type NotesEditorContentProps } from "./editor/notes
 export { type DocumentSnapshot, useDocumentSnapshot } from "./hooks/use-document-snapshot";
 export { useEditorCommands } from "./hooks/use-editor-commands";
 export { type SelectionState, useSelectionState } from "./hooks/use-selection-state";
+export { useWritingBridge, type WritingSource } from "./hooks/use-writing-bridge";
 export { sanitizeUrl } from "./lib/sanitize-url";
 export { MediaImage } from "./media/media-image";
 export { type MediaResolver, MediaResolverProvider, useMediaSource } from "./media/media-source";

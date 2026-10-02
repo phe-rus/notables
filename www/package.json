@@ -15,6 +15,7 @@
     "tauri": "tauri"
   },
   "dependencies": {
+    "@anthropic-ai/sdk": "0.131.0",
     "@fontsource-variable/caveat": "5.3.0",
     "@fontsource-variable/newsreader": "5.3.0",
     "@fontsource/patrick-hand": "5.3.0",

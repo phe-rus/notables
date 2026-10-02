@@ -22,6 +22,7 @@ import { motion } from "motion/react";
 import { useCallback, useState } from "react";
 import { getDeviceId } from "../../../platform/device-identity";
 import { saveNoteContent } from "../../../platform/storage/note-content-cache";
+import { AiAssist } from "../../ai/components/ai-assist";
 import { PendingNarration } from "../../books/narration/components/pending-narration";
 import { useBook } from "../../books/store/book-store";
 import { formatFull } from "../../library/lib/date-format";
@@ -123,6 +124,7 @@ function NoteEditorScreen({ entry, viewId }: { entry: LibraryEntry; viewId?: str
             >
               {statusLabel[status]}
             </StatusIndicator>
+            <AiAssist />
             <IconButton
               label={entry.pinned ? "Unpin" : "Pin"}
               tone={entry.pinned ? "accent" : "default"}

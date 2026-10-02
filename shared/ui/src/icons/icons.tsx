@@ -1,5 +1,6 @@
 import {
   Add01Icon,
+  AiMagicIcon,
   Alert02Icon,
   ArrowDown01Icon,
   ArrowLeft01Icon,
@@ -131,6 +132,7 @@ export const HighlighterIcon = icon(HugeHighlighterIcon, "HighlighterIcon");
 export const ChaptersIcon = icon(LeftToRightListBulletIcon, "ChaptersIcon");
 export const SleepIcon = icon(Moon02Icon, "SleepIcon");
 export const ExpandIcon = icon(FullScreenIcon, "ExpandIcon");
+export const SparkleIcon = icon(AiMagicIcon, "SparkleIcon");
 export const ThumbsUpIcon = toggleIcon(HugeThumbsUpIcon, "ThumbsUpIcon");
 export const HeartIcon = toggleIcon(FavouriteIcon, "HeartIcon");
 export const StarIcon = toggleIcon(HugeStarIcon, "StarIcon");

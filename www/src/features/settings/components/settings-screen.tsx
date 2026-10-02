@@ -4,6 +4,7 @@ import { AppMark } from "../../../components/brand/app-mark";
 import { CollapsedSidebarControls } from "../../../components/window/collapsed-sidebar-controls";
 import { setAuthorName, useAuthorName } from "../../../platform/author-preferences";
 import { isTauri } from "../../../platform/runtime";
+import { AiSettingsSection } from "../../ai/components/ai-settings-section";
 import { sidebarIcons } from "../../library/components/library-sidebar";
 import { SidebarEditor } from "../../library/components/sidebar-editor";
 import { type NoteFont, noteFontLabels, noteFonts } from "../../library/model/note-fonts";
@@ -181,6 +182,8 @@ export function SettingsScreen({ onOpenSidebar }: { onOpenSidebar: () => void })
               />
             </SettingsRow>
           </SettingsGroup>
+
+          <AiSettingsSection />
 
           <SettingsGroup title="About">
             <div className="flex items-center gap-4 px-4 py-4">

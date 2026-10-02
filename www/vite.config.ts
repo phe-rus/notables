@@ -66,6 +66,7 @@ export default defineConfig({
       "yjs",
       // Loaded on demand by the importers; bundled up front so the first
       // import doesn't reload the page in development.
+      "@anthropic-ai/sdk",
       "fflate",
       "pdfjs-dist/legacy/build/pdf.mjs",
     ],
