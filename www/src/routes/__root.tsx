@@ -2,8 +2,9 @@ import { MediaResolverProvider } from "@notables/editor";
 import { ContextMenuHost, DialogHost, Toaster, TooltipHost } from "@notables/ui";
 import { createRootRoute, HeadContent, Outlet, Scripts } from "@tanstack/react-router";
 import { MotionConfig } from "motion/react";
-import type { ReactNode } from "react";
+import { type ReactNode, useEffect } from "react";
 import { resolveMediaUrl } from "../platform/storage/media-store";
+import { startWindowFrame } from "../platform/window-frame";
 import styles from "../styles/app.css?url";
 
 export const Route = createRootRoute({
@@ -38,6 +39,7 @@ function RootComponent() {
 }
 
 function RootDocument({ children }: { children: ReactNode }) {
+  useEffect(startWindowFrame, []);
   return (
     <html lang="en">
       <head>

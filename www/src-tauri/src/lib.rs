@@ -55,6 +55,11 @@ pub fn run() {
             #[cfg(any(target_os = "windows", target_os = "linux"))]
             if let Some(window) = app.get_webview_window("main") {
                 window.set_decorations(false)?;
+                // On Windows 11 a shadow also gives the undecorated window the
+                // system's rounded corners. Linux rounds the page itself, in a
+                // transparent window (tauri.linux.conf.json).
+                #[cfg(target_os = "windows")]
+                window.set_shadow(true)?;
             }
             media_permissions::allow_microphone(app)?;
             let data_dir = app.path().app_data_dir()?;

@@ -40,3 +40,20 @@
     -webkit-print-color-adjust: exact;
   }
 }
+
+/* Linux desktop windows draw their own rounded corners (see window-frame.ts). */
+html[data-window-frame="rounded"] {
+  background: transparent;
+}
+html[data-window-frame="rounded"] body {
+  clip-path: inset(0 round 10px);
+}
+html[data-window-frame="rounded"] body::after {
+  content: "";
+  position: fixed;
+  inset: 0;
+  z-index: 2147483647;
+  pointer-events: none;
+  border-radius: 10px;
+  box-shadow: inset 0 0 0 1px var(--color-separator);
+}
