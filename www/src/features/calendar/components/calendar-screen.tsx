@@ -7,7 +7,6 @@ import {
   FIRST_YEAR,
   LAST_YEAR,
   localDay,
-  occurrencesBetween,
   occurrencesTouching,
   weekday,
 } from "@notables/core";
@@ -141,14 +140,9 @@ export function CalendarScreen({
     return map;
   }, [events, view, range[0], range[1]]);
 
-  const busy = useMemo(() => {
-    const days = new Set<Day>();
-    if (view !== "year") return days;
-    for (const event of events) {
-      for (const on of occurrencesBetween(event, range[0], range[1])) days.add(on);
-    }
-    return days;
-  }, [events, view, range[0], range[1]]);
+  // In the Year view the title follows the year scrolled to.
+  const [scrolledYear, setScrolledYear] = useState(year);
+  useEffect(() => setScrolledYear(year), [year]);
 
   const dayEvents = useMemo(
     () =>
@@ -207,7 +201,7 @@ export function CalendarScreen({
     view === "years"
       ? `${pageStart}\u2013${pageEnd}`
       : view === "year"
-        ? String(year)
+        ? String(scrolledYear)
         : view === "day"
           ? format({ day: "numeric", month: "long", year: "numeric" }).format(asDate(selected))
           : format({ month: "long", year: "numeric" }).format(asDate(selected));
@@ -247,8 +241,16 @@ export function CalendarScreen({
             </IconButton>
             <ZoomTitle
               title={title}
-              year={year}
-              zoomOut={outer[view] ? () => zoomTo(selected, outer[view] as CalendarView) : null}
+              year={view === "year" ? scrolledYear : year}
+              zoomOut={
+                outer[view]
+                  ? () =>
+                      zoomTo(
+                        view === "year" ? dayInMonth(scrolledYear, month, 1) : selected,
+                        outer[view] as CalendarView,
+                      )
+                  : null
+              }
               onYear={(next) => go(dayInMonth(next, month, Number(selected.slice(8))), "year")}
             />
           </div>
@@ -313,10 +315,9 @@ export function CalendarScreen({
               year={year}
               today={today}
               weekStart={weekStart}
-              busy={busy}
-              holidays={holidays}
-              onMonth={(m) => zoomTo(dayInMonth(year, m, 1), "month")}
-              onDay={(day) => zoomTo(day, "month")}
+              events={events}
+              onVisibleYear={setScrolledYear}
+              onMonth={(y, m) => zoomTo(dayInMonth(y, m, 1), "month")}
             />
           ) : view === "month" ? (
             <MonthView
