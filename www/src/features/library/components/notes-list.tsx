@@ -13,6 +13,7 @@ import { Link, useNavigate } from "@tanstack/react-router";
 import { AnimatePresence, motion } from "motion/react";
 import { useDeferredValue, useMemo, useState } from "react";
 import { CollapsedSidebarControls } from "../../../components/window/collapsed-sidebar-controls";
+import { BookShelf, useShelfBooks } from "../../books/components/book-shelf";
 import { noteMenu } from "../../notes/actions/note-menu";
 import { search } from "../../search/lib/rank";
 import { useSearchableNotes } from "../../search/lib/use-searchable-notes";
@@ -54,6 +55,9 @@ export function NotesList({
   const [query, setQuery] = useState("");
   const deferredQuery = useDeferredValue(query.trim());
   const notes = useSearchableNotes(Boolean(deferredQuery));
+  // Manga and comics views also show the bound books of that kind.
+  const shelf = useShelfBooks(view.id === "comic" ? "comic" : "manga");
+  const shelfBooks = !deferredQuery && (view.id === "manga" || view.id === "comic") ? shelf : [];
 
   const groups = useMemo<Group[]>(() => {
     const inView = notes.filter((note) => isOwnNote(note.entry) && view.matches(note.entry));
@@ -119,7 +123,8 @@ export function NotesList({
       </header>
 
       <div className="flex grow flex-col overflow-y-auto px-2.5 pb-28 md:pb-8">
-        {ready && groups.length === 0 && (
+        <BookShelf books={shelfBooks} label={view.id === "comic" ? "Your comics" : "Your manga"} />
+        {ready && groups.length === 0 && shelfBooks.length === 0 && (
           <EmptyList searching={Boolean(deferredQuery)} onCreate={onCreateNote} />
         )}
         {groups.map((group, index) => (

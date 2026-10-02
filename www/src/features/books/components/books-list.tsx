@@ -11,13 +11,15 @@ import {
 } from "@notables/ui";
 import { Link, useNavigate } from "@tanstack/react-router";
 import { AnimatePresence, motion } from "motion/react";
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import { CollapsedSidebarControls } from "../../../components/window/collapsed-sidebar-controls";
 import { ImportSheet } from "../../imports/components/import-sheet";
 import { GroupSwitcher } from "../../library/components/group-switcher";
 import { usePreferences } from "../../settings/store/preferences-store";
 import { exportBookAsEpub } from "../export/export-book";
-import { type BookEntry, getBookStore, useBooks } from "../store/book-store";
+import { arrangeShelf, titleInSeries } from "../lib/arrange-shelf";
+import { type BookEntry, bookKindLabel, getBookStore, useBooks } from "../store/book-store";
+import { type SeriesEntry, useSeries } from "../store/series-store";
 import { BookCover } from "./book-cover";
 
 export function BooksList({
@@ -30,6 +32,8 @@ export function BooksList({
   className?: string;
 }) {
   const books = useBooks();
+  const series = useSeries();
+  const shelf = useMemo(() => arrangeShelf(books, series), [books, series]);
   const navigate = useNavigate();
   const { collapsed } = usePreferences().sidebar;
 
@@ -91,16 +95,20 @@ export function BooksList({
           </div>
         )}
         <AnimatePresence initial={false}>
-          {books.map((book) => (
+          {shelf.map((item) => (
             <motion.div
-              key={book.id}
+              key={item.type === "book" ? item.book.id : item.series.id}
               layout="position"
               initial={{ opacity: 0, scale: 0.97 }}
               animate={{ opacity: 1, scale: 1 }}
               exit={{ opacity: 0, scale: 0.97 }}
               transition={spring.smooth}
             >
-              <BookRow book={book} active={book.id === activeId} />
+              {item.type === "book" ? (
+                <BookRow book={item.book} active={item.book.id === activeId} />
+              ) : (
+                <SeriesGroup series={item.series} books={item.books} activeId={activeId} />
+              )}
             </motion.div>
           ))}
         </AnimatePresence>
@@ -110,8 +118,46 @@ export function BooksList({
   );
 }
 
-function BookRow({ book, active }: { book: BookEntry; active: boolean }) {
+/** The volumes of a series under one heading. */
+function SeriesGroup({
+  series,
+  books,
+  activeId,
+}: {
+  series: SeriesEntry;
+  books: BookEntry[];
+  activeId?: string;
+}) {
+  const kind = books[0] ? bookKindLabel(books[0]) : null;
+  const parts = `${books.length} ${series.partLabel.toLowerCase()}s`;
+  return (
+    <section aria-label={series.title} className="flex flex-col pt-2">
+      <h2 className="flex items-baseline justify-between gap-3 px-2.5 pb-1">
+        <span className="truncate text-[13px] font-semibold text-label">{series.title}</span>
+        <span className="shrink-0 text-[12px] text-label-tertiary">
+          {kind ? `${kind} · ${parts}` : parts}
+        </span>
+      </h2>
+      {books.map((book) => (
+        <BookRow key={book.id} book={book} series={series} active={book.id === activeId} />
+      ))}
+    </section>
+  );
+}
+
+function BookRow({
+  book,
+  series,
+  active,
+}: {
+  book: BookEntry;
+  /** Set when the row sits under its series' heading. */
+  series?: SeriesEntry;
+  active: boolean;
+}) {
   const chapters = book.chapterIds.length;
+  const kind = series ? null : bookKindLabel(book);
+  const count = chapters === 1 ? "1 chapter" : `${chapters} chapters`;
   const navigate = useNavigate();
   const menu = useContextMenu(() => [
     {
@@ -163,13 +209,13 @@ function BookRow({ book, active }: { book: BookEntry; active: boolean }) {
         active ? "bg-accent-soft" : "hover:bg-fill/60",
       )}
     >
-      <BookCover title={book.title} author={book.author} className="w-12" />
+      <BookCover title={book.title} author={book.author} image={book.cover} className="w-12" />
       <span className="flex min-w-0 flex-col gap-0.5">
         <span className="truncate text-[15px] font-semibold text-label">
-          {book.title || "Untitled book"}
+          {(series ? titleInSeries(book, series) : book.title) || "Untitled book"}
         </span>
         <span className="text-[13px] text-label-secondary">
-          {chapters === 1 ? "1 chapter" : `${chapters} chapters`}
+          {kind ? `${kind} · ${count}` : count}
         </span>
       </span>
     </Link>

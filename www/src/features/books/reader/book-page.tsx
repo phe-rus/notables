@@ -29,6 +29,7 @@ export function BookPage({
       <BookCover
         title={book.title}
         author={book.author}
+        image={book.cover}
         className="h-full w-full rounded-[4px_16px_16px_4px]"
       />
     );

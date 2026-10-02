@@ -76,7 +76,7 @@ function BookEditor({ book, actions }: { book: BookEntry; actions?: ReactNode })
 
       <div className="mx-auto flex w-full max-w-[680px] flex-col gap-10 px-6 pt-8 pb-24">
         <section className="flex flex-col items-center gap-6 sm:flex-row sm:items-end">
-          <BookCover title={book.title} author={book.author} className="w-40" />
+          <BookCover title={book.title} author={book.author} image={book.cover} className="w-40" />
           <div className="flex w-full flex-col gap-2">
             <input
               aria-label="Book title"

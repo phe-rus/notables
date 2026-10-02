@@ -28,6 +28,21 @@ export interface BookEntry {
 
 export const bookFormat = (book: BookEntry): BookFormat => book.format ?? "prose";
 
+/** Which shelf a book sits on: manga and comics have their own. */
+export type BookShelf = "books" | "manga" | "comic";
+
+export function bookShelf(book: BookEntry): BookShelf {
+  if (bookFormat(book) !== "comic") return "books";
+  return book.direction === "rtl" ? "manga" : "comic";
+}
+
+/** "Manga", "Comic" or "Audiobook"; nothing for an ordinary book. */
+export function bookKindLabel(book: BookEntry): string | null {
+  if (bookFormat(book) === "audio") return "Audiobook";
+  const shelf = bookShelf(book);
+  return shelf === "manga" ? "Manga" : shelf === "comic" ? "Comic" : null;
+}
+
 /**
  * Books live in the library document next to the notes index, so they sync
  * and back up together.
