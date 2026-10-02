@@ -16,6 +16,11 @@ export class Narrator {
   #state: NarratorState;
   #listeners = new Set<(state: NarratorState) => void>();
   #run = 0;
+  /**
+   * Offers another engine when the current one is gone (the natural voice
+   * was deleted, say); the line is then read again with it.
+   */
+  recover: ((error: unknown) => Promise<SpeechEngine | null>) | null = null;
 
   constructor(
     private readonly lines: string[],
@@ -54,12 +59,18 @@ export class Narrator {
     while (run === this.#run && this.#state.index < this.lines.length) {
       const line = this.lines[this.#state.index] ?? "";
       const next = this.lines[this.#state.index + 1];
-      if (next) this.engine.prepare?.(next);
+      if (next) this.engine.prepare?.(next, this.options);
       try {
         await this.engine.speak(line, this.options);
       } catch (error) {
         if (run !== this.#run) return;
         if (error instanceof DOMException && error.name === "AbortError") return;
+        const fallback = await this.recover?.(error);
+        if (run !== this.#run) return;
+        if (fallback) {
+          this.engine = fallback;
+          continue;
+        }
         this.#set({
           playing: false,
           error: error instanceof Error ? error.message : "Speech stopped.",

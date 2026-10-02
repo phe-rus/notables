@@ -5,7 +5,7 @@ pub enum TranscriptionError {
     #[error("the transcription model has not been downloaded yet")]
     ModelMissing,
     #[error("could not download the transcription model: {0}")]
-    Download(#[from] reqwest::Error),
+    Download(#[from] crate::models::ModelsError),
     #[error("could not read or write the model file: {0}")]
     Io(#[from] std::io::Error),
     #[error("could not locate the app data folder: {0}")]

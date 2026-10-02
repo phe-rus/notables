@@ -12,6 +12,7 @@ import { sidebarIcons } from "../../library/components/library-sidebar";
 import { SidebarEditor } from "../../library/components/sidebar-editor";
 import { type NoteFont, noteFontLabels, noteFonts } from "../../library/model/note-fonts";
 import { ListeningSettingsSection } from "../../listening/components/listening-settings-section";
+import { ModelPacksSection } from "../../listening/components/model-packs-section";
 import { WidgetsSettingsSection } from "../../widgets/components/widgets-settings-section";
 import {
   type ListPreferences,
@@ -220,6 +221,7 @@ export function SettingsScreen({ onOpenSidebar }: { onOpenSidebar: () => void })
           </SettingsGroup>
 
           <ListeningSettingsSection />
+          <ModelPacksSection />
 
           <ReminderSettingsSection />
 

@@ -1,9 +1,12 @@
 /**
- * Voices for reading aloud: the device's own, best-sounding first, and
- * Gemini's when the person has set up a Gemini key.
+ * Voices for reading aloud: the natural voice that runs on the device, the
+ * device's own voices, best-sounding first, and Gemini's when the person
+ * has set up a Gemini key.
  */
 
-export type VoiceProvider = "system" | "gemini";
+import type { NaturalVoiceInfo } from "./natural-voice";
+
+export type VoiceProvider = "system" | "gemini" | "device-neural";
 
 export interface Voice {
   id: string;
@@ -16,6 +19,8 @@ export interface Voice {
   natural: boolean;
   /** Works without a connection. */
   offline: boolean;
+  /** The pack's default style of the natural voice. */
+  preferred?: boolean;
 }
 
 export const speechSupported = () =>
@@ -88,8 +93,31 @@ export const geminiVoices: Voice[] = [
 const languageOf = (tag: string) => tag.toLowerCase().split(/[-_]/)[0] ?? "";
 
 /**
+ * The natural voice's styles, when it speaks `lang`. Each style keeps its
+ * proper name; `describe` gives the translated descriptor for a style id.
+ */
+export function naturalVoices(
+  info: NaturalVoiceInfo | null,
+  lang: string,
+  describe: (styleId: string) => string,
+): Voice[] {
+  if (!info?.languages.includes(languageOf(lang))) return [];
+  return info.styles.map((style) => ({
+    id: `device-neural:${style.id}`,
+    provider: "device-neural" as const,
+    name: `${style.name} · ${describe(style.id)}`,
+    lang,
+    natural: true,
+    offline: true,
+    preferred: style.id === info.defaultStyle,
+  }));
+}
+
+/**
  * Voices for a language, best first: natural before plain, an exact
  * regional match before others, voices that work offline before online.
+ * The natural voice on the device beats even an exact "Enhanced" device
+ * voice, and its default style beats its other styles.
  */
 export function rankVoices(voices: Voice[], lang: string): Voice[] {
   const wanted = lang.toLowerCase();
@@ -98,7 +126,9 @@ export function rankVoices(voices: Voice[], lang: string): Voice[] {
     (voice.natural ? 8 : 0) +
     (voice.lang.toLowerCase() === wanted ? 4 : 0) +
     (voice.lang === "*" ? 1 : 0) +
-    (voice.offline ? 1 : 0);
+    (voice.offline ? 1 : 0) +
+    (voice.provider === "device-neural" ? 2 : 0) +
+    (voice.preferred ? 1 : 0);
   const seen = new Set<string>();
   return voices
     .filter((voice) => !seen.has(voice.id) && seen.add(voice.id))

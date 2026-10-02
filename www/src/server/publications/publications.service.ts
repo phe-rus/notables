@@ -227,11 +227,6 @@ export function createPublications(db: D1Database, storage: R2Bucket) {
       await replaceMedia(id, []);
     },
 
-    /** A published media file, optionally a byte range of it (for audio seeking). */
-    async media(publicationId: string, mediaId: string, range?: R2Range) {
-      return storage.get(mediaKey(publicationId, mediaId), range ? { range } : undefined);
-    },
-
     /** The publication and its serialized document, as JSON text. */
     async get(id: string): Promise<{ publication: Publication; document: string }> {
       const row = await find(id);

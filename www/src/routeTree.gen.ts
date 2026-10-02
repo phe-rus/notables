@@ -17,6 +17,7 @@ import { Route as AppIndexRouteImport } from './routes/_app/index'
 import { Route as AppCalendarRouteImport } from './routes/_app/calendar'
 import { Route as AppSettingsRouteImport } from './routes/_app/settings'
 import { Route as AppTrashRouteImport } from './routes/_app/trash'
+import { Route as ModelsSplatRouteImport } from './routes/models/$'
 import { Route as PPublicationIdRouteImport } from './routes/p/$publicationId'
 import { Route as ReadBookIdRouteImport } from './routes/read/$bookId'
 import { Route as SShareIdRouteImport } from './routes/s/$shareId'
@@ -65,6 +66,11 @@ const AppTrashRoute = AppTrashRouteImport.update({
   id: '/trash',
   path: '/trash',
   getParentRoute: () => AppRoute,
+} as any)
+const ModelsSplatRoute = ModelsSplatRouteImport.update({
+  id: '/models/$',
+  path: '/models/$',
+  getParentRoute: () => rootRouteImport,
 } as any)
 const PPublicationIdRoute = PPublicationIdRouteImport.update({
   id: '/p/$publicationId',
@@ -121,6 +127,7 @@ export interface FileRoutesByFullPath {
   '/calendar': typeof AppCalendarRoute
   '/settings': typeof AppSettingsRoute
   '/trash': typeof AppTrashRoute
+  '/models/$': typeof ModelsSplatRoute
   '/p/$publicationId': typeof PPublicationIdRoute
   '/read/$bookId': typeof ReadBookIdRoute
   '/s/$shareId': typeof SShareIdRoute
@@ -138,6 +145,7 @@ export interface FileRoutesByTo {
   '/calendar': typeof AppCalendarRoute
   '/settings': typeof AppSettingsRoute
   '/trash': typeof AppTrashRoute
+  '/models/$': typeof ModelsSplatRoute
   '/p/$publicationId': typeof PPublicationIdRoute
   '/read/$bookId': typeof ReadBookIdRoute
   '/s/$shareId': typeof SShareIdRoute
@@ -158,6 +166,7 @@ export interface FileRoutesById {
   '/_app/calendar': typeof AppCalendarRoute
   '/_app/settings': typeof AppSettingsRoute
   '/_app/trash': typeof AppTrashRoute
+  '/models/$': typeof ModelsSplatRoute
   '/p/$publicationId': typeof PPublicationIdRoute
   '/read/$bookId': typeof ReadBookIdRoute
   '/s/$shareId': typeof SShareIdRoute
@@ -179,6 +188,7 @@ export interface FileRouteTypes {
     | '/calendar'
     | '/settings'
     | '/trash'
+    | '/models/$'
     | '/p/$publicationId'
     | '/read/$bookId'
     | '/s/$shareId'
@@ -196,6 +206,7 @@ export interface FileRouteTypes {
     | '/calendar'
     | '/settings'
     | '/trash'
+    | '/models/$'
     | '/p/$publicationId'
     | '/read/$bookId'
     | '/s/$shareId'
@@ -215,6 +226,7 @@ export interface FileRouteTypes {
     | '/_app/calendar'
     | '/_app/settings'
     | '/_app/trash'
+    | '/models/$'
     | '/p/$publicationId'
     | '/read/$bookId'
     | '/s/$shareId'
@@ -232,6 +244,7 @@ export interface RootRouteChildren {
   VerifyRoute: typeof VerifyRoute
   WelcomeRoute: typeof WelcomeRoute
   WidgetRoute: typeof WidgetRoute
+  ModelsSplatRoute: typeof ModelsSplatRoute
   PPublicationIdRoute: typeof PPublicationIdRoute
   ReadBookIdRoute: typeof ReadBookIdRoute
   SShareIdRoute: typeof SShareIdRoute
@@ -295,6 +308,13 @@ declare module '@tanstack/react-router' {
       fullPath: '/trash'
       preLoaderRoute: typeof AppTrashRouteImport
       parentRoute: typeof AppRoute
+    }
+    '/models/$': {
+      id: '/models/$'
+      path: '/models/$'
+      fullPath: '/models/$'
+      preLoaderRoute: typeof ModelsSplatRouteImport
+      parentRoute: typeof rootRouteImport
     }
     '/p/$publicationId': {
       id: '/p/$publicationId'
@@ -393,6 +413,7 @@ const rootRouteChildren: RootRouteChildren = {
   VerifyRoute: VerifyRoute,
   WelcomeRoute: WelcomeRoute,
   WidgetRoute: WidgetRoute,
+  ModelsSplatRoute: ModelsSplatRoute,
   PPublicationIdRoute: PPublicationIdRoute,
   ReadBookIdRoute: ReadBookIdRoute,
   SShareIdRoute: SShareIdRoute,

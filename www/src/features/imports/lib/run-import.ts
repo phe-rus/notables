@@ -113,6 +113,7 @@ export async function runImport(plan: ImportPlan, options: ImportOptions): Promi
       getBookStore().update(book.id, {
         title: details.title || plannedBookTitle(series, planned),
         author: details.author,
+        ...(details.language ? { language: details.language } : {}),
         format: details.format,
         direction: details.format === "comic" && options.comicKind === "manga" ? "rtl" : "ltr",
         cover: details.cover,
@@ -205,6 +206,7 @@ function needsSeries(series: PlannedSeries): boolean {
 interface BookDetails {
   title: string;
   author: string;
+  language?: string;
   format: BookFormat;
   cover: string | null;
 }
@@ -248,7 +250,13 @@ async function importBookContent(
     const cover = epub.cover
       ? `media:${await saveMedia(new Blob([epub.cover.bytes as BlobPart], { type: epub.cover.type }))}`
       : null;
-    return { title: epub.title, author: epub.author, format: "prose", cover };
+    return {
+      title: epub.title,
+      author: epub.author,
+      ...(epub.language ? { language: epub.language } : {}),
+      format: "prose",
+      cover,
+    };
   }
 
   if (container && planned.containerKind === "pdf") {

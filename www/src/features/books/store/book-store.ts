@@ -11,6 +11,8 @@ export interface BookEntry {
   title: string;
   subtitle: string;
   author: string;
+  /** The language the book is written in (BCP 47), when known; read aloud speaks it. */
+  language?: string;
   /** Note ids, in reading order. */
   chapterIds: string[];
   createdAt: number;

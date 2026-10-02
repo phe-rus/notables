@@ -21,6 +21,8 @@ export interface EpubChapter {
 export interface Epub {
   title: string;
   author: string;
+  /** The book's `dc:language` (BCP 47), when it declares one. */
+  language: string | null;
   cover: EpubImage | null;
   chapters: EpubChapter[];
   images: Map<string, EpubImage>;
@@ -109,6 +111,7 @@ export function readEpub(bytes: Uint8Array): Epub {
 
   const title = byLocalName(opf, "title")[0]?.textContent?.trim() || "Untitled";
   const author = byLocalName(opf, "creator")[0]?.textContent?.trim() ?? "";
+  const language = byLocalName(opf, "language")[0]?.textContent?.trim() || null;
   const manifest = new Map<string, { path: string; type: string; properties: string }>();
   for (const item of byLocalName(opf, "item")) {
     const id = item.getAttribute("id");
@@ -179,5 +182,5 @@ export function readEpub(bytes: Uint8Array): Epub {
     });
   }
 
-  return { title, author, cover, chapters, images };
+  return { title, author, language, cover, chapters, images };
 }

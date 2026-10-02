@@ -1,7 +1,7 @@
 # 0001. Natural voice on the device with Supertonic, served from R2
 
 **Date**: 2026-10-02
-**Status**: Proposed
+**Status**: In Progress
 
 ## Summary
 

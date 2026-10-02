@@ -4,7 +4,12 @@ import {
   normalizePeak,
   type SpeechEngine,
 } from "../../../src/features/listening/lib/speech-engines";
-import { fromSystem, rankVoices, type Voice } from "../../../src/features/listening/lib/voices";
+import {
+  fromSystem,
+  naturalVoices,
+  rankVoices,
+  type Voice,
+} from "../../../src/features/listening/lib/voices";
 import { phraseAt, type TimedPhrase } from "../../../src/features/listening/store/transcript-store";
 
 /** Speaks instantly, remembering what it said. */
@@ -80,6 +85,38 @@ describe("voices", () => {
       "en-US",
     );
     expect(ranked.map((v) => v.id)).toEqual(["natural-us", "natural-gb", "plain-us"]);
+  });
+});
+
+describe("natural voice", () => {
+  const info = {
+    version: "2026.10.1",
+    languages: ["en", "fr", "ar"],
+    styles: [
+      { id: "F1", name: "Ada" },
+      { id: "F2", name: "Lina" },
+    ],
+    defaultStyle: "F2",
+    sampleRate: 44_100,
+  };
+  const enhanced: Voice = {
+    id: "system:ava",
+    provider: "system",
+    name: "Ava (Enhanced)",
+    lang: "en-US",
+    natural: true,
+    offline: true,
+  };
+
+  it("ranks its default style above an exact Enhanced device voice", () => {
+    const ranked = rankVoices([enhanced, ...naturalVoices(info, "en-US", (id) => id)], "en-US");
+    expect(ranked.map((v) => v.id)).toEqual(["device-neural:F2", "device-neural:F1", "system:ava"]);
+    expect(ranked[0]?.name).toBe("Lina · F2");
+  });
+
+  it("is not offered for languages the pack does not speak", () => {
+    expect(naturalVoices(info, "sw", (id) => id)).toEqual([]);
+    expect(naturalVoices(null, "en", (id) => id)).toEqual([]);
   });
 });
 

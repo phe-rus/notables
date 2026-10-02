@@ -55,7 +55,8 @@ export function BookReader({ book }: { book: BookEntry }) {
   const [highlighting, setHighlighting] = useState(false);
   const [listOpen, setListOpen] = useState(false);
   usePaintedHighlights(root, highlights);
-  const lang = document.documentElement.lang || navigator.language || "en";
+  // Read aloud speaks the book's own language, else the app's.
+  const lang = book.language || document.documentElement.lang || navigator.language || "en";
   const narration = useNarration(lang, book.title || "Book");
   const script = useRef<ScriptLine[]>([]);
 

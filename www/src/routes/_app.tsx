@@ -20,6 +20,7 @@ import { NotesList } from "../features/library/components/notes-list";
 import { getView, groupOf } from "../features/library/model/library-views";
 import { getLibrary, useLibraryReady } from "../features/library/store/library-store";
 import { MiniPlayer } from "../features/listening/components/mini-player";
+import { ModelPacksRunner } from "../features/listening/components/model-packs-runner";
 import { seedWelcomeLibrary } from "../features/onboarding/lib/seed-welcome-library";
 import { SearchPalette } from "../features/search/components/search-palette";
 import { AppearanceSync } from "../features/settings/components/appearance-sync";
@@ -138,6 +139,7 @@ function AppShell() {
       {libraryReady && <ReminderRunner />}
       {libraryReady && <ShareSessionsRunner />}
       {libraryReady && <WidgetPublisher />}
+      <ModelPacksRunner />
       <SearchPalette />
 
       {/* Desktop: the sidebar sits on the window; content floats in an inset card. */}

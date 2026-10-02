@@ -28,8 +28,14 @@ whisper-rs = "0.16.0"
 symphonia = { version = "0.5", default-features = false, features = ["mp3", "aac", "isomp4", "ogg", "vorbis", "flac", "wav", "pcm", "alac"] }
 reqwest = { version = "0.12", default-features = false, features = ["rustls-tls", "stream"] }
 futures-util = "0.3"
-tokio = { version = "1", features = ["fs", "io-util", "sync"] }
+tokio = { version = "1", features = ["fs", "io-util", "sync", "time"] }
 thiserror = "2"
+# Model packs (spec 0001): checksums, free space, and the natural voice.
+sha2 = "0.10"
+fs4 = { version = "0.13", features = ["sync"] }
+ort = { version = "=2.0.0-rc.13", default-features = false, features = ["std", "download-binaries", "copy-dylibs", "tls-rustls", "api-27"] }
+rand = "0.9"
+unicode-normalization = "0.1"
 # On-device storage: documents and metadata in SQLite, media as files.
 rusqlite = { version = "0.40.2", features = ["bundled"] }
 # Native save dialogs for exported files.

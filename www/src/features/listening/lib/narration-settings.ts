@@ -5,12 +5,14 @@ export interface NarrationSettings {
   /** A voice id from voices.ts, or null for the best available. */
   voiceId: string | null;
   rate: number;
+  /** Phones fetch voice downloads over mobile data, not only Wi-Fi. */
+  downloadOnMobileData: boolean;
 }
 
 export const NARRATION_RATES = [0.8, 1, 1.15, 1.3, 1.5, 1.75] as const;
 
 const KEY = "notables:narration";
-const defaults: NarrationSettings = { voiceId: null, rate: 1 };
+const defaults: NarrationSettings = { voiceId: null, rate: 1, downloadOnMobileData: false };
 const listeners = new Set<() => void>();
 let cached: NarrationSettings | undefined;
 

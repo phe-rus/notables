@@ -101,12 +101,13 @@ A premium sounding voice you download once that reads offline and privately on e
 - [x] Design it (spec): `/architect natural voice on the device`
 - [ ] Build it: `/develop natural voice on the device`
   - [ ] Models served from R2 and downloaded, checksummed and resumable in Rust, with the bucket and database renamed (AC-7, AC-11, AC-14)
-  - [ ] Supertonic speaking in read aloud on desktop: Rust synthesis, the natural voice engine, ranking and content language (AC-3, AC-4, AC-5, AC-6, AC-12, AC-13)
-  - [ ] Automatic, manageable and updatable packs in Settings > Listening (AC-1, AC-2, AC-8, AC-9, AC-15)
+  - [x] Supertonic speaking in read aloud on desktop: Rust synthesis, the natural voice engine, ranking and content language (AC-3, AC-4, AC-5, AC-6, AC-12, AC-13)
+  - [x] Automatic, manageable and updatable packs in Settings > Listening (AC-1, AC-2, AC-8, AC-9, AC-15)
   - [ ] Whisper moved onto the same packs, every string in six languages (AC-10, AC-16)
 - [ ] Verify it: `/check verify natural voice on the device`
 - [ ] Test it: `/test natural voice on the device`
 spec [0001](../../specs/www/0001-natural-voice-on-device/index.md)
+code in `www/src-tauri/src/models`, `www/src-tauri/src/voice`, `www/src/features/listening`, `www/src/server/models`, `scripts/models`
 
 ### 3. Cloud voices with your own key · needs a decision
 ChatGPT quality voices for people who add their own key, alongside Gemini's. The default should feel like ChatGPT's Juniper: open and upbeat, and speaking whatever language the text is in. Juniper itself is only in the ChatGPT app, so the spec picks the closest voice developers can use (likely `marin`) and steers its tone to match.

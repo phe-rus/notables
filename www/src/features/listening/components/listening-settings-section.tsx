@@ -2,6 +2,7 @@ import { SegmentedControl } from "@notables/ui";
 import { useEffect, useState } from "react";
 import { t } from "../../../i18n/i18n";
 import { SettingsGroup, SettingsRow } from "../../settings/components/settings-controls";
+import { useModelPacks } from "../lib/model-packs";
 import {
   NARRATION_RATES,
   setNarrationSettings,
@@ -14,6 +15,8 @@ import type { Voice } from "../lib/voices";
 export function ListeningSettingsSection() {
   const settings = useNarrationSettings();
   const [voices, setVoices] = useState<Voice[] | null>(null);
+  // The list changes when the natural voice is installed, updated or deleted.
+  const naturalVersion = useModelPacks()?.find((pack) => pack.kind === "voice")?.installedVersion;
   const lang =
     typeof document === "undefined"
       ? "en"
@@ -21,7 +24,7 @@ export function ListeningSettingsSection() {
 
   useEffect(() => {
     void availableVoices(lang).then(setVoices);
-  }, [lang]);
+  }, [lang, naturalVersion]);
 
   return (
     <SettingsGroup title={t("listening.title")} footer={t("listening.footer")}>

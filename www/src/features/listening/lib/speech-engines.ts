@@ -1,12 +1,19 @@
 import { readAiKey } from "../../ai/store/ai-settings";
+import { clampPace, synthesizeNatural } from "./natural-voice";
 import { systemVoiceKey } from "./voices";
+
+export interface SpeechOptions {
+  rate: number;
+  /** The language of the text being read. */
+  lang: string;
+}
 
 /** Something that can say a piece of text out loud. */
 export interface SpeechEngine {
   /** Resolves when finished; rejects with "cancelled" when stopped. */
-  speak(text: string, options: { rate: number; lang: string }): Promise<void>;
+  speak(text: string, options: SpeechOptions): Promise<void>;
   /** Gets ready to say this next, so there's no gap. */
-  prepare?(text: string): void;
+  prepare?(text: string, options: SpeechOptions): void;
   cancel(): void;
 }
 
@@ -18,7 +25,7 @@ export class SystemSpeech implements SpeechEngine {
 
   constructor(private readonly voiceKey: string | null) {}
 
-  async speak(text: string, { rate, lang }: { rate: number; lang: string }) {
+  async speak(text: string, { rate, lang }: SpeechOptions) {
     const voices = speechSynthesis.getVoices();
     const utterance = new SpeechSynthesisUtterance(text);
     utterance.lang = lang;
@@ -83,24 +90,73 @@ export function normalizePeak(channel: Float32Array, target = 0.98) {
   for (let i = 0; i < channel.length; i++) channel[i] = (channel[i] ?? 0) * gain;
 }
 
-/** Gemini's natural voices, using the person's own Gemini key. */
-export class GeminiSpeech implements SpeechEngine {
+/**
+ * Plays generated speech through Web Audio, keeping a few rendered lines so
+ * the next one is ready before the current one ends.
+ */
+class BufferedPlayback {
   #context: AudioContext | null = null;
   #source: AudioBufferSourceNode | null = null;
   #cache = new Map<string, Promise<AudioBuffer>>();
   #stop: (() => void) | null = null;
 
-  constructor(private readonly voiceName: string) {}
+  get context(): AudioContext {
+    this.#context ??= new AudioContext();
+    return this.#context;
+  }
 
-  #audio(text: string): Promise<AudioBuffer> {
-    let pending = this.#cache.get(text);
+  /** The rendered audio for `key`, rendering it once. */
+  audio(key: string, render: () => Promise<AudioBuffer>): Promise<AudioBuffer> {
+    let pending = this.#cache.get(key);
     if (!pending) {
-      pending = this.#fetch(text);
-      this.#cache.set(text, pending);
+      pending = render();
+      this.#cache.set(key, pending);
+      // A failed render is tried again next time.
+      pending.catch(() => this.#cache.delete(key));
       // Keep only a few lines around.
       if (this.#cache.size > 6) this.#cache.delete(this.#cache.keys().next().value as string);
     }
     return pending;
+  }
+
+  async play(buffer: AudioBuffer, playbackRate = 1) {
+    const context = this.context;
+    if (context.state === "suspended") await context.resume();
+    await new Promise<void>((resolve, reject) => {
+      const source = context.createBufferSource();
+      source.buffer = buffer;
+      source.playbackRate.value = playbackRate;
+      source.connect(context.destination);
+      this.#source = source;
+      this.#stop = () => reject(cancelled());
+      source.onended = () => {
+        if (this.#source === source) resolve();
+      };
+      source.start();
+    });
+  }
+
+  cancel() {
+    const source = this.#source;
+    this.#source = null;
+    try {
+      source?.stop();
+    } catch {
+      // Already stopped.
+    }
+    this.#stop?.();
+    this.#stop = null;
+  }
+}
+
+/** Gemini's natural voices, using the person's own Gemini key. */
+export class GeminiSpeech implements SpeechEngine {
+  #playback = new BufferedPlayback();
+
+  constructor(private readonly voiceName: string) {}
+
+  #audio(text: string): Promise<AudioBuffer> {
+    return this.#playback.audio(text, () => this.#fetch(text));
   }
 
   async #fetch(text: string): Promise<AudioBuffer> {
@@ -133,42 +189,80 @@ export class GeminiSpeech implements SpeechEngine {
     )?.inlineData;
     if (!inline?.data) throw new Error("Gemini sent no audio.");
     const rate = Number(inline.mimeType?.match(/rate=(\d+)/)?.[1]) || 24_000;
-    this.#context ??= new AudioContext();
-    return pcmToBuffer(this.#context, inline.data, rate);
+    return pcmToBuffer(this.#playback.context, inline.data, rate);
   }
 
   prepare(text: string) {
     void this.#audio(text).catch(() => {});
   }
 
-  async speak(text: string, { rate }: { rate: number; lang: string }) {
-    const buffer = await this.#audio(text);
-    this.#context ??= new AudioContext();
-    const context = this.#context;
-    if (context.state === "suspended") await context.resume();
-    await new Promise<void>((resolve, reject) => {
-      const source = context.createBufferSource();
-      source.buffer = buffer;
-      source.playbackRate.value = rate;
-      source.connect(context.destination);
-      this.#source = source;
-      this.#stop = () => reject(cancelled());
-      source.onended = () => {
-        if (this.#source === source) resolve();
-      };
-      source.start();
-    });
+  async speak(text: string, { rate }: SpeechOptions) {
+    await this.#playback.play(await this.#audio(text), rate);
   }
 
   cancel() {
-    const source = this.#source;
-    this.#source = null;
-    try {
-      source?.stop();
-    } catch {
-      // Already stopped.
-    }
-    this.#stop?.();
-    this.#stop = null;
+    this.#playback.cancel();
   }
+}
+
+/**
+ * The natural voice that runs on the device (spec 0001). It renders the
+ * next line while the current one plays; pace changes the speaking speed
+ * in the model, so the pitch stays the same.
+ */
+export class DeviceNeuralSpeech implements SpeechEngine {
+  #playback = new BufferedPlayback();
+
+  constructor(
+    /** The pack version, fixed for the whole session. */
+    private readonly version: string,
+    private readonly sampleRate: number,
+    private readonly style: string | null,
+  ) {}
+
+  #audio(text: string, { rate, lang }: SpeechOptions): Promise<AudioBuffer> {
+    const speed = clampPace(rate);
+    const key = [text, lang, this.style, speed, this.version].join("|");
+    return this.#playback.audio(key, async () => {
+      const samples = await synthesizeNatural({
+        text,
+        lang,
+        version: this.version,
+        style: this.style,
+        speed,
+      });
+      const buffer = this.#playback.context.createBuffer(
+        1,
+        Math.max(1, samples.length),
+        this.sampleRate,
+      );
+      const channel = buffer.getChannelData(0);
+      channel.set(samples);
+      normalizePeak(channel);
+      return buffer;
+    });
+  }
+
+  prepare(text: string, options: SpeechOptions) {
+    void this.#audio(text, options).catch(() => {});
+  }
+
+  async speak(text: string, options: SpeechOptions) {
+    await this.#playback.play(await this.#audio(text, options));
+  }
+
+  cancel() {
+    this.#playback.cancel();
+  }
+}
+
+/** Says why reading aloud can't start, in place of speaking. */
+export class UnavailableSpeech implements SpeechEngine {
+  constructor(private readonly reason: string) {}
+
+  async speak(): Promise<void> {
+    throw new Error(this.reason);
+  }
+
+  cancel() {}
 }

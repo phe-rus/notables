@@ -2,6 +2,7 @@ import { afterAll, beforeAll, describe, expect, it } from "bun:test";
 import { readdirSync, readFileSync } from "node:fs";
 import { createId } from "@notables/core";
 import { getPlatformProxy } from "wrangler";
+import { mediaKey } from "../../src/server/publications/publication-media";
 import {
   createPublications,
   type Publications,
@@ -27,6 +28,9 @@ beforeAll(async () => {
 }, 60_000);
 
 afterAll(() => proxy?.dispose());
+
+const media = (publicationId: string, mediaId: string) =>
+  proxy.env.MEDIA.get(mediaKey(publicationId, mediaId));
 
 async function noteIdOf(publicationId: string): Promise<string> {
   const row = await proxy.env.DB.prepare("SELECT note_id FROM publications WHERE id = ?")
@@ -133,21 +137,19 @@ describe("publications", () => {
     const published = JSON.parse((await pubs.get(publication.id)).document);
     expect(published.root.children[0].src).toBe(`/media/${publication.id}/${mediaId}`);
 
-    const whole = await pubs.media(publication.id, mediaId);
+    const whole = await media(publication.id, mediaId);
     expect(await whole?.text()).toBe("0123456789");
     expect(whole?.httpMetadata?.contentType).toBe("audio/webm");
-    const slice = await pubs.media(publication.id, mediaId, { offset: 2, length: 3 });
-    expect(await slice?.text()).toBe("234");
 
     // Re-publishing without the clip removes its file; unpublishing removes everything.
     await pubs.publish({ ...input({ noteId: await noteIdOf(publication.id) }), key });
-    expect(await pubs.media(publication.id, mediaId)).toBeNull();
+    expect(await media(publication.id, mediaId)).toBeNull();
 
     const again = await pubs.publish(
       input({ document, media: [{ id: mediaId, contentType: "audio/webm", data: btoa("x") }] }),
     );
     await pubs.unpublish(again.publication.id, again.key);
-    expect(await pubs.media(again.publication.id, mediaId)).toBeNull();
+    expect(await media(again.publication.id, mediaId)).toBeNull();
   });
 
   it("rejects oversized media", async () => {

@@ -94,6 +94,12 @@ Shipped and tested in the browser (Playwright) unless noted:
   player, read-along with on-device Whisper (native decode in
   `src-tauri/src/transcription/decode.rs`), read aloud with natural
   device voices or Gemini voices (Gemini untested with a real key).
+- Natural voice on the device (spec 0001, in progress): Supertonic 3 via
+  ONNX Runtime (`src-tauri/src/voice`), versioned checksummed model packs
+  (`src-tauri/src/models`, served by `/models/$` from R2), Settings >
+  Downloads. Whisper now downloads as the `whisper-base` pack. Not live
+  until the packs are published (`bun run models:publish <id>`) and the
+  Worker is deployed; the bucket and database rename (AC-14) is still open.
 - Six languages with RTL for Arabic. Main surfaces are translated; some
   deeper screens (invoice editor, importers, readers' minor labels) are
   still English.

@@ -6,16 +6,20 @@
 mod deep_links;
 mod export;
 mod media_permissions;
+mod models;
 mod storage;
 mod system_settings;
 mod transcription;
+mod voice;
 mod widgets;
 mod window_frame;
 
 use tauri::Manager;
 
+use models::Models;
 use storage::Storage;
 use transcription::Transcriber;
+use voice::Voice;
 
 #[cfg_attr(mobile, tauri::mobile_entry_point)]
 pub fn run() {
@@ -30,6 +34,7 @@ pub fn run() {
         .plugin(tauri_plugin_notification::init())
         .plugin(tauri_plugin_dialog::init())
         .manage(Transcriber::default())
+        .manage(Voice::default())
         .register_asynchronous_uri_scheme_protocol(
             storage::protocol::SCHEME,
             storage::protocol::handle,
@@ -53,6 +58,14 @@ pub fn run() {
             transcription::commands::whisper_download_model,
             transcription::commands::whisper_transcribe,
             transcription::commands::whisper_transcribe_media,
+            models::commands::models_status,
+            models::commands::models_download,
+            models::commands::models_auto,
+            models::commands::models_delete,
+            models::commands::models_license,
+            voice::commands::voice_info,
+            voice::commands::voice_warm,
+            voice::commands::voice_synthesize,
             window_frame::window_frame,
             widgets::widgets_publish,
             #[cfg(desktop)]
@@ -84,6 +97,10 @@ pub fn run() {
             deep_links::register(app);
             let data_dir = app.path().app_data_dir()?;
             app.manage(Storage::open(&data_dir)?);
+            let models = Models::new(&data_dir);
+            models.clean_up();
+            app.manage(models);
+            voice::start_idle_unloading(app.handle().clone());
             Ok(())
         })
         .run(tauri::generate_context!())
