@@ -5,12 +5,13 @@
   "compatibility_date": "2026-09-01",
   "compatibility_flags": ["nodejs_compat"],
   "observability": { "enabled": true },
+  "routes": [{ "pattern": "notables.pherus.org", "custom_domain": true }],
   "d1_databases": [
     {
       "binding": "DB",
       "database_name": "notables-database",
       // Replace with the id printed by `wrangler d1 create notables-database`.
-      "database_id": "00000000-0000-0000-0000-000000000000",
+      "database_id": "d551662b-29d4-487a-9296-9f1bf480c472",
       "migrations_dir": "migrations"
     }
   ],
