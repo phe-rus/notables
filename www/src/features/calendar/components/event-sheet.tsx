@@ -1,4 +1,4 @@
-import { Sheet } from "@notables/ui";
+import { Sheet } from "@ultrapeach/ui";
 import { t } from "../../../i18n/i18n";
 import { EventForm, type EventTarget } from "./event-form";
 

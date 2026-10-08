@@ -1,14 +1,14 @@
-import { useWritingBridge } from "@notables/editor";
+import { useWritingBridge } from "@notables/pluraliti";
+import { Link } from "@tanstack/react-router";
 import {
   Button,
   CloseIcon,
   IconButton,
-  openContextMenu,
+  openMenu,
   SparkleIcon,
   spring,
   toast,
-} from "@notables/ui";
-import { Link } from "@tanstack/react-router";
+} from "@ultrapeach/ui";
 import { AnimatePresence, motion } from "motion/react";
 import { useRef, useState } from "react";
 import { createPortal } from "react-dom";
@@ -103,10 +103,9 @@ export function AiAssist() {
       <IconButton
         label={`Writing help with ${provider.label}`}
         onClick={(event) => {
-          const rect = event.currentTarget.getBoundingClientRect();
           // Read now, while the selection is still the person's.
           bridge.read();
-          openContextMenu(rect.left, rect.bottom + 6, [
+          openMenu(event.currentTarget, [
             { heading: `Writing help · ${provider.label}` },
             ...writingActions.map((action) => ({
               label: action.label,
@@ -123,7 +122,7 @@ export function AiAssist() {
             <motion.section
               aria-label={run.action.label}
               aria-live="polite"
-              className="glass-menu fixed right-4 bottom-[max(16px,env(safe-area-inset-bottom))] z-[65] flex max-h-[min(70dvh,560px)] w-[min(440px,calc(100vw-32px))] flex-col overflow-hidden rounded-[22px] max-md:bottom-24"
+              className="glass-menu fixed right-4 bottom-[max(16px,env(safe-area-inset-bottom))] z-[65] flex max-h-[min(70dvh,560px)] w-[min(440px,calc(100vw-32px))] flex-col overflow-hidden rounded-5xl max-md:bottom-24"
               initial={{ opacity: 0, y: 20, scale: 0.98 }}
               animate={{ opacity: 1, y: 0, scale: 1 }}
               exit={{ opacity: 0, y: 16, scale: 0.98 }}
@@ -133,13 +132,13 @@ export function AiAssist() {
                 <span className="flex size-7 items-center justify-center rounded-full bg-accent-soft text-accent-text">
                   <SparkleIcon size={15} />
                 </span>
-                <span className="grow text-[15px] font-semibold">{run.action.label}</span>
-                <span className="text-[12px] text-label-tertiary">{provider.label}</span>
+                <span className="grow text-subheadline font-semibold">{run.action.label}</span>
+                <span className="text-caption text-label-tertiary">{provider.label}</span>
                 <IconButton label="Close" onClick={close}>
                   <CloseIcon size={17} />
                 </IconButton>
               </header>
-              <div className="min-h-[72px] overflow-y-auto px-4 pb-3 text-[15px] leading-relaxed whitespace-pre-wrap">
+              <div className="min-h-[72px] overflow-y-auto px-4 pb-3 text-subheadline leading-relaxed whitespace-pre-wrap">
                 {run.state === "failed" ? (
                   <p className="text-danger">{run.message}</p>
                 ) : run.text ? (

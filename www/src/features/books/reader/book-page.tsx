@@ -1,4 +1,4 @@
-import { cn } from "@notables/ui";
+import { cn } from "@ultrapeach/ui";
 import type { ReactNode } from "react";
 import { BookCover } from "../components/book-cover";
 import type { BookEntry } from "../store/book-store";
@@ -61,7 +61,7 @@ export function BookPage({
           </div>
           {index > 0 && (
             <span
-              className="absolute inset-x-0 text-center font-serif text-[13px] text-label-tertiary"
+              className="absolute inset-x-0 text-center font-serif text-footnote text-label-tertiary"
               style={{ bottom: geometry.padding * 0.6 }}
             >
               {index}

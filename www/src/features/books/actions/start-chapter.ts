@@ -1,5 +1,5 @@
 import type { NoteKind } from "@notables/core";
-import { $appendContent, composeDocument } from "@notables/editor";
+import { $appendContent, composeDocument } from "@notables/pluraliti";
 import { writeNote } from "../../library/lib/write-note";
 import { kindOfBook } from "../lib/book-kind";
 import type { MediaKind } from "../model/media-kind";

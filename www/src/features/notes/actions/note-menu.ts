@@ -1,6 +1,6 @@
 import { NoteKind } from "@notables/core";
-import { type ContextMenuItem, toast } from "@notables/ui";
 import type { useNavigate } from "@tanstack/react-router";
+import { type ContextMenuItem, toast } from "@ultrapeach/ui";
 import { appLinkFor } from "../../../platform/app-links";
 import { publicUrl } from "../../../platform/public-url";
 import { noteFontLabels, noteFonts } from "../../library/model/note-fonts";

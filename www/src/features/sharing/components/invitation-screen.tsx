@@ -1,5 +1,5 @@
-import { Button, ShareIcon } from "@notables/ui";
 import { useNavigate } from "@tanstack/react-router";
+import { Button, ShareIcon } from "@ultrapeach/ui";
 import { useEffect, useMemo, useState } from "react";
 import { AppMark } from "../../../components/brand/app-mark";
 import { t } from "../../../i18n/i18n";
@@ -41,7 +41,7 @@ export function InvitationScreen({ shareId }: { shareId: string }) {
             <h1 className="font-serif text-[30px] leading-tight font-semibold">
               {invitation.title || t("common.untitled")}
             </h1>
-            <p className="text-[15px] leading-snug text-label-secondary">
+            <p className="text-subheadline leading-snug text-label-secondary">
               {t("sharing.acceptBody")}
             </p>
           </div>
@@ -50,15 +50,15 @@ export function InvitationScreen({ shareId }: { shareId: string }) {
             {t("sharing.accept")}
           </Button>
           {invitation.name && (
-            <p className="text-[12px] text-label-tertiary">
+            <p className="text-caption text-label-tertiary">
               {t("sharing.joiningAs", { name: invitation.name })}
             </p>
           )}
         </>
       ) : (
         <div className="flex max-w-[380px] flex-col gap-2">
-          <h1 className="text-[22px] font-semibold">{t("sharing.badLinkTitle")}</h1>
-          <p className="text-[15px] text-label-secondary">{t("sharing.badLinkBody")}</p>
+          <h1 className="text-title2 font-semibold">{t("sharing.badLinkTitle")}</h1>
+          <p className="text-subheadline text-label-secondary">{t("sharing.badLinkBody")}</p>
         </div>
       )}
     </main>

@@ -1,4 +1,4 @@
-import { useDrawingStudio, useEditorCommands } from "@notables/editor";
+import { useDrawingStudio, useEditorCommands } from "@notables/pluraliti";
 import { useEffect, useRef } from "react";
 import { takeDrawing } from "../lib/pending-drawing";
 

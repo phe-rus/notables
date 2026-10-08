@@ -1,0 +1,4 @@
+/target/
+/android/build/
+/.cargo-ok
+/.cargo_vcs_info.json

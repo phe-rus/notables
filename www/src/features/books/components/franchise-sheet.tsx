@@ -1,4 +1,4 @@
-import { CloseIcon, IconButton, Sheet } from "@notables/ui";
+import { CloseIcon, IconButton, Sheet } from "@ultrapeach/ui";
 import { useState } from "react";
 import { t } from "../../../i18n/i18n";
 import { setSeriesFranchise, startFranchise } from "../actions/franchise";
@@ -68,13 +68,13 @@ function FranchiseContent({ task, onClose }: { task: FranchiseTask; onClose: () 
     <>
       <header className="flex items-start justify-between gap-3 px-6 pt-6 pb-2">
         <div className="flex min-w-0 flex-col gap-1">
-          <h2 className="truncate text-[20px] font-bold tracking-tight">
+          <h2 className="truncate text-title3 font-bold tracking-tight">
             {task.type === "add"
               ? t("books.franchise.addTitle", { title: task.series.title })
               : t("books.franchise.renameTitle")}
           </h2>
           {task.type === "add" && (
-            <p className="text-[13px] leading-snug text-label-secondary">
+            <p className="text-footnote leading-snug text-label-secondary">
               {t("books.franchise.hint")}
             </p>
           )}
@@ -86,7 +86,7 @@ function FranchiseContent({ task, onClose }: { task: FranchiseTask; onClose: () 
       <div className="flex grow flex-col gap-5 overflow-y-auto px-6 pt-3 pb-6">
         {others.length > 0 && (
           <section className="flex flex-col gap-1.5">
-            <h3 className="text-[12px] font-medium text-label-tertiary">
+            <h3 className="text-caption font-medium text-label-tertiary">
               {t("books.franchise.existing")}
             </h3>
             <ul className="flex flex-col">
@@ -95,12 +95,14 @@ function FranchiseContent({ task, onClose }: { task: FranchiseTask; onClose: () 
                   <button
                     type="button"
                     onClick={() => join(franchise)}
-                    className="flex w-full items-baseline justify-between gap-3 rounded-[12px] px-3 py-2.5 text-start transition-colors hover:bg-fill/70"
+                    className="flex w-full items-baseline justify-between gap-3 rounded-xl px-3 py-2.5 text-start transition-colors hover:bg-fill/70"
                   >
-                    <span className="truncate text-[15px] font-semibold">{franchise.title}</span>
+                    <span className="truncate text-subheadline font-semibold">
+                      {franchise.title}
+                    </span>
                     {/* Two franchises may share a name: their sizes tell them apart. */}
                     {(titleCounts.get(franchise.title) ?? 0) > 1 && (
-                      <span className="shrink-0 text-[13px] text-label-secondary">
+                      <span className="shrink-0 text-footnote text-label-secondary">
                         {t("trash.seriesCount", { count: seriesIn(franchise.id) })}
                       </span>
                     )}
@@ -117,7 +119,7 @@ function FranchiseContent({ task, onClose }: { task: FranchiseTask; onClose: () 
             submit();
           }}
         >
-          <label htmlFor="franchise-name" className="text-[12px] font-medium text-label-tertiary">
+          <label htmlFor="franchise-name" className="text-caption font-medium text-label-tertiary">
             {task.type === "add" ? t("books.franchise.newLabel") : t("books.franchise.name")}
           </label>
           <div className="flex gap-2">
@@ -126,7 +128,7 @@ function FranchiseContent({ task, onClose }: { task: FranchiseTask; onClose: () 
               value={name}
               maxLength={FRANCHISE_TITLE_MAX}
               onChange={(event) => setName(event.target.value)}
-              className="control-field min-w-0 grow rounded-[10px] px-3 py-2 text-[16px]"
+              className="control-field min-w-0 grow rounded-lg px-3 py-2 text-callout"
             />
             <button
               type="submit"

@@ -1,5 +1,5 @@
 import { addDaysTo, type Day } from "@notables/core";
-import { cn, haptic } from "@notables/ui";
+import { cn, haptic } from "@ultrapeach/ui";
 import { motion } from "motion/react";
 import { useRef } from "react";
 import { locale } from "../../../i18n/i18n";
@@ -79,12 +79,12 @@ export function WeekStrip({
               }}
               className="flex flex-col items-center gap-1 py-1"
             >
-              <span className="text-[11px] font-medium text-label-tertiary">
+              <span className="text-caption2 font-medium text-label-tertiary">
                 {narrowDay().format(asDate(day))}
               </span>
               <span
                 className={cn(
-                  "flex size-9 items-center justify-center rounded-full text-[17px] tabular-nums transition-colors",
+                  "flex size-9 items-center justify-center rounded-full text-body tabular-nums transition-colors",
                   chosen
                     ? isToday
                       ? "bg-accent font-semibold text-on-accent"

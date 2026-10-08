@@ -1,5 +1,4 @@
-import { MediaResolverProvider } from "@notables/editor";
-import { ContextMenuHost, DialogHost, Toaster, TooltipHost } from "@notables/ui";
+import { MediaResolverProvider } from "@notables/pluraliti";
 import {
   createRootRoute,
   HeadContent,
@@ -7,11 +6,13 @@ import {
   Scripts,
   useRouterState,
 } from "@tanstack/react-router";
+import { ContextMenuHost, DialogHost, Toaster, TooltipHost } from "@ultrapeach/ui";
 import { MotionConfig } from "motion/react";
 import { Fragment, type ReactNode, useEffect } from "react";
 import { AppLinkListener } from "../components/app-links/app-link-listener";
 import { SplashScreen } from "../components/splash/splash-screen";
 import { ListeningSession } from "../features/listening/components/listening-session";
+import { appearanceBootScript } from "../features/settings/lib/appearance-boot";
 import { useLanguage } from "../i18n/i18n";
 import { languages } from "../i18n/languages";
 import { resolveMediaUrl } from "../platform/storage/media-store";
@@ -61,6 +62,8 @@ function RootDocument({ children }: { children: ReactNode }) {
   return (
     <html lang={language} dir={direction} suppressHydrationWarning>
       <head>
+        {/* Saved theme, accent and text size before the first paint: no flash of the wrong look. */}
+        <script dangerouslySetInnerHTML={{ __html: appearanceBootScript }} />
         <HeadContent />
       </head>
       <body>

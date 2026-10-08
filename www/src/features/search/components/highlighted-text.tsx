@@ -15,7 +15,7 @@ export function HighlightedText({
     const from = Math.max(start, cursor);
     if (from > cursor) parts.push(text.slice(cursor, from));
     parts.push(
-      <mark key={from} className="rounded-[3px] bg-accent-soft px-px text-label">
+      <mark key={from} className="rounded-xs bg-accent-soft px-px text-label">
         {text.slice(from, end)}
       </mark>,
     );

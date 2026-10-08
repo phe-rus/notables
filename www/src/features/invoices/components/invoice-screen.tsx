@@ -1,4 +1,5 @@
 import { computeTotals, formatMoney, type InvoiceDocument, type InvoiceKind } from "@notables/core";
+import { Link, useNavigate } from "@tanstack/react-router";
 import {
   Button,
   ChevronLeftIcon,
@@ -7,15 +8,14 @@ import {
   DownloadIcon,
   ExpandIcon,
   IconButton,
+  Picker,
   Popover,
   PrintIcon,
   SegmentedControl,
-  Select,
   TrashIcon,
   toast,
   useDismiss,
-} from "@notables/ui";
-import { Link, useNavigate } from "@tanstack/react-router";
+} from "@ultrapeach/ui";
 import { useCallback, useId, useRef, useState } from "react";
 import { createPortal } from "react-dom";
 import { Field, FormSection, TextArea, TextInput } from "../../../components/form/form-fields";
@@ -124,7 +124,7 @@ export function InvoiceScreen({ invoice }: { invoice: InvoiceDocument }) {
       >
         <Link
           to="/invoices"
-          className="flex items-center text-[17px] text-accent-text no-underline md:hidden"
+          className="flex items-center text-body text-accent-text no-underline md:hidden"
           aria-label="Back to invoices"
         >
           <ChevronLeftIcon size={22} />
@@ -217,7 +217,7 @@ export function InvoiceScreen({ invoice }: { invoice: InvoiceDocument }) {
                   />
                 </Field>
                 <Field label="Currency">
-                  <Select
+                  <Picker
                     label="Currency"
                     value={invoice.currency}
                     onChange={(currency) => set({ currency })}
@@ -263,7 +263,7 @@ export function InvoiceScreen({ invoice }: { invoice: InvoiceDocument }) {
             <FormSection
               title="Items"
               aside={
-                <span className="text-[13px] font-semibold tabular-nums">
+                <span className="text-footnote font-semibold tabular-nums">
                   {formatMoney(totals.total, invoice.currency)}
                 </span>
               }
@@ -311,14 +311,14 @@ export function InvoiceScreen({ invoice }: { invoice: InvoiceDocument }) {
             </FormSection>
 
             <FormSection title="Seal">
-              <div className="flex flex-col gap-3 rounded-[16px] bg-fill/60 p-4 text-[13px] leading-snug text-label-secondary">
+              <div className="flex flex-col gap-3 rounded-3xl bg-fill/60 p-4 text-footnote leading-snug text-label-secondary">
                 <p>
                   Every {invoice.kind} is signed on this device. The code on the page lets anyone
                   check it’s genuine and unchanged, and the issuer ID shows it came from you.
                 </p>
                 <p className="flex items-center justify-between gap-3">
                   <span>Your issuer ID</span>
-                  <span className="font-mono text-[13px] font-semibold text-label">
+                  <span className="font-mono text-footnote font-semibold text-label">
                     {issuerId ?? "…"}
                   </span>
                 </p>
@@ -449,7 +449,7 @@ function SaveAsBusiness({ invoice }: { invoice: InvoiceDocument }) {
           description: "New documents start with these details.",
         });
       }}
-      className="text-[13px] font-medium text-accent-text"
+      className="text-footnote font-medium text-accent-text"
     >
       {business ? "Update my business" : "Save as my business"}
     </button>

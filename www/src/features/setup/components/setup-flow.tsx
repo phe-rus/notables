@@ -1,4 +1,5 @@
-import { accents } from "@notables/tokens";
+import { useNavigate } from "@tanstack/react-router";
+import { accents } from "@ultrapeach/tokens";
 import {
   BellIcon,
   BookIcon,
@@ -12,8 +13,7 @@ import {
   SegmentedControl,
   SwatchPicker,
   spring,
-} from "@notables/ui";
-import { useNavigate } from "@tanstack/react-router";
+} from "@ultrapeach/ui";
 import { AnimatePresence, motion } from "motion/react";
 import { type ReactNode, useEffect, useState } from "react";
 import { AppMark } from "../../../components/brand/app-mark";
@@ -195,7 +195,7 @@ function StepTitle({ title, children }: { title: string; children?: ReactNode })
   return (
     <div className="flex flex-col gap-2">
       <h1 className="text-[30px] leading-tight font-bold tracking-tight">{title}</h1>
-      {children && <p className="text-[16px] leading-snug text-label-secondary">{children}</p>}
+      {children && <p className="text-callout leading-snug text-label-secondary">{children}</p>}
     </div>
   );
 }
@@ -238,14 +238,14 @@ function IntroStep() {
             initial={{ opacity: 0, y: 8 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ ...spring.smooth, delay: 0.08 * position }}
-            className="flex gap-3 rounded-[18px] border border-separator/70 bg-elevated p-4"
+            className="flex gap-3 rounded-4xl border border-separator/70 bg-elevated p-4"
           >
             <span className="flex size-9 shrink-0 items-center justify-center rounded-full bg-accent-soft text-accent-text">
               {item.icon}
             </span>
             <span className="flex flex-col gap-0.5">
-              <span className="text-[15px] font-semibold">{item.title}</span>
-              <span className="text-[13px] leading-snug text-label-secondary">{item.body}</span>
+              <span className="text-subheadline font-semibold">{item.title}</span>
+              <span className="text-footnote leading-snug text-label-secondary">{item.body}</span>
             </span>
           </motion.li>
         ))}
@@ -258,7 +258,7 @@ function LicenceStep({ agreed, onAgree }: { agreed: boolean; onAgree: (value: bo
   return (
     <>
       <StepTitle title={t("setup.yours")}>{t("setup.yoursBody")}</StepTitle>
-      <ul className="flex flex-col gap-2.5 text-[15px] leading-snug">
+      <ul className="flex flex-col gap-2.5 text-subheadline leading-snug">
         {[t("setup.promiseDevice"), t("setup.promiseNothingSent"), t("setup.promiseBin")].map(
           (line) => (
             <li key={line} className="flex gap-2.5">
@@ -270,7 +270,7 @@ function LicenceStep({ agreed, onAgree }: { agreed: boolean; onAgree: (value: bo
           ),
         )}
       </ul>
-      <div className="max-h-[180px] overflow-y-auto rounded-[16px] bg-fill/60 p-4 text-[12px] leading-relaxed text-label-secondary">
+      <div className="max-h-[180px] overflow-y-auto rounded-3xl bg-fill/60 p-4 text-caption leading-relaxed text-label-secondary">
         <p className="mb-2 font-semibold text-label">MIT License. Copyright (c) 2026 Pherus.</p>
         <p>
           Permission is hereby granted, free of charge, to any person obtaining a copy of this
@@ -290,7 +290,7 @@ function LicenceStep({ agreed, onAgree }: { agreed: boolean; onAgree: (value: bo
           DEALINGS IN THE SOFTWARE.
         </p>
       </div>
-      <label className="flex cursor-pointer items-center gap-3 rounded-[14px] bg-elevated px-4 py-3 shadow-[inset_0_0_0_1px_var(--color-separator)] has-[:focus-visible]:ring-2 has-[:focus-visible]:ring-accent/70">
+      <label className="flex cursor-pointer items-center gap-3 rounded-2xl bg-elevated px-4 py-3 shadow-[inset_0_0_0_1px_var(--color-separator)] has-[:focus-visible]:ring-2 has-[:focus-visible]:ring-accent/70">
         <input
           type="checkbox"
           className="sr-only"
@@ -300,7 +300,7 @@ function LicenceStep({ agreed, onAgree }: { agreed: boolean; onAgree: (value: bo
         <span
           aria-hidden="true"
           className={cn(
-            "flex size-[22px] shrink-0 items-center justify-center rounded-[7px] transition-colors",
+            "flex size-[22px] shrink-0 items-center justify-center rounded-sm transition-colors",
             agreed
               ? "bg-accent text-on-accent"
               : "shadow-[inset_0_0_0_1.5px_var(--color-label-tertiary)]",
@@ -308,7 +308,7 @@ function LicenceStep({ agreed, onAgree }: { agreed: boolean; onAgree: (value: bo
         >
           {agreed && <CheckIcon size={14} strokeWidth={2.8} />}
         </span>
-        <span className="text-[15px] font-medium">{t("setup.agree")}</span>
+        <span className="text-subheadline font-medium">{t("setup.agree")}</span>
       </label>
     </>
   );
@@ -333,7 +333,7 @@ function NameStep({ onSubmit }: { onSubmit: () => void }) {
           placeholder={t("setup.namePlaceholder")}
           aria-label={t("setup.namePlaceholder")}
           autoComplete="name"
-          className="w-full rounded-[14px] control-field px-4 py-3.5 text-[19px]"
+          className="w-full rounded-2xl control-field px-4 py-3.5 text-[19px]"
         />
       </form>
     </>
@@ -357,7 +357,7 @@ function LookStep() {
           ]}
         />
         <div className="flex flex-col gap-2">
-          <span className="text-[13px] font-medium text-label-secondary">
+          <span className="text-footnote font-medium text-label-secondary">
             {t("setup.accentColour")}
           </span>
           <SwatchPicker
@@ -367,13 +367,13 @@ function LookStep() {
             options={Object.values(accents).map((accent) => ({
               value: accent.id,
               label: accent.name,
-              color: accent.light.accent,
+              color: accent.swatch,
               ink: accent.light.onAccent,
             }))}
           />
         </div>
         <div className="flex flex-col gap-2">
-          <span className="text-[13px] font-medium text-label-secondary">
+          <span className="text-footnote font-medium text-label-secondary">
             {t("setup.writingFont")}
           </span>
           <div className="grid grid-cols-2 gap-2">
@@ -404,7 +404,7 @@ function FontChoice({
   return (
     <label
       className={cn(
-        "flex cursor-pointer flex-col gap-1 rounded-[14px] px-4 py-3 transition-colors has-[:focus-visible]:ring-2 has-[:focus-visible]:ring-accent/70",
+        "flex cursor-pointer flex-col gap-1 rounded-2xl px-4 py-3 transition-colors has-[:focus-visible]:ring-2 has-[:focus-visible]:ring-accent/70",
         selected
           ? "bg-accent-soft shadow-[inset_0_0_0_1.5px_var(--color-accent)]"
           : "bg-fill/60 hover:bg-fill",
@@ -417,10 +417,10 @@ function FontChoice({
         checked={selected}
         onChange={onSelect}
       />
-      <span className="text-[22px] leading-tight" style={{ fontFamily: noteFontFamilies[font] }}>
+      <span className="text-title2 leading-tight" style={{ fontFamily: noteFontFamilies[font] }}>
         Dear diary,
       </span>
-      <span className="text-[12px] font-medium text-label-secondary">{noteFontLabels[font]}</span>
+      <span className="text-caption font-medium text-label-secondary">{noteFontLabels[font]}</span>
     </label>
   );
 }
@@ -439,7 +439,7 @@ function LanguageStep() {
               key={option.id}
               lang={option.id}
               className={cn(
-                "flex cursor-pointer items-center justify-between rounded-[14px] px-4 py-3 transition-colors has-[:focus-visible]:ring-2 has-[:focus-visible]:ring-accent/70",
+                "flex cursor-pointer items-center justify-between rounded-2xl px-4 py-3 transition-colors has-[:focus-visible]:ring-2 has-[:focus-visible]:ring-accent/70",
                 selected ? "bg-accent-soft" : "bg-fill/60 hover:bg-fill",
               )}
             >
@@ -450,7 +450,7 @@ function LanguageStep() {
                 checked={selected}
                 onChange={() => setLanguageChoice(option.id)}
               />
-              <span className="text-[15px] font-medium">{option.name}</span>
+              <span className="text-subheadline font-medium">{option.name}</span>
               {selected && <CheckIcon size={16} strokeWidth={2.6} className="text-accent-text" />}
             </label>
           );
@@ -523,13 +523,13 @@ function PermissionRow({ kind, device }: { kind: PermissionKind; device: DeviceP
     setState(await requestPermission(kind));
   };
   return (
-    <div className="flex items-center gap-3 rounded-[18px] border border-separator/70 bg-elevated p-4">
+    <div className="flex items-center gap-3 rounded-4xl border border-separator/70 bg-elevated p-4">
       <span className="flex size-10 shrink-0 items-center justify-center rounded-full bg-accent-soft text-accent-text">
         {copy.icon}
       </span>
       <span className="flex min-w-0 grow flex-col gap-0.5">
-        <span className="text-[15px] font-semibold">{copy.title}</span>
-        <span className="text-[13px] leading-snug text-label-secondary">
+        <span className="text-subheadline font-semibold">{copy.title}</span>
+        <span className="text-footnote leading-snug text-label-secondary">
           {state === "denied"
             ? t("setup.permissionDenied", { place: settingsPlace(device) })
             : state === "unsupported"

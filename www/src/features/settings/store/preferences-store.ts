@@ -1,7 +1,8 @@
 import { useSyncExternalStore } from "react";
 import { defaultPreferences, normalizePreferences, type Preferences } from "../model/preferences";
 
-const STORAGE_KEY = "notables:preferences";
+/** Where preferences are saved; the pre-paint appearance script reads it too. */
+export const PREFERENCES_KEY = "notables:preferences";
 
 let current: Preferences | undefined;
 const listeners = new Set<() => void>();
@@ -9,7 +10,7 @@ const listeners = new Set<() => void>();
 function read(): Preferences {
   if (current) return current;
   try {
-    const stored = localStorage.getItem(STORAGE_KEY);
+    const stored = localStorage.getItem(PREFERENCES_KEY);
     current = normalizePreferences(stored ? JSON.parse(stored) : {});
   } catch {
     current = defaultPreferences;
@@ -24,7 +25,7 @@ export function getPreferences(): Preferences {
 export function updatePreferences(change: (previous: Preferences) => Preferences): void {
   current = normalizePreferences(change(read()));
   try {
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(current));
+    localStorage.setItem(PREFERENCES_KEY, JSON.stringify(current));
   } catch {
     // Private windows may refuse storage; the change still applies for this session.
   }
@@ -35,7 +36,7 @@ function subscribe(listener: () => void) {
   listeners.add(listener);
   // Keep other windows of the app in step.
   const onStorage = (event: StorageEvent) => {
-    if (event.key !== STORAGE_KEY) return;
+    if (event.key !== PREFERENCES_KEY) return;
     current = undefined;
     listener();
   };

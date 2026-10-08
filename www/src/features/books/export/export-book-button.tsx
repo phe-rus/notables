@@ -1,4 +1,4 @@
-import { Button, DownloadIcon, openContextMenu, toast } from "@notables/ui";
+import { Button, DownloadIcon, openMenu, toast } from "@ultrapeach/ui";
 import { useState } from "react";
 import { t } from "../../../i18n/i18n";
 import type { BookEntry } from "../store/book-store";
@@ -39,15 +39,14 @@ export function ExportBookButton({ book }: { book: BookEntry }) {
       variant="secondary"
       disabled={exporting || book.chapterIds.length === 0}
       onClick={(event) => {
-        const rect = event.currentTarget.getBoundingClientRect();
-        openContextMenu(
-          Math.max(12, rect.right - 300),
-          rect.bottom + 6,
+        openMenu(
+          event.currentTarget,
           exportMenuItems(
             book,
             () => setExporting(true),
             () => setExporting(false),
           ),
+          { edge: "trailing" },
         );
       }}
       data-tooltip={t("books.exportBook")}

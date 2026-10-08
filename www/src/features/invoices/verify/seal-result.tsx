@@ -1,5 +1,5 @@
 import { formatMoney, invoiceKindLabels, type SealCheck } from "@notables/core";
-import { CheckIcon, CloseIcon, cn, spring, WarningIcon } from "@notables/ui";
+import { CheckIcon, CloseIcon, cn, spring, WarningIcon } from "@ultrapeach/ui";
 import { motion } from "motion/react";
 import { useState } from "react";
 import { knownIssuer, namesakes, rememberIssuer } from "./trusted-issuers";
@@ -84,13 +84,15 @@ export function SealResult({
         {tone.icon}
       </motion.span>
       <div className="flex flex-col items-center gap-1.5 text-center">
-        <h1 className="text-[28px] font-bold tracking-tight">{tone.title}</h1>
-        <p className="max-w-[420px] text-[15px] leading-snug text-label-secondary">{explanation}</p>
+        <h1 className="text-title font-bold tracking-tight">{tone.title}</h1>
+        <p className="max-w-[420px] text-subheadline leading-snug text-label-secondary">
+          {explanation}
+        </p>
       </div>
       {extra}
 
       {check.summary && (
-        <dl className="grid w-full grid-cols-[auto_1fr] gap-x-6 gap-y-2.5 rounded-[20px] border border-separator/70 bg-elevated p-5 text-[14px]">
+        <dl className="grid w-full grid-cols-[auto_1fr] gap-x-6 gap-y-2.5 rounded-4xl border border-separator/70 bg-elevated p-5 text-[14px]">
           <Row label="Document">
             {invoiceKindLabels[check.summary.kind]} {check.summary.no}
           </Row>
@@ -107,7 +109,7 @@ export function SealResult({
           <Row label="Items">{check.summary.items}</Row>
           <Row label="Tax">{formatMoney(check.summary.tax, check.summary.cur)}</Row>
           <Row label="Total">
-            <span className="text-[17px] font-bold">
+            <span className="text-body font-bold">
               {formatMoney(check.summary.total, check.summary.cur)}
             </span>
           </Row>
@@ -120,7 +122,7 @@ export function SealResult({
       )}
 
       {check.valid && verdict === "genuine" && (
-        <p className="text-center text-[13px] leading-snug text-label-tertiary">
+        <p className="text-center text-footnote leading-snug text-label-tertiary">
           Check these details match the paper you were given. If they don’t, the paper was changed.
         </p>
       )}
@@ -133,7 +135,7 @@ export function SealResult({
               rememberIssuer(check.issuerId, check.summary.from);
               setRemembered(true);
             }}
-            className="rounded-full bg-inverse px-5 py-2.5 text-[15px] font-semibold text-on-inverse transition-transform active:scale-[0.97]"
+            className="rounded-full bg-inverse px-5 py-2.5 text-subheadline font-semibold text-on-inverse transition-transform active:scale-[0.97]"
           >
             Trust {check.summary.from || "this issuer"}
           </button>
@@ -141,7 +143,7 @@ export function SealResult({
         <button
           type="button"
           onClick={onReset}
-          className="rounded-full bg-fill px-5 py-2.5 text-[15px] font-semibold text-label transition-transform active:scale-[0.97]"
+          className="rounded-full bg-fill px-5 py-2.5 text-subheadline font-semibold text-label transition-transform active:scale-[0.97]"
         >
           Check another
         </button>

@@ -1,5 +1,5 @@
-import { cn } from "@notables/ui";
 import { getCurrentWindow } from "@tauri-apps/api/window";
+import { cn } from "@ultrapeach/ui";
 
 const buttons = [
   { action: "close", label: "Close", color: "bg-[#ff5f57]", glyph: "M4 4l4 4M8 4l-4 4" },

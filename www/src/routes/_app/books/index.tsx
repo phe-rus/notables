@@ -10,7 +10,7 @@ function NoBookSelected() {
       <p className="font-serif text-[26px] font-semibold text-label">
         Every note can become a chapter.
       </p>
-      <p className="text-[15px] text-label-secondary">Pick a book, or start a new one.</p>
+      <p className="text-subheadline text-label-secondary">Pick a book, or start a new one.</p>
     </div>
   );
 }

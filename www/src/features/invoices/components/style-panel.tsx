@@ -1,6 +1,6 @@
 import type { InvoiceFont, InvoiceLayout, InvoiceStyle } from "@notables/core";
-import { useMediaSource } from "@notables/editor";
-import { PhotoIcon, SegmentedControl, SwatchPicker } from "@notables/ui";
+import { useMediaSource } from "@notables/pluraliti";
+import { PhotoIcon, SegmentedControl, SwatchPicker } from "@ultrapeach/ui";
 import { useRef } from "react";
 import { deleteMedia, saveMedia } from "../../../platform/storage/media-store";
 
@@ -38,7 +38,7 @@ export function StylePanel({
   return (
     <div className="flex flex-col gap-5">
       <div className="flex flex-col gap-2.5">
-        <span className="text-[12px] font-medium text-label-secondary">Accent</span>
+        <span className="text-caption font-medium text-label-secondary">Accent</span>
         <div className="flex items-start gap-3">
           <SwatchPicker
             label="Document accent"
@@ -67,13 +67,13 @@ export function StylePanel({
                 aria-label="Custom accent colour"
               />
             </span>
-            <span className="text-[11px] text-label-tertiary">Custom</span>
+            <span className="text-caption2 text-label-tertiary">Custom</span>
           </label>
         </div>
       </div>
 
       <div className="flex flex-col gap-2.5">
-        <span className="text-[12px] font-medium text-label-secondary">Layout</span>
+        <span className="text-caption font-medium text-label-secondary">Layout</span>
         <SegmentedControl<InvoiceLayout>
           label="Layout"
           value={style.layout}
@@ -87,7 +87,7 @@ export function StylePanel({
       </div>
 
       <div className="flex flex-col gap-2.5">
-        <span className="text-[12px] font-medium text-label-secondary">Typeface</span>
+        <span className="text-caption font-medium text-label-secondary">Typeface</span>
         <SegmentedControl<InvoiceFont>
           label="Typeface"
           value={style.font}
@@ -100,12 +100,12 @@ export function StylePanel({
       </div>
 
       <div className="flex flex-col gap-2.5">
-        <span className="text-[12px] font-medium text-label-secondary">Logo</span>
+        <span className="text-caption font-medium text-label-secondary">Logo</span>
         <div className="flex items-center gap-3">
           <button
             type="button"
             onClick={() => fileInput.current?.click()}
-            className="flex h-14 w-24 items-center justify-center overflow-hidden rounded-[12px] border border-dashed border-separator bg-fill/50 text-label-tertiary transition-colors hover:bg-fill"
+            className="flex h-14 w-24 items-center justify-center overflow-hidden rounded-xl border border-dashed border-separator bg-fill/50 text-label-tertiary transition-colors hover:bg-fill"
             aria-label={style.logo ? "Change logo" : "Add logo"}
           >
             {logoSrc ? (
@@ -122,7 +122,7 @@ export function StylePanel({
                 onChange({ ...style, logo: null });
                 if (previous?.startsWith("media:")) void deleteMedia(previous.slice(6));
               }}
-              className="text-[13px] font-medium text-danger"
+              className="text-footnote font-medium text-danger"
             >
               Remove
             </button>

@@ -7,7 +7,8 @@ const ROOT = join(import.meta.dir, "../../..");
 const SCAN = [
   "www/src",
   "www/test",
-  "shared",
+  "packages",
+  "AGENTS.md",
   "docs",
   "README.md",
   "CONTRIBUTING.md",
@@ -15,7 +16,7 @@ const SCAN = [
   "www/package.json",
   "www/src-tauri/tauri.conf.json",
 ];
-const SKIP = new Set(["node_modules", "dist", "target", "gen", "routeTree.gen.ts"]);
+const SKIP = new Set(["node_modules", ".turbo", "dist", "target", "gen", "routeTree.gen.ts"]);
 const TEXT = /\.(ts|tsx|css|md|json|rs)$/;
 const EM_DASH = String.fromCharCode(0x2014);
 

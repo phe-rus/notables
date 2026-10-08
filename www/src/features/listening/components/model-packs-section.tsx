@@ -1,7 +1,14 @@
-import { Button, confirmDialog, Sheet, Switch, toast } from "@notables/ui";
+import {
+  Button,
+  confirmDialog,
+  LabeledContent,
+  Section,
+  Sheet,
+  Toggle,
+  toast,
+} from "@ultrapeach/ui";
 import { useState } from "react";
 import { locale, type MessageKey, t } from "../../../i18n/i18n";
-import { SettingsGroup, SettingsRow } from "../../settings/components/settings-controls";
 import {
   deletePack,
   downloadPack,
@@ -99,13 +106,13 @@ export function ModelPacksSection() {
   };
 
   return (
-    <SettingsGroup title={t("listening.packs.title")} footer={t("listening.packs.footer")}>
+    <Section title={t("listening.packs.title")} footer={t("listening.packs.footer")}>
       {packs.map((pack) => {
         const busy = ["downloading", "updating", "verifying"].includes(pack.state);
         const installed = pack.installedVersion !== null;
         const canFetch = !installed && !busy && pack.availableVersion !== null;
         return (
-          <SettingsRow
+          <LabeledContent
             key={pack.id}
             label={t(PACK_NAMES[pack.id] ?? "listening.packs.naturalVoice")}
             description={describe(pack)}
@@ -133,19 +140,19 @@ export function ModelPacksSection() {
                 </Button>
               )}
             </div>
-          </SettingsRow>
+          </LabeledContent>
         );
       })}
-      <SettingsRow
+      <LabeledContent
         label={t("listening.packs.mobileData")}
         description={t("listening.packs.mobileDataHint")}
       >
-        <Switch
+        <Toggle
           label={t("listening.packs.mobileData")}
           checked={settings.downloadOnMobileData}
           onChange={(downloadOnMobileData) => setNarrationSettings({ downloadOnMobileData })}
         />
-      </SettingsRow>
+      </LabeledContent>
       <Sheet
         open={license !== null}
         onClose={() => setLicense(null)}
@@ -153,8 +160,8 @@ export function ModelPacksSection() {
         className="max-w-[620px]"
       >
         <div className="flex max-h-[70vh] flex-col gap-3 p-5">
-          <h2 className="text-[17px] font-semibold text-label">{license?.title}</h2>
-          <pre className="min-h-0 flex-1 overflow-auto whitespace-pre-wrap text-[12px] leading-relaxed text-label-secondary">
+          <h2 className="text-body font-semibold text-label">{license?.title}</h2>
+          <pre className="min-h-0 flex-1 overflow-auto whitespace-pre-wrap text-caption leading-relaxed text-label-secondary">
             {license?.text}
           </pre>
           <Button className="self-end" onClick={() => setLicense(null)}>
@@ -162,6 +169,6 @@ export function ModelPacksSection() {
           </Button>
         </div>
       </Sheet>
-    </SettingsGroup>
+    </Section>
   );
 }

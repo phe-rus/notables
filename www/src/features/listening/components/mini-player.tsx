@@ -1,5 +1,5 @@
-import { CloseIcon, cn, IconButton, PauseIcon, PlayIcon, spring } from "@notables/ui";
 import { Link } from "@tanstack/react-router";
+import { CloseIcon, cn, IconButton, PauseIcon, PlayIcon, spring } from "@ultrapeach/ui";
 import { AnimatePresence, motion } from "motion/react";
 import { t } from "../../../i18n/i18n";
 import { BookCover } from "../../books/components/book-cover";
@@ -27,7 +27,7 @@ export function MiniPlayer({ className }: { className?: string }) {
           exit={{ y: 24, opacity: 0 }}
           transition={spring.smooth}
           className={cn(
-            "glass-menu flex items-center gap-3 overflow-hidden rounded-[20px] py-2 pr-2 pl-2",
+            "glass-menu flex items-center gap-3 overflow-hidden rounded-4xl py-2 pr-2 pl-2",
             className,
           )}
         >
@@ -46,7 +46,7 @@ export function MiniPlayer({ className }: { className?: string }) {
               <span className="truncate text-[14px] font-semibold text-label">
                 {playback.track?.title}
               </span>
-              <span className="truncate text-[12px] text-label-secondary">
+              <span className="truncate text-caption text-label-secondary">
                 {book.title || t("common.untitled")}
               </span>
             </span>

@@ -1,5 +1,5 @@
-import { BookIcon, Chip, cn, SearchIcon, spring } from "@notables/ui";
 import { useNavigate } from "@tanstack/react-router";
+import { BookIcon, Chip, cn, SearchIcon, spring } from "@ultrapeach/ui";
 import { AnimatePresence, motion } from "motion/react";
 import { useDeferredValue, useEffect, useMemo, useRef, useState } from "react";
 import { useBooks } from "../../books/store/book-store";
@@ -56,7 +56,7 @@ export function SearchPalette() {
           <motion.div
             role="dialog"
             aria-label="Search"
-            className="glass-menu relative flex max-h-[min(560px,72vh)] w-full max-w-[640px] flex-col overflow-hidden rounded-[22px]"
+            className="glass-menu relative flex max-h-[min(560px,72vh)] w-full max-w-[640px] flex-col overflow-hidden rounded-5xl"
             initial={{ opacity: 0, scale: 0.96, y: -12 }}
             animate={{ opacity: 1, scale: 1, y: 0 }}
             exit={{ opacity: 0, scale: 0.98, y: -8, transition: { duration: 0.14 } }}
@@ -166,7 +166,7 @@ function PaletteBody() {
           aria-activedescendant={results.length ? `search-result-${selected}` : undefined}
           className="min-w-0 grow bg-transparent text-[18px] text-label outline-none placeholder:text-label-tertiary"
         />
-        <kbd className="rounded-md bg-fill px-1.5 py-0.5 font-sans text-[11px] font-semibold text-label-tertiary">
+        <kbd className="rounded-lg bg-fill px-1.5 py-0.5 font-sans text-caption2 font-semibold text-label-tertiary">
           esc
         </kbd>
       </label>
@@ -180,7 +180,7 @@ function PaletteBody() {
       >
         {!deferred.trim() && results.length > 0 && <GroupLabel>Recent</GroupLabel>}
         {results.length === 0 && (
-          <p className="px-3 py-10 text-center text-[15px] text-label-secondary">
+          <p className="px-3 py-10 text-center text-subheadline text-label-secondary">
             {deferred.trim()
               ? `No results for “${deferred.trim()}”`
               : "Your notes will show up here."}
@@ -204,7 +204,7 @@ function PaletteBody() {
 
 function GroupLabel({ children }: { children: string }) {
   return (
-    <span className="px-3 pt-1.5 pb-1 text-[12px] font-semibold text-label-tertiary">
+    <span className="px-3 pt-1.5 pb-1 text-caption font-semibold text-label-tertiary">
       {children}
     </span>
   );
@@ -237,25 +237,25 @@ function ResultRow({
         tabIndex={-1}
         onMouseMove={onHover}
         onClick={onChoose}
-        className="relative isolate flex cursor-default flex-col gap-0.5 rounded-[12px] px-3 py-2.5"
+        className="relative isolate flex cursor-default flex-col gap-0.5 rounded-xl px-3 py-2.5"
       >
         {active && (
           <motion.span
             layoutId="search-selection"
-            className="absolute inset-0 -z-10 rounded-[12px] bg-fill"
+            className="absolute inset-0 -z-10 rounded-xl bg-fill"
             transition={spring.snappy}
           />
         )}
         <span className="flex items-center gap-2">
           {result.type === "book" && <BookIcon size={15} className="text-accent-text" />}
-          <span className="truncate text-[15px] font-semibold text-label">{result.title}</span>
+          <span className="truncate text-subheadline font-semibold text-label">{result.title}</span>
           {result.type === "note" && result.kind && (
             <Chip tone={active ? "accent" : "neutral"}>{result.kind}</Chip>
           )}
-          <span className="ml-auto shrink-0 text-[12px] text-label-tertiary">{result.meta}</span>
+          <span className="ml-auto shrink-0 text-caption text-label-tertiary">{result.meta}</span>
         </span>
         {result.type === "note" && result.snippet && (
-          <span className={cn("line-clamp-2 text-[13px] leading-snug text-label-secondary")}>
+          <span className={cn("line-clamp-2 text-footnote leading-snug text-label-secondary")}>
             <HighlightedText text={result.snippet.text} matches={result.snippet.matches} />
           </span>
         )}

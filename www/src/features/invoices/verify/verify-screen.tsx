@@ -1,6 +1,6 @@
 import { extractSeal, hiddenMarkFor, type SealCheck, verifySeal } from "@notables/core";
-import { PhotoIcon, ScanCodeIcon, spring } from "@notables/ui";
 import { Link } from "@tanstack/react-router";
+import { PhotoIcon, ScanCodeIcon, spring } from "@ultrapeach/ui";
 import { AnimatePresence, motion } from "motion/react";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { AppMark } from "../../../components/brand/app-mark";
@@ -71,12 +71,12 @@ export function VerifyScreen() {
       <header className="flex items-center justify-between px-5 pt-[max(18px,env(safe-area-inset-top))]">
         <Link
           to="/"
-          className="flex items-center gap-2 text-[15px] font-semibold text-label no-underline"
+          className="flex items-center gap-2 text-subheadline font-semibold text-label no-underline"
         >
           <AppMark size={26} />
           Notables
         </Link>
-        <span className="text-[13px] text-label-tertiary">Document check</span>
+        <span className="text-footnote text-label-tertiary">Document check</span>
       </header>
 
       <main className="mx-auto flex w-full max-w-[480px] grow flex-col justify-center gap-6 px-5 pt-8 pb-16">
@@ -89,7 +89,7 @@ export function VerifyScreen() {
                 extra={
                   <>
                     {matchedNumber && (
-                      <p className="rounded-[14px] bg-success/10 px-4 py-2.5 text-center text-[14px] font-medium">
+                      <p className="rounded-2xl bg-success/10 px-4 py-2.5 text-center text-[14px] font-medium">
                         The number and check code match {matchedNumber} as issued from this device.
                       </p>
                     )}
@@ -110,8 +110,8 @@ export function VerifyScreen() {
               transition={spring.smooth}
             >
               <div className="flex flex-col items-center gap-2 text-center">
-                <h1 className="text-[28px] font-bold tracking-tight">Is it genuine?</h1>
-                <p className="max-w-[380px] text-[15px] leading-snug text-label-secondary">
+                <h1 className="text-title font-bold tracking-tight">Is it genuine?</h1>
+                <p className="max-w-[380px] text-subheadline leading-snug text-label-secondary">
                   Scan the code on an invoice, receipt or quote made with Notables to check who
                   issued it and that nothing was changed.
                 </p>
@@ -166,11 +166,11 @@ export function VerifyScreen() {
                   onChange={(event) => setPasted(event.target.value)}
                   placeholder="Or paste a verification link"
                   aria-label="Verification link"
-                  className="min-w-0 grow rounded-[12px] control-field px-3.5 py-2.5 text-[14px] text-label placeholder:text-label-tertiary"
+                  className="min-w-0 grow rounded-xl control-field px-3.5 py-2.5 text-[14px] text-label placeholder:text-label-tertiary"
                 />
                 <button
                   type="submit"
-                  className="rounded-[12px] bg-inverse px-4 text-[14px] font-semibold text-on-inverse disabled:opacity-40"
+                  className="rounded-xl bg-inverse px-4 text-[14px] font-semibold text-on-inverse disabled:opacity-40"
                   disabled={!pasted.trim()}
                 >
                   Check
@@ -195,7 +195,7 @@ export function VerifyScreen() {
         </AnimatePresence>
       </main>
 
-      <footer className="px-5 pb-[max(18px,env(safe-area-inset-bottom))] text-center text-[12px] text-label-tertiary">
+      <footer className="px-5 pb-[max(18px,env(safe-area-inset-bottom))] text-center text-caption text-label-tertiary">
         Checked on this device. Nothing you scan is sent anywhere.
       </footer>
     </div>
@@ -218,10 +218,10 @@ function NumberCheckForm({
   const [busy, setBusy] = useState(false);
 
   return (
-    <details className="group rounded-[18px] border border-separator/70 bg-elevated px-4 py-3 open:pb-4">
+    <details className="group rounded-4xl border border-separator/70 bg-elevated px-4 py-3 open:pb-4">
       <summary className="cursor-pointer list-none text-[14px] font-semibold text-label marker:hidden">
         Check by number instead
-        <span className="block text-[13px] font-normal text-label-secondary">
+        <span className="block text-footnote font-normal text-label-secondary">
           For documents issued from this device: type the number and check code on the paper.
         </span>
       </summary>
@@ -253,7 +253,7 @@ function NumberCheckForm({
           onChange={(event) => setNumber(event.target.value)}
           placeholder="Number, e.g. INV-0042"
           aria-label="Document number"
-          className="min-w-0 rounded-[12px] control-field px-3 py-2.5 text-[14px]"
+          className="min-w-0 rounded-xl control-field px-3 py-2.5 text-[14px]"
         />
         <input
           value={code}
@@ -261,12 +261,12 @@ function NumberCheckForm({
           placeholder="Check code"
           aria-label="Check code"
           autoCapitalize="characters"
-          className="min-w-0 rounded-[12px] control-field px-3 py-2.5 font-mono text-[14px] uppercase"
+          className="min-w-0 rounded-xl control-field px-3 py-2.5 font-mono text-[14px] uppercase"
         />
         <button
           type="submit"
           disabled={busy || !number.trim() || !code.trim()}
-          className="rounded-[12px] bg-inverse px-4 py-2.5 text-[14px] font-semibold text-on-inverse disabled:opacity-40 max-sm:col-span-2"
+          className="rounded-xl bg-inverse px-4 py-2.5 text-[14px] font-semibold text-on-inverse disabled:opacity-40 max-sm:col-span-2"
         >
           {busy ? "Checking…" : "Check"}
         </button>
@@ -288,7 +288,7 @@ function ChoiceButton({
     <button
       type="button"
       onClick={onClick}
-      className="flex flex-col items-center gap-2 rounded-[20px] border border-separator/70 bg-elevated px-4 py-6 text-[15px] font-semibold text-label transition-[transform,background-color] hover:bg-fill/50 active:scale-[0.98]"
+      className="flex flex-col items-center gap-2 rounded-4xl border border-separator/70 bg-elevated px-4 py-6 text-subheadline font-semibold text-label transition-[transform,background-color] hover:bg-fill/50 active:scale-[0.98]"
     >
       <span className="text-accent-text">{icon}</span>
       {children}

@@ -1,6 +1,6 @@
-import { useMediaSource } from "@notables/editor";
-import { ChevronLeftIcon, ChevronRightIcon, CloseIcon, cn } from "@notables/ui";
+import { useMediaSource } from "@notables/pluraliti";
 import { Link } from "@tanstack/react-router";
+import { ChevronLeftIcon, ChevronRightIcon, CloseIcon, cn } from "@ultrapeach/ui";
 import { AnimatePresence, motion, type PanInfo } from "motion/react";
 import { useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState } from "react";
 import { useBookKind } from "../../lib/book-kind";
@@ -135,7 +135,7 @@ export function ComicReader({ book }: { book: BookEntry }) {
         >
           <CloseIcon size={20} />
         </Link>
-        <p className="min-w-0 truncate text-center text-[15px] font-semibold">
+        <p className="min-w-0 truncate text-center text-subheadline font-semibold">
           {book.title || "Untitled"}
           {chapterTitle && <span className="font-normal text-white/60"> · {chapterTitle}</span>}
         </p>
@@ -144,7 +144,7 @@ export function ComicReader({ book }: { book: BookEntry }) {
 
       <div ref={stage} className="relative flex min-h-0 grow items-center justify-center">
         {chapters && pages.length === 0 && (
-          <p className="px-8 text-center text-[15px] text-white/70">
+          <p className="px-8 text-center text-subheadline text-white/70">
             This book has no pages on this device yet.
           </p>
         )}
@@ -211,7 +211,7 @@ export function ComicReader({ book }: { book: BookEntry }) {
           onChange={(event) => setPage(Number(event.target.value))}
           className="book-scrubber grow"
         />
-        <span className="shrink-0 text-[13px] text-white/70 tabular-nums" aria-live="polite">
+        <span className="shrink-0 text-footnote text-white/70 tabular-nums" aria-live="polite">
           {pages.length ? `${shown} / ${pages.length}` : ""}
         </span>
         <button

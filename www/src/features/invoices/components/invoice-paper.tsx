@@ -8,8 +8,8 @@ import {
   invoiceKindLabels,
   lineAmount,
 } from "@notables/core";
-import { useMediaSource } from "@notables/editor";
-import { cn } from "@notables/ui";
+import { useMediaSource } from "@notables/pluraliti";
+import { cn } from "@ultrapeach/ui";
 import { type CSSProperties, type ReactNode, useMemo } from "react";
 import { HiddenMark } from "../hidden-mark/hidden-mark";
 import { SealCode } from "./seal-code";
@@ -108,7 +108,7 @@ export function InvoicePaper({ invoice, verifyLink, issuerId, className }: Invoi
           >
             {label}
           </h1>
-          <span className="mt-1 text-[13px] text-[#77716a]">{invoice.number || "-"}</span>
+          <span className="mt-1 text-footnote text-[#77716a]">{invoice.number || "-"}</span>
         </div>
         {logo ? (
           <Logo src={logo} />
@@ -121,7 +121,7 @@ export function InvoicePaper({ invoice, verifyLink, issuerId, className }: Invoi
         )}
       </header>
 
-      <dl className="mt-8 grid w-max grid-cols-[auto_auto] gap-x-8 gap-y-1 text-[13px]">
+      <dl className="mt-8 grid w-max grid-cols-[auto_auto] gap-x-8 gap-y-1 text-footnote">
         <Meta label={invoice.kind === "receipt" ? "Receipt number" : `${label} number`}>
           {invoice.number}
         </Meta>
@@ -136,7 +136,7 @@ export function InvoicePaper({ invoice, verifyLink, issuerId, className }: Invoi
         )}
       </dl>
 
-      <section className="mt-9 grid grid-cols-2 gap-10 text-[13px] leading-[1.55]">
+      <section className="mt-9 grid grid-cols-2 gap-10 text-footnote leading-[1.55]">
         <Party title="From" party={invoice.issuer} />
         <Party
           title={invoice.kind === "receipt" ? "Received from" : "Bill to"}
@@ -147,16 +147,16 @@ export function InvoicePaper({ invoice, verifyLink, issuerId, className }: Invoi
       <p
         className={cn(
           "mt-10 font-semibold tracking-tight",
-          layout === "minimal" ? "text-[20px]" : "text-[24px]",
+          layout === "minimal" ? "text-title3" : "text-[24px]",
         )}
       >
         {amountLine}
       </p>
 
-      <table className="mt-7 w-full border-collapse text-[13px]">
+      <table className="mt-7 w-full border-collapse text-footnote">
         <thead>
           <tr
-            className="border-b text-left text-[12px] text-[#77716a]"
+            className="border-b text-left text-caption text-[#77716a]"
             style={{ borderColor: layout === "minimal" ? "#e8e4dc" : accent }}
           >
             <th className="py-2 pr-4 font-medium">Description</th>
@@ -177,14 +177,14 @@ export function InvoicePaper({ invoice, verifyLink, issuerId, className }: Invoi
         </tbody>
       </table>
 
-      <div className="mt-5 ml-auto flex w-[300px] flex-col text-[13px]">
+      <div className="mt-5 ml-auto flex w-[300px] flex-col text-footnote">
         <TotalRow label="Subtotal" value={money(totals.subtotal)} />
         {totals.discount > 0 && <TotalRow label="Discount" value={`−${money(totals.discount)}`} />}
         {invoice.taxRate > 0 && (
           <TotalRow label={`Tax (${invoice.taxRate}%)`} value={money(totals.tax)} />
         )}
         <div
-          className="mt-2 flex items-baseline justify-between border-t pt-3 text-[15px] font-semibold"
+          className="mt-2 flex items-baseline justify-between border-t pt-3 text-subheadline font-semibold"
           style={{ borderColor: accent }}
         >
           <span>
@@ -204,10 +204,10 @@ export function InvoicePaper({ invoice, verifyLink, issuerId, className }: Invoi
       </div>
 
       {(invoice.paymentDetails || invoice.notes) && (
-        <section className="mt-10 grid grid-cols-2 gap-10 text-[13px] leading-[1.55]">
+        <section className="mt-10 grid grid-cols-2 gap-10 text-footnote leading-[1.55]">
           {invoice.paymentDetails ? (
             <div>
-              <h2 className="mb-1 text-[12px] font-medium text-[#77716a]">
+              <h2 className="mb-1 text-caption font-medium text-[#77716a]">
                 {invoice.kind === "receipt" ? "Paid with" : "How to pay"}
               </h2>
               <p className="whitespace-pre-wrap">{invoice.paymentDetails}</p>
@@ -217,7 +217,7 @@ export function InvoicePaper({ invoice, verifyLink, issuerId, className }: Invoi
           )}
           {invoice.notes && (
             <div>
-              <h2 className="mb-1 text-[12px] font-medium text-[#77716a]">Notes</h2>
+              <h2 className="mb-1 text-caption font-medium text-[#77716a]">Notes</h2>
               <p className="whitespace-pre-wrap">{invoice.notes}</p>
             </div>
           )}
@@ -225,8 +225,8 @@ export function InvoicePaper({ invoice, verifyLink, issuerId, className }: Invoi
       )}
 
       <footer className="mt-auto flex items-end justify-between gap-6 border-t border-[#efebe4] pt-6">
-        <div className="flex flex-col gap-1 text-[11px] leading-snug text-[#77716a]">
-          <span className="text-[12px] font-semibold text-[#1f1d1a]">
+        <div className="flex flex-col gap-1 text-caption2 leading-snug text-[#77716a]">
+          <span className="text-caption font-semibold text-[#1f1d1a]">
             Scan to check this {label.toLowerCase()} is genuine
           </span>
           <span>
@@ -246,7 +246,7 @@ export function InvoicePaper({ invoice, verifyLink, issuerId, className }: Invoi
         {verifyLink ? (
           <SealCode value={verifyLink} size={108} />
         ) : (
-          <div className="size-[108px] rounded-md bg-[#f3f0ea]" />
+          <div className="size-[108px] rounded-lg bg-[#f3f0ea]" />
         )}
       </footer>
       {/* Microprint: the seal itself, too small to notice, but copyable from a PDF. */}
@@ -284,7 +284,7 @@ function Party({ title, party }: { title: string; party: InvoiceDocument["issuer
     .filter(Boolean);
   return (
     <div>
-      <h2 className="mb-1 text-[12px] font-medium text-[#77716a]">{title}</h2>
+      <h2 className="mb-1 text-caption font-medium text-[#77716a]">{title}</h2>
       <p className="font-semibold">{party.name || "-"}</p>
       {lines.map((line, index) => (
         <p key={index}>{line}</p>

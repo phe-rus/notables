@@ -1,6 +1,6 @@
-import { Button, CloseIcon, IconButton, ShareIcon, Sheet, toast } from "@notables/ui";
+import { Button, CloseIcon, IconButton, ShareIcon, Sheet, toast } from "@ultrapeach/ui";
 import { useState } from "react";
-import { Field, SelectInput, TextInput } from "../../../components/form/form-fields";
+import { Field, PickerInput, TextInput } from "../../../components/form/form-fields";
 import { t } from "../../../i18n/i18n";
 import { useAuthorName } from "../../../platform/author-preferences";
 import { isListedNote, useLibrary } from "../../library/store/library-store";
@@ -58,15 +58,17 @@ function InviteForm({ onClose }: { onClose: () => void }) {
     <>
       <header className="flex items-start justify-between gap-3 px-6 pt-6 pb-2">
         <div className="flex flex-col gap-1">
-          <h2 className="text-[20px] font-bold tracking-tight">{t("connections.inviteTitle")}</h2>
-          <p className="text-[13px] leading-snug text-label-secondary">{t("sharing.explainer")}</p>
+          <h2 className="text-title3 font-bold tracking-tight">{t("connections.inviteTitle")}</h2>
+          <p className="text-footnote leading-snug text-label-secondary">
+            {t("sharing.explainer")}
+          </p>
         </div>
         <IconButton label={t("common.close")} onClick={onClose}>
           <CloseIcon size={18} />
         </IconButton>
       </header>
       {notes.length === 0 ? (
-        <p className="px-6 pt-3 pb-8 text-[15px] text-label-secondary">
+        <p className="px-6 pt-3 pb-8 text-subheadline text-label-secondary">
           {t("connections.noNotes")}
         </p>
       ) : (
@@ -78,7 +80,7 @@ function InviteForm({ onClose }: { onClose: () => void }) {
           }}
         >
           <Field label={t("connections.inviteNote")}>
-            <SelectInput
+            <PickerInput
               label={t("connections.inviteNote")}
               value={noteId}
               onChange={setNoteId}

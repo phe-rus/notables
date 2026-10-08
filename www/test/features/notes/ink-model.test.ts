@@ -5,7 +5,7 @@ import {
   pushPoint,
   strokeHit,
   strokePath,
-} from "../../../../shared/editor/src/nodes/ink/ink-model";
+} from "../../../../packages/pluraliti/src/nodes/ink/ink-model";
 
 const line = (): InkStroke => {
   const stroke: InkStroke = { tool: "pen", color: "ink", size: 5, points: [] };

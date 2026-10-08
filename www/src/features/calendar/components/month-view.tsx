@@ -7,7 +7,7 @@ import {
   LAST_YEAR,
   occurrencesTouching,
 } from "@notables/core";
-import { cn } from "@notables/ui";
+import { cn } from "@ultrapeach/ui";
 import { useLayoutEffect, useMemo, useRef, useState } from "react";
 import { locale, t } from "../../../i18n/i18n";
 import { formatClock } from "../lib/describe-alert";
@@ -135,7 +135,7 @@ export function MonthView({
         {names.map((name, index) => (
           <span
             key={name}
-            className="text-center text-[11px] font-semibold tracking-wide text-label-tertiary uppercase md:text-right md:pr-2"
+            className="text-center text-caption2 font-semibold tracking-wide text-label-tertiary uppercase md:text-right md:pr-2"
           >
             <span className="md:hidden">{narrow[index]}</span>
             <span className="hidden md:inline">{name}</span>
@@ -160,7 +160,7 @@ export function MonthView({
                 <h2
                   data-month={index}
                   className={cn(
-                    "pt-4 pb-1.5 text-[20px] font-bold tracking-tight md:text-[22px]",
+                    "pt-4 pb-1.5 text-title3 font-bold tracking-tight md:text-title2",
                     isThisMonth && "text-accent-text",
                   )}
                 >
@@ -229,14 +229,14 @@ function DayCell({
       aria-pressed={isSelected}
       aria-label={`${day}${events.length ? `, ${t("calendar.eventsCount", { count: events.length })}` : ""}`}
       className={cn(
-        "group relative flex min-w-0 flex-col items-center gap-1 overflow-hidden rounded-[12px] py-1 text-left transition-colors md:items-stretch md:rounded-[10px] md:px-1.5 md:py-1.5",
+        "group relative flex min-w-0 flex-col items-center gap-1 overflow-hidden rounded-xl py-1 text-left transition-colors md:items-stretch md:rounded-lg md:px-1.5 md:py-1.5",
         isSelected ? "md:bg-accent/8" : "hover:bg-fill/50",
         outside && "opacity-40",
       )}
     >
       <span
         className={cn(
-          "flex size-8 items-center justify-center self-center rounded-full text-[15px] tabular-nums transition-colors md:size-7 md:self-end md:text-[13px]",
+          "flex size-8 items-center justify-center self-center rounded-full text-subheadline tabular-nums transition-colors md:size-7 md:self-end md:text-footnote",
           isToday
             ? "bg-accent font-semibold text-on-accent"
             : isSelected
@@ -273,7 +273,7 @@ function DayCell({
         {events.slice(0, Math.max(0, MAX_PILLS - holidays.length)).map((event) => (
           <span
             key={event.id}
-            className="flex min-w-0 items-center gap-1 truncate rounded-[5px] px-1.5 py-px text-[11.5px] leading-[16px]"
+            className="flex min-w-0 items-center gap-1 truncate rounded-xs px-1.5 py-px text-[11.5px] leading-[16px]"
             style={{
               background: `color-mix(in srgb, ${event.color} 16%, transparent)`,
               color: `color-mix(in srgb, ${event.color} 75%, var(--color-label))`,
@@ -288,7 +288,7 @@ function DayCell({
           </span>
         ))}
         {extra > 0 && (
-          <span className="px-1.5 text-[11px] text-label-tertiary">
+          <span className="px-1.5 text-caption2 text-label-tertiary">
             {t("calendar.more", { count: extra })}
           </span>
         )}

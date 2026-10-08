@@ -1,4 +1,4 @@
-import { cn } from "@notables/ui";
+import { cn } from "@ultrapeach/ui";
 
 /** Live input levels as a centred bar waveform; recent bars are highlighted. */
 export function LevelMeter({

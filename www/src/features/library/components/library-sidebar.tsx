@@ -1,9 +1,7 @@
+import { type LinkProps, useNavigate } from "@tanstack/react-router";
 import {
   BookIcon,
   CalendarIcon,
-  ChevronLeftIcon,
-  ChevronRightIcon,
-  type ContextMenuItem,
   cn,
   GlobeIcon,
   InvoiceIcon,
@@ -14,23 +12,15 @@ import {
   PinIcon,
   RecentIcon,
   SearchIcon,
-  SettingsIcon,
-  SidebarIcon,
   StoryIcon,
   spring,
   TrashIcon,
-  useContextMenu,
-} from "@notables/ui";
-import { Link, type LinkProps, useNavigate, useRouter } from "@tanstack/react-router";
+  WalletIcon,
+} from "@ultrapeach/ui";
 import { AnimatePresence, motion } from "motion/react";
 import { type ReactNode, useState } from "react";
-import { AppMark } from "../../../components/brand/app-mark";
-import { ToolbarButton } from "../../../components/layout/toolbar-button";
-import { WindowControls } from "../../../components/window/window-controls";
 import { t } from "../../../i18n/i18n";
 import { shortcutLabel } from "../../../lib/keyboard/shortcuts";
-import { useAuthorName } from "../../../platform/author-preferences";
-import { windowChrome } from "../../../platform/window-chrome";
 import { useBooks, useTrashedBooks } from "../../books/store/book-store";
 import { useSeries } from "../../books/store/series-store";
 import { useUpcomingCount } from "../../calendar/store/use-upcoming-count";
@@ -38,18 +28,17 @@ import { usePeople } from "../../connections/lib/use-people";
 import { useInvoices } from "../../invoices/store/invoice-store";
 import { noteMenu } from "../../notes/actions/note-menu";
 import { openSearch } from "../../search/store/search-palette";
-import {
-  toggleSidebarCollapsed,
-  updatePreferences,
-  usePreferences,
-} from "../../settings/store/preferences-store";
+import { updatePreferences, usePreferences } from "../../settings/store/preferences-store";
 import { binNotes, binSeriesAndBooks } from "../../trash/lib/bin-groups";
 import { formatAge } from "../lib/date-format";
 import { planningKinds, readingKinds, writingKinds } from "../model/library-views";
-import { type SidebarItemId, sidebarItemTitles } from "../model/sidebar-items";
+import { type SidebarItemId, sidebarItemSections, sidebarItemTitles } from "../model/sidebar-items";
 import { isListedNote, useLibrary } from "../store/library-store";
 import { RECENT_WINDOW, useOpened } from "../store/recents-store";
 import { SidebarEditor } from "./sidebar-editor";
+import { SidebarProfileRow } from "./sidebar-profile-row";
+import { ActionRow, NavItem, SectionHeader } from "./sidebar-rows";
+import { SidebarTopBar } from "./sidebar-top-bar";
 
 /** Where the app is: a view of notes, books or settings. */
 export type SidebarLocation =
@@ -58,6 +47,7 @@ export type SidebarLocation =
   | "calendar"
   | "connections"
   | "settings"
+  | "wallet"
   | "trash";
 
 export const sidebarIcons: Record<SidebarItemId, ReactNode> = {
@@ -123,14 +113,41 @@ export function Sidebar({
         ? { to: "/invoices" }
         : { to: "/", search: { view: id } };
 
+  const visible = (id: SidebarItemId) => !hidden.includes(id);
+  // Writing, Plan & learn and Published, in the order people chose.
+  const notePlaces = order.filter((id) => visible(id) && sidebarItemSections[id] === "notes");
+  const sidebarItem = (id: SidebarItemId) => (
+    <NavItem
+      key={id}
+      {...link(id)}
+      active={active === id}
+      icon={sidebarIcons[id]}
+      trailing={counts ? count(id) : undefined}
+      menu={() => [
+        {
+          label: t("nav.hideFromSidebar"),
+          onSelect: () =>
+            updatePreferences((p) => ({
+              ...p,
+              sidebar: { ...p.sidebar, hidden: [...p.sidebar.hidden, id] },
+            })),
+        },
+        { label: t("nav.editSidebar"), onSelect: () => setEditing(true) },
+      ]}
+    >
+      {sidebarItemTitles[id]}
+    </NavItem>
+  );
+
   return (
     <nav
-      aria-label="Library"
+      aria-label={t("nav.main")}
       style={style}
       className={cn("flex shrink-0 flex-col overflow-hidden px-2.5", className)}
     >
       <SidebarTopBar />
 
+      {/* Like a chat app's sidebar: actions, then the places, then recents. */}
       <div className="flex flex-col gap-px pb-4">
         <ActionRow icon={<PenIcon size={17} />} shortcut={shortcutLabel("N")} onClick={onNewNote}>
           {t("nav.newNote")}
@@ -142,123 +159,96 @@ export function Sidebar({
         >
           {t("common.search")}
         </ActionRow>
+        {visible("books") && sidebarItem("books")}
+        <NavItem
+          to="/calendar"
+          active={active === "calendar"}
+          icon={<CalendarIcon size={17} />}
+          trailing={counts && upcoming > 0 ? upcoming : undefined}
+        >
+          {t("nav.calendar")}
+        </NavItem>
+        <NavItem to="/wallet" active={active === "wallet"} icon={<WalletIcon size={17} />}>
+          {t("wallet.title")}
+        </NavItem>
+        {visible("invoices") && sidebarItem("invoices")}
       </div>
 
       <div className="no-scrollbar -mx-2.5 flex grow flex-col gap-5 overflow-y-auto px-2.5 pb-4">
-        <div className="flex flex-col gap-px">
-          <NavItem
-            to="/"
-            active={active === "all"}
-            icon={<NoteIcon size={17} />}
-            trailing={counts ? count("all") : undefined}
-          >
-            {t("nav.allNotes")}
-          </NavItem>
-          <NavItem
-            to="/calendar"
-            active={active === "calendar"}
-            icon={<CalendarIcon size={17} />}
-            trailing={counts && upcoming > 0 ? upcoming : undefined}
-          >
-            {t("nav.calendar")}
-          </NavItem>
-          <NavItem
-            to="/connections"
-            active={active === "connections"}
-            icon={<PeopleIcon size={17} />}
-            trailing={
-              online > 0 ? (
-                <span className="flex items-center gap-1 text-success">
-                  <span className="size-1.5 rounded-full bg-success" />
-                  {online}
-                </span>
-              ) : undefined
-            }
-          >
-            {t("nav.connections")}
-          </NavItem>
-        </div>
-
-        <section aria-label={t("nav.library")} className="flex flex-col">
-          <SectionHeader
-            title={t("nav.library")}
-            action={
-              <button
-                type="button"
-                onClick={() => setEditing((value) => !value)}
-                className={cn(
-                  "rounded-md px-1.5 text-[12px] font-medium transition-colors",
-                  editing ? "text-accent-text" : "text-label-tertiary hover:text-label",
-                )}
-              >
-                {editing ? t("common.done") : t("common.edit")}
-              </button>
-            }
-          />
-          <AnimatePresence mode="popLayout" initial={false}>
-            {editing ? (
-              <motion.div
-                key="editor"
-                initial={{ opacity: 0, y: -4 }}
-                animate={{ opacity: 1, y: 0 }}
-                exit={{ opacity: 0, y: -4 }}
-                transition={spring.snappy}
-              >
-                <SidebarEditor icons={sidebarIcons} />
-                <p className="px-2.5 pt-2 text-[12px] leading-snug text-label-tertiary">
-                  {t("nav.sidebarHint")}
-                </p>
-              </motion.div>
-            ) : (
-              <motion.div
-                key="items"
-                className="flex flex-col gap-px"
-                initial={{ opacity: 0, y: 4 }}
-                animate={{ opacity: 1, y: 0 }}
-                exit={{ opacity: 0, y: 4 }}
-                transition={spring.snappy}
-              >
-                {order
-                  .filter((id) => !hidden.includes(id))
-                  .map((id) => (
-                    <NavItem
-                      key={id}
-                      {...link(id)}
-                      active={active === id}
-                      icon={sidebarIcons[id]}
-                      trailing={counts ? count(id) : undefined}
-                      menu={() => [
-                        {
-                          label: t("nav.hideFromSidebar"),
-                          onSelect: () =>
-                            updatePreferences((p) => ({
-                              ...p,
-                              sidebar: { ...p.sidebar, hidden: [...p.sidebar.hidden, id] },
-                            })),
-                        },
-                        { label: t("nav.editSidebar"), onSelect: () => setEditing(true) },
-                      ]}
-                    >
-                      {sidebarItemTitles[id]}
-                    </NavItem>
-                  ))}
-              </motion.div>
-            )}
-          </AnimatePresence>
-        </section>
-
-        {(binCount > 0 || active === "trash") && (
-          <div className="-mt-3 flex flex-col gap-px">
-            <NavItem
-              to="/trash"
-              active={active === "trash"}
-              icon={<TrashIcon size={17} />}
-              trailing={counts ? binCount : undefined}
+        <AnimatePresence mode="popLayout" initial={false}>
+          {editing ? (
+            <motion.section
+              key="editor"
+              aria-label={t("nav.editSidebar")}
+              className="flex flex-col"
+              initial={{ opacity: 0, y: -4 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -4 }}
+              transition={spring.snappy}
             >
-              {t("nav.recentlyDeleted")}
-            </NavItem>
-          </div>
-        )}
+              <SectionHeader
+                title={t("nav.library")}
+                action={
+                  <button
+                    type="button"
+                    onClick={() => setEditing(false)}
+                    className="rounded-lg px-1.5 text-caption font-medium text-accent-text"
+                  >
+                    {t("common.done")}
+                  </button>
+                }
+              />
+              <SidebarEditor icons={sidebarIcons} />
+              <p className="px-2.5 pt-2 text-caption leading-snug text-label-tertiary">
+                {t("nav.sidebarHint")}
+              </p>
+            </motion.section>
+          ) : (
+            <motion.div
+              key="items"
+              className="flex flex-col gap-px"
+              initial={{ opacity: 0, y: 4 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: 4 }}
+              transition={spring.snappy}
+            >
+              <NavItem
+                to="/"
+                active={active === "all"}
+                icon={<NoteIcon size={17} />}
+                trailing={counts ? count("all") : undefined}
+              >
+                {t("nav.allNotes")}
+              </NavItem>
+              {notePlaces.map((id) => sidebarItem(id))}
+              <NavItem
+                to="/connections"
+                active={active === "connections"}
+                icon={<PeopleIcon size={17} />}
+                trailing={
+                  online > 0 ? (
+                    <span className="flex items-center gap-1 text-success">
+                      <span className="size-1.5 rounded-full bg-success" />
+                      {online}
+                    </span>
+                  ) : undefined
+                }
+              >
+                {t("nav.connections")}
+              </NavItem>
+              {(binCount > 0 || active === "trash") && (
+                <NavItem
+                  to="/trash"
+                  active={active === "trash"}
+                  icon={<TrashIcon size={17} />}
+                  trailing={counts ? binCount : undefined}
+                >
+                  {t("nav.recentlyDeleted")}
+                </NavItem>
+              )}
+            </motion.div>
+          )}
+        </AnimatePresence>
 
         {pinned.length > 0 && (
           <section aria-label={t("nav.pinned")} className="flex flex-col">
@@ -305,164 +295,7 @@ export function Sidebar({
         )}
       </div>
 
-      <ProfileRow active={active === "settings"} />
+      <SidebarProfileRow active={active === "settings"} />
     </nav>
-  );
-}
-
-/** Window controls, then sidebar, back and forward buttons. */
-function SidebarTopBar() {
-  const chrome = windowChrome();
-  const router = useRouter();
-  return (
-    <div data-tauri-drag-region className="flex h-[52px] shrink-0 items-center gap-1 pl-2">
-      {chrome === "custom" && <WindowControls className="mr-3" />}
-      {/* macOS draws its own traffic lights here. */}
-      {chrome === "native-mac" && <div className="w-[64px] shrink-0" />}
-      {chrome === "none" && (
-        <span className="mr-auto flex items-center gap-2">
-          <AppMark size={24} />
-          <span className="text-[15px] font-semibold tracking-tight">Notables</span>
-        </span>
-      )}
-      <div
-        data-tauri-drag-region
-        className={cn("flex items-center gap-0.5", chrome !== "none" && "grow")}
-      >
-        <ToolbarButton
-          label={t("nav.hideSidebar")}
-          onClick={toggleSidebarCollapsed}
-          className="max-lg:hidden"
-        >
-          <SidebarIcon size={17} />
-        </ToolbarButton>
-        <ToolbarButton label={t("common.back")} onClick={() => router.history.back()}>
-          <ChevronLeftIcon size={17} />
-        </ToolbarButton>
-        <ToolbarButton label={t("nav.forward")} onClick={() => router.history.forward()}>
-          <ChevronRightIcon size={17} />
-        </ToolbarButton>
-      </div>
-    </div>
-  );
-}
-
-function SectionHeader({ title, action }: { title: string; action?: ReactNode }) {
-  return (
-    <div className="flex h-7 items-center justify-between pr-1 pl-2.5">
-      <span className="text-[12px] font-medium text-label-tertiary">{title}</span>
-      {action}
-    </div>
-  );
-}
-
-const rowClass =
-  "group relative isolate flex items-center gap-2.5 rounded-[9px] px-2.5 py-[6px] text-[14px] text-label no-underline transition-colors duration-fast";
-
-function ActionRow({
-  icon,
-  shortcut,
-  onClick,
-  children,
-}: {
-  icon: ReactNode;
-  shortcut: string;
-  onClick: () => void;
-  children: ReactNode;
-}) {
-  return (
-    <button type="button" onClick={onClick} className={cn(rowClass, "text-left hover:bg-fill/70")}>
-      <span className="flex text-label-secondary">{icon}</span>
-      <span className="grow">{children}</span>
-      <kbd className="font-sans text-[12px] text-label-tertiary opacity-0 transition-opacity group-hover:opacity-100">
-        {shortcut}
-      </kbd>
-    </button>
-  );
-}
-
-const NO_MENU = () => [];
-
-function NavItem({
-  active,
-  icon,
-  trailing,
-  menu,
-  children,
-  ...link
-}: LinkProps & {
-  active: boolean;
-  icon: ReactNode;
-  trailing?: ReactNode;
-  /** Actions for right-click and long-press. */
-  menu?: () => ContextMenuItem[];
-  children: ReactNode;
-}) {
-  const handlers = useContextMenu(menu ?? NO_MENU);
-  return (
-    <Link
-      {...link}
-      {...(menu ? handlers : {})}
-      className={cn(
-        rowClass,
-        "touch-manipulation [-webkit-touch-callout:none]",
-        active ? "font-medium" : "hover:bg-fill/70",
-      )}
-    >
-      {active && (
-        <motion.span
-          layoutId="sidebar-selection"
-          className="absolute inset-0 -z-10 rounded-[9px] bg-accent-soft"
-          transition={spring.snappy}
-        />
-      )}
-      <span
-        className={cn(
-          "flex transition-colors",
-          active ? "text-accent-text" : "text-label-secondary",
-        )}
-      >
-        {icon}
-      </span>
-      <span className="grow truncate">{children}</span>
-      {trailing !== undefined && (
-        <span
-          className={cn(
-            "shrink-0 text-[12px] tabular-nums",
-            active ? "text-accent-text" : "text-label-tertiary",
-          )}
-        >
-          {trailing}
-        </span>
-      )}
-    </Link>
-  );
-}
-
-function ProfileRow({ active }: { active: boolean }) {
-  const name = useAuthorName();
-  return (
-    <div className="flex shrink-0 items-center gap-2.5 border-t border-separator/60 px-1.5 py-3">
-      <span className="flex size-8 shrink-0 items-center justify-center rounded-full bg-accent-soft text-[14px] font-semibold text-accent-text">
-        {(name || "N").slice(0, 1).toUpperCase()}
-      </span>
-      <span className="flex min-w-0 grow flex-col">
-        <span className="truncate text-[14px] font-medium">{name || t("nav.onThisDevice")}</span>
-        <span className="truncate text-[12px] text-label-tertiary">{t("nav.noAccount")}</span>
-      </span>
-      <Link
-        to="/settings"
-        aria-label={t("common.settings")}
-        data-tooltip={t("common.settings")}
-        className={cn(
-          "flex size-8 items-center justify-center rounded-lg transition-colors duration-fast",
-          active
-            ? "bg-accent-soft text-accent-text"
-            : "text-label-tertiary hover:bg-fill/80 hover:text-label",
-        )}
-      >
-        <SettingsIcon size={18} />
-      </Link>
-    </div>
   );
 }

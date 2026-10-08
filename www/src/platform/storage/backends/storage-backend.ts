@@ -1,4 +1,4 @@
-import type { DocumentSnapshot } from "@notables/editor";
+import type { DocumentSnapshot } from "@notables/pluraliti";
 
 /** A note's rendered document (Lexical JSON). */
 export type SerializedDocument = DocumentSnapshot["document"];

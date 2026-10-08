@@ -1,16 +1,16 @@
 @import "tailwindcss";
-@import "@notables/tokens/theme.css";
-@import "@notables/ui/utilities.css";
-@import "@notables/ui/base.css";
-@import "@notables/editor/editor.css";
+@import "@ultrapeach/tokens/theme.css";
+@import "@ultrapeach/ui/utilities.css";
+@import "@ultrapeach/ui/base.css";
+@import "@notables/pluraliti/editor.css";
 @import "./book.css";
 @import "@fontsource-variable/newsreader";
 /* Handwriting faces for notes, bundled so they work offline. */
 @import "@fontsource-variable/caveat";
 @import "@fontsource/patrick-hand";
 
-@source "../../../shared/ui/src";
-@source "../../../shared/editor/src";
+@source "../../../packages/ultrapeach/ui/src";
+@source "../../../packages/pluraliti/src";
 
 @theme static {
   --font-serif: "Newsreader Variable", "New York", "Iowan Old Style", Georgia, serif;

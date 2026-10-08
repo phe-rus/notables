@@ -1,4 +1,4 @@
-import { CheckIcon, cn, spring, TrashIcon, toast } from "@notables/ui";
+import { CheckIcon, cn, spring, TrashIcon, toast } from "@ultrapeach/ui";
 import { AnimatePresence, motion } from "motion/react";
 import { type RefObject, useEffect, useState } from "react";
 import { highlightAt, quoteFromRange } from "../lib/selection-quote";
@@ -153,7 +153,7 @@ export function HighlightPalette({
           <button
             type="button"
             onClick={copy}
-            className="h-8 rounded-full px-3 text-[13px] font-semibold text-label hover:bg-fill"
+            className="h-8 rounded-full px-3 text-footnote font-semibold text-label hover:bg-fill"
           >
             Copy
           </button>

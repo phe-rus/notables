@@ -1,5 +1,5 @@
 import { formatMoney, type LineItem, lineAmount } from "@notables/core";
-import { CloseIcon, PlusIcon, spring } from "@notables/ui";
+import { CloseIcon, PlusIcon, spring } from "@ultrapeach/ui";
 import { AnimatePresence, motion } from "motion/react";
 import { useState } from "react";
 import { TextInput } from "../../../components/form/form-fields";
@@ -32,7 +32,7 @@ export function LineItemsEditor({
             transition={spring.smooth}
             className="overflow-hidden"
           >
-            <div className="flex flex-col gap-2 rounded-[14px] border border-separator/70 bg-elevated p-2.5">
+            <div className="flex flex-col gap-2 rounded-2xl border border-separator/70 bg-elevated p-2.5">
               <div className="flex items-center gap-2">
                 <TextInput
                   aria-label={`Item ${index + 1} description`}
@@ -73,7 +73,7 @@ export function LineItemsEditor({
       <button
         type="button"
         onClick={() => onChange([...items, newLineItem()])}
-        className="flex items-center justify-center gap-1.5 rounded-[12px] border border-dashed border-separator py-2.5 text-[14px] font-medium text-accent-text transition-colors hover:bg-fill/60"
+        className="flex items-center justify-center gap-1.5 rounded-xl border border-dashed border-separator py-2.5 text-[14px] font-medium text-accent-text transition-colors hover:bg-fill/60"
       >
         <PlusIcon size={15} strokeWidth={2.2} />
         Add item

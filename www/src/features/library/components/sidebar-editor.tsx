@@ -1,4 +1,4 @@
-import { cn, DragHandleIcon, HiddenIcon, VisibleIcon } from "@notables/ui";
+import { cn, DragHandleIcon, HiddenIcon, VisibleIcon } from "@ultrapeach/ui";
 import { Reorder, useDragControls } from "motion/react";
 import type { ReactNode } from "react";
 import { updatePreferences, usePreferences } from "../../settings/store/preferences-store";
@@ -68,7 +68,7 @@ function EditorRow({
       value={id}
       dragListener={false}
       dragControls={controls}
-      className="relative flex items-center gap-2.5 rounded-lg bg-transparent px-1.5 py-[5px] text-[14px]"
+      className="relative flex items-center gap-2.5 rounded-2xl bg-transparent px-1.5 py-[5px] text-[14px]"
       whileDrag={{
         scale: 1.02,
         backgroundColor: "var(--color-elevated)",
@@ -94,7 +94,7 @@ function EditorRow({
         aria-label={visible ? `Hide ${title}` : `Show ${title}`}
         aria-pressed={visible}
         onClick={onToggle}
-        className="flex rounded-md p-1 text-label-tertiary transition-colors hover:bg-fill hover:text-label"
+        className="flex rounded-lg p-1 text-label-tertiary transition-colors hover:bg-fill hover:text-label"
       >
         {visible ? <VisibleIcon size={16} /> : <HiddenIcon size={16} />}
       </button>

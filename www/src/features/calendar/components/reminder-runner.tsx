@@ -1,6 +1,6 @@
 import { addDaysTo, alertsBetween, type DueAlert, localDay } from "@notables/core";
-import { toast } from "@notables/ui";
 import { useNavigate } from "@tanstack/react-router";
+import { toast } from "@ultrapeach/ui";
 import { useEffect, useRef } from "react";
 import { t } from "../../../i18n/i18n";
 import { alertFeedback } from "../lib/alert-feedback";

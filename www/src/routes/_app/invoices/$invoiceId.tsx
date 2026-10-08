@@ -13,7 +13,9 @@ function InvoiceRoute() {
   const ready = useLibraryReady();
   if (!invoice) {
     return ready ? (
-      <p className="m-auto text-[15px] text-label-secondary">This document isn’t on this device.</p>
+      <p className="m-auto text-subheadline text-label-secondary">
+        This document isn’t on this device.
+      </p>
     ) : null;
   }
   return <InvoiceScreen invoice={invoice} />;

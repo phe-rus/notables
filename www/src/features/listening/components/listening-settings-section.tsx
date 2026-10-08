@@ -1,8 +1,7 @@
-import { SegmentedControl } from "@notables/ui";
+import { LabeledContent, Section, SegmentedControl } from "@ultrapeach/ui";
 import { useEffect, useState } from "react";
-import { SelectInput } from "../../../components/form/form-fields";
+import { PickerInput } from "../../../components/form/form-fields";
 import { t } from "../../../i18n/i18n";
-import { SettingsGroup, SettingsRow } from "../../settings/components/settings-controls";
 import { useModelPacks } from "../lib/model-packs";
 import {
   NARRATION_RATES,
@@ -28,16 +27,16 @@ export function ListeningSettingsSection() {
   }, [lang, naturalVersion]);
 
   return (
-    <SettingsGroup title={t("listening.title")} footer={t("listening.footer")}>
-      <SettingsRow label={t("listening.voice")} stacked>
+    <Section title={t("listening.title")} footer={t("listening.footer")}>
+      <LabeledContent label={t("listening.voice")} stacked>
         {voices && voices.length === 0 ? (
           <p className="text-[14px] text-label-secondary">{t("listening.noVoices")}</p>
         ) : (
-          <SelectInput
+          <PickerInput
             label={t("listening.voice")}
             value={settings.voiceId ?? ""}
             onChange={(voiceId) => setNarrationSettings({ voiceId: voiceId || null })}
-            className="py-2 text-[15px]"
+            className="py-2 text-subheadline"
             options={[
               { value: "", label: t("listening.bestVoice") },
               ...(voices ?? []).map((voice) => ({
@@ -54,15 +53,15 @@ export function ListeningSettingsSection() {
             ]}
           />
         )}
-      </SettingsRow>
-      <SettingsRow label={t("listening.speed")} wide>
+      </LabeledContent>
+      <LabeledContent label={t("listening.speed")} wide>
         <SegmentedControl<string>
           label={t("listening.speed")}
           value={String(settings.rate)}
           onChange={(rate) => setNarrationSettings({ rate: Number(rate) })}
           options={NARRATION_RATES.map((rate) => ({ value: String(rate), label: `${rate}×` }))}
         />
-      </SettingsRow>
-    </SettingsGroup>
+      </LabeledContent>
+    </Section>
   );
 }

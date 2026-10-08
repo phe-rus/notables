@@ -1,34 +1,19 @@
-import { useSyncExternalStore } from "react";
+import { createStore, useSelector } from "@tanstack/react-store";
 
-let open = false;
-const listeners = new Set<() => void>();
-
-const emit = () => {
-  for (const listener of listeners) listener();
-};
+const search = createStore(false);
 
 export function openSearch() {
-  open = true;
-  emit();
+  search.setState(() => true);
 }
 
 export function closeSearch() {
-  open = false;
-  emit();
+  search.setState(() => false);
 }
 
 export function toggleSearch() {
-  open = !open;
-  emit();
+  search.setState((open) => !open);
 }
 
 export function useSearchOpen(): boolean {
-  return useSyncExternalStore(
-    (listener) => {
-      listeners.add(listener);
-      return () => listeners.delete(listener);
-    },
-    () => open,
-    () => false,
-  );
+  return useSelector(search);
 }

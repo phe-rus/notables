@@ -1,5 +1,5 @@
 import type { Reaction } from "@notables/core";
-import { cn, HeartIcon, riseMotion, StarIcon, ThumbsUpIcon } from "@notables/ui";
+import { cn, HeartIcon, riseMotion, StarIcon, ThumbsUpIcon } from "@ultrapeach/ui";
 import { motion } from "motion/react";
 import type { PublicationStats } from "../../../server/publications/publications.service";
 
@@ -37,7 +37,7 @@ export function ReactionsBar({
         aria-label={`Heart · ${stats.hearts}`}
         onClick={() => onToggleReaction("heart")}
         className={cn(
-          "group flex h-11 min-w-16 items-center justify-center gap-1.5 rounded-full px-3 text-[15px] font-semibold transition-[background-color,transform] active:scale-95",
+          "group flex h-11 min-w-16 items-center justify-center gap-1.5 rounded-full px-3 text-subheadline font-semibold transition-[background-color,transform] active:scale-95",
           hearted
             ? "bg-[#ffe7ec] text-[#c4123a] dark:bg-[#3d1720] dark:text-[#ff8fa6]"
             : "text-label hover:bg-fill",
@@ -52,7 +52,7 @@ export function ReactionsBar({
         aria-label={`Like · ${stats.likes}`}
         onClick={() => onToggleReaction("like")}
         className={cn(
-          "group flex h-11 min-w-14 items-center justify-center gap-1.5 rounded-full px-3 text-[15px] transition-[background-color,transform] active:scale-95",
+          "group flex h-11 min-w-14 items-center justify-center gap-1.5 rounded-full px-3 text-subheadline transition-[background-color,transform] active:scale-95",
           liked ? "bg-accent-soft font-semibold text-accent-text" : "text-label hover:bg-fill",
         )}
       >

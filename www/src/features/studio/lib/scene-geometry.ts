@@ -1,4 +1,4 @@
-import { strokePath } from "@notables/editor";
+import { strokePath } from "@notables/pluraliti";
 import type { BubbleFont, BubbleItem, StrokeItem } from "../model/page-scene";
 
 export const fontFamilies: Record<BubbleFont, string> = {

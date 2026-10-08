@@ -1,4 +1,4 @@
-import { cn, PinIcon } from "@notables/ui";
+import { cn, PinIcon } from "@ultrapeach/ui";
 import { useEffect, useMemo, useState } from "react";
 import { AppMark } from "../../../components/brand/app-mark";
 import { locale, t } from "../../../i18n/i18n";
@@ -24,7 +24,6 @@ export function TodayWidget() {
     return () => window.clearInterval(timer);
   }, []);
 
-  // biome-ignore lint/correctness/useExhaustiveDependencies: rebuilt when notes or plans change.
   const snapshot = useMemo(() => buildWidgetSnapshot(now), [notes, events, now]);
   const date = new Intl.DateTimeFormat(locale(), {
     weekday: "long",
@@ -40,7 +39,7 @@ export function TodayWidget() {
     >
       <header data-tauri-drag-region className="flex items-start justify-between gap-2">
         <div data-tauri-drag-region className="flex flex-col">
-          <span className="text-[12px] font-semibold tracking-wide text-accent-text uppercase">
+          <span className="text-caption font-semibold tracking-wide text-accent-text uppercase">
             {t("widgets.today")}
           </span>
           <span className="text-[19px] leading-tight font-bold tracking-tight">{date}</span>
@@ -49,14 +48,14 @@ export function TodayWidget() {
           type="button"
           aria-label={t("widgets.open")}
           onClick={() => void openFromWidget("/")}
-          className="shrink-0 rounded-[10px] transition-transform active:scale-95"
+          className="shrink-0 rounded-lg transition-transform active:scale-95"
         >
           <AppMark size={30} />
         </button>
       </header>
 
       <section className="flex min-h-0 flex-col gap-1.5" aria-label={snapshot.labels.upNext}>
-        <h2 className="text-[12px] font-semibold text-label-tertiary">{snapshot.labels.upNext}</h2>
+        <h2 className="text-caption font-semibold text-label-tertiary">{snapshot.labels.upNext}</h2>
         {ready && snapshot.agenda.length === 0 && (
           <p className="text-[14px] text-label-secondary">{snapshot.labels.nothingPlanned}</p>
         )}
@@ -66,12 +65,12 @@ export function TodayWidget() {
               <button
                 type="button"
                 onClick={() => void openFromWidget(`/calendar?day=${item.day}`)}
-                className="flex w-full items-stretch gap-2.5 rounded-[12px] px-2 py-1.5 text-left transition-colors hover:bg-fill/60"
+                className="flex w-full items-stretch gap-2.5 rounded-xl px-2 py-1.5 text-left transition-colors hover:bg-fill/60"
               >
                 <span className="w-1 shrink-0 rounded-full" style={{ background: item.color }} />
                 <span className="flex min-w-0 flex-col">
                   <span className="truncate text-[14px] font-medium">{item.title}</span>
-                  <span className="truncate text-[12px] text-label-secondary">{item.when}</span>
+                  <span className="truncate text-caption text-label-secondary">{item.when}</span>
                 </span>
               </button>
             </li>
@@ -81,7 +80,7 @@ export function TodayWidget() {
 
       {(snapshot.pinned.length > 0 || snapshot.recent.length > 0) && (
         <section className="flex min-h-0 flex-col gap-1.5" aria-label={snapshot.labels.pinned}>
-          <h2 className="text-[12px] font-semibold text-label-tertiary">
+          <h2 className="text-caption font-semibold text-label-tertiary">
             {snapshot.pinned.length > 0 ? snapshot.labels.pinned : snapshot.labels.recent}
           </h2>
           <ul className="flex flex-col gap-0.5 overflow-hidden">
@@ -93,7 +92,7 @@ export function TodayWidget() {
                     type="button"
                     onClick={() => void openFromWidget(path(note.link))}
                     className={cn(
-                      "flex w-full items-center gap-2 rounded-[10px] px-2 py-1.5 text-left text-[14px] transition-colors hover:bg-fill/60",
+                      "flex w-full items-center gap-2 rounded-lg px-2 py-1.5 text-left text-[14px] transition-colors hover:bg-fill/60",
                     )}
                   >
                     {snapshot.pinned.length > 0 && (

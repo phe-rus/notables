@@ -1,4 +1,4 @@
-import { CloseIcon, cn, IconButton, spring } from "@notables/ui";
+import { CloseIcon, cn, IconButton, spring } from "@ultrapeach/ui";
 import { AnimatePresence, motion } from "motion/react";
 import type { BookChapter } from "../../reader/use-book-content";
 import type { HighlightEntry } from "../store/highlight-store";
@@ -46,7 +46,7 @@ export function HighlightsPanel({
           />
           <motion.aside
             aria-label="Highlights"
-            className="glass-menu relative flex h-full w-full max-w-[380px] flex-col sm:m-3 sm:h-[calc(100%-24px)] sm:rounded-[22px]"
+            className="glass-menu relative flex h-full w-full max-w-[380px] flex-col sm:m-3 sm:h-[calc(100%-24px)] sm:rounded-5xl"
             initial={{ x: 40, opacity: 0 }}
             animate={{ x: 0, opacity: 1 }}
             exit={{ x: 40, opacity: 0 }}
@@ -60,13 +60,13 @@ export function HighlightsPanel({
             </header>
             <div className="flex grow flex-col gap-5 overflow-y-auto px-3 pb-8">
               {groups.length === 0 && (
-                <p className="px-2 pt-6 text-center text-[15px] leading-snug text-label-secondary">
+                <p className="px-2 pt-6 text-center text-subheadline leading-snug text-label-secondary">
                   Turn on highlighting, then select words on a page to mark them.
                 </p>
               )}
               {groups.map((group) => (
                 <section key={group.chapter.noteId} className="flex flex-col gap-1">
-                  <h3 className="px-2 pb-1 text-[12px] font-medium text-label-tertiary">
+                  <h3 className="px-2 pb-1 text-caption font-medium text-label-tertiary">
                     Chapter {group.index + 1} · {group.chapter.title}
                   </h3>
                   {group.items.map((entry) => (
@@ -74,7 +74,7 @@ export function HighlightsPanel({
                       key={entry.id}
                       type="button"
                       onClick={() => onChoose(entry)}
-                      className="flex gap-3 rounded-[12px] px-2 py-2 text-left transition-colors hover:bg-fill/60"
+                      className="flex gap-3 rounded-xl px-2 py-2 text-left transition-colors hover:bg-fill/60"
                     >
                       <span
                         className={cn(
@@ -82,7 +82,7 @@ export function HighlightsPanel({
                           swatchClass[entry.color],
                         )}
                       />
-                      <span className="line-clamp-4 font-serif text-[15px] leading-snug text-label">
+                      <span className="line-clamp-4 font-serif text-subheadline leading-snug text-label">
                         {entry.quote.exact}
                       </span>
                     </button>

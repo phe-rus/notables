@@ -1,5 +1,5 @@
-import { cn, spring } from "@notables/ui";
 import { Link } from "@tanstack/react-router";
+import { cn, spring } from "@ultrapeach/ui";
 import { motion } from "motion/react";
 import { type GroupId, type ViewId, viewGroups } from "../model/library-views";
 
@@ -21,7 +21,7 @@ export function GroupSwitcher({ group, active }: { group: GroupId; active: ViewI
               : { to: "/" as const, search: { view: option.id } })}
             aria-current={selected ? "page" : undefined}
             className={cn(
-              "relative isolate max-w-full truncate rounded-full px-3.5 py-1.5 text-[13px] font-medium no-underline transition-colors",
+              "relative isolate max-w-full truncate rounded-full px-3.5 py-1.5 text-footnote font-medium no-underline transition-colors",
               selected ? "text-on-inverse" : "bg-fill/70 text-label-secondary hover:text-label",
             )}
           >

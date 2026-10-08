@@ -1,6 +1,6 @@
 import { localMediaSrc } from "@notables/core";
-import { Button, MicIcon } from "@notables/ui";
 import { useNavigate } from "@tanstack/react-router";
+import { Button, MicIcon } from "@ultrapeach/ui";
 import { useState } from "react";
 import { saveMedia } from "../../../../platform/storage/media-store";
 import { getLibrary } from "../../../library/store/library-store";

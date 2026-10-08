@@ -1,3 +1,4 @@
+import { Link } from "@tanstack/react-router";
 import {
   AddPersonIcon,
   Button,
@@ -7,14 +8,13 @@ import {
   GlobeIcon,
   IconButton,
   MoreIcon,
-  openContextMenu,
+  openMenu,
   PeopleIcon,
   SearchField,
   SidebarIcon,
   spring,
   toast,
-} from "@notables/ui";
-import { Link } from "@tanstack/react-router";
+} from "@ultrapeach/ui";
 import { AnimatePresence, motion } from "motion/react";
 import { useDeferredValue, useState } from "react";
 import { CollapsedSidebarControls } from "../../../components/window/collapsed-sidebar-controls";
@@ -56,7 +56,7 @@ export function ConnectionsScreen({ onOpenSidebar }: { onOpenSidebar: () => void
             <IconButton label={t("nav.showLibrary")} className="lg:hidden" onClick={onOpenSidebar}>
               <SidebarIcon size={20} />
             </IconButton>
-            <h1 className="truncate text-[22px] font-bold tracking-tight">
+            <h1 className="truncate text-title2 font-bold tracking-tight">
               {t("nav.connections")}
             </h1>
           </div>
@@ -98,7 +98,7 @@ export function ConnectionsScreen({ onOpenSidebar }: { onOpenSidebar: () => void
                   {online.map((person) => (
                     <li key={person.key} className="flex w-16 flex-col items-center gap-1.5">
                       <Avatar person={person} size="large" />
-                      <span className="w-full truncate text-center text-[12px] font-medium">
+                      <span className="w-full truncate text-center text-caption font-medium">
                         {person.name}
                       </span>
                     </li>
@@ -109,7 +109,7 @@ export function ConnectionsScreen({ onOpenSidebar }: { onOpenSidebar: () => void
             <section aria-label={t("connections.everyone")} className="flex flex-col gap-3">
               <SectionTitle>{t("connections.everyone")}</SectionTitle>
               {shown.length === 0 ? (
-                <p className="text-[15px] text-label-secondary">{t("common.noMatches")}</p>
+                <p className="text-subheadline text-label-secondary">{t("common.noMatches")}</p>
               ) : (
                 <ul className="grid items-start gap-3 @min-[720px]/people:grid-cols-2 @min-[1120px]/people:grid-cols-3">
                   {shown.map((person) => (
@@ -130,7 +130,7 @@ export function ConnectionsScreen({ onOpenSidebar }: { onOpenSidebar: () => void
 
 function SectionTitle({ children }: { children: string }) {
   return (
-    <h2 className="text-[13px] font-semibold tracking-[0.04em] text-label-tertiary uppercase">
+    <h2 className="text-footnote font-semibold tracking-[0.04em] text-label-tertiary uppercase">
       {children}
     </h2>
   );
@@ -155,7 +155,7 @@ function Avatar({ person, size = "small" }: { person: Person; size?: "small" | "
         }}
         className={cn(
           "flex items-center justify-center rounded-full font-semibold",
-          size === "large" ? "size-14 text-[22px]" : "size-11 text-[17px]",
+          size === "large" ? "size-14 text-title2" : "size-11 text-body",
         )}
       >
         {[...person.name][0]?.toLocaleUpperCase()}
@@ -202,7 +202,7 @@ function PersonCard({ person }: { person: Person }) {
         : t("connections.notSeen");
 
   return (
-    <li className="flex flex-col overflow-hidden rounded-[18px] bg-elevated shadow-[inset_0_0_0_1px_var(--color-separator)]">
+    <li className="flex flex-col overflow-hidden rounded-4xl bg-elevated shadow-[inset_0_0_0_1px_var(--color-separator)]">
       <button
         type="button"
         aria-expanded={open}
@@ -211,16 +211,16 @@ function PersonCard({ person }: { person: Person }) {
       >
         <Avatar person={person} />
         <span className="flex min-w-0 grow flex-col">
-          <span className="truncate text-[16px] font-semibold">{person.name}</span>
+          <span className="truncate text-callout font-semibold">{person.name}</span>
           <span
             className={cn(
-              "truncate text-[13px]",
+              "truncate text-footnote",
               person.online ? "text-success" : "text-label-secondary",
             )}
           >
             {status}
           </span>
-          <span className="truncate text-[12px] text-label-tertiary">
+          <span className="truncate text-caption text-label-tertiary">
             {t("connections.notes", { count: person.notes.length })}
           </span>
         </span>
@@ -302,7 +302,7 @@ function SharedNoteRow({
   };
   const hasActions = note.relation === "invited" && note.inviteId !== null;
   return (
-    <li className="flex items-center gap-1 rounded-[12px] pe-1 hover:bg-fill/40">
+    <li className="flex items-center gap-1 rounded-xl pe-1 hover:bg-fill/40">
       <Link
         to="/notes/$noteId"
         params={{ noteId: note.noteId }}
@@ -313,7 +313,7 @@ function SharedNoteRow({
         />
         <span className="flex min-w-0 flex-col">
           <span className="truncate text-[14px] font-medium text-label">{title}</span>
-          <span className="truncate text-[12px] text-label-tertiary">
+          <span className="truncate text-caption text-label-tertiary">
             {t(`connections.relation.${note.relation}`)}
           </span>
         </span>
@@ -322,8 +322,7 @@ function SharedNoteRow({
         <IconButton
           label={t("notes.more")}
           onClick={(event) => {
-            const rect = event.currentTarget.getBoundingClientRect();
-            openContextMenu(rect.right - 240, rect.bottom + 4, actions());
+            openMenu(event.currentTarget, actions(), { edge: "trailing" });
           }}
         >
           <MoreIcon size={18} />
@@ -342,7 +341,7 @@ function EmptyState({ onInvite }: { onInvite: () => void }) {
       <p className="font-serif text-[24px] font-semibold tracking-tight">
         {t("connections.emptyTitle")}
       </p>
-      <p className="max-w-[380px] text-[15px] leading-snug text-label-secondary">
+      <p className="max-w-[380px] text-subheadline leading-snug text-label-secondary">
         {t("connections.emptyBody")}
       </p>
       <Button variant="primary" className="mt-2" onClick={onInvite}>
@@ -356,18 +355,18 @@ function EmptyState({ onInvite }: { onInvite: () => void }) {
 /** Meeting people beyond the ones you share with waits for accounts; said plainly. */
 function DiscoverCard() {
   return (
-    <aside className="flex max-w-[640px] items-start gap-3 rounded-[18px] border border-dashed border-separator px-4 py-3.5">
+    <aside className="flex max-w-[640px] items-start gap-3 rounded-4xl border border-dashed border-separator px-4 py-3.5">
       <span className="flex size-9 shrink-0 items-center justify-center rounded-full bg-fill text-label-secondary">
         <GlobeIcon size={18} />
       </span>
       <span className="flex min-w-0 flex-col gap-0.5">
         <span className="flex flex-wrap items-center gap-x-2 gap-y-0.5">
-          <span className="text-[15px] font-semibold">{t("connections.discoverTitle")}</span>
-          <span className="rounded-full bg-fill px-2 py-0.5 text-[11px] font-semibold text-label-secondary">
+          <span className="text-subheadline font-semibold">{t("connections.discoverTitle")}</span>
+          <span className="rounded-full bg-fill px-2 py-0.5 text-caption2 font-semibold text-label-secondary">
             {t("connections.comingLater")}
           </span>
         </span>
-        <span className="text-[13px] leading-snug text-label-secondary">
+        <span className="text-footnote leading-snug text-label-secondary">
           {t("connections.discoverBody")}
         </span>
       </span>

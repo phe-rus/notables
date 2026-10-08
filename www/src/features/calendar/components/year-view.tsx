@@ -6,7 +6,7 @@ import {
   LAST_YEAR,
   occurrencesBetween,
 } from "@notables/core";
-import { cn } from "@notables/ui";
+import { cn } from "@ultrapeach/ui";
 import { useLayoutEffect, useMemo, useRef, useState } from "react";
 import { locale } from "../../../i18n/i18n";
 import { useHolidays } from "../lib/holidays";
@@ -125,11 +125,11 @@ export function YearView({
                   key={month}
                   type="button"
                   onClick={() => onMonth(value, month)}
-                  className="flex flex-col gap-1.5 rounded-[12px] p-1 text-start transition-colors hover:bg-fill/40"
+                  className="flex flex-col gap-1.5 rounded-xl p-1 text-start transition-colors hover:bg-fill/40"
                 >
                   <span
                     className={cn(
-                      "text-[15px] font-semibold tracking-tight",
+                      "text-subheadline font-semibold tracking-tight",
                       today.startsWith(dayInMonth(value, month, 1).slice(0, 7)) &&
                         "text-accent-text",
                     )}
@@ -150,7 +150,7 @@ export function YearView({
                         return (
                           <span
                             key={day}
-                            className="relative flex aspect-square items-center justify-center text-[11px] tabular-nums"
+                            className="relative flex aspect-square items-center justify-center text-caption2 tabular-nums"
                           >
                             <span
                               className={cn(

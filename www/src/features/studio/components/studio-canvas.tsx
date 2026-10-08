@@ -1,5 +1,5 @@
 import { createId } from "@notables/core";
-import { pushPoint, strokeHit } from "@notables/editor";
+import { pushPoint, strokeHit } from "@notables/pluraliti";
 import { type PointerEvent, useRef, useState } from "react";
 import {
   type BrushTool,

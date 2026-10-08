@@ -15,7 +15,7 @@ import {
   spring,
   toast,
   UndoIcon,
-} from "@notables/ui";
+} from "@ultrapeach/ui";
 import { motion } from "motion/react";
 import { type ReactNode, useEffect, useRef, useState } from "react";
 import { saveMedia } from "../../../platform/storage/media-store";
@@ -225,7 +225,7 @@ export function StudioScreen({
             label={zoom === 1 ? "Zoom in" : "Fit page"}
             onClick={() => setZoom((value) => (value === 1 ? 2 : 1))}
           >
-            <span className="text-[13px] font-semibold tabular-nums">
+            <span className="text-footnote font-semibold tabular-nums">
               {zoom === 1 ? "1×" : "2×"}
             </span>
           </IconButton>
@@ -281,7 +281,7 @@ export function StudioScreen({
           />
         ) : selected && selected.type === "picture" ? (
           <ToolRow>
-            <span className="px-2 text-[13px] text-label-secondary">Picture</span>
+            <span className="px-2 text-footnote text-label-secondary">Picture</span>
             <Button variant="ghost" onClick={() => restack(selected.id, true)}>
               To front
             </Button>
@@ -303,7 +303,7 @@ export function StudioScreen({
                 {bubbleStyleLabels[style]}
               </Chip>
             ))}
-            <span className="px-2 text-[12px] text-label-tertiary">Tap the page to place it</span>
+            <span className="px-2 text-caption text-label-tertiary">Tap the page to place it</span>
           </ToolRow>
         ) : tool === "pen" || tool === "brush" || tool === "marker" ? (
           <ToolRow>
@@ -446,7 +446,7 @@ export function Chip({
       aria-pressed={active}
       onClick={onClick}
       className={cn(
-        "shrink-0 rounded-full px-3 py-1.5 text-[13px] font-medium transition-colors",
+        "shrink-0 rounded-full px-3 py-1.5 text-footnote font-medium transition-colors",
         active ? "bg-inverse text-on-inverse" : "text-label-secondary hover:bg-fill/60",
       )}
     >

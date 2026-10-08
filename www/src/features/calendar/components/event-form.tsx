@@ -10,9 +10,9 @@ import {
   type Repeat,
   repeatLabels,
 } from "@notables/core";
-import { Button, CloseIcon, IconButton, openContextMenu, Switch, toast } from "@notables/ui";
+import { Button, CloseIcon, IconButton, openMenu, Toggle, toast } from "@ultrapeach/ui";
 import { useState } from "react";
-import { Field, SelectInput, TextArea, TextInput } from "../../../components/form/form-fields";
+import { Field, PickerInput, TextArea, TextInput } from "../../../components/form/form-fields";
 import { locale, t } from "../../../i18n/i18n";
 import { permissionState, requestPermission } from "../../../platform/permissions";
 import { alertLabel, allDayAlerts, timedAlerts } from "../lib/alert-choices";
@@ -110,11 +110,14 @@ export function EventForm({
   const remove = (anchor: HTMLElement) => {
     // A repeating event can lose one day or all of them.
     if (target.event.repeat === "never") return removeAll();
-    const rect = anchor.getBoundingClientRect();
-    openContextMenu(rect.left, rect.top - 96, [
-      { label: t("calendar.deleteDay"), onSelect: removeDay },
-      { label: t("calendar.deleteEvery"), destructive: true, onSelect: removeAll },
-    ]);
+    openMenu(
+      anchor,
+      [
+        { label: t("calendar.deleteDay"), onSelect: removeDay },
+        { label: t("calendar.deleteEvery"), destructive: true, onSelect: removeAll },
+      ],
+      { above: true },
+    );
   };
 
   const endMinutes = minutesOf(event.time ?? "09:00") + event.duration;
@@ -123,7 +126,7 @@ export function EventForm({
     <>
       <header className="flex items-center justify-between gap-3 px-5 pt-5 pb-3">
         <div className="min-w-0 grow">
-          <SelectInput<CalendarEventKind>
+          <PickerInput<CalendarEventKind>
             label={t("calendar.kindLabel")}
             value={event.kind}
             onChange={changeKind}
@@ -163,14 +166,14 @@ export function EventForm({
             value={event.title}
             placeholder={t(`calendar.placeholder.${event.kind}`)}
             onChange={(e) => set({ title: e.target.value })}
-            className="py-2.5 text-[17px] font-semibold"
+            className="py-2.5 text-body font-semibold"
           />
         </div>
 
         {event.kind === "reminder" && !target.isNew && (
-          <div className="flex items-center justify-between rounded-[12px] bg-fill/50 px-3.5 py-2.5">
+          <div className="flex items-center justify-between rounded-xl bg-fill/50 px-3.5 py-2.5">
             <span className="text-[14px]">{t("calendar.done")}</span>
-            <Switch
+            <Toggle
               label={t("calendar.done")}
               checked={event.done?.includes(target.day) ?? false}
               onChange={(on) =>
@@ -231,9 +234,9 @@ export function EventForm({
                 />
               </Field>
             )}
-            <div className="flex items-center justify-between rounded-[12px] bg-fill/50 px-3.5 py-2.5">
+            <div className="flex items-center justify-between rounded-xl bg-fill/50 px-3.5 py-2.5">
               <span className="text-[14px]">{t("calendar.allDay")}</span>
-              <Switch
+              <Toggle
                 label={t("calendar.allDay")}
                 checked={allDay}
                 onChange={(on) =>
@@ -260,7 +263,7 @@ export function EventForm({
         <div className="grid grid-cols-2 gap-2.5">
           {!yearly && (
             <Field label={t("calendar.repeatLabel")}>
-              <SelectInput<Repeat>
+              <PickerInput<Repeat>
                 label={t("calendar.repeatLabel")}
                 value={event.repeat}
                 onChange={(repeat) => set({ repeat })}
@@ -301,7 +304,7 @@ export function EventForm({
         )}
 
         <fieldset className="flex flex-col gap-1.5">
-          <legend className="pb-1.5 text-[12px] font-medium text-label-secondary">
+          <legend className="pb-1.5 text-caption font-medium text-label-secondary">
             {t("calendar.color")}
           </legend>
           <div className="flex flex-wrap gap-2">
@@ -368,7 +371,7 @@ function AlertField({
 }) {
   return (
     <Field label={label}>
-      <SelectInput
+      <PickerInput
         label={label}
         value={value === null ? "none" : String(value)}
         onChange={(next) => onChange(next === "none" ? null : Number(next))}
@@ -415,7 +418,7 @@ function BirthDate({
     <div className="flex flex-col gap-2.5">
       <div className="grid grid-cols-[1.4fr_1fr_1fr] gap-2.5">
         <Field label={t("calendar.birthMonth")}>
-          <SelectInput
+          <PickerInput
             label={t("calendar.birthMonth")}
             value={String(month)}
             onChange={(next) => write(year, Number(next), day)}
@@ -426,7 +429,7 @@ function BirthDate({
           />
         </Field>
         <Field label={t("calendar.birthDay")}>
-          <SelectInput
+          <PickerInput
             label={t("calendar.birthDay")}
             value={String(day)}
             onChange={(next) => write(year, month, Number(next))}
@@ -454,9 +457,9 @@ function BirthDate({
           />
         </Field>
       </div>
-      <div className="flex items-center justify-between rounded-[12px] bg-fill/50 px-3.5 py-2.5">
+      <div className="flex items-center justify-between rounded-xl bg-fill/50 px-3.5 py-2.5">
         <span className="text-[14px]">{t("calendar.yearUnknown")}</span>
-        <Switch
+        <Toggle
           label={t("calendar.yearUnknown")}
           checked={!known}
           onChange={(unknown) => {

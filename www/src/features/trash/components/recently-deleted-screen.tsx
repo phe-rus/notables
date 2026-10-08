@@ -8,7 +8,7 @@ import {
   spring,
   TrashIcon,
   useContextMenu,
-} from "@notables/ui";
+} from "@ultrapeach/ui";
 import { AnimatePresence, motion } from "motion/react";
 import { useMemo } from "react";
 import { CollapsedSidebarControls } from "../../../components/window/collapsed-sidebar-controls";
@@ -103,7 +103,7 @@ export function RecentlyDeletedScreen({ onOpenSidebar }: { onOpenSidebar: () => 
             <IconButton label={t("nav.showLibrary")} className="lg:hidden" onClick={onOpenSidebar}>
               <SidebarIcon size={20} />
             </IconButton>
-            <h1 className="text-[22px] font-bold tracking-tight">{t("nav.recentlyDeleted")}</h1>
+            <h1 className="text-title2 font-bold tracking-tight">{t("nav.recentlyDeleted")}</h1>
           </div>
           {items.length > 0 && (
             <Button variant="ghost" onClick={confirmEmpty} className="text-danger">
@@ -115,7 +115,7 @@ export function RecentlyDeletedScreen({ onOpenSidebar }: { onOpenSidebar: () => 
 
       <div className="flex grow flex-col overflow-y-auto">
         <div className="mx-auto flex w-full max-w-[640px] flex-col gap-3 px-4 pt-2 pb-32 sm:px-5 md:pb-24">
-          <p className="px-1 text-[13px] leading-snug text-label-secondary">
+          <p className="px-1 text-footnote leading-snug text-label-secondary">
             {t("trash.intro", { days: RETENTION_DAYS })}
           </p>
           {items.length === 0 && (
@@ -123,7 +123,7 @@ export function RecentlyDeletedScreen({ onOpenSidebar }: { onOpenSidebar: () => 
               <span className="flex size-14 items-center justify-center rounded-full bg-fill text-label-tertiary">
                 <TrashIcon size={26} />
               </span>
-              <p className="text-[16px] font-semibold">{t("trash.nothingTitle")}</p>
+              <p className="text-callout font-semibold">{t("trash.nothingTitle")}</p>
               <p className="max-w-[300px] text-[14px] text-label-secondary">
                 {t("trash.nothingBody")}
               </p>
@@ -194,10 +194,10 @@ function BinRow({ item }: { item: Item }) {
   return (
     <div
       {...menu}
-      className="flex touch-manipulation items-center gap-3 rounded-[16px] bg-elevated px-3 py-2.5 shadow-[inset_0_0_0_1px_var(--color-separator)] [-webkit-touch-callout:none]"
+      className="flex touch-manipulation items-center gap-3 rounded-3xl bg-elevated px-3 py-2.5 shadow-[inset_0_0_0_1px_var(--color-separator)] [-webkit-touch-callout:none]"
     >
       {item.type === "note" ? (
-        <span className="flex size-9 shrink-0 items-center justify-center rounded-[10px] bg-fill text-label-secondary">
+        <span className="flex size-9 shrink-0 items-center justify-center rounded-lg bg-fill text-label-secondary">
           <NoteIcon size={18} />
         </span>
       ) : (
@@ -209,8 +209,8 @@ function BinRow({ item }: { item: Item }) {
         />
       )}
       <span className="flex min-w-0 grow flex-col gap-0.5">
-        <span className="truncate text-[15px] font-semibold">{titleOf(item)}</span>
-        <span className={cn("text-[13px]", left <= 1 ? "text-danger" : "text-label-secondary")}>
+        <span className="truncate text-subheadline font-semibold">{titleOf(item)}</span>
+        <span className={cn("text-footnote", left <= 1 ? "text-danger" : "text-label-secondary")}>
           {describe(item)} · {t("trash.daysLeft", { count: left })}
         </span>
       </span>

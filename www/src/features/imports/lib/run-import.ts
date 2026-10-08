@@ -1,5 +1,5 @@
 import { createId, type NoteKind } from "@notables/core";
-import { $appendContent, composeDocument, composeDocumentFromHtml } from "@notables/editor";
+import { $appendContent, composeDocument, composeDocumentFromHtml } from "@notables/pluraliti";
 import { saveMedia } from "../../../platform/storage/media-store";
 import { noteKindFor } from "../../books/actions/start-chapter";
 import { syncBookFormat } from "../../books/actions/sync-book-format";

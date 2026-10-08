@@ -9,7 +9,7 @@ import {
   ShareIcon,
   Sheet,
   toast,
-} from "@notables/ui";
+} from "@ultrapeach/ui";
 import { useEffect, useState } from "react";
 import { t } from "../../../i18n/i18n";
 import { useAuthorName } from "../../../platform/author-preferences";
@@ -105,8 +105,10 @@ function ShareContent({ entry, onClose }: { entry: LibraryEntry; onClose: () => 
     <>
       <header className="flex items-start justify-between gap-3 px-6 pt-6 pb-2">
         <div className="flex flex-col gap-1">
-          <h2 className="text-[20px] font-bold tracking-tight">{t("sharing.title")}</h2>
-          <p className="text-[13px] leading-snug text-label-secondary">{t("sharing.explainer")}</p>
+          <h2 className="text-title3 font-bold tracking-tight">{t("sharing.title")}</h2>
+          <p className="text-footnote leading-snug text-label-secondary">
+            {t("sharing.explainer")}
+          </p>
         </div>
         <IconButton label={t("common.close")} onClick={onClose}>
           <CloseIcon size={18} />
@@ -128,7 +130,7 @@ function ShareContent({ entry, onClose }: { entry: LibraryEntry; onClose: () => 
               placeholder={t("sharing.personPlaceholder")}
               aria-label={t("sharing.personPlaceholder")}
               maxLength={60}
-              className="min-w-0 grow rounded-[12px] control-field px-3.5 py-2.5 text-[15px] text-label placeholder:text-label-tertiary"
+              className="min-w-0 grow rounded-xl control-field px-3.5 py-2.5 text-subheadline text-label placeholder:text-label-tertiary"
             />
             <Button variant="primary" type="submit" disabled={busy || !name.trim()}>
               <ShareIcon size={16} />
@@ -139,10 +141,10 @@ function ShareContent({ entry, onClose }: { entry: LibraryEntry; onClose: () => 
 
         {members.length > 0 && (
           <section className="flex flex-col gap-1.5" aria-label={t("sharing.people")}>
-            <h3 className="text-[12px] font-semibold tracking-wide text-label-tertiary uppercase">
+            <h3 className="text-caption font-semibold tracking-wide text-label-tertiary uppercase">
               {t("sharing.people")}
             </h3>
-            <ul className="flex flex-col divide-y divide-separator/60 overflow-hidden rounded-[16px] border border-separator/60 bg-elevated">
+            <ul className="flex flex-col divide-y divide-separator/60 overflow-hidden rounded-3xl border border-separator/60 bg-elevated">
               {members.map(([inviteId, member]) => {
                 const here = online.has(inviteId) || inviteId === share?.inviteId;
                 const isMe = inviteId === share?.inviteId;
@@ -160,10 +162,10 @@ function ShareContent({ entry, onClose }: { entry: LibraryEntry; onClose: () => 
                       )}
                     </span>
                     <span className="flex min-w-0 grow flex-col">
-                      <span className="truncate text-[15px] font-medium">
+                      <span className="truncate text-subheadline font-medium">
                         {isMe ? t("sharing.you", { name: member.name }) : member.name}
                       </span>
-                      <span className="text-[12px] text-label-secondary">
+                      <span className="text-caption text-label-secondary">
                         {inviteId === OWNER
                           ? t("sharing.owner")
                           : here
@@ -201,7 +203,7 @@ function ShareContent({ entry, onClose }: { entry: LibraryEntry; onClose: () => 
           </section>
         )}
 
-        <ul className="flex flex-col gap-2 text-[13px] leading-snug text-label-secondary">
+        <ul className="flex flex-col gap-2 text-footnote leading-snug text-label-secondary">
           {[t("sharing.pointDirect"), t("sharing.pointEncrypted"), t("sharing.pointOnline")].map(
             (point) => (
               <li key={point} className="flex gap-2">

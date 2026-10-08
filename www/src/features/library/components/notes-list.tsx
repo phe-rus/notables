@@ -1,3 +1,4 @@
+import { Link, useNavigate } from "@tanstack/react-router";
 import {
   Chip,
   cn,
@@ -8,8 +9,7 @@ import {
   SidebarIcon,
   spring,
   useContextMenu,
-} from "@notables/ui";
-import { Link, useNavigate } from "@tanstack/react-router";
+} from "@ultrapeach/ui";
 import { AnimatePresence, motion } from "motion/react";
 import { useDeferredValue, useMemo, useState } from "react";
 import { CollapsedSidebarControls } from "../../../components/window/collapsed-sidebar-controls";
@@ -109,7 +109,7 @@ export function NotesList({
             <IconButton label={t("nav.showLibrary")} className="lg:hidden" onClick={onOpenSidebar}>
               <SidebarIcon size={20} />
             </IconButton>
-            <h1 className="text-[22px] font-bold tracking-tight">{view.title}</h1>
+            <h1 className="text-title2 font-bold tracking-tight">{view.title}</h1>
           </div>
           <IconButton label={t("nav.newNote")} tone="accent" onClick={onCreateNote}>
             <PenIcon size={20} strokeWidth={1.9} />
@@ -134,7 +134,7 @@ export function NotesList({
         {groups.map((group, index) => (
           <div key={group.label ?? `group-${index}`} className="flex flex-col">
             {group.label && (
-              <h2 className="px-2.5 pt-3 pb-1 text-[12px] font-medium text-label-tertiary">
+              <h2 className="px-2.5 pt-3 pb-1 text-caption font-medium text-label-tertiary">
                 {group.label}
               </h2>
             )}
@@ -186,7 +186,7 @@ function NoteRow({
       search={(s) => s}
       {...menu}
       className={cn(
-        "group relative isolate flex touch-manipulation flex-col rounded-[12px] px-3 no-underline transition-colors duration-fast [-webkit-touch-callout:none]",
+        "group relative isolate flex touch-manipulation flex-col rounded-xl px-3 no-underline transition-colors duration-fast [-webkit-touch-callout:none]",
         compact ? "gap-px py-2" : "gap-[3px] py-3",
         !active && "hover:bg-fill/60",
       )}
@@ -194,26 +194,26 @@ function NoteRow({
       {active && (
         <motion.span
           layoutId="note-selection"
-          className="absolute inset-0 -z-10 rounded-[12px] bg-accent-soft"
+          className="absolute inset-0 -z-10 rounded-xl bg-accent-soft"
           transition={spring.snappy}
         />
       )}
       <span
         className={cn(
           "flex items-center gap-1.5 font-semibold text-label",
-          compact ? "text-[14px]" : "text-[15px]",
+          compact ? "text-[14px]" : "text-subheadline",
         )}
       >
         {entry.pinned && <PinIcon size={13} className="text-accent-text" />}
         <span className="truncate">{entry.title || t("notes.newNote")}</span>
         {compact && (
-          <span className="ml-auto shrink-0 text-[12px] font-normal text-label-tertiary">
+          <span className="ml-auto shrink-0 text-caption font-normal text-label-tertiary">
             {formatUpdated(entry.updatedAt)}
           </span>
         )}
       </span>
       {(options.preview || snippet) && (
-        <span className="truncate text-[13px] text-label-secondary">
+        <span className="truncate text-footnote text-label-secondary">
           {!compact && <b className="font-medium text-label">{formatUpdated(entry.updatedAt)}</b>}
           {!compact && "  "}
           {snippet ?? (entry.excerpt || t("notes.noText"))}
@@ -232,7 +232,7 @@ function NoteRow({
 function EmptyList({ searching, onCreate }: { searching: boolean; onCreate: () => void }) {
   return (
     <div className="flex flex-col items-center gap-3 px-6 pt-16 text-center">
-      <p className="text-[15px] text-label-secondary">
+      <p className="text-subheadline text-label-secondary">
         {searching ? t("notes.noMatches") : t("notes.empty")}
       </p>
       {!searching && (

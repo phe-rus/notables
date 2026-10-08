@@ -1,4 +1,4 @@
-import { type HapticKind, setHapticPlayer } from "@notables/ui";
+import { type HapticKind, setHapticPlayer } from "@ultrapeach/ui";
 import { getPreferences } from "../features/settings/store/preferences-store";
 import { androidBridge } from "./android-bridge";
 

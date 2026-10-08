@@ -1,5 +1,5 @@
 import { createId, type NoteKind } from "@notables/core";
-import { composeDocumentFromHtml, composeDocumentFromMarkdown } from "@notables/editor";
+import { composeDocumentFromHtml, composeDocumentFromMarkdown } from "@notables/pluraliti";
 import { saveMedia } from "../../../platform/storage/media-store";
 import { type BookEntry, getBookStore } from "../../books/store/book-store";
 import { getInvoiceStore } from "../../invoices/store/invoice-store";

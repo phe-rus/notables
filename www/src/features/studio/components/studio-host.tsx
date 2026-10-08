@@ -1,4 +1,4 @@
-import { type Drawing, type DrawingStudio, DrawingStudioProvider } from "@notables/editor";
+import { type Drawing, type DrawingStudio, DrawingStudioProvider } from "@notables/pluraliti";
 import { AnimatePresence } from "motion/react";
 import { type ReactNode, useMemo, useState } from "react";
 import { loadScene, saveDrawing } from "../lib/scene-storage";

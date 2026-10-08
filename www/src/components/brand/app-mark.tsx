@@ -1,4 +1,4 @@
-import { cn } from "@notables/ui";
+import { cn } from "@ultrapeach/ui";
 import { useId } from "react";
 
 /**

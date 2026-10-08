@@ -46,7 +46,7 @@ export function SplashScreen() {
           <div className="splash-mark drop-shadow-[0_18px_40px_rgba(120,80,0,0.18)]">
             <AppMark size={92} />
           </div>
-          <span className="splash-word text-[17px] font-semibold tracking-tight text-label">
+          <span className="splash-word text-body font-semibold tracking-tight text-label">
             Notables
           </span>
           <span className="splash-spinner absolute bottom-[calc(env(safe-area-inset-bottom)+64px)]">

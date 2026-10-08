@@ -27,7 +27,7 @@ export function PaperPreview(props: InvoicePaperProps) {
   return (
     <div ref={frame} className="flex w-full justify-center px-6 py-8">
       <div
-        className="overflow-hidden rounded-[6px] shadow-[0_2px_6px_rgba(0,0,0,0.06),0_24px_60px_rgba(60,40,0,0.14)]"
+        className="overflow-hidden rounded-sm shadow-[0_2px_6px_rgba(0,0,0,0.06),0_24px_60px_rgba(60,40,0,0.14)]"
         style={{ width: PAPER_WIDTH * scale, height: height * scale }}
       >
         <div

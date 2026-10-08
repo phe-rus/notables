@@ -35,6 +35,31 @@ There is **no separate API framework** and no separate API service. Server
 logic lives in `www` as TanStack Start server functions and API routes, or
 in the Tauri Rust core when it belongs on the device.
 
+## TanStack ecosystem
+
+Prefer TanStack for application infrastructure where a library fits the requirement.
+Use the installed version's API and add a dependency when its feature needs it.
+Avoid parallel state and form frameworks or custom subscription engines for new UI.
+
+| Responsibility | Library and intended use |
+| --- | --- |
+| Routing and server functions | Existing TanStack Router and Start |
+| Reactive UI state | TanStack Store; drawer, search palette and listening session use it |
+| Validated editing | TanStack Form for wallet capture review and editing |
+| Remote asynchronous state | TanStack Query when a feature needs server requests and cache invalidation |
+| Reactive collections | Evaluate TanStack DB for structured local collections, preserving native storage and Yjs collaboration contracts |
+| Calculation sheets and finance | TanStack Table for grid structure; evaluate Charts for financial visualizations |
+| Long lists | TanStack Virtual when list size warrants windowing |
+| Repeated work | TanStack Pacer for debounce, queue and rate limiting requirements |
+| Keyboard interaction | TanStack Hotkeys for shortcut registration and sequences |
+| AI, Markdown and code rendering | Evaluate the corresponding TanStack libraries where their models fit; retain Pluraliti's Lexical document contract |
+
+Devtools are development tools and must never persist or expose sensitive wallet
+content. Config, CLI and Intent are tooling choices, not runtime requirements.
+TanStack does not replace native camera permissions, OCR, barcode decoding,
+cryptography, OS key storage or device authentication. Those adapters stay at the
+platform boundary. Wallet content must not enter a persisted Query or DB cache.
+
 ## Repository layout
 
 ```
@@ -50,22 +75,22 @@ notables/
 │   ├── migrations/         D1 schema
 │   ├── vite.config.ts
 │   └── wrangler.jsonc
-├── shared/
-│   ├── core/               domain model, schemas, Yjs document layout
-│   ├── editor/             custom Lexical editor: nodes, plugins, toolbar
+├── packages/
+│   ├── notable-core/       domain model, schemas, Yjs document layout
+│   ├── pluraliti/          custom Lexical editor: nodes, plugins, toolbar
 │   ├── ui/                 design-system components
 │   ├── tokens/             colors, typography, spacing, motion
 │   └── sync/               local-first sync engine + persistence contract
 └── docs/                   this file and the ADRs
 ```
 
-`shared/*` packages contain no app logic and never import from `www`.
+`packages/*` packages contain no app logic and never import from `www`.
 
 ## One codebase, two runtimes
 
 ```
           ┌─────────────── www (one source tree) ───────────────┐
-          │  routes · features · shared/editor · shared/ui       │
+          │  routes · features · packages/pluraliti · packages/ultrapeach/ui       │
           └──────────────┬──────────────────────────┬────────────┘
                          │                          │
             vite build (SSR, Worker)       vite build (SPA, static)
@@ -112,7 +137,7 @@ The most important boundary in the system
 
 ## Content
 
-A note is a Yjs document with these top-level parts (`shared/core`):
+A note is a Yjs document with these top-level parts (`packages/notable-core`):
 
 | Key          | Type          | Holds                                         |
 | ------------ | ------------- | --------------------------------------------- |
@@ -126,7 +151,7 @@ compile into **books**, ordered chapters with a cover, exportable as EPUB.
 
 ## Editor
 
-`shared/editor` is our own editor built on Lexical's core, custom nodes,
+`packages/pluraliti` is our own editor built on Lexical's core, custom nodes,
 our toolbar, our keyboard and Markdown shortcuts, our motion, not a
 pre-styled kit ([ADR-0004](./adr/0004-custom-lexical-editor.md)). It binds
 to the note's Yjs document through `@lexical/yjs`, so local persistence,
@@ -158,6 +183,6 @@ Notables never requires an account
 ## Quality bar
 
 - TypeScript strict mode everywhere; Biome for lint and format.
-- Domain logic lives in `shared/*` and is unit tested with `bun test`.
+- Domain logic lives in `packages/*` and is unit tested with `bun test`.
 - CI runs lint, typecheck, test and build on every pull request.
 - Conventional Commits (see [CONTRIBUTING](../CONTRIBUTING.md)).

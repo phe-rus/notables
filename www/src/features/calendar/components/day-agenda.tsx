@@ -9,7 +9,7 @@ import {
   isYearlyKind,
   occurrencesBetween,
 } from "@notables/core";
-import { BellIcon, CheckIcon, cn, RepeatIcon, toast, useContextMenu } from "@notables/ui";
+import { BellIcon, CheckIcon, cn, RepeatIcon, toast, useContextMenu } from "@ultrapeach/ui";
 import type { ReactNode } from "react";
 import { locale, t } from "../../../i18n/i18n";
 import { describeDay, formatClock } from "../lib/describe-alert";
@@ -92,26 +92,26 @@ export function DayAgenda({
     <div className="flex flex-col gap-6 px-4 pt-4 pb-32 md:px-5 md:pb-8">
       <section aria-label={t("calendar.day")} className="flex flex-col gap-2">
         <div className="flex flex-col">
-          <h2 className="text-[17px] font-semibold tracking-tight">
+          <h2 className="text-body font-semibold tracking-tight">
             {describeDay(day, new Date(`${today}T12:00:00`))}
           </h2>
-          <p className="text-[13px] text-label-secondary">
+          <p className="text-footnote text-label-secondary">
             {longDate().format(new Date(`${day}T00:00:00Z`))}
           </p>
         </div>
         {holidays.map((holiday) => (
           <p
             key={holiday.name}
-            className="flex items-center gap-2 rounded-[12px] bg-danger/8 px-3 py-2 text-[14px] font-medium text-danger"
+            className="flex items-center gap-2 rounded-xl bg-danger/8 px-3 py-2 text-[14px] font-medium text-danger"
           >
             <span className="grow">{holiday.name}</span>
-            <span className="text-[11px] font-semibold uppercase opacity-70">
+            <span className="text-caption2 font-semibold uppercase opacity-70">
               {holiday.closed ? t("calendar.holiday") : t("calendar.observance")}
             </span>
           </p>
         ))}
         {dayEvents.length === 0 ? (
-          <div className="flex flex-col gap-3 rounded-[16px] bg-fill/40 px-4 py-4">
+          <div className="flex flex-col gap-3 rounded-3xl bg-fill/40 px-4 py-4">
             <p className="text-[14px] text-label-secondary">{t("calendar.nothingPlanned")}</p>
             <div className="flex flex-wrap gap-1.5">
               {(["plan", "reminder", "birthday", "trip"] as const).map((kind) => (
@@ -152,7 +152,7 @@ export function DayAgenda({
                 <button
                   type="button"
                   onClick={() => onOpen(event, on)}
-                  className="flex w-full items-center gap-3 rounded-[14px] px-3 py-2 text-start transition-colors hover:bg-fill/50"
+                  className="flex w-full items-center gap-3 rounded-2xl px-3 py-2 text-start transition-colors hover:bg-fill/50"
                 >
                   <span
                     className="flex size-9 shrink-0 items-center justify-center rounded-full"
@@ -164,7 +164,7 @@ export function DayAgenda({
                     {kindIcons[event.kind]}
                   </span>
                   <span className="flex min-w-0 grow flex-col">
-                    <span className="truncate text-[15px] font-medium">
+                    <span className="truncate text-subheadline font-medium">
                       {event.title || t("calendar.someone")}
                     </span>
                     <span className="truncate text-[12.5px] text-label-secondary">
@@ -205,7 +205,7 @@ export function DayAgenda({
 function AgendaSection({ title, children }: { title: string; children: ReactNode }) {
   return (
     <section aria-label={title} className="flex flex-col gap-2">
-      <h2 className="text-[13px] font-semibold text-label-secondary">{title}</h2>
+      <h2 className="text-footnote font-semibold text-label-secondary">{title}</h2>
       <ul className="flex flex-col gap-1">{children}</ul>
     </section>
   );
@@ -224,7 +224,7 @@ function QuickKind({
     <button
       type="button"
       onClick={onClick}
-      className="flex items-center gap-1.5 rounded-full bg-elevated px-3 py-1.5 text-[13px] font-medium shadow-[inset_0_0_0_1px_var(--color-separator)] transition-colors hover:bg-fill/60"
+      className="flex items-center gap-1.5 rounded-full bg-elevated px-3 py-1.5 text-footnote font-medium shadow-[inset_0_0_0_1px_var(--color-separator)] transition-colors hover:bg-fill/60"
     >
       {icon}
       {children}
@@ -286,7 +286,7 @@ function EventRow({
   return (
     <div
       {...menu}
-      className="flex w-full items-stretch gap-2 rounded-[14px] px-2 transition-colors hover:bg-fill/50"
+      className="flex w-full items-stretch gap-2 rounded-2xl px-2 transition-colors hover:bg-fill/50"
     >
       {reminder ? (
         // biome-ignore lint/a11y/useSemanticElements: a round check like Reminders, not a form checkbox.
@@ -321,7 +321,10 @@ function EventRow({
       >
         <span className="flex min-w-0 grow flex-col gap-0.5">
           <span
-            className={cn("truncate text-[15px] font-medium", done && "line-through opacity-55")}
+            className={cn(
+              "truncate text-subheadline font-medium",
+              done && "line-through opacity-55",
+            )}
           >
             {eventTitle(event, day)}
           </span>

@@ -1,5 +1,5 @@
 import { createPublicationSnapshot, readingMinutes } from "@notables/core";
-import { useDocumentSnapshot } from "@notables/editor";
+import { useDocumentSnapshot } from "@notables/pluraliti";
 import { useCallback, useState } from "react";
 import type * as Y from "yjs";
 import { collectLocalMedia } from "../../../lib/documents/collect-local-media";

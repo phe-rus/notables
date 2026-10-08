@@ -1,4 +1,4 @@
-import { Button, CloseIcon, IconButton, Select, Sheet, toast } from "@notables/ui";
+import { Button, CloseIcon, IconButton, Picker, Sheet, toast } from "@ultrapeach/ui";
 import { useState } from "react";
 import { Field, FormSection, TextArea, TextInput } from "../../../components/form/form-fields";
 import { PartyFields } from "../components/party-fields";
@@ -41,8 +41,8 @@ function BusinessForm({ onClose }: { onClose: () => void }) {
     <>
       <header className="flex items-start justify-between gap-3 px-6 pt-6 pb-3">
         <div className="flex flex-col gap-1">
-          <h2 className="text-[20px] font-bold tracking-tight">Your business</h2>
-          <p className="text-[13px] leading-snug text-label-secondary">
+          <h2 className="text-title3 font-bold tracking-tight">Your business</h2>
+          <p className="text-footnote leading-snug text-label-secondary">
             Filled in on every new document, so you never type it twice. Documents already made stay
             as they are.
           </p>
@@ -64,7 +64,7 @@ function BusinessForm({ onClose }: { onClose: () => void }) {
         <FormSection title="Money">
           <div className="grid grid-cols-3 gap-2.5">
             <Field label="Currency">
-              <Select
+              <Picker
                 label="Currency"
                 value={profile.currency}
                 onChange={(currency) => set({ currency })}

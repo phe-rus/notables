@@ -1,4 +1,4 @@
-import type { Drawing } from "@notables/editor";
+import type { Drawing } from "@notables/pluraliti";
 import { loadMedia, saveMedia } from "../../../platform/storage/media-store";
 import { isPageScene, type PageScene } from "../model/page-scene";
 import { renderScene } from "./render-scene";

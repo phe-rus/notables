@@ -1,4 +1,4 @@
-import { useMediaSource } from "@notables/editor";
+import { useMediaSource } from "@notables/pluraliti";
 import { type ReactNode, useId } from "react";
 import { PANEL_BORDER } from "../lib/render-scene";
 import { bubbleShape, bubbleText, fontFamilies, sceneStrokePath } from "../lib/scene-geometry";
@@ -130,7 +130,6 @@ export function BubbleView({ bubble }: { bubble: BubbleItem }) {
         textAnchor={text.align === "center" ? "middle" : "start"}
       >
         {text.lines.map((line, index) => (
-          // biome-ignore lint/suspicious/noArrayIndexKey: lines are positional.
           <tspan key={index} x={text.x} y={text.firstBaseline + index * text.lineHeight}>
             {line}
           </tspan>

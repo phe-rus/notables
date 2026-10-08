@@ -1,4 +1,4 @@
-import { composeDocumentFromMarkdown } from "@notables/editor";
+import { composeDocumentFromMarkdown } from "@notables/pluraliti";
 import { getBookStore } from "../../books/store/book-store";
 import { writeNote } from "../../library/lib/write-note";
 import { getLibrary } from "../../library/store/library-store";

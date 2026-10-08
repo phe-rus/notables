@@ -1,4 +1,5 @@
-import { useMediaSource } from "@notables/editor";
+import { useMediaSource } from "@notables/pluraliti";
+import { Link } from "@tanstack/react-router";
 import {
   ChevronRightIcon,
   CloseIcon,
@@ -12,8 +13,7 @@ import {
   SkipForwardIcon,
   SleepIcon,
   spring,
-} from "@notables/ui";
-import { Link } from "@tanstack/react-router";
+} from "@ultrapeach/ui";
 import { AnimatePresence, motion } from "motion/react";
 import { useEffect, useState } from "react";
 import { t } from "../../../../i18n/i18n";
@@ -102,7 +102,7 @@ function PlayerScreen({ book, player }: { book: BookEntry; player: AudiobookPlay
         >
           <CloseIcon size={20} />
         </Link>
-        <p className="truncate text-[13px] font-medium text-label-secondary">
+        <p className="truncate text-footnote font-medium text-label-secondary">
           {player.tracks.length > 0 && `Chapter ${player.index + 1} of ${player.tracks.length}`}
         </p>
         <span className="w-[34px]" />
@@ -122,15 +122,15 @@ function PlayerScreen({ book, player }: { book: BookEntry; player: AudiobookPlay
               title={book.title}
               author={book.author}
               image={book.cover}
-              className="w-full rounded-[10px] shadow-[0_30px_70px_-24px_rgb(0_0_0/0.55)]"
+              className="w-full rounded-lg shadow-[0_30px_70px_-24px_rgb(0_0_0/0.55)]"
             />
           </motion.div>
 
           <div className="flex w-full flex-col items-center gap-1 text-center">
-            <h1 className="line-clamp-2 text-[22px] leading-tight font-bold tracking-tight">
+            <h1 className="line-clamp-2 text-title2 leading-tight font-bold tracking-tight">
               {track?.title ?? book.title}
             </h1>
-            <p className="text-[15px] text-label-secondary">
+            <p className="text-subheadline text-label-secondary">
               {[book.title, book.author].filter(Boolean).join(" · ")}
             </p>
           </div>
@@ -149,7 +149,7 @@ function PlayerScreen({ book, player }: { book: BookEntry; player: AudiobookPlay
               onChange={(event) => player.seek(Number(event.target.value))}
               className="book-scrubber w-full"
             />
-            <div className="flex justify-between text-[12px] text-label-tertiary tabular-nums">
+            <div className="flex justify-between text-caption text-label-tertiary tabular-nums">
               <span>{clock(time)}</span>
               <span>−{clock(Math.ceil(Math.max(0, duration - time)))}</span>
             </div>
@@ -213,7 +213,7 @@ function PlayerScreen({ book, player }: { book: BookEntry; player: AudiobookPlay
             </Pill>
           </div>
           {player.failed && (
-            <p role="alert" className="text-center text-[13px] text-danger">
+            <p role="alert" className="text-center text-footnote text-danger">
               {t("listening.couldNotPlay")}
             </p>
           )}
@@ -302,7 +302,7 @@ function Pill({
       data-tooltip={label}
       onClick={onClick}
       className={cn(
-        "flex h-8 items-center gap-1.5 rounded-full px-3.5 text-[13px] font-semibold tabular-nums transition-colors",
+        "flex h-8 items-center gap-1.5 rounded-full px-3.5 text-footnote font-semibold tabular-nums transition-colors",
         active
           ? "bg-accent-soft text-accent-text"
           : "bg-fill/70 text-label-secondary hover:text-label",
@@ -358,22 +358,24 @@ function TrackList({ player }: { player: AudiobookPlayback }) {
             aria-current={current ? "true" : undefined}
             onClick={() => (current ? player.toggle() : player.playTrack(index))}
             className={cn(
-              "flex w-full items-center gap-3 rounded-[12px] px-3 py-2.5 text-start transition-colors",
+              "flex w-full items-center gap-3 rounded-xl px-3 py-2.5 text-start transition-colors",
               current ? "bg-fill/80" : "hover:bg-fill/50",
             )}
           >
             <span
               className={cn(
-                "w-6 shrink-0 text-center text-[13px] tabular-nums",
+                "w-6 shrink-0 text-center text-footnote tabular-nums",
                 current ? "text-accent-text" : "text-label-tertiary",
               )}
             >
               {current && player.playing ? <Equalizer /> : offset + 1}
             </span>
-            <span className={cn("min-w-0 grow truncate text-[15px]", current && "font-semibold")}>
+            <span
+              className={cn("min-w-0 grow truncate text-subheadline", current && "font-semibold")}
+            >
               {entry.title}
             </span>
-            <span className="shrink-0 text-[13px] text-label-tertiary tabular-nums">
+            <span className="shrink-0 text-footnote text-label-tertiary tabular-nums">
               {entry.durationMs ? clock(entry.durationMs / 1000) : ""}
             </span>
           </button>
@@ -400,7 +402,7 @@ function TrackList({ player }: { player: AudiobookPlayback }) {
                   return next;
                 })
               }
-              className="flex items-center gap-2.5 rounded-[12px] px-3 py-2.5 text-start transition-colors hover:bg-fill/50"
+              className="flex items-center gap-2.5 rounded-xl px-3 py-2.5 text-start transition-colors hover:bg-fill/50"
             >
               <motion.span
                 animate={{ rotate: expanded ? 90 : 0 }}
@@ -411,13 +413,13 @@ function TrackList({ player }: { player: AudiobookPlayback }) {
               </motion.span>
               <span
                 className={cn(
-                  "min-w-0 grow truncate text-[15px] font-semibold",
+                  "min-w-0 grow truncate text-subheadline font-semibold",
                   number === playing && "text-accent-text",
                 )}
               >
                 {section.title}
               </span>
-              <span className="shrink-0 text-[13px] text-label-tertiary tabular-nums">
+              <span className="shrink-0 text-footnote text-label-tertiary tabular-nums">
                 {total ? clock(total / 1000) : section.tracks.length}
               </span>
             </button>

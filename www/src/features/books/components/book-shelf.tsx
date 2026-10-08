@@ -29,7 +29,7 @@ export function BookShelf({ books, label }: { books: BookEntry[]; label: string 
   if (books.length === 0) return null;
   return (
     <section aria-label={label} className="flex flex-col gap-2 pt-2 pb-1">
-      <h2 className="px-2.5 text-[12px] font-medium text-label-tertiary">{label}</h2>
+      <h2 className="px-2.5 text-caption font-medium text-label-tertiary">{label}</h2>
       <div className="no-scrollbar flex gap-3 overflow-x-auto px-2.5 pb-3">
         {books.map((book) => (
           <Link
@@ -44,7 +44,7 @@ export function BookShelf({ books, label }: { books: BookEntry[]; label: string 
               image={book.cover}
               className="w-full"
             />
-            <span className="line-clamp-2 text-[12px] leading-tight font-medium text-label">
+            <span className="line-clamp-2 text-caption leading-tight font-medium text-label">
               {book.title || t("common.untitled")}
             </span>
           </Link>

@@ -1,0 +1,7 @@
+[[permission]]
+identifier = "wallet-access"
+description = "Allows the local main window to access the encrypted wallet. Native commands also verify its origin, route and session."
+commands.allow = [
+  "wallet_migrate_prototype", "wallet_status", "wallet_initialize", "wallet_unlock", "wallet_lock",
+  "wallet_list", "wallet_read", "wallet_save", "wallet_delete", "wallet_activity"
+]

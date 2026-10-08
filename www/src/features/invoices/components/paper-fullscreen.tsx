@@ -1,5 +1,5 @@
 import type { InvoiceDocument } from "@notables/core";
-import { Button, CloseIcon, DownloadIcon, IconButton, PrintIcon, spring } from "@notables/ui";
+import { Button, CloseIcon, DownloadIcon, IconButton, PrintIcon, spring } from "@ultrapeach/ui";
 import { AnimatePresence, motion } from "motion/react";
 import { useEffect, useLayoutEffect, useRef, useState } from "react";
 import { createPortal } from "react-dom";
@@ -58,7 +58,7 @@ export function PaperFullscreen({
             >
               <CloseIcon size={20} />
             </IconButton>
-            <span className="truncate text-[15px] font-semibold">{invoice.number}</span>
+            <span className="truncate text-subheadline font-semibold">{invoice.number}</span>
             <div className="ml-auto flex items-center gap-2">
               <Button variant="secondary" onClick={onPrint}>
                 <PrintIcon size={16} />
@@ -123,7 +123,7 @@ function FittedPaper({
         type="button"
         aria-label={zoomed ? "Fit to screen" : "Zoom in"}
         onClick={() => setZoomed((value) => !value)}
-        className="mx-auto block cursor-zoom-in overflow-hidden rounded-[4px] text-left shadow-[0_30px_80px_rgba(0,0,0,0.45)] data-[zoomed=true]:cursor-zoom-out"
+        className="mx-auto block cursor-zoom-in overflow-hidden rounded-xs text-left shadow-[0_30px_80px_rgba(0,0,0,0.45)] data-[zoomed=true]:cursor-zoom-out"
         data-zoomed={zoomed}
         animate={{ width: PAPER_WIDTH * scale, height: height * scale }}
         transition={spring.smooth}

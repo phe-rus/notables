@@ -1,4 +1,4 @@
-import { cn, spring } from "@notables/ui";
+import { cn, spring } from "@ultrapeach/ui";
 import { animate, type MotionValue, motion, useMotionValue, useTransform } from "motion/react";
 import { type ReactNode, useCallback, useEffect, useRef, useState } from "react";
 import type { PageGeometry } from "./page-geometry";

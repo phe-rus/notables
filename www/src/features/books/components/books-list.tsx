@@ -1,3 +1,4 @@
+import { Link, useNavigate } from "@tanstack/react-router";
 import {
   BookIcon,
   Button,
@@ -7,13 +8,13 @@ import {
   DownloadIcon,
   IconButton,
   openContextMenu,
+  openMenu,
   SegmentedControl,
   SidebarIcon,
   spring,
   TrashIcon,
   useContextMenu,
-} from "@notables/ui";
-import { Link, useNavigate } from "@tanstack/react-router";
+} from "@ultrapeach/ui";
 import { AnimatePresence, motion } from "motion/react";
 import { type MouseEvent, useEffect, useMemo, useRef, useState } from "react";
 import { CollapsedSidebarControls } from "../../../components/window/collapsed-sidebar-controls";
@@ -93,11 +94,10 @@ function BooksListContent({ activeId, onOpenSidebar, className }: BooksListProps
     void navigate({ to: "/books/$bookId", params: { bookId: book.id } });
   };
   const chooseNewBook = (event: MouseEvent<HTMLElement>) => {
-    const rect = event.currentTarget.getBoundingClientRect();
-    openContextMenu(
-      rect.right - 200,
-      rect.bottom + 6,
+    openMenu(
+      event.currentTarget,
       mediaKinds.map((kind) => ({ label: kindLabel(kind), onSelect: () => createBook(kind) })),
+      { edge: "trailing" },
     );
   };
   const chooseShelf = (booksShelf: BooksShelf) =>
@@ -148,7 +148,7 @@ function BooksListContent({ activeId, onOpenSidebar, className }: BooksListProps
             <IconButton label={t("nav.showLibrary")} className="lg:hidden" onClick={onOpenSidebar}>
               <SidebarIcon size={20} />
             </IconButton>
-            <h1 className="text-[22px] font-bold tracking-tight">
+            <h1 className="text-title2 font-bold tracking-tight">
               {selecting
                 ? selectedCount === 0
                   ? t("books.selectTitle")
@@ -162,7 +162,7 @@ function BooksListContent({ activeId, onOpenSidebar, className }: BooksListProps
                 type="button"
                 onClick={() => (selecting ? stop() : selection.start())}
                 className={cn(
-                  "h-8 rounded-full px-3 text-[15px] transition-colors hover:bg-fill",
+                  "h-8 rounded-full px-3 text-subheadline transition-colors hover:bg-fill",
                   selecting ? "font-semibold text-accent-text" : "text-accent-text",
                 )}
               >
@@ -197,7 +197,7 @@ function BooksListContent({ activeId, onOpenSidebar, className }: BooksListProps
       <div className="flex grow flex-col gap-1 overflow-y-auto px-2.5 pt-2 pb-28 md:pb-8">
         {allBooks.length === 0 && (
           <div className="flex flex-col items-center gap-3 px-6 pt-16 text-center">
-            <p className="text-[15px] text-label-secondary">{t("books.emptyBody")}</p>
+            <p className="text-subheadline text-label-secondary">{t("books.emptyBody")}</p>
             <button
               type="button"
               onClick={() => createBook()}
@@ -259,7 +259,7 @@ function BooksListContent({ activeId, onOpenSidebar, className }: BooksListProps
             animate={{ y: 0, opacity: 1 }}
             exit={{ y: 24, opacity: 0 }}
             transition={spring.smooth}
-            className="glass-menu absolute inset-x-3 bottom-[max(12px,env(safe-area-inset-bottom))] z-10 flex items-center justify-between gap-2 rounded-[18px] p-2 max-md:bottom-24"
+            className="glass-menu absolute inset-x-3 bottom-[max(12px,env(safe-area-inset-bottom))] z-10 flex items-center justify-between gap-2 rounded-4xl p-2 max-md:bottom-24"
           >
             <Button
               variant="ghost"
@@ -349,7 +349,7 @@ function FranchiseGroup({
           image={first?.cover}
           className="w-6"
         />
-        <span className="truncate text-[15px] font-bold tracking-tight text-label">
+        <span className="truncate text-subheadline font-bold tracking-tight text-label">
           {franchise.title}
         </span>
       </h2>
@@ -412,10 +412,12 @@ function SeriesGroup({
   const heading = (
     <>
       <span className="flex min-w-0 flex-col">
-        <span className="truncate text-[13px] font-semibold text-label">{series.title}</span>
-        {franchise && <span className="truncate text-[12px] text-label-tertiary">{franchise}</span>}
+        <span className="truncate text-footnote font-semibold text-label">{series.title}</span>
+        {franchise && (
+          <span className="truncate text-caption text-label-tertiary">{franchise}</span>
+        )}
       </span>
-      <span className="shrink-0 text-[12px] text-label-tertiary">
+      <span className="shrink-0 text-caption text-label-tertiary">
         {kind ? `${kind} · ${parts}` : parts}
       </span>
     </>
@@ -560,17 +562,17 @@ function BookRow({
     <>
       <BookCover title={book.title} author={book.author} image={book.cover} className="w-12" />
       <span className="flex min-w-0 flex-col gap-0.5">
-        <span className="truncate text-[15px] font-semibold text-label">
+        <span className="truncate text-subheadline font-semibold text-label">
           {(series ? volumeTitle(book, series, mediaKind) : book.title) || t("books.untitled")}
         </span>
-        <span className="text-[13px] text-label-secondary">
+        <span className="text-footnote text-label-secondary">
           {[franchise, kind, count].filter(Boolean).join(" · ")}
         </span>
       </span>
     </>
   );
   const rowClass =
-    "flex w-full touch-manipulation items-center gap-3 rounded-[14px] p-2.5 text-left no-underline transition-colors duration-fast [-webkit-touch-callout:none]";
+    "flex w-full touch-manipulation items-center gap-3 rounded-2xl p-2.5 text-left no-underline transition-colors duration-fast [-webkit-touch-callout:none]";
 
   if (selection.selecting) {
     const checked = inSelectedSeries || selection.selected.has(book.id);

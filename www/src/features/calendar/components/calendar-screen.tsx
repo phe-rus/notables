@@ -10,25 +10,25 @@ import {
   occurrencesTouching,
   weekday,
 } from "@notables/core";
+import { useNavigate } from "@tanstack/react-router";
 import {
   ChevronLeftIcon,
   ChevronRightIcon,
   cn,
   GlobeIcon,
   IconButton,
-  openContextMenu,
+  openMenu,
   PlusIcon,
   Popover,
   SidebarIcon,
-  Switch,
   spring,
+  Toggle,
   useDismiss,
   useMediaQuery,
-} from "@notables/ui";
-import { useNavigate } from "@tanstack/react-router";
+} from "@ultrapeach/ui";
 import { motion } from "motion/react";
 import { useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState } from "react";
-import { Field, SelectInput } from "../../../components/form/form-fields";
+import { Field, PickerInput } from "../../../components/form/form-fields";
 import { CollapsedSidebarControls } from "../../../components/window/collapsed-sidebar-controls";
 import { locale, t } from "../../../i18n/i18n";
 import { usePreferences } from "../../settings/store/preferences-store";
@@ -287,17 +287,20 @@ export function CalendarScreen({
               label={t("calendar.newEvent")}
               tone="accent"
               onClick={(event) => {
-                const rect = event.currentTarget.getBoundingClientRect();
-                openContextMenu(rect.right - 220, rect.bottom + 6, [
-                  { label: t("calendar.quickAdd"), onSelect: () => setTyping(true) },
-                  "divider" as const,
-                  ...(
-                    ["plan", "reminder", "birthday", "anniversary", "deadline", "trip"] as const
-                  ).map((kind) => ({
-                    label: t(`calendar.newOf.${kind}`),
-                    onSelect: () => add(kind),
-                  })),
-                ]);
+                openMenu(
+                  event.currentTarget,
+                  [
+                    { label: t("calendar.quickAdd"), onSelect: () => setTyping(true) },
+                    "divider" as const,
+                    ...(
+                      ["plan", "reminder", "birthday", "anniversary", "deadline", "trip"] as const
+                    ).map((kind) => ({
+                      label: t(`calendar.newOf.${kind}`),
+                      onSelect: () => add(kind),
+                    })),
+                  ],
+                  { edge: "trailing" },
+                );
               }}
             >
               <PlusIcon size={20} strokeWidth={2} />
@@ -440,7 +443,7 @@ function ZoomTitle({
             setEditing(false);
           }
         }}
-        className="w-[7ch] rounded-[10px] control-field px-2 py-0.5 text-[22px] font-bold tabular-nums"
+        className="w-[7ch] rounded-lg control-field px-2 py-0.5 text-title2 font-bold tabular-nums"
       />
     );
   }
@@ -456,10 +459,10 @@ function ZoomTitle({
         }
       }}
       className={cn(
-        "min-w-0 rounded-[10px] px-1.5 text-start transition-colors hover:bg-fill/60 active:bg-fill",
+        "min-w-0 rounded-lg px-1.5 text-start transition-colors hover:bg-fill/60 active:bg-fill",
         back
-          ? "flex min-h-11 items-center gap-0.5 text-[17px] text-accent-text"
-          : "text-[22px] font-bold tracking-tight",
+          ? "flex min-h-11 items-center gap-0.5 text-body text-accent-text"
+          : "text-title2 font-bold tracking-tight",
       )}
     >
       {back && (
@@ -499,7 +502,7 @@ function YearsView({
             data-year={value}
             onClick={() => onYear(value)}
             className={cn(
-              "flex h-16 items-center justify-center rounded-[16px] text-[20px] font-semibold tabular-nums transition-colors",
+              "flex h-16 items-center justify-center rounded-3xl text-title3 font-semibold tabular-nums transition-colors",
               value === current
                 ? "bg-accent text-on-accent"
                 : value === selected
@@ -546,7 +549,7 @@ function HolidayButton() {
         className="top-[calc(100%+8px)] end-0 flex w-[300px] max-w-[calc(100vw-32px)] flex-col gap-3 p-4"
       >
         <Field label={t("calendar.holidayCountry")}>
-          <SelectInput
+          <PickerInput
             label={t("calendar.holidayCountry")}
             value={settings.country ?? "none"}
             searchable
@@ -565,7 +568,7 @@ function HolidayButton() {
         </Field>
         <div className="flex items-center justify-between gap-3">
           <span className="text-[14px]">{t("calendar.observances")}</span>
-          <Switch
+          <Toggle
             label={t("calendar.observances")}
             checked={settings.observances}
             onChange={(observances) => setHolidaySettings({ observances })}

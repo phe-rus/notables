@@ -173,11 +173,11 @@ export function QrScanner({
   }, [onScan, onUnavailable, read]);
 
   return (
-    <div className="relative aspect-square w-full overflow-hidden rounded-[24px] bg-black">
+    <div className="relative aspect-square w-full overflow-hidden rounded-5xl bg-black">
       <video ref={video} muted playsInline className="size-full object-cover" />
-      <div className="pointer-events-none absolute inset-[18%] rounded-[22px] border-2 border-white/80 shadow-[0_0_0_9999px_rgba(0,0,0,0.35)]" />
+      <div className="pointer-events-none absolute inset-[18%] rounded-5xl border-2 border-white/80 shadow-[0_0_0_9999px_rgba(0,0,0,0.35)]" />
       {hint && ready && (
-        <span className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-black/70 to-transparent px-4 pt-8 pb-4 text-center text-[13px] text-white">
+        <span className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-black/70 to-transparent px-4 pt-8 pb-4 text-center text-footnote text-white">
           {hint}
         </span>
       )}

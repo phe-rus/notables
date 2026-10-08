@@ -1,4 +1,4 @@
-import { DocumentView } from "@notables/editor";
+import { DocumentView } from "@notables/pluraliti";
 import { strToU8, type Zippable, zipSync } from "fflate";
 import { renderToStaticMarkup } from "react-dom/server";
 import { stripLeadingTitle } from "../../../lib/documents/strip-leading-title";

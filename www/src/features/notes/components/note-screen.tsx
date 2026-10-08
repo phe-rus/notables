@@ -1,11 +1,12 @@
 import { noteDoc } from "@notables/core";
 import {
   BlockToolbar,
-  type DocumentSnapshot,
+  type DocumentChange,
   NotesEditor,
   NotesEditorContent,
-} from "@notables/editor";
+} from "@notables/pluraliti";
 import type { SyncStatus } from "@notables/sync";
+import { Link, useNavigate } from "@tanstack/react-router";
 import {
   Button,
   ChevronLeftIcon,
@@ -13,14 +14,13 @@ import {
   cn,
   IconButton,
   MoreIcon,
-  openContextMenu,
+  openMenu,
   PinIcon,
   riseMotion,
   ShareIcon,
   StatusIndicator,
   TrashIcon,
-} from "@notables/ui";
-import { Link, useNavigate } from "@tanstack/react-router";
+} from "@ultrapeach/ui";
 import { motion } from "motion/react";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { t } from "../../../i18n/i18n";
@@ -95,12 +95,24 @@ function NoteEditorScreen({ entry, viewId }: { entry: LibraryEntry; viewId?: str
 
   useEffect(() => recordOpened(entry.id), [entry.id]);
 
+  // Opening a note loads it from its shared document, which the editor also
+  // reports as a change. Only an edit (yours, or a collaborator's after the
+  // note has loaded) marks it as modified, so reading never reorders the list.
+  const loaded = useRef(false);
+  useEffect(() => {
+    loaded.current = false;
+  }, [entry.id]);
   const onDocumentChange = useCallback(
-    ({ document, text }: DocumentSnapshot) => {
+    ({ document, text, origin }: DocumentChange) => {
       const { title, excerpt } = summarize(text);
+      const edited = origin === "local" || loaded.current;
+      loaded.current = true;
       void saveNoteContent(entry.id, document);
       if (provider && noteDoc.title(provider.doc) !== title) noteDoc.setTitle(provider.doc, title);
-      getLibrary().update(entry.id, { title, excerpt, updatedAt: Date.now() });
+      getLibrary().update(
+        entry.id,
+        edited ? { title, excerpt, updatedAt: Date.now() } : { title, excerpt },
+      );
     },
     [entry.id, provider],
   );
@@ -143,7 +155,7 @@ function NoteEditorScreen({ entry, viewId }: { entry: LibraryEntry; viewId?: str
               <Link
                 to="/books/$bookId"
                 params={{ bookId: book.id }}
-                className="flex min-h-11 min-w-0 items-center gap-0.5 px-1 text-[17px] text-accent-text no-underline"
+                className="flex min-h-11 min-w-0 items-center gap-0.5 px-1 text-body text-accent-text no-underline"
               >
                 <ChevronLeftIcon size={22} strokeWidth={2.2} className="shrink-0" />
                 <span className="max-w-[min(180px,30cqw)] truncate">{book.title || "Book"}</span>
@@ -152,7 +164,7 @@ function NoteEditorScreen({ entry, viewId }: { entry: LibraryEntry; viewId?: str
               <Link
                 to="/"
                 search={(s) => s}
-                className="flex min-h-11 shrink-0 items-center gap-0.5 px-1 text-[17px] text-accent-text no-underline md:hidden"
+                className="flex min-h-11 shrink-0 items-center gap-0.5 px-1 text-body text-accent-text no-underline md:hidden"
               >
                 <ChevronLeftIcon size={22} strokeWidth={2.2} className="shrink-0" />
                 <span
@@ -169,7 +181,7 @@ function NoteEditorScreen({ entry, viewId }: { entry: LibraryEntry; viewId?: str
             <span
               aria-hidden={!titleInBar}
               className={cn(
-                "min-w-0 flex-1 truncate text-center text-[17px] font-semibold text-label transition-opacity duration-200 @min-[860px]/note:hidden",
+                "min-w-0 flex-1 truncate text-center text-body font-semibold text-label transition-opacity duration-200 @min-[860px]/note:hidden",
                 titleInBar ? "opacity-100" : "opacity-0",
               )}
             >
@@ -213,8 +225,7 @@ function NoteEditorScreen({ entry, viewId }: { entry: LibraryEntry; viewId?: str
                 label={t("notes.font")}
                 className="@max-[520px]/note:hidden"
                 onClick={(event) => {
-                  const rect = event.currentTarget.getBoundingClientRect();
-                  openContextMenu(rect.left, rect.bottom + 6, noteFontItems(entry));
+                  openMenu(event.currentTarget, noteFontItems(entry));
                 }}
               >
                 <span className="font-[family-name:var(--font-script)] text-[21px] leading-none font-semibold">
@@ -252,8 +263,7 @@ function NoteEditorScreen({ entry, viewId }: { entry: LibraryEntry; viewId?: str
                 label={t("notes.more")}
                 className="@min-[520px]/note:hidden"
                 onClick={(event) => {
-                  const rect = event.currentTarget.getBoundingClientRect();
-                  openContextMenu(rect.right - 220, rect.bottom + 6, moreItems());
+                  openMenu(event.currentTarget, moreItems(), { edge: "trailing" });
                 }}
               >
                 <MoreIcon size={20} />
@@ -269,7 +279,7 @@ function NoteEditorScreen({ entry, viewId }: { entry: LibraryEntry; viewId?: str
             <div className="flex w-full max-w-[640px] flex-col gap-4">
               <p
                 data-read-aloud-skip
-                className="text-center font-sans text-[12px] text-label-tertiary @min-[600px]/note:text-start @min-[600px]/note:text-[13px]"
+                className="text-center font-sans text-caption text-label-tertiary @min-[600px]/note:text-start @min-[600px]/note:text-footnote"
               >
                 {formatFull(entry.createdAt)}
               </p>
@@ -309,7 +319,7 @@ function MissingNote() {
   return (
     <div className="flex grow flex-col items-center justify-center gap-2 p-10 text-center">
       <p className="font-serif text-[24px] font-semibold">This note isn’t on this device</p>
-      <p className="text-[15px] text-label-secondary">It may have been deleted.</p>
+      <p className="text-subheadline text-label-secondary">It may have been deleted.</p>
       <Link to="/" className="mt-2 font-semibold text-accent-text">
         Back to notes
       </Link>

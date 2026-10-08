@@ -7,7 +7,7 @@ import {
   Popover,
   toast,
   useDismiss,
-} from "@notables/ui";
+} from "@ultrapeach/ui";
 import { useCallback, useId, useRef, useState } from "react";
 import type * as Y from "yjs";
 import { getAuthorName } from "../../../platform/author-preferences";
@@ -95,15 +95,15 @@ export function PublishControl({ entry, doc }: { entry: LibraryEntry; doc: Y.Doc
         {published && link ? (
           <>
             <div className="flex flex-col gap-1">
-              <p className="text-[15px] font-semibold">This note is public</p>
-              <p className="text-[13px] leading-snug text-label-secondary">
+              <p className="text-subheadline font-semibold">This note is public</p>
+              <p className="text-footnote leading-snug text-label-secondary">
                 Readers see the version you last published. Your note stays private.
               </p>
             </div>
             <button
               type="button"
               onClick={copy}
-              className="flex items-center gap-2 rounded-full bg-fill px-3.5 py-2.5 text-left text-[13px] text-label-secondary transition-colors hover:bg-separator/60"
+              className="flex items-center gap-2 rounded-full bg-fill px-3.5 py-2.5 text-left text-footnote text-label-secondary transition-colors hover:bg-separator/60"
             >
               <LinkIcon size={15} className="shrink-0 text-accent-text" />
               <span className="truncate">{link}</span>
@@ -128,7 +128,7 @@ export function PublishControl({ entry, doc }: { entry: LibraryEntry; doc: Y.Doc
               type="button"
               disabled={busy !== null}
               onClick={unpublish}
-              className="self-start text-[13px] font-semibold text-danger disabled:opacity-40"
+              className="self-start text-footnote font-semibold text-danger disabled:opacity-40"
             >
               {busy === "unpublish" ? "Unpublishing…" : "Unpublish"}
             </button>
@@ -136,20 +136,20 @@ export function PublishControl({ entry, doc }: { entry: LibraryEntry; doc: Y.Doc
         ) : (
           <>
             <div className="flex flex-col gap-1">
-              <p className="text-[15px] font-semibold">Publish to the web</p>
-              <p className="text-[13px] leading-snug text-label-secondary">
+              <p className="text-subheadline font-semibold">Publish to the web</p>
+              <p className="text-footnote leading-snug text-label-secondary">
                 Anyone with the link can read it, heart it and rate it. You can unpublish at any
                 time.
               </p>
             </div>
-            <label className="flex flex-col gap-1.5 text-[13px] font-medium text-label-secondary">
+            <label className="flex flex-col gap-1.5 text-footnote font-medium text-label-secondary">
               Name shown to readers
               <input
                 value={author}
                 onChange={(event) => setAuthor(event.target.value)}
                 maxLength={80}
                 placeholder="Your name or pen name"
-                className="rounded-[14px] control-field px-3.5 py-2.5 text-[15px] text-label"
+                className="rounded-2xl control-field px-3.5 py-2.5 text-subheadline text-label"
               />
             </label>
             <Button variant="primary" disabled={busy !== null} onClick={publish}>
@@ -158,7 +158,7 @@ export function PublishControl({ entry, doc }: { entry: LibraryEntry; doc: Y.Doc
           </>
         )}
         {error && (
-          <p role="alert" className={cn("text-[13px] text-danger")}>
+          <p role="alert" className={cn("text-footnote text-danger")}>
             {error}
           </p>
         )}

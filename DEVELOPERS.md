@@ -32,9 +32,9 @@ www/                  the app: web, and the frontend of every Tauri target
     gen/android/      the Android project
     widgets/          home-screen widget sources not yet in a project (iOS)
   migrations/         D1 schema
-shared/
-  core/               models, invoicing, calendar recurrence
-  editor/             the Lexical-based editor
+packages/
+  notable-core/       models, invoicing, calendar recurrence
+  pluraliti/          the Lexical-based editor
   sync/               Yjs persistence and the peer-to-peer mesh
   tokens/             design tokens (theme.css is generated)
   ui/                 components, haptics, motion, Hugeicons

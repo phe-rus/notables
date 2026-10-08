@@ -1,4 +1,4 @@
-import { Button, cn, toast } from "@notables/ui";
+import { Button, cn, toast } from "@ultrapeach/ui";
 import { useEffect, useRef, useState } from "react";
 import { t } from "../../../i18n/i18n";
 import { canTranscribeRecordings, transcribeRecording } from "../lib/transcribe-recording";
@@ -59,8 +59,8 @@ export function ReadAlong({
   return (
     <div className="flex flex-col gap-3">
       {working && (
-        <div className="flex flex-col gap-1.5 rounded-[14px] bg-fill/50 px-3.5 py-3">
-          <div className="flex justify-between text-[13px] text-label-secondary">
+        <div className="flex flex-col gap-1.5 rounded-2xl bg-fill/50 px-3.5 py-3">
+          <div className="flex justify-between text-footnote text-label-secondary">
             <span>{progress?.status ?? t("listening.transcribing")}</span>
             {progress?.fraction != null && (
               <span className="tabular-nums">{Math.round(progress.fraction * 100)}%</span>
@@ -84,7 +84,7 @@ export function ReadAlong({
                 onClick={() => onSeek(start / 1000)}
                 aria-current={index === current ? "true" : undefined}
                 className={cn(
-                  "w-full rounded-[10px] px-3 py-1.5 text-left font-serif text-[17px] leading-relaxed transition-colors duration-300",
+                  "w-full rounded-lg px-3 py-1.5 text-left font-serif text-body leading-relaxed transition-colors duration-300",
                   index === current
                     ? "bg-accent/12 text-label"
                     : index < current
@@ -98,7 +98,7 @@ export function ReadAlong({
           ))}
         </ol>
       ) : plainTranscript ? (
-        <p className="px-3 font-serif text-[16px] leading-relaxed whitespace-pre-line text-label">
+        <p className="px-3 font-serif text-callout leading-relaxed whitespace-pre-line text-label">
           {plainTranscript}
         </p>
       ) : null}

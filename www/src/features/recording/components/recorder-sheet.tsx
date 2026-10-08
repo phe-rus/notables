@@ -1,5 +1,5 @@
 import type { TranscriptSegment } from "@notables/core";
-import { cn, confirmDialog, PauseIcon, PlayIcon, spring } from "@notables/ui";
+import { cn, confirmDialog, PauseIcon, PlayIcon, spring } from "@ultrapeach/ui";
 import { AnimatePresence, motion } from "motion/react";
 import { useEffect, useRef, useState, useSyncExternalStore } from "react";
 import { createPortal } from "react-dom";
@@ -48,10 +48,12 @@ export function RecorderSheet({ open, ...props }: RecorderSheetProps) {
           exit={{ opacity: 0 }}
         >
           <motion.section
+            // Always dark, like a recording studio, whatever the app's appearance.
+            data-theme="dark"
             role="dialog"
             aria-modal="true"
             aria-label="Record audio"
-            className="flex h-full w-full max-w-[520px] flex-col overflow-hidden bg-[#121110] text-[#f5f2ec] md:h-[760px] md:max-h-full md:rounded-[32px] md:shadow-2xl"
+            className="flex h-full w-full max-w-[520px] flex-col overflow-hidden bg-background text-label md:h-[760px] md:max-h-full md:rounded-[32px] md:shadow-2xl"
             initial={{ y: "100%" }}
             animate={{ y: 0 }}
             exit={{ y: "100%" }}
@@ -117,10 +119,10 @@ function RecorderSession({ title, onCancel, onFinish }: Omit<RecorderSheetProps,
   return (
     <>
       <header className="flex items-center justify-between px-4 pt-[max(16px,env(safe-area-inset-top))]">
-        <button type="button" onClick={cancel} className="min-h-11 px-2 text-[17px] text-[#ffc53d]">
+        <button type="button" onClick={cancel} className="min-h-11 px-2 text-body text-accent-text">
           Cancel
         </button>
-        <h2 className="truncate px-2 text-[17px] font-semibold">{title}</h2>
+        <h2 className="truncate px-2 text-body font-semibold">{title}</h2>
         <span className="w-[68px]" aria-hidden="true" />
       </header>
 
@@ -128,12 +130,15 @@ function RecorderSession({ title, onCancel, onFinish }: Omit<RecorderSheetProps,
         <span className="text-[54px] font-light tracking-[0.02em] tabular-nums" aria-live="off">
           {formatDuration(recorder.elapsedMs)}
         </span>
-        <span className="flex items-center gap-1.5 text-[13px] text-[#b5aea2]" aria-live="polite">
+        <span
+          className="flex items-center gap-1.5 text-footnote text-label-secondary"
+          aria-live="polite"
+        >
           {live && (
             <span
               className={cn(
                 "size-2 rounded-full",
-                recording ? "animate-pulse bg-[#ff453a]" : "bg-[#b5aea2]",
+                recording ? "animate-pulse bg-danger" : "bg-label-secondary",
               )}
             />
           )}
@@ -143,28 +148,28 @@ function RecorderSession({ title, onCancel, onFinish }: Omit<RecorderSheetProps,
 
       <LevelMeter levels={recorder.levels} active={recording} className="px-5" />
 
-      <div className="mx-4 mt-5 flex min-h-0 grow flex-col gap-3.5 overflow-y-auto rounded-[22px] bg-[#1f1d1a] p-5">
+      <div className="mx-4 mt-5 flex min-h-0 grow flex-col gap-3.5 overflow-y-auto rounded-5xl bg-elevated p-5">
         {recorder.state === "unavailable" && recorder.problem && (
           <MicrophoneHelpCard problem={recorder.problem} onRetry={recorder.start} />
         )}
-        <span className="text-[12px] font-semibold tracking-[0.04em] text-[#8f887b]">
+        <span className="text-caption font-semibold tracking-[0.04em] text-label-tertiary">
           LIVE TRANSCRIPT
         </span>
         {transcription.segments.map((segment) => (
           <div key={`${segment.startMs}-${segment.text}`} className="flex gap-3">
-            <span className="w-11 shrink-0 pt-1 text-[12px] text-[#8f887b] tabular-nums">
+            <span className="w-11 shrink-0 pt-1 text-caption text-label-tertiary tabular-nums">
               {formatDuration(segment.startMs)}
             </span>
-            <p className="font-serif text-[17px] leading-relaxed text-[#ece6da]">{segment.text}</p>
+            <p className="font-serif text-body leading-relaxed text-ink">{segment.text}</p>
           </div>
         ))}
         {transcription.interim && (
-          <p className="pl-14 font-serif text-[17px] leading-relaxed text-[#8f887b]">
+          <p className="pl-14 font-serif text-body leading-relaxed text-label-tertiary">
             {transcription.interim}…
           </p>
         )}
         {!transcription.supported && (
-          <p className="text-[14px] leading-snug text-[#8f887b]">
+          <p className="text-[14px] leading-snug text-label-tertiary">
             Live transcription isn’t available on this device yet. Your recording is still saved
             with the note.
           </p>
@@ -178,7 +183,7 @@ function RecorderSession({ title, onCancel, onFinish }: Omit<RecorderSheetProps,
           aria-label={recording ? "Pause" : "Resume"}
           disabled={!live}
           onClick={recording ? recorder.pause : recorder.resume}
-          className="flex size-14 items-center justify-center rounded-full bg-[#2c2a26] transition-transform active:scale-95 disabled:opacity-40"
+          className="flex size-14 items-center justify-center rounded-full bg-fill transition-transform active:scale-95 disabled:opacity-40"
         >
           {recording ? <PauseIcon size={22} /> : <PlayIcon size={22} />}
         </button>
@@ -187,9 +192,9 @@ function RecorderSession({ title, onCancel, onFinish }: Omit<RecorderSheetProps,
           aria-label="Stop and add to note"
           disabled={!live}
           onClick={finish}
-          className="flex size-[78px] items-center justify-center rounded-full border-4 border-[#f5f2ec] transition-transform active:scale-95 disabled:opacity-40"
+          className="flex size-[78px] items-center justify-center rounded-full border-4 border-label transition-transform active:scale-95 disabled:opacity-40"
         >
-          <span className="size-[30px] rounded-[8px] bg-[#ff453a]" />
+          <span className="size-[30px] rounded-md bg-danger" />
         </button>
         {/* Balances the pause button so the stop control stays centred. */}
         <span className="size-14" aria-hidden="true" />
@@ -228,15 +233,15 @@ function MicrophoneHelpCard({
   const help = microphoneHelp(problem, devicePlatform());
   const [opened, setOpened] = useState(false);
   return (
-    <div role="alert" className="flex flex-col gap-3 rounded-[16px] bg-[#2c2a26] p-4">
-      <p className="text-[15px] font-semibold text-[#f5f2ec]">{help.title}</p>
-      <p className="text-[14px] leading-snug text-[#b5aea2]">{help.steps}</p>
+    <div role="alert" className="flex flex-col gap-3 rounded-3xl bg-fill p-4">
+      <p className="text-subheadline font-semibold text-label">{help.title}</p>
+      <p className="text-[14px] leading-snug text-label-secondary">{help.steps}</p>
       <div className="flex flex-wrap gap-2">
         {help.canOpenSettings && (
           <button
             type="button"
             onClick={async () => setOpened(await openMicrophoneSettings())}
-            className="rounded-full bg-[#f5f2ec] px-4 py-2 text-[14px] font-semibold text-[#1c1c1e] transition-transform active:scale-[0.97]"
+            className="rounded-full bg-inverse px-4 py-2 text-[14px] font-semibold text-on-inverse transition-transform active:scale-[0.97]"
           >
             {opened ? "Settings opened" : "Open Settings"}
           </button>
@@ -244,7 +249,7 @@ function MicrophoneHelpCard({
         <button
           type="button"
           onClick={onRetry}
-          className="rounded-full bg-[#3a3732] px-4 py-2 text-[14px] font-semibold text-[#f5f2ec] transition-transform active:scale-[0.97]"
+          className="rounded-full bg-separator px-4 py-2 text-[14px] font-semibold text-label transition-transform active:scale-[0.97]"
         >
           Try again
         </button>

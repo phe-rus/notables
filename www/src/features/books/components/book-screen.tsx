@@ -1,13 +1,13 @@
-import { ChevronLeftIcon, IconButton, TrashIcon } from "@notables/ui";
 import { Link, useNavigate } from "@tanstack/react-router";
+import { ChevronLeftIcon, IconButton, TrashIcon } from "@ultrapeach/ui";
 import { type ReactNode, useEffect, useMemo } from "react";
 import { t } from "../../../i18n/i18n";
 import { type LibraryEntry, useLibrary } from "../../library/store/library-store";
 import { moveBooksToBin } from "../../trash/lib/recycle-bin";
 import { syncBookFormat } from "../actions/sync-book-format";
 import { type BookEntry, getBookStore, useBook } from "../store/book-store";
-import { BookContents } from "./book-contents";
 import { BookCover } from "./book-cover";
+import { BookContents } from "./contents/book-contents";
 
 export function BookScreen({ bookId, actions }: { bookId: string; actions?: ReactNode }) {
   const book = useBook(bookId);
@@ -48,7 +48,7 @@ function BookEditor({ book, actions }: { book: BookEntry; actions?: ReactNode })
       <header className="glass-bar sticky top-0 z-20 flex box-content h-14 shrink-0 items-center justify-between gap-2 px-3 pt-[env(safe-area-inset-top)] md:px-5">
         <Link
           to="/books"
-          className="flex min-h-11 items-center gap-0.5 px-1 text-[17px] text-accent-text no-underline md:invisible"
+          className="flex min-h-11 items-center gap-0.5 px-1 text-body text-accent-text no-underline md:invisible"
         >
           <ChevronLeftIcon size={22} strokeWidth={2.2} />
           <span className="max-sm:sr-only">{t("nav.books")}</span>
@@ -70,21 +70,21 @@ function BookEditor({ book, actions }: { book: BookEntry; actions?: ReactNode })
               placeholder={t("books.untitled")}
               value={book.title}
               onChange={(e) => store.update(book.id, { title: e.target.value })}
-              className="bg-transparent font-serif text-[34px] leading-tight font-semibold tracking-tight outline-none placeholder:text-label-tertiary"
+              className="bg-transparent font-serif text-large-title leading-tight font-semibold tracking-tight outline-none placeholder:text-label-tertiary"
             />
             <input
               aria-label={t("books.subtitle")}
               placeholder={t("books.subtitle")}
               value={book.subtitle}
               onChange={(e) => store.update(book.id, { subtitle: e.target.value })}
-              className="bg-transparent text-[17px] text-label-secondary outline-none placeholder:text-label-tertiary"
+              className="bg-transparent text-body text-label-secondary outline-none placeholder:text-label-tertiary"
             />
             <input
               aria-label={t("books.author")}
               placeholder={t("books.author")}
               value={book.author}
               onChange={(e) => store.update(book.id, { author: e.target.value })}
-              className="bg-transparent text-[15px] font-medium outline-none placeholder:text-label-tertiary"
+              className="bg-transparent text-subheadline font-medium outline-none placeholder:text-label-tertiary"
             />
           </div>
         </section>

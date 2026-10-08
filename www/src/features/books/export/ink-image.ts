@@ -1,4 +1,4 @@
-import { INK_WIDTH, type InkStroke, strokePath } from "@notables/editor";
+import { INK_WIDTH, type InkStroke, strokePath } from "@notables/pluraliti";
 
 const inkHex: Record<string, string> = {
   ink: "#1c1c1e",

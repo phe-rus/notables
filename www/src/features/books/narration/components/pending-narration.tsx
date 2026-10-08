@@ -1,4 +1,4 @@
-import { useEditorCommands } from "@notables/editor";
+import { useEditorCommands } from "@notables/pluraliti";
 import { useEffect, useRef } from "react";
 import { takeNarration } from "../lib/pending-narrations";
 

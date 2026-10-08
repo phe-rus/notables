@@ -1,4 +1,4 @@
-import type { ComposedContent } from "@notables/editor";
+import type { ComposedContent } from "@notables/pluraliti";
 
 /**
  * Narrations waiting to be written into their new chapter. The chapter's

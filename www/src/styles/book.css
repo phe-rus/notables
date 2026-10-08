@@ -1,188 +1,191 @@
 /* The book reader: desk, paper, endpapers and book typography. */
 
-.book-desk {
-  background:
-    radial-gradient(120% 80% at 50% 40%, transparent 55%, rgb(60 40 10 / 0.08)),
-    var(--color-sidebar);
-}
-
-.book-paper {
-  background-color: #fffdf8;
-  color: #24221f;
-}
-
-/* Gutter shading: pages curve into the spine. */
-.book-paper.is-left {
-  border-radius: 14px 3px 3px 14px;
-  box-shadow: inset -26px 0 30px -26px rgb(60 40 10 / 0.35);
-}
-
-.book-paper.is-right {
-  border-radius: 3px 14px 14px 3px;
-  box-shadow: inset 26px 0 30px -26px rgb(60 40 10 / 0.35);
-}
-
-.book-endpaper {
-  background-color: #e9dfc7;
-  background-image:
-    radial-gradient(circle at 25% 30%, rgb(255 255 255 / 0.35) 0 2px, transparent 3px),
-    radial-gradient(circle at 75% 70%, rgb(138 90 0 / 0.12) 0 2px, transparent 3px);
-  background-size: 22px 22px;
-}
-
-@media (prefers-color-scheme: dark) {
-  .book-paper {
-    background-color: #f4efe4;
+/* In the components layer: above the base reset, below utilities, so a class can still adjust it. */
+@layer components {
+  .book-desk {
+    background:
+      radial-gradient(120% 80% at 50% 40%, transparent 55%, rgb(60 40 10 / 0.08)),
+      var(--color-sidebar);
   }
-}
 
-/* Typography inside the page flow. */
+  .book-paper {
+    background-color: #fffdf8;
+    color: #24221f;
+  }
 
-.book-flow {
-  font-family: var(--font-serif);
-  font-size: 17px;
-  line-height: 1.6;
-  color: #24221f;
-  hyphens: auto;
-  text-align: justify;
-}
+  /* Gutter shading: pages curve into the spine. */
+  .book-paper.is-left {
+    border-radius: 14px 3px 3px 14px;
+    box-shadow: inset -26px 0 30px -26px rgb(60 40 10 / 0.35);
+  }
 
-.book-flow .nt-content {
-  font-size: inherit;
-  line-height: inherit;
-  color: inherit;
-}
+  .book-paper.is-right {
+    border-radius: 3px 14px 14px 3px;
+    box-shadow: inset 26px 0 30px -26px rgb(60 40 10 / 0.35);
+  }
 
-.book-flow .nt-content > * + * {
-  margin-top: 0.7em;
-}
+  .book-endpaper {
+    background-color: #e9dfc7;
+    background-image:
+      radial-gradient(circle at 25% 30%, rgb(255 255 255 / 0.35) 0 2px, transparent 3px),
+      radial-gradient(circle at 75% 70%, rgb(138 90 0 / 0.12) 0 2px, transparent 3px);
+    background-size: 22px 22px;
+  }
 
-.book-flow img,
-.book-flow .nt-audio,
-.book-flow pre,
-.book-flow blockquote {
-  break-inside: avoid;
-  -webkit-column-break-inside: avoid;
-}
+  @media (prefers-color-scheme: dark) {
+    .book-paper {
+      background-color: #f4efe4;
+    }
+  }
 
-/* Italic overhangs the last letter; justified lines would clip it at the page edge. */
-.book-flow blockquote {
-  text-align: left;
-  padding-right: 0.25em;
-}
+  /* Typography inside the page flow. */
 
-.book-flow .nt-image {
-  max-height: 260px;
-}
+  .book-flow {
+    font-family: var(--font-serif);
+    font-size: 17px;
+    line-height: 1.6;
+    color: #24221f;
+    hyphens: auto;
+    text-align: justify;
+  }
 
-.book-flow h1,
-.book-flow h2,
-.book-flow h3 {
-  text-align: left;
-  break-after: avoid;
-  -webkit-column-break-after: avoid;
-}
+  .book-flow .nt-content {
+    font-size: inherit;
+    line-height: inherit;
+    color: inherit;
+  }
 
-.book-title-page {
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  height: 100%;
-  text-align: center;
-  break-after: column;
-  -webkit-column-break-after: always;
-}
+  .book-flow .nt-content > * + * {
+    margin-top: 0.7em;
+  }
 
-.book-title-page h1 {
-  margin: 0;
-  font-size: 34px;
-  line-height: 1.1;
-  font-weight: 600;
-  text-align: center;
-}
+  .book-flow img,
+  .book-flow .nt-audio,
+  .book-flow pre,
+  .book-flow blockquote {
+    break-inside: avoid;
+    -webkit-column-break-inside: avoid;
+  }
 
-.book-subtitle {
-  margin: 12px 0 0;
-  font-style: italic;
-  color: #6b6458;
-}
+  /* Italic overhangs the last letter; justified lines would clip it at the page edge. */
+  .book-flow blockquote {
+    text-align: left;
+    padding-right: 0.25em;
+  }
 
-.book-author {
-  margin: 40px 0 0;
-  font-family: var(--font-sans);
-  font-size: 12px;
-  letter-spacing: 0.14em;
-  text-transform: uppercase;
-  color: #6b6458;
-}
+  .book-flow .nt-image {
+    max-height: 260px;
+  }
 
-/* A part has a page of its own before its first chapter, as in print. */
-.book-part {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  height: 100%;
-  break-before: column;
-  -webkit-column-break-before: always;
-}
+  .book-flow h1,
+  .book-flow h2,
+  .book-flow h3 {
+    text-align: left;
+    break-after: avoid;
+    -webkit-column-break-after: avoid;
+  }
 
-.book-part h2 {
-  margin: 0;
-  font-size: 30px;
-  line-height: 1.15;
-  font-weight: 600;
-  text-align: center;
-}
+  .book-title-page {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    height: 100%;
+    text-align: center;
+    break-after: column;
+    -webkit-column-break-after: always;
+  }
 
-.book-chapter {
-  break-before: column;
-  -webkit-column-break-before: always;
-  padding-top: 18%;
-}
+  .book-title-page h1 {
+    margin: 0;
+    font-size: 34px;
+    line-height: 1.1;
+    font-weight: 600;
+    text-align: center;
+  }
 
-.book-chapter-number {
-  margin: 0;
-  font-family: var(--font-sans);
-  font-size: 11px;
-  letter-spacing: 0.16em;
-  text-transform: uppercase;
-  color: #8a5a00;
-  text-align: left;
-}
+  .book-subtitle {
+    margin: 12px 0 0;
+    font-style: italic;
+    color: #6b6458;
+  }
 
-.book-chapter-title {
-  margin: 8px 0 28px;
-  font-size: 28px;
-  line-height: 1.15;
-  font-weight: 600;
-}
+  .book-author {
+    margin: 40px 0 0;
+    font-family: var(--font-sans);
+    font-size: 12px;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: #6b6458;
+  }
 
-.book-missing {
-  font-style: italic;
-  color: #8b8478;
-}
+  /* A part has a page of its own before its first chapter, as in print. */
+  .book-part {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 100%;
+    break-before: column;
+    -webkit-column-break-before: always;
+  }
 
-.book-scrubber {
-  accent-color: var(--color-accent-text);
-}
+  .book-part h2 {
+    margin: 0;
+    font-size: 30px;
+    line-height: 1.15;
+    font-weight: 600;
+    text-align: center;
+  }
 
-/* Highlights, drawn with the CSS Custom Highlight API. */
-::highlight(nt-highlight-yellow) {
-  background-color: rgb(247 209 84 / 0.45);
-}
-::highlight(nt-highlight-green) {
-  background-color: rgb(143 209 138 / 0.45);
-}
-::highlight(nt-highlight-blue) {
-  background-color: rgb(140 194 242 / 0.45);
-}
-::highlight(nt-highlight-pink) {
-  background-color: rgb(242 155 191 / 0.45);
-}
+  .book-chapter {
+    break-before: column;
+    -webkit-column-break-before: always;
+    padding-top: 18%;
+  }
 
-/* The sentence being read aloud, in books and notes. */
-::highlight(nt-reading) {
-  background-color: color-mix(in srgb, var(--color-accent) 26%, transparent);
-  text-decoration: underline 2px color-mix(in srgb, var(--color-accent) 70%, transparent);
-  text-underline-offset: 4px;
+  .book-chapter-number {
+    margin: 0;
+    font-family: var(--font-sans);
+    font-size: 11px;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    color: #8a5a00;
+    text-align: left;
+  }
+
+  .book-chapter-title {
+    margin: 8px 0 28px;
+    font-size: 28px;
+    line-height: 1.15;
+    font-weight: 600;
+  }
+
+  .book-missing {
+    font-style: italic;
+    color: #8b8478;
+  }
+
+  .book-scrubber {
+    accent-color: var(--color-accent-text);
+  }
+
+  /* Highlights, drawn with the CSS Custom Highlight API. */
+  ::highlight(nt-highlight-yellow) {
+    background-color: rgb(247 209 84 / 0.45);
+  }
+  ::highlight(nt-highlight-green) {
+    background-color: rgb(143 209 138 / 0.45);
+  }
+  ::highlight(nt-highlight-blue) {
+    background-color: rgb(140 194 242 / 0.45);
+  }
+  ::highlight(nt-highlight-pink) {
+    background-color: rgb(242 155 191 / 0.45);
+  }
+
+  /* The sentence being read aloud, in books and notes. */
+  ::highlight(nt-reading) {
+    background-color: color-mix(in srgb, var(--color-accent) 26%, transparent);
+    text-decoration: underline 2px color-mix(in srgb, var(--color-accent) 70%, transparent);
+    text-underline-offset: 4px;
+  }
 }

@@ -18,14 +18,14 @@ export function RecentClientPicker({
   if (clients.length === 0) return null;
   return (
     <div className="flex flex-col gap-1.5">
-      <span className="text-[12px] font-medium text-label-secondary">Recent</span>
+      <span className="text-caption font-medium text-label-secondary">Recent</span>
       <div className="no-scrollbar scroll-fade-x -mx-3 flex gap-1.5 overflow-x-auto px-3">
         {clients.map((client) => (
           <button
             key={client.name}
             type="button"
             onClick={() => onPick({ ...client })}
-            className="shrink-0 rounded-full bg-fill/70 px-3 py-1.5 text-[13px] font-medium text-label transition-colors hover:bg-fill"
+            className="shrink-0 rounded-full bg-fill/70 px-3 py-1.5 text-footnote font-medium text-label transition-colors hover:bg-fill"
           >
             {client.name}
           </button>

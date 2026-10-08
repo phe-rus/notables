@@ -1,4 +1,4 @@
-import { type AccentId, defaultAccent, isAccentId } from "@notables/tokens";
+import { type AccentId, defaultAccent, isAccentId } from "@ultrapeach/tokens";
 import { t } from "../../../i18n/i18n";
 import { isMediaKind, type MediaKind } from "../../books/model/media-kind";
 import { type NoteFont, noteFonts } from "../../library/model/note-fonts";

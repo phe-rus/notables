@@ -11,12 +11,12 @@ work in every WebView, and collaborate in real time.
 
 ## Decision
 
-Build `shared/editor` on **Lexical's core** rather than a pre-styled kit:
+Build `packages/pluraliti` on **Lexical's core** rather than a pre-styled kit:
 
 - Our own theme, nodes and decorators (audio, image, canvas embeds).
 - Our own floating selection toolbar, block toolbar and shortcuts.
 - Collaboration and persistence through **`@lexical/yjs`**, bound to the
-  note's Yjs document (`shared/core` layout key `root`, Lexical's default).
+  note's Yjs document (`packages/notable-core` layout key `root`, Lexical's default).
 
 ## Consequences
 

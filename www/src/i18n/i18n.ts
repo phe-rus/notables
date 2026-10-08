@@ -41,6 +41,7 @@ function readChoice(): LanguageChoice {
 function systemLanguage(): LanguageId {
   if (typeof navigator === "undefined") return "en";
   for (const tag of navigator.languages ?? [navigator.language]) {
+    if (typeof tag !== "string") continue;
     const base = tag.toLowerCase().split("-")[0];
     if (isLanguageId(base)) return base;
   }

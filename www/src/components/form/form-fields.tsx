@@ -1,9 +1,9 @@
-import { cn, Select } from "@notables/ui";
+import { cn, Picker } from "@ultrapeach/ui";
 import type { ComponentProps, InputHTMLAttributes, ReactNode, TextareaHTMLAttributes } from "react";
 import { t } from "../../i18n/i18n";
 
 export const fieldClass =
-  "w-full min-w-0 rounded-[10px] control-field px-3 py-2 text-[14px] text-label placeholder:text-label-tertiary";
+  "w-full min-w-0 rounded-lg control-field px-3 py-2 text-[14px] text-label placeholder:text-label-tertiary";
 
 export function Field({
   label,
@@ -17,7 +17,7 @@ export function Field({
   return (
     // biome-ignore lint/a11y/noLabelWithoutControl: the control is passed in as children.
     <label className={cn("flex min-w-0 flex-col gap-1.5", className)}>
-      <span className="text-[12px] font-medium text-label-secondary">{label}</span>
+      <span className="text-caption font-medium text-label-secondary">{label}</span>
       {children}
     </label>
   );
@@ -44,7 +44,7 @@ export function FormSection({
   return (
     <section className="flex flex-col gap-3">
       <div className="flex items-center justify-between">
-        <h2 className="text-[13px] font-semibold text-label">{title}</h2>
+        <h2 className="text-footnote font-semibold text-label">{title}</h2>
         {aside}
       </div>
       {children}
@@ -53,9 +53,9 @@ export function FormSection({
 }
 
 /** The shared pop-up button, with its search field and empty state in the app's language. */
-export function SelectInput<T extends string>(props: ComponentProps<typeof Select<T>>) {
+export function PickerInput<T extends string>(props: ComponentProps<typeof Picker<T>>) {
   return (
-    <Select<T>
+    <Picker<T>
       searchPlaceholder={t("common.search")}
       emptyLabel={t("common.noMatches")}
       {...props}

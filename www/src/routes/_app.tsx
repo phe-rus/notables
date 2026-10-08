@@ -1,5 +1,4 @@
-import { TranscriptionProvider } from "@notables/editor";
-import { cn, spring, useMediaQuery } from "@notables/ui";
+import { TranscriptionProvider } from "@notables/pluraliti";
 import {
   createFileRoute,
   Outlet,
@@ -7,6 +6,7 @@ import {
   useMatch,
   useNavigate,
 } from "@tanstack/react-router";
+import { cn, spring, useMediaQuery } from "@ultrapeach/ui";
 import { AnimatePresence, motion } from "motion/react";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { setDrawerOpen, useDrawerOpen } from "../components/layout/drawer-store";
@@ -34,7 +34,10 @@ import { WidgetPublisher } from "../features/widgets/components/widget-publisher
 import { isShortcut } from "../lib/keyboard/shortcuts";
 import { markAppReady } from "../platform/app-ready";
 import { createNativeTranscription } from "../platform/native-transcription";
+import { preventPageZoom } from "../platform/page-zoom";
 
+/** iOS sheet motion: quick to start, long gentle settle. */
+const drawerEase = [0.32, 0.72, 0, 1] as const;
 export const Route = createFileRoute("/_app")({
   // Private notes live on the device, so the app shell renders client-side.
   ssr: false,
@@ -58,8 +61,9 @@ function AppShell() {
   const inTrash = pathname.startsWith("/trash");
   const inCalendar = pathname.startsWith("/calendar");
   const inConnections = pathname.startsWith("/connections");
+  const inWallet = pathname === "/wallet" || pathname === "/wallet/";
   // Settings, Calendar, Connections and Recently Deleted fill the content area without a list beside them.
-  const fullPage = inSettings || inTrash || inCalendar || inConnections;
+  const fullPage = inSettings || inTrash || inCalendar || inConnections || inWallet;
   const noteId = note?.params.noteId;
   const bookId = book?.params.bookId;
   const invoiceId = invoice?.params.invoiceId;
@@ -75,19 +79,21 @@ function AppShell() {
   const [liveWidth, setLiveWidth] = useState<number | null>(null);
   const width = liveWidth ?? storedWidth;
 
-  const location: SidebarLocation = inSettings
-    ? "settings"
-    : inTrash
-      ? "trash"
-      : inCalendar
-        ? "calendar"
-        : inConnections
-          ? "connections"
-          : inInvoices
-            ? "invoices"
-            : inBooks
-              ? "books"
-              : (groupOf(view.id) ?? (view.id === "published" ? "published" : "all"));
+  const location: SidebarLocation = inWallet
+    ? "wallet"
+    : inSettings
+      ? "settings"
+      : inTrash
+        ? "trash"
+        : inCalendar
+          ? "calendar"
+          : inConnections
+            ? "connections"
+            : inInvoices
+              ? "invoices"
+              : inBooks
+                ? "books"
+                : (groupOf(view.id) ?? (view.id === "published" ? "published" : "all"));
 
   const createNote = useCallback(() => {
     const entry = getLibrary().create(view.kind);
@@ -128,6 +134,8 @@ function AppShell() {
 
   // Close the drawer whenever the place changes.
   useEffect(() => setDrawerOpen(false), [pathname, viewId]);
+  // Like a native app, the app's own screens don't zoom as a page.
+  useEffect(preventPageZoom, []);
 
   const commitWidth = (next: number) => {
     setLiveWidth(null);
@@ -170,42 +178,45 @@ function AppShell() {
       </AnimatePresence>
 
       {/* Phones and tablets: a drawer over dimmed content, dismissed by tap or swipe. A dim,
-          not a blur: re-blurring the whole screen every frame is what made it stutter on phones. */}
-      <AnimatePresence>
-        {!isDesktop && drawerOpen && (
-          <div className="fixed inset-0 z-40 flex">
-            <motion.button
-              type="button"
-              aria-label="Close library"
-              className="absolute inset-0 bg-black/35"
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              exit={{ opacity: 0 }}
-              transition={{ duration: 0.25 }}
-              onClick={() => setDrawerOpen(false)}
-            />
-            <motion.div
-              className="relative flex w-[min(86vw,340px)] bg-sidebar shadow-[0_20px_60px_rgba(0,0,0,0.25)]"
-              initial={{ x: "-100%" }}
-              animate={{ x: 0 }}
-              exit={{ x: "-100%" }}
-              transition={{ type: "spring", stiffness: 380, damping: 38, mass: 0.9 }}
-              drag="x"
-              dragConstraints={{ left: 0, right: 0 }}
-              dragElastic={{ left: 0.5, right: 0.04 }}
-              onDragEnd={(_, info) => {
-                if (info.offset.x < -80 || info.velocity.x < -500) setDrawerOpen(false);
-              }}
-            >
-              <Sidebar {...sidebarProps} className="w-full pt-[env(safe-area-inset-top)]" />
-            </motion.div>
-          </div>
-        )}
-      </AnimatePresence>
+          not a blur: re-blurring the whole screen every frame is what made it stutter on phones.
+          It stays mounted off screen, so opening is only a slide; building the sidebar at the
+          tap is what made it seem to hang. */}
+      {!isDesktop && (
+        <div
+          className={cn("fixed inset-0 z-40 flex", !drawerOpen && "pointer-events-none")}
+          inert={!drawerOpen}
+          aria-hidden={!drawerOpen}
+        >
+          <motion.button
+            type="button"
+            aria-label="Close library"
+            className="absolute inset-0 bg-black/35 will-change-[opacity]"
+            initial={false}
+            animate={{ opacity: drawerOpen ? 1 : 0 }}
+            transition={{ duration: 0.3, ease: drawerEase }}
+            onClick={() => setDrawerOpen(false)}
+          />
+          <motion.div
+            className="relative flex w-[min(86vw,340px)] bg-sidebar shadow-[0_20px_60px_rgba(0,0,0,0.25)] will-change-transform"
+            initial={false}
+            animate={{ x: drawerOpen ? 0 : "-105%" }}
+            // A timed curve runs on the compositor, so a busy main thread can't stall the slide.
+            transition={{ duration: 0.34, ease: drawerEase }}
+            drag="x"
+            dragConstraints={{ left: 0, right: 0 }}
+            dragElastic={{ left: 0.5, right: 0.04 }}
+            onDragEnd={(_, info) => {
+              if (info.offset.x < -80 || info.velocity.x < -500) setDrawerOpen(false);
+            }}
+          >
+            <Sidebar {...sidebarProps} className="w-full pt-[env(safe-area-inset-top)]" />
+          </motion.div>
+        </div>
+      )}
 
       <div
         className={cn(
-          "flex min-w-0 grow overflow-hidden bg-background lg:my-2 lg:mr-2 lg:rounded-[16px] lg:border lg:border-separator/70 lg:shadow-[0_1px_2px_rgba(0,0,0,0.04),0_8px_28px_rgba(0,0,0,0.05)]",
+          "flex min-w-0 grow overflow-hidden bg-background lg:my-2 lg:mr-2 lg:rounded-3xl lg:border lg:border-separator/70 lg:shadow-[0_1px_2px_rgba(0,0,0,0.04),0_8px_28px_rgba(0,0,0,0.05)]",
           // With the sidebar tucked away, the card sits evenly inside the window.
           collapsed && "lg:ml-2",
         )}
@@ -275,18 +286,19 @@ function AppShell() {
 
       {/* On phones an open note's toolbar takes the bottom edge. */}
       {(!isPhone || showTabBar) && (
-        <MiniPlayer className="fixed inset-x-3 bottom-[calc(max(14px,env(safe-area-inset-bottom))+70px)] z-30 md:right-6 md:bottom-6 md:left-auto md:w-[340px]" />
+        <MiniPlayer className="fixed inset-x-3 bottom-[calc(max(14px,env(safe-area-inset-bottom))+58px)] z-30 md:right-6 md:bottom-6 md:left-auto md:w-[340px]" />
       )}
 
       {isPhone && showTabBar && (
         <TabBar
+          className={drawerOpen ? "invisible" : undefined}
           active={
-            inCalendar
-              ? null
-              : inInvoices
-                ? "invoices"
-                : inBooks || location === "books"
-                  ? "books"
+            inWallet
+              ? "wallet"
+              : inCalendar || inBooks || location === "books"
+                ? null
+                : inInvoices
+                  ? "invoices"
                   : inSettings
                     ? "settings"
                     : "notes"

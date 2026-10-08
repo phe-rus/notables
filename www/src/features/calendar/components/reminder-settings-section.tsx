@@ -1,4 +1,4 @@
-import { Switch } from "@notables/ui";
+import { LabeledContent, Section, Toggle } from "@ultrapeach/ui";
 import { useEffect, useState } from "react";
 import { t } from "../../../i18n/i18n";
 import {
@@ -6,7 +6,6 @@ import {
   permissionState,
   requestPermission,
 } from "../../../platform/permissions";
-import { SettingsGroup, SettingsRow } from "../../settings/components/settings-controls";
 import { alertFeedback } from "../lib/alert-feedback";
 import { setAlertSettings, useAlertSettings } from "../lib/alert-settings";
 
@@ -28,8 +27,8 @@ export function ReminderSettingsSection() {
   }, []);
 
   return (
-    <SettingsGroup title={t("reminders.title")} footer={t("reminders.footer")}>
-      <SettingsRow
+    <Section title={t("reminders.title")} footer={t("reminders.footer")}>
+      <LabeledContent
         label={t("reminders.notifications")}
         description={permission ? permissionWords(permission) : " "}
       >
@@ -50,21 +49,21 @@ export function ReminderSettingsSection() {
             {t("reminders.tryIt")}
           </button>
         )}
-      </SettingsRow>
-      <SettingsRow label={t("reminders.sound")} description={t("reminders.soundHint")}>
-        <Switch
+      </LabeledContent>
+      <LabeledContent label={t("reminders.sound")} description={t("reminders.soundHint")}>
+        <Toggle
           label={t("reminders.sound")}
           checked={sound}
           onChange={(on) => setAlertSettings({ sound: on })}
         />
-      </SettingsRow>
-      <SettingsRow label={t("reminders.vibrate")} description={t("reminders.vibrateHint")}>
-        <Switch
+      </LabeledContent>
+      <LabeledContent label={t("reminders.vibrate")} description={t("reminders.vibrateHint")}>
+        <Toggle
           label={t("reminders.vibrate")}
           checked={haptics}
           onChange={(on) => setAlertSettings({ haptics: on })}
         />
-      </SettingsRow>
-    </SettingsGroup>
+      </LabeledContent>
+    </Section>
   );
 }

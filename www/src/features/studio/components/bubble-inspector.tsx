@@ -1,4 +1,4 @@
-import { Button, cn } from "@notables/ui";
+import { Button, cn } from "@ultrapeach/ui";
 import { useEffect, useRef } from "react";
 import { fontFamilies, fontLabels } from "../lib/scene-geometry";
 import type { BubbleFont, BubbleItem, BubbleStyle } from "../model/page-scene";
@@ -36,7 +36,7 @@ export function BubbleInspector({
   };
 
   return (
-    <div className="glass-menu flex w-full max-w-[640px] flex-col gap-2 rounded-[22px] p-2.5">
+    <div className="glass-menu flex w-full max-w-[640px] flex-col gap-2 rounded-5xl p-2.5">
       <textarea
         ref={field}
         value={bubble.text}
@@ -44,7 +44,7 @@ export function BubbleInspector({
         placeholder="What do they say?"
         aria-label="Bubble text"
         onChange={(event) => onChange({ text: event.target.value })}
-        className="w-full resize-none rounded-[14px] bg-fill/50 px-3 py-2 text-[16px] text-label outline-none placeholder:text-label-tertiary"
+        className="w-full resize-none rounded-2xl bg-fill/50 px-3 py-2 text-callout text-label outline-none placeholder:text-label-tertiary"
         style={{ fontFamily: fontFamilies[bubble.font] }}
       />
       <div className="no-scrollbar scroll-fade-x -mx-2 flex items-center gap-1 overflow-x-auto px-2">
@@ -62,7 +62,7 @@ export function BubbleInspector({
             aria-pressed={bubble.font === font}
             onClick={() => onChange({ font })}
             className={cn(
-              "shrink-0 rounded-full px-3 py-1 text-[15px] transition-colors",
+              "shrink-0 rounded-full px-3 py-1 text-subheadline transition-colors",
               bubble.font === font ? "bg-fill text-label" : "text-label-secondary hover:bg-fill/60",
             )}
             style={{ fontFamily: fontFamilies[font] }}

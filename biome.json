@@ -10,7 +10,8 @@
       "!**/tokens/theme.css",
       "!.agentic",
       "!.agents",
-      "!.claude"
+      "!.claude",
+      "!**/src-tauri/vendor"
     ]
   },
   "formatter": {

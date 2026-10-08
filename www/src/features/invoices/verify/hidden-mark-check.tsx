@@ -1,4 +1,4 @@
-import { CheckIcon, cn, ScanCodeIcon, WarningIcon } from "@notables/ui";
+import { CheckIcon, cn, ScanCodeIcon, WarningIcon } from "@ultrapeach/ui";
 import { useCallback, useEffect, useState } from "react";
 import { readHiddenMark } from "../hidden-mark/reveal-hidden-mark";
 import { type FrameReader, imageCanvas, QrScanner } from "./qr-scanner";
@@ -89,7 +89,7 @@ export function HiddenMarkCheck({ expected, source }: { expected: string; source
     <div className="flex w-full flex-col gap-3">
       <div
         className={cn(
-          "flex gap-3 rounded-[18px] p-4 text-left",
+          "flex gap-3 rounded-4xl p-4 text-left",
           tone === "good" ? "bg-success/10" : tone === "bad" ? "bg-danger/10" : "bg-fill/60",
         )}
       >
@@ -108,8 +108,8 @@ export function HiddenMarkCheck({ expected, source }: { expected: string; source
           )}
         </span>
         <span className="flex flex-col gap-0.5">
-          <span className="text-[15px] font-semibold">{title}</span>
-          <span className="text-[13px] leading-snug text-label-secondary">{body}</span>
+          <span className="text-subheadline font-semibold">{title}</span>
+          <span className="text-footnote leading-snug text-label-secondary">{body}</span>
         </span>
       </div>
       {source.kind === "camera" && state === "checking" && (

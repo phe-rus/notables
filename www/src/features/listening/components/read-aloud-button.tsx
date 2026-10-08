@@ -1,4 +1,4 @@
-import { cn, HeadphonesIcon, IconButton, toast } from "@notables/ui";
+import { cn, HeadphonesIcon, IconButton, toast } from "@ultrapeach/ui";
 import { AnimatePresence } from "motion/react";
 import { type RefObject, useEffect, useRef } from "react";
 import { createPortal } from "react-dom";

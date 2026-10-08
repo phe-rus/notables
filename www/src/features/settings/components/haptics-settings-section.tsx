@@ -1,9 +1,8 @@
-import { Switch } from "@notables/ui";
+import { LabeledContent, Section, Toggle } from "@ultrapeach/ui";
 import { useEffect, useState } from "react";
 import { t } from "../../../i18n/i18n";
 import { hapticsAvailable, playHaptic } from "../../../platform/haptics";
 import { updatePreferences, usePreferences } from "../store/preferences-store";
-import { SettingsGroup, SettingsRow } from "./settings-controls";
 
 /** Touch feedback across the app, on devices that can give it. */
 export function HapticsSettingsSection() {
@@ -14,8 +13,8 @@ export function HapticsSettingsSection() {
   if (!available) return null;
 
   return (
-    <SettingsGroup title={t("haptics.title")}>
-      <SettingsRow label={t("haptics.toggle")} description={t("haptics.hint")}>
+    <Section title={t("haptics.title")}>
+      <LabeledContent label={t("haptics.toggle")} description={t("haptics.hint")}>
         <div className="flex items-center gap-4">
           <button
             type="button"
@@ -24,7 +23,7 @@ export function HapticsSettingsSection() {
           >
             {t("haptics.tryIt")}
           </button>
-          <Switch
+          <Toggle
             label={t("haptics.toggle")}
             checked={haptics}
             onChange={(on) => {
@@ -34,7 +33,7 @@ export function HapticsSettingsSection() {
             }}
           />
         </div>
-      </SettingsRow>
-    </SettingsGroup>
+      </LabeledContent>
+    </Section>
   );
 }

@@ -1,5 +1,12 @@
-import { ChaptersIcon, CloseIcon, cn, HeadphonesIcon, HighlighterIcon, toast } from "@notables/ui";
 import { Link } from "@tanstack/react-router";
+import {
+  ChaptersIcon,
+  CloseIcon,
+  cn,
+  HeadphonesIcon,
+  HighlighterIcon,
+  toast,
+} from "@ultrapeach/ui";
 import { AnimatePresence, motion } from "motion/react";
 import { useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState } from "react";
 import { NarrationBar } from "../../listening/components/narration-bar";
@@ -171,10 +178,10 @@ export function BookReader({ book }: { book: BookEntry }) {
         >
           <CloseIcon size={20} />
         </Link>
-        <p className="truncate font-serif text-[17px] font-semibold">{book.title || "Untitled"}</p>
+        <p className="truncate font-serif text-body font-semibold">{book.title || "Untitled"}</p>
         <div className="flex shrink-0 items-center justify-end gap-1">
           <p
-            className="hidden w-28 text-right text-[13px] text-label-secondary tabular-nums sm:block"
+            className="hidden w-28 text-right text-footnote text-label-secondary tabular-nums sm:block"
             aria-live="polite"
           >
             {total ? label : ""}

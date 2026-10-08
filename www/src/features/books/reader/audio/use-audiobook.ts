@@ -1,4 +1,4 @@
-import { useMediaSource } from "@notables/editor";
+import { useMediaSource } from "@notables/pluraliti";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { type ChapterRecording, chapterRecordings } from "../../lib/chapter-media";
 import type { BookEntry } from "../../store/book-store";

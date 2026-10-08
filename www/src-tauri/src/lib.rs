@@ -12,10 +12,11 @@ mod storage;
 mod system_settings;
 mod transcription;
 mod voice;
+pub mod wallet;
 mod widgets;
 mod window_frame;
 
-use tauri::Manager;
+use tauri::{Emitter, Manager};
 
 use models::Models;
 use storage::Storage;
@@ -31,6 +32,27 @@ pub fn run() {
         deep_links::focus_main(app);
     }));
     builder
+        .on_window_event(|window, event| {
+            if window.label() == "main"
+                && let Some(wallet) = window.app_handle().try_state::<wallet::session::Wallet>()
+            {
+                match event {
+                    tauri::WindowEvent::Focused(false) | tauri::WindowEvent::Destroyed => {
+                        wallet.background();
+                        let _ = window.emit("wallet-locked", wallet.generation());
+                    }
+                    tauri::WindowEvent::Focused(true) => wallet.foreground(),
+                    #[cfg(mobile)]
+                    tauri::WindowEvent::Suspended => {
+                        wallet.background();
+                        let _ = window.emit("wallet-locked", wallet.generation());
+                    }
+                    #[cfg(mobile)]
+                    tauri::WindowEvent::Resumed => wallet.foreground(),
+                    _ => {}
+                }
+            }
+        })
         .plugin(tauri_plugin_deep_link::init())
         .plugin(tauri_plugin_notification::init())
         .plugin(tauri_plugin_dialog::init())
@@ -41,6 +63,16 @@ pub fn run() {
             storage::protocol::handle,
         )
         .invoke_handler(tauri::generate_handler![
+            wallet::commands::wallet_status,
+            wallet::commands::wallet_initialize,
+            wallet::commands::wallet_unlock,
+            wallet::commands::wallet_migrate_prototype,
+            wallet::commands::wallet_lock,
+            wallet::commands::wallet_list,
+            wallet::commands::wallet_read,
+            wallet::commands::wallet_activity,
+            wallet::commands::wallet_save,
+            wallet::commands::wallet_delete,
             export::export_save_file,
             export::export_print,
             system_settings::open_microphone_settings,
@@ -76,6 +108,8 @@ pub fn run() {
             widgets::widgets_open,
         ])
         .setup(|app| {
+            #[cfg(target_os = "android")]
+            app.handle().plugin(tauri_plugin_nfc::init())?;
             if cfg!(debug_assertions) {
                 app.handle().plugin(
                     tauri_plugin_log::Builder::default()
@@ -108,6 +142,18 @@ pub fn run() {
             window_frame::setup(app)?;
             deep_links::register(app);
             let data_dir = app.path().app_data_dir()?;
+            app.manage(wallet::session::Wallet::new(&data_dir));
+            let wallet_app = app.handle().clone();
+            tauri::async_runtime::spawn(async move {
+                let mut timer = tokio::time::interval(std::time::Duration::from_secs(1));
+                loop {
+                    timer.tick().await;
+                    let wallet = wallet_app.state::<wallet::session::Wallet>();
+                    if wallet.expire_idle() {
+                        let _ = wallet_app.emit_to("main", "wallet-locked", wallet.generation());
+                    }
+                }
+            });
             app.manage(Storage::open(&data_dir)?);
             #[cfg(target_os = "linux")]
             match storage::media_server::MediaServer::start(app.handle().clone()) {

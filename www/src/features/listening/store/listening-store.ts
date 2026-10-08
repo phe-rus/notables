@@ -1,4 +1,5 @@
-import { useEffect, useSyncExternalStore } from "react";
+import { createStore, useSelector } from "@tanstack/react-store";
+import { useEffect } from "react";
 import type { AudiobookPlayback } from "../../books/reader/audio/use-audiobook";
 
 /**
@@ -10,52 +11,30 @@ interface ListeningState {
   playback: AudiobookPlayback | null;
 }
 
-let state: ListeningState = { bookId: null, playback: null };
-const listeners = new Set<() => void>();
-const emit = () => {
-  for (const listener of listeners) listener();
-};
+const listening = createStore<ListeningState>({ bookId: null, playback: null });
 
 export function openAudiobook(bookId: string) {
-  if (state.bookId === bookId) return;
-  state = { bookId, playback: null };
-  emit();
+  if (listening.get().bookId === bookId) return;
+  listening.setState(() => ({ bookId, playback: null }));
 }
 
 export function closeAudiobook() {
-  state = { bookId: null, playback: null };
-  emit();
+  listening.setState(() => ({ bookId: null, playback: null }));
 }
 
 /** Called by the session as playback changes. */
 export function publishPlayback(bookId: string, playback: AudiobookPlayback) {
-  if (state.bookId !== bookId) return;
-  state = { bookId, playback };
-  emit();
+  if (listening.get().bookId !== bookId) return;
+  listening.setState(() => ({ bookId, playback }));
 }
 
-const subscribe = (listener: () => void) => {
-  listeners.add(listener);
-  return () => {
-    listeners.delete(listener);
-  };
-};
-
 export function useListening(): ListeningState {
-  return useSyncExternalStore(
-    subscribe,
-    () => state,
-    () => state,
-  );
+  return useSelector(listening);
 }
 
 /** Only the book playing; doesn't change as playback moves on. */
 export function useListeningBookId(): string | null {
-  return useSyncExternalStore(
-    subscribe,
-    () => state.bookId,
-    () => null,
-  );
+  return useSelector(listening, (state) => state.bookId);
 }
 
 /** Starts (or returns to) a book's audiobook and follows its playback. */

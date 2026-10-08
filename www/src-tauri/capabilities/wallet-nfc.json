@@ -1,0 +1,8 @@
+{
+  "identifier": "wallet-nfc",
+  "description": "Read-only NFC acquisition on Android for the local main window.",
+  "windows": ["main"],
+  "local": true,
+  "platforms": ["android"],
+  "permissions": ["nfc:allow-is-available", "nfc:allow-scan", "nfc:allow-cancel"]
+}

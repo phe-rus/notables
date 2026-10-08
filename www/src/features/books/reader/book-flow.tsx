@@ -1,4 +1,4 @@
-import { DocumentView } from "@notables/editor";
+import { DocumentView } from "@notables/pluraliti";
 import { type CSSProperties, memo } from "react";
 import { stripLeadingTitle } from "../../../lib/documents/strip-leading-title";
 import type { BookEntry } from "../store/book-store";

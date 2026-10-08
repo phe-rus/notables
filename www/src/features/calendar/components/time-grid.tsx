@@ -6,7 +6,7 @@ import {
   type Occurrence,
   occurrencesTouching,
 } from "@notables/core";
-import { CheckIcon, cn } from "@notables/ui";
+import { CheckIcon, cn } from "@ultrapeach/ui";
 import {
   type PointerEvent as ReactPointerEvent,
   useEffect,
@@ -251,12 +251,12 @@ export function TimeGrid({
                 key={day}
                 type="button"
                 onClick={() => onDayTitle(day)}
-                className="flex items-baseline justify-center gap-1.5 py-2 text-[13px] text-label-secondary"
+                className="flex items-baseline justify-center gap-1.5 py-2 text-footnote text-label-secondary"
               >
                 <span>{headerFormat().format(new Date(`${day}T00:00:00Z`))}</span>
                 <span
                   className={cn(
-                    "flex size-7 items-center justify-center rounded-full text-[16px] font-semibold tabular-nums",
+                    "flex size-7 items-center justify-center rounded-full text-callout font-semibold tabular-nums",
                     isToday ? "bg-accent text-on-accent" : "text-label",
                   )}
                 >
@@ -269,7 +269,7 @@ export function TimeGrid({
       </div>
       {lanes.rows > 0 && (
         <div className="flex border-b border-separator/70 py-1 ps-14">
-          <span className="absolute -ms-14 w-12 pe-2 pt-1 text-end text-[11px] text-label-tertiary">
+          <span className="absolute -ms-14 w-12 pe-2 pt-1 text-end text-caption2 text-label-tertiary">
             {t("calendar.allDayShort")}
           </span>
           <div
@@ -288,7 +288,7 @@ export function TimeGrid({
                   color: occurrence.event.color,
                 }}
                 className={cn(
-                  "mx-0.5 flex min-w-0 items-center gap-1 rounded-[6px] px-1.5 text-start text-[12px] font-semibold",
+                  "mx-0.5 flex min-w-0 items-center gap-1 rounded-sm px-1.5 text-start text-caption font-semibold",
                   selectedId === occurrence.event.id && "ring-2 ring-current",
                 )}
               >
@@ -306,7 +306,7 @@ export function TimeGrid({
             {Array.from({ length: 24 }, (_, hour) => (
               <span
                 key={hour}
-                className="absolute w-12 pe-2 text-end text-[11px] text-label-tertiary tabular-nums"
+                className="absolute w-12 pe-2 text-end text-caption2 text-label-tertiary tabular-nums"
                 style={{ top: hour * hourHeight - 7 }}
               >
                 {hour === 0 ? "" : hourLabel(hour)}
@@ -387,7 +387,7 @@ export function TimeGrid({
                         borderInlineStartColor: event.color,
                       }}
                       className={cn(
-                        "group absolute z-10 flex cursor-grab touch-none flex-col overflow-hidden rounded-[7px] border-s-[3px] px-1.5 py-0.5 text-[12px] leading-tight select-none",
+                        "group absolute z-10 flex cursor-grab touch-none flex-col overflow-hidden rounded-sm border-s-[3px] px-1.5 py-0.5 text-caption leading-tight select-none",
                         dragging && "z-20 cursor-grabbing shadow-lg",
                         selectedId === event.id && "ring-2 ring-accent",
                         done && "opacity-55",

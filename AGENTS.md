@@ -15,8 +15,10 @@ audiobooks, invoices and plans. One codebase ships everywhere:
   widgets.
 - `packages/notable-core` (models, invoicing, calendar recurrence), `packages/pluraliti`
   (custom Lexical editor), `packages/sync` (Yjs persistence, peer-to-peer
-  mesh), `packages/ui` (components, Hugeicons), `packages/tokens` (design
-  tokens; `theme.css` is generated, run `bun run generate` there).
+  mesh), and UltraPeach, our design language, in `packages/ultrapeach/`:
+  `ui` (components, Hugeicons) and `tokens` (design tokens; `theme.css`
+  is generated, run `bun run generate` there). Blush pink is the default.
+- The app package in `www/` is named `notes`; the repo root is `notables`.
 - Decisions live in `docs/adr/`; read ADR-0003, 0005 and 0006 before
   touching sync, identity or sharing.
 
@@ -103,7 +105,7 @@ Shipped and tested in the browser (Playwright) unless noted:
   and are filled from files or folders.
 - Connections (`features/connections`): people from shared notes, who is
   online, last seen on this device, invite from there.
-- Shared `Select` pop-up button replaces every native select; the note
+- Shared `Picker` pop-up button replaces every native select; the note
   top bar and segmented controls adapt with container queries.
 - Drawing studio for comic, manga and picture-book pages
   (`features/studio`); drawn pages are images that keep an editable scene.
@@ -141,7 +143,7 @@ Shipped and tested in the browser (Playwright) unless noted:
   (MainActivity), solid top bars (`data-os="android"`), system haptics and
   the Today home-screen widget with Add to Home Screen (`AndroidBridge.kt`,
   `www/src/platform/android-bridge.ts`). Haptics everywhere go through
-  `haptic()` in packages/ui; menus and popovers keep to `screenEdges()`.
+  `haptic()` in packages/ultrapeach/ui; menus and popovers keep to `screenEdges()`.
   Calendar on phones: week strip, back titles, self-scrolling months.
   Open: read aloud has no voice (the WebView has no speechSynthesis
   voices; needs Android TextToSpeech through the bridge); the
@@ -150,7 +152,30 @@ Shipped and tested in the browser (Playwright) unless noted:
   needs an x86_64 build, which `ort` blocks. Debug the live WebView with
   `adb forward tcp:9333 localabstract:webview_devtools_remote_<pid>`.
 
+- UltraPeach design language (`packages/ultrapeach`, rules in its AGENTS.md):
+  Blush default accent (controls use rose `#d16988`), Dynamic Type text
+  styles, radius scale, scoped `data-theme`, platform variants, clear glass
+  on Apple, solid floating bars on Android (glass there looked out of place),
+  pre-paint appearance script. Tab bar: Notes, Wallet, Invoices, Settings;
+  no tab haptics. Sidebar laid out like Claude's (actions and places, then
+  notes views, then Pinned and Recents). "All notables" replaces All Notes.
+- Settings is a list of pages (`features/settings/components/settings-catalog.tsx`,
+  routes `/settings` and `/settings/$page`), split view on wide windows.
+  Privacy & Security shows the Lock (spec 0004), switched off until its
+  native adapters ship.
+- Wallet: Apple Wallet stack, card detail with copy, swipe to front (opens
+  the card instead: bug), passport kind, SIM PUK and ICCID, scanning with a
+  card guide, contrast, MRZ (tested) and ID barcodes (zxing, bundled).
+  Six fake sample cards are on the owner's phone.
+- Opening a note no longer marks it as edited: the editor reports where a
+  change came from (`DocumentChange.origin` in packages/pluraliti), and the
+  note screen stamps `updatedAt` only for real edits.
+
 ## Next
+
+The long plan, stage by stage, is in [docs/STAGES.md](docs/STAGES.md).
+Resume from its first unfinished stage (now Stage 1, UltraPeach).
+
 
 - Android: read aloud through TextToSpeech, the startup notification
   check, export to content:// locations, an x86_64 build for ChromeOS.
@@ -173,6 +198,7 @@ General skills live in your home folder, not here.
 
 ## Context files
 
+- [packages/ultrapeach/AGENTS.md](packages/ultrapeach/AGENTS.md): the UltraPeach design language: tokens, text styles, materials, platform variants and the component catalog. Read before touching any UI.
 - [www/src/features/wallet/AGENTS.md](www/src/features/wallet/AGENTS.md): wallet requirements, rejected prototype, physical Android evidence and resume checkpoint. Read before continuing wallet work.
 
 <!-- BEGIN:turborepo-agent-rules -->

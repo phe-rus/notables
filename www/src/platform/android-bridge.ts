@@ -1,4 +1,4 @@
-import type { HapticKind } from "@notables/ui";
+import type { HapticKind } from "@ultrapeach/ui";
 
 /**
  * What the Android app offers the page directly (AndroidBridge.kt in

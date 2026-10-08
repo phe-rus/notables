@@ -1,7 +1,7 @@
-import { cn, SegmentedControl, Switch, toast } from "@notables/ui";
+import { cn, LabeledContent, Section, SegmentedControl, Toggle, toast } from "@ultrapeach/ui";
 import { useCallback, useEffect, useState } from "react";
-import { SelectInput } from "../../../components/form/form-fields";
-import { SettingsGroup, SettingsRow } from "../../settings/components/settings-controls";
+import { PickerInput } from "../../../components/form/form-fields";
+import { t } from "../../../i18n/i18n";
 import { type ModelOption, recommendedModels, tierLabels } from "../lib/model-choices";
 import { AiError, listModels, streamText } from "../lib/stream-text";
 import { type AiProvider, aiProviders, providerInfo } from "../model/providers";
@@ -114,32 +114,32 @@ export function AiSettingsSection() {
 
   return (
     <div id="ai">
-      <SettingsGroup
-        title="AI writing help"
+      <Section
+        title={t("settings.ai")}
         footer={
           settings.enabled
             ? `Text you ask about goes straight from this device to ${info.label}, using your key. Notables never sees it, and nothing is sent until you ask.`
             : "Off by default. Bring your own key from Claude, Gemini or OpenRouter to summarize, improve and continue your writing."
         }
       >
-        <SettingsRow label="Use AI">
-          <Switch
+        <LabeledContent label="Use AI">
+          <Toggle
             label="Use AI"
             checked={settings.enabled}
             onChange={(enabled) => updateAiSettings((current) => ({ ...current, enabled }))}
           />
-        </SettingsRow>
+        </LabeledContent>
         {settings.enabled && (
           <>
-            <SettingsRow label="Provider" wide>
+            <LabeledContent label="Provider" wide>
               <SegmentedControl<AiProvider>
                 label="Provider"
                 value={provider}
                 onChange={(next) => updateAiSettings((current) => ({ ...current, provider: next }))}
                 options={aiProviders.map((id) => ({ value: id, label: providerInfo[id].label }))}
               />
-            </SettingsRow>
-            <SettingsRow
+            </LabeledContent>
+            <LabeledContent
               label="API key"
               description={hasKey ? "Saved on this device." : "Kept only on this device."}
               stacked
@@ -160,12 +160,12 @@ export function AiSettingsSection() {
                     onChange={(event) => setKey(event.target.value)}
                     placeholder={hasKey ? "••••••••  (saved)" : info.keyHint}
                     aria-label={`${info.label} API key`}
-                    className="min-w-0 grow rounded-[10px] control-field px-3 py-2 font-mono text-[14px]"
+                    className="min-w-0 grow rounded-lg control-field px-3 py-2 font-mono text-[14px]"
                   />
                   <button
                     type="submit"
                     disabled={!key.trim() && !hasKey}
-                    className="rounded-[10px] bg-inverse px-3.5 text-[14px] font-semibold text-on-inverse disabled:opacity-40"
+                    className="rounded-lg bg-inverse px-3.5 text-[14px] font-semibold text-on-inverse disabled:opacity-40"
                   >
                     {key.trim() ? "Save" : hasKey ? "Remove" : "Save"}
                   </button>
@@ -174,13 +174,13 @@ export function AiSettingsSection() {
                   href={info.keyUrl}
                   target="_blank"
                   rel="noreferrer"
-                  className="self-start text-[13px] font-medium text-accent-text"
+                  className="self-start text-footnote font-medium text-accent-text"
                 >
                   Get a {info.label} key
                 </a>
               </div>
-            </SettingsRow>
-            <SettingsRow label="Model" description={costNote[provider]} stacked>
+            </LabeledContent>
+            <LabeledContent label="Model" description={costNote[provider]} stacked>
               <div className="flex w-full flex-col gap-3">
                 <ModelChooser
                   provider={provider}
@@ -194,15 +194,15 @@ export function AiSettingsSection() {
                   type="button"
                   disabled={!hasKey || busy !== null}
                   onClick={() => void test()}
-                  className="self-start rounded-[10px] bg-fill px-3.5 py-2 text-[14px] font-semibold disabled:opacity-40"
+                  className="self-start rounded-lg bg-fill px-3.5 py-2 text-[14px] font-semibold disabled:opacity-40"
                 >
                   {busy === "test" ? "Testing…" : "Test connection"}
                 </button>
               </div>
-            </SettingsRow>
+            </LabeledContent>
           </>
         )}
-      </SettingsGroup>
+      </Section>
     </div>
   );
 }
@@ -251,7 +251,7 @@ function ModelChooser({
           <label
             key={pick.id}
             className={cn(
-              "flex cursor-pointer items-center gap-3 rounded-[12px] px-3 py-2.5 transition-colors has-[:focus-visible]:ring-2 has-[:focus-visible]:ring-accent/70",
+              "flex cursor-pointer items-center gap-3 rounded-xl px-3 py-2.5 transition-colors has-[:focus-visible]:ring-2 has-[:focus-visible]:ring-accent/70",
               value === pick.id ? "bg-accent-soft" : "bg-fill/50 hover:bg-fill",
             )}
           >
@@ -274,15 +274,17 @@ function ModelChooser({
               {value === pick.id && <span className="size-[7px] rounded-full bg-white" />}
             </span>
             <span className="flex min-w-0 grow flex-col">
-              <span className="text-[15px] font-semibold">
+              <span className="text-subheadline font-semibold">
                 {tierLabels[pick.tier].title}
                 <span className="font-normal text-label-secondary"> · {pick.name}</span>
               </span>
-              <span className="text-[13px] text-label-tertiary">{tierLabels[pick.tier].note}</span>
+              <span className="text-footnote text-label-tertiary">
+                {tierLabels[pick.tier].note}
+              </span>
             </span>
             <span
               className={cn(
-                "shrink-0 rounded-full px-2 py-0.5 text-[12px] font-semibold",
+                "shrink-0 rounded-full px-2 py-0.5 text-caption font-semibold",
                 pick.free ? "bg-success/15 text-success" : "bg-fill text-label-secondary",
               )}
             >
@@ -293,11 +295,11 @@ function ModelChooser({
       </fieldset>
       {models.length > 0 && (
         <details className="group" open={!picked && models.length > 0 ? true : undefined}>
-          <summary className="cursor-pointer list-none text-[13px] font-medium text-accent-text">
+          <summary className="cursor-pointer list-none text-footnote font-medium text-accent-text">
             {picked ? "Other model…" : `Using ${current?.name ?? value}`}
           </summary>
           <div className="mt-2">
-            <SelectInput
+            <PickerInput
               label="Any model"
               value={value}
               onChange={onChange}

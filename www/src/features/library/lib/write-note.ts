@@ -1,5 +1,5 @@
 import type { NoteKind } from "@notables/core";
-import type { DocumentSnapshot } from "@notables/editor";
+import type { DocumentSnapshot } from "@notables/pluraliti";
 import * as Y from "yjs";
 import { getPersistence } from "../../../platform/storage/document-storage";
 import { saveNoteContent } from "../../../platform/storage/note-content-cache";

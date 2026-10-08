@@ -1,6 +1,6 @@
-import { DocumentView } from "@notables/editor";
-import { Chip } from "@notables/ui";
+import { DocumentView } from "@notables/pluraliti";
 import { Link } from "@tanstack/react-router";
+import { Chip } from "@ultrapeach/ui";
 import { useMemo, useRef } from "react";
 import { AppMark } from "../../../components/brand/app-mark";
 import { stripLeadingTitle } from "../../../lib/documents/strip-leading-title";
@@ -39,14 +39,14 @@ export function ReaderPage({ publication, document }: ReaderPageProps) {
         <div className="mx-auto flex max-w-[680px] items-center justify-between">
           <Link
             to="/"
-            className="flex items-center gap-2 text-[15px] font-semibold text-white no-underline"
+            className="flex items-center gap-2 text-subheadline font-semibold text-white no-underline"
           >
             <AppMark />
             Notables
           </Link>
           <Chip className="bg-white/15 text-white">Public</Chip>
         </div>
-        <p className="mx-auto mt-16 max-w-[680px] text-[12px] font-semibold tracking-[0.06em] text-[#e6eef2] uppercase">
+        <p className="mx-auto mt-16 max-w-[680px] text-caption font-semibold tracking-[0.06em] text-[#e6eef2] uppercase">
           {noteKindLabels[publication.kind]} · {publication.readingMinutes} min read
         </p>
       </header>
@@ -90,8 +90,8 @@ function AuthorByline({
         {name.slice(0, 1).toUpperCase()}
       </span>
       <div className="flex flex-col">
-        <span className="text-[15px] font-semibold">{name}</span>
-        <span className="text-[13px] text-label-secondary">
+        <span className="text-subheadline font-semibold">{name}</span>
+        <span className="text-footnote text-label-secondary">
           Published {publishedDate.format(publishedAt)}
           {reads > 0 && ` · Read by ${reads.toLocaleString()}`}
         </span>

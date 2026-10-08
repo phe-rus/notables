@@ -1,4 +1,4 @@
-import { cn } from "@notables/ui";
+import { cn } from "@ultrapeach/ui";
 import type { ReactNode } from "react";
 
 /** A small, quiet icon button for window and pane toolbars. */
@@ -20,7 +20,7 @@ export function ToolbarButton({
       data-tooltip={label}
       onClick={onClick}
       className={cn(
-        "flex size-7 items-center justify-center rounded-md text-label-tertiary transition-colors duration-fast hover:bg-fill/80 hover:text-label active:scale-95",
+        "flex size-7 items-center justify-center rounded-lg text-label-tertiary transition-colors duration-fast hover:bg-fill/80 hover:text-label active:scale-95",
         className,
       )}
     >

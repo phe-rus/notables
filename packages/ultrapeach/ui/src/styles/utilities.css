@@ -1,0 +1,225 @@
+/*
+ * UltraPeach utilities. Import after Tailwind so `@utility` definitions are
+ * picked up: `@import "@ultrapeach/ui/utilities.css";`
+ *
+ * Write `backdrop-filter` alone, never with `-webkit-backdrop-filter` beside
+ * it: the minifier merges the pair into the prefixed form only, which
+ * Chrome (and Android's WebView) ignores, so the glass silently stops
+ * blurring. The build adds the prefix where Safari needs it.
+ */
+
+/*
+ * Platform variants: `ios:`, `android:`, `macos:`, `windows:` and `linux:`
+ * apply where the app sets `data-os` on the root, so each system keeps its
+ * own conventions without a flash of the wrong one on first paint.
+ */
+@custom-variant ios (&:where([data-os="ios"], [data-os="ios"] *));
+@custom-variant android (&:where([data-os="android"], [data-os="android"] *));
+@custom-variant macos (&:where([data-os="macos"], [data-os="macos"] *));
+@custom-variant windows (&:where([data-os="windows"], [data-os="windows"] *));
+@custom-variant linux (&:where([data-os="linux"], [data-os="linux"] *));
+
+/** Centered page container with comfortable gutters. */
+@utility container {
+  margin-inline: auto;
+  padding-inline: 1.5rem;
+
+  @media (width >= --theme(--breakpoint-sm)) {
+    max-width: none;
+  }
+
+  @media (width >= 1440px) {
+    padding-inline: 2rem;
+    max-width: 1440px;
+  }
+}
+
+/** Scrollable without a visible scrollbar. */
+@utility no-scrollbar {
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+
+  &::-webkit-scrollbar {
+    display: none;
+  }
+}
+
+/**
+ * A row that scrolls sideways fades out at its edges, so a cut-off item
+ * reads as "there's more" rather than as broken layout.
+ */
+@utility scroll-fade-x {
+  mask-image: linear-gradient(
+    to right,
+    transparent,
+    #000 14px,
+    #000 calc(100% - 14px),
+    transparent
+  );
+}
+
+/**
+ * Two-tone icons: the first path is the primary stroke, the rest are
+ * secondary. Hovering a `.group` brings both to full strength with a
+ * slight tilt in opposite directions.
+ */
+@utility dualTone {
+  cursor: pointer;
+  color: currentcolor;
+  stroke-width: 2;
+
+  & path {
+    transform-box: fill-box;
+    transition:
+      opacity 200ms ease,
+      transform 200ms var(--ease-emphasized);
+  }
+
+  & path:first-child {
+    opacity: 80%;
+    transform-origin: 0% 100%;
+  }
+
+  & path:not(:first-child) {
+    opacity: 40%;
+    transform-origin: 100% 100%;
+  }
+
+  .group:hover & path:first-child {
+    opacity: 100%;
+    transform: rotate(-3deg);
+  }
+
+  .group:hover & path:not(:first-child) {
+    opacity: 100%;
+    transform: rotate(3deg);
+  }
+}
+
+/**
+ * Liquid Glass, clear: the most transparent of Apple's glass, for controls
+ * floating over content (the tab bar, its search button, toolbars). Content
+ * shows through vividly; a light blur and lift keep labels legible, and a
+ * specular rim, an inner glow and a sheen give the edge its glassiness.
+ * With Reduce Transparency it becomes solid, as on Apple platforms.
+ */
+@utility glass {
+  background-color: var(--color-glass-tint);
+  background-image: linear-gradient(
+    135deg,
+    var(--color-glass-sheen),
+    transparent 42%,
+    transparent 70%,
+    color-mix(in srgb, var(--color-glass-sheen) 50%, transparent)
+  );
+  backdrop-filter: blur(12px) saturate(190%) brightness(1.05);
+  box-shadow:
+    inset 1px 1.5px 0 -0.5px var(--color-glass-specular),
+    inset -1px -1px 0 -0.5px color-mix(in srgb, var(--color-glass-specular) 45%, transparent),
+    inset 0 0 0 0.5px var(--color-glass-rim),
+    inset 0 0 16px 0 color-mix(in srgb, var(--color-glass-sheen) 60%, transparent),
+    0 10px 30px -10px var(--color-shadow-floating);
+
+  @media (prefers-reduced-transparency: reduce) {
+    background-color: var(--color-elevated);
+    background-image: none;
+    backdrop-filter: none;
+  }
+}
+
+/*
+ * Android keeps the same floating shapes on a solid surface, without glass:
+ * calmer, closer to Material, and nothing to re-blur while things move.
+ * Apple platforms keep the clear glass above.
+ */
+:root[data-os="android"] .glass {
+  background-color: var(--color-elevated);
+  background-image: none;
+  backdrop-filter: none;
+  box-shadow:
+    inset 0 0 0 1px var(--color-separator),
+    0 8px 24px -10px var(--color-shadow-floating);
+}
+
+/**
+ * A droplet of tinted glass marking the current choice inside glass, such
+ * as the selected tab: the accent at a quarter strength, lit at its rim.
+ */
+@utility glass-lens {
+  background-color: color-mix(in srgb, var(--color-accent) 24%, transparent);
+  background-image: linear-gradient(
+    160deg,
+    color-mix(in srgb, var(--color-glass-specular) 55%, transparent),
+    transparent 45%
+  );
+  box-shadow:
+    inset 1px 1.5px 0 -0.5px var(--color-glass-specular),
+    inset 0 0 0 0.5px color-mix(in srgb, var(--color-accent) 45%, transparent),
+    inset 0 0 14px 0 color-mix(in srgb, var(--color-accent) 30%, transparent),
+    0 3px 10px -3px color-mix(in srgb, var(--color-accent) 55%, transparent);
+}
+
+/* On Android the current choice is a plain tinted pill, matching its solid bar. */
+:root[data-os="android"] .glass-lens {
+  background-color: color-mix(in srgb, var(--color-accent) 22%, transparent);
+  background-image: none;
+  box-shadow: none;
+}
+
+/** A quieter glass for large panes such as the sidebar. */
+@utility glass-pane {
+  background-color: color-mix(in srgb, var(--color-sidebar) 78%, transparent);
+  backdrop-filter: blur(30px) saturate(160%);
+}
+
+/** Glass for edge-attached bars (headers): content scrolls beneath it. */
+@utility glass-bar {
+  background-color: color-mix(in srgb, var(--color-paper) 72%, transparent);
+  backdrop-filter: blur(20px) saturate(180%);
+  box-shadow: inset 0 -1px 0 0 color-mix(in srgb, var(--color-separator) 60%, transparent);
+}
+
+/* Android's web view drops the blur under sticky bars, which left them see-through;
+   Android's own top bars are solid anyway. */
+:root[data-os="android"] .glass-bar {
+  background-color: var(--color-paper);
+  backdrop-filter: none;
+}
+
+/**
+ * Dense glass for menus and popovers. Nearly opaque so text stays legible
+ * even inside another glass surface (nested backdrop filters cannot see
+ * through their parent's backdrop).
+ */
+@utility glass-menu {
+  background-color: color-mix(in srgb, var(--color-elevated) 97%, transparent);
+  backdrop-filter: blur(24px) saturate(180%);
+  box-shadow:
+    inset 0 0 0 1px color-mix(in srgb, var(--color-separator) 80%, transparent),
+    0 18px 48px -12px var(--color-shadow-menu);
+}
+
+/**
+ * Text inputs: a soft recessed well that lifts onto the page with a gentle
+ * accent glow when focused.
+ */
+@utility control-field {
+  background-color: var(--color-fill);
+  box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--color-separator) 55%, transparent);
+  transition:
+    background-color 160ms var(--ease-standard),
+    box-shadow 160ms var(--ease-standard);
+
+  &:hover {
+    box-shadow: inset 0 0 0 1px var(--color-separator);
+  }
+
+  &:focus,
+  &:focus-within {
+    outline: none;
+    background-color: var(--color-elevated);
+    box-shadow:
+      inset 0 0 0 1px color-mix(in srgb, var(--color-accent) 70%, var(--color-separator)),
+      0 0 0 4px color-mix(in srgb, var(--color-accent) 22%, transparent);
+  }
+}

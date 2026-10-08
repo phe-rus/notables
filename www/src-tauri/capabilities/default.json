@@ -4,6 +4,7 @@
   "description": "Permissions for the main Notables window and the desktop widget.",
   "windows": ["main", "widget"],
   "permissions": [
+    "existing-app-commands",
     "core:default",
     "core:window:allow-start-dragging",
     "core:window:allow-close",

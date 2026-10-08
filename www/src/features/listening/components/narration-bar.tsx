@@ -3,12 +3,12 @@ import {
   cn,
   IconButton,
   NextTrackIcon,
-  openContextMenu,
+  openMenu,
   PauseIcon,
   PlayIcon,
   PreviousTrackIcon,
   spring,
-} from "@notables/ui";
+} from "@ultrapeach/ui";
 import { motion } from "motion/react";
 import { t } from "../../../i18n/i18n";
 import {
@@ -43,11 +43,9 @@ export function NarrationBar({
 
   const chooseVoice = async (anchor: HTMLElement) => {
     const voices = await availableVoices(lang);
-    const rect = anchor.getBoundingClientRect();
     const current = settings.voiceId ?? voices[0]?.id;
-    openContextMenu(
-      Math.max(12, rect.left - 120),
-      Math.max(12, rect.top - Math.min(voices.length, 9) * 38 - 20),
+    openMenu(
+      anchor,
       voices.length === 0
         ? [{ label: t("listening.noVoices"), disabled: true, onSelect: () => {} }]
         : voices.slice(0, 12).map((voice) => ({
@@ -55,6 +53,7 @@ export function NarrationBar({
             checked: voice.id === current,
             onSelect: () => setNarrationSettings({ voiceId: voice.id }),
           })),
+      { edge: "trailing", above: true },
     );
   };
 
@@ -93,19 +92,19 @@ export function NarrationBar({
         type="button"
         onClick={() => setNarrationSettings({ rate: nextRate })}
         aria-label={`${t("listening.speed")} ${nextRate}×`}
-        className="rounded-full px-2.5 py-1 text-[13px] font-semibold tabular-nums transition-colors hover:bg-fill/60"
+        className="rounded-full px-2.5 py-1 text-footnote font-semibold tabular-nums transition-colors hover:bg-fill/60"
       >
         {settings.rate}×
       </button>
       <button
         type="button"
         onClick={(event) => void chooseVoice(event.currentTarget)}
-        className="rounded-full px-2.5 py-1 text-[13px] font-medium text-label-secondary transition-colors hover:bg-fill/60"
+        className="rounded-full px-2.5 py-1 text-footnote font-medium text-label-secondary transition-colors hover:bg-fill/60"
       >
         {t("listening.voice")}
       </button>
       {state.error && (
-        <span className="max-w-[180px] truncate px-1 text-[12px] text-danger" title={state.error}>
+        <span className="max-w-[180px] truncate px-1 text-caption text-danger" title={state.error}>
           {state.error}
         </span>
       )}

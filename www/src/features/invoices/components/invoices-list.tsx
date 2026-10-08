@@ -5,20 +5,20 @@ import {
   type InvoiceKind,
   invoiceKindLabels,
 } from "@notables/core";
+import { Link, useNavigate } from "@tanstack/react-router";
 import {
   BusinessIcon,
   Chip,
   cn,
   confirmDialog,
   IconButton,
-  openContextMenu,
+  openMenu,
   PlusIcon,
   SidebarIcon,
   spring,
   toast,
   useContextMenu,
-} from "@notables/ui";
-import { Link, useNavigate } from "@tanstack/react-router";
+} from "@ultrapeach/ui";
 import { AnimatePresence, motion } from "motion/react";
 import { useState } from "react";
 import { CollapsedSidebarControls } from "../../../components/window/collapsed-sidebar-controls";
@@ -75,7 +75,7 @@ export function InvoicesList({
             <IconButton label={t("nav.showLibrary")} className="lg:hidden" onClick={onOpenSidebar}>
               <SidebarIcon size={20} />
             </IconButton>
-            <h1 className="text-[22px] font-bold tracking-tight">{t("invoices.title")}</h1>
+            <h1 className="text-title2 font-bold tracking-tight">{t("invoices.title")}</h1>
           </div>
           <div className="flex items-center gap-1">
             <IconButton
@@ -92,14 +92,13 @@ export function InvoicesList({
               label="New invoice, receipt or quote"
               tone="accent"
               onClick={(event) => {
-                const rect = event.currentTarget.getBoundingClientRect();
-                openContextMenu(
-                  rect.right - 200,
-                  rect.bottom + 6,
+                openMenu(
+                  event.currentTarget,
                   (["invoice", "receipt", "quote"] as const).map((kind) => ({
                     label: `New ${invoiceKindLabels[kind].toLowerCase()}`,
                     onSelect: () => create(kind),
                   })),
+                  { edge: "trailing" },
                 );
               }}
             >
@@ -118,7 +117,7 @@ export function InvoicesList({
                 aria-pressed={selected}
                 onClick={() => setFilter(kind)}
                 className={cn(
-                  "relative isolate flex max-w-full min-w-0 items-center gap-1.5 rounded-full px-3.5 py-1.5 text-[13px] font-medium transition-colors",
+                  "relative isolate flex max-w-full min-w-0 items-center gap-1.5 rounded-full px-3.5 py-1.5 text-footnote font-medium transition-colors",
                   selected ? "text-on-inverse" : "bg-fill/70 text-label-secondary hover:text-label",
                 )}
               >
@@ -146,7 +145,7 @@ export function InvoicesList({
           <button
             type="button"
             onClick={() => setBusinessOpen(true)}
-            className="mx-1.5 mb-2 flex items-center gap-3 rounded-[16px] bg-accent/10 px-3.5 py-3 text-left transition-colors hover:bg-accent/15"
+            className="mx-1.5 mb-2 flex items-center gap-3 rounded-3xl bg-accent/10 px-3.5 py-3 text-left transition-colors hover:bg-accent/15"
           >
             <span className="flex size-9 shrink-0 items-center justify-center rounded-full bg-accent text-on-accent">
               <BusinessIcon size={18} />
@@ -166,7 +165,7 @@ export function InvoicesList({
         )}
         {all.length === 0 && (
           <div className="flex flex-col items-center gap-2 px-6 pt-16 text-center">
-            <p className="text-[15px] font-semibold">Get paid, beautifully</p>
+            <p className="text-subheadline font-semibold">Get paid, beautifully</p>
             <p className="text-[14px] leading-snug text-label-secondary">
               Invoices, receipts and quotes, signed on this device so anyone can scan them to check
               they’re genuine.
@@ -249,7 +248,7 @@ function InvoiceRow({ invoice, active }: { invoice: InvoiceDocument; active: boo
       params={{ invoiceId: invoice.id }}
       {...menu}
       className={cn(
-        "relative isolate flex touch-manipulation items-center gap-3 rounded-[12px] px-2.5 py-2.5 no-underline transition-colors [-webkit-touch-callout:none]",
+        "relative isolate flex touch-manipulation items-center gap-3 rounded-xl px-2.5 py-2.5 no-underline transition-colors [-webkit-touch-callout:none]",
         !active && "hover:bg-fill/60",
       )}
     >
@@ -258,19 +257,19 @@ function InvoiceRow({ invoice, active }: { invoice: InvoiceDocument; active: boo
         {active && (
           <motion.span
             layoutId="invoice-selection"
-            className="absolute inset-0 -z-10 rounded-[12px] bg-accent-soft"
+            className="absolute inset-0 -z-10 rounded-xl bg-accent-soft"
             transition={spring.snappy}
           />
         )}
         <span className="flex items-baseline justify-between gap-3">
-          <span className="truncate text-[15px] font-semibold text-label">
+          <span className="truncate text-subheadline font-semibold text-label">
             {invoice.client.name || "No client yet"}
           </span>
           <span className="shrink-0 text-[14px] font-semibold tabular-nums text-label">
             {formatMoney(total, invoice.currency)}
           </span>
         </span>
-        <span className="flex items-center gap-2 text-[13px] text-label-secondary">
+        <span className="flex items-center gap-2 text-footnote text-label-secondary">
           <Chip tone={invoice.kind === "receipt" ? "public" : active ? "accent" : "neutral"}>
             {invoiceKindLabels[invoice.kind]}
           </Chip>
@@ -294,7 +293,7 @@ function PaperThumbnail({ invoice }: { invoice: InvoiceDocument }) {
   return (
     <span
       aria-hidden="true"
-      className="pointer-events-none relative block shrink-0 overflow-hidden rounded-[3px] bg-white shadow-[0_1px_2px_rgba(0,0,0,0.1),0_6px_14px_-6px_rgba(60,40,0,0.3)] ring-1 ring-black/5"
+      className="pointer-events-none relative block shrink-0 overflow-hidden rounded-xs bg-white shadow-[0_1px_2px_rgba(0,0,0,0.1),0_6px_14px_-6px_rgba(60,40,0,0.3)] ring-1 ring-black/5"
       style={{ width: THUMB_WIDTH, height: PAPER_HEIGHT * scale }}
     >
       <span

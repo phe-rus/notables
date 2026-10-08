@@ -1,4 +1,4 @@
-import { cn, IconButton, LayoutIcon, Popover, useDismiss } from "@notables/ui";
+import { cn, IconButton, LayoutIcon, Popover, useDismiss } from "@ultrapeach/ui";
 import { useRef, useState } from "react";
 import {
   layoutPanels,
@@ -38,7 +38,7 @@ export function PageMenu({
         origin="top-left"
         className="top-[calc(100%+8px)] left-1/2 w-[320px] -translate-x-1/2 p-3"
       >
-        <p className="px-1 pb-2 text-[12px] font-semibold text-label-secondary">Page</p>
+        <p className="px-1 pb-2 text-caption font-semibold text-label-secondary">Page</p>
         <div className="flex flex-wrap gap-1.5 pb-3">
           {(Object.keys(pageSizes) as PageSize[]).map((size) => (
             <button
@@ -47,7 +47,7 @@ export function PageMenu({
               aria-pressed={scene.size === size}
               onClick={() => onChange(reshape(scene, size, scene.layout))}
               className={cn(
-                "rounded-full px-3 py-1.5 text-[13px] font-medium transition-colors",
+                "rounded-full px-3 py-1.5 text-footnote font-medium transition-colors",
                 scene.size === size ? "bg-inverse text-on-inverse" : "bg-fill/60 hover:bg-fill",
               )}
             >
@@ -55,7 +55,7 @@ export function PageMenu({
             </button>
           ))}
         </div>
-        <p className="px-1 pb-2 text-[12px] font-semibold text-label-secondary">Panels</p>
+        <p className="px-1 pb-2 text-caption font-semibold text-label-secondary">Panels</p>
         <div className="grid grid-cols-3 gap-2">
           {layouts.map((layout) => (
             <button
@@ -64,12 +64,12 @@ export function PageMenu({
               aria-pressed={scene.layout === layout}
               onClick={() => onChange(reshape(scene, scene.size, layout))}
               className={cn(
-                "flex flex-col items-center gap-1 rounded-[12px] p-1.5 transition-colors",
+                "flex flex-col items-center gap-1 rounded-xl p-1.5 transition-colors",
                 scene.layout === layout ? "bg-accent/15 text-accent-text" : "hover:bg-fill/60",
               )}
             >
               <LayoutPreview layout={layout} width={scene.width} height={scene.height} />
-              <span className="text-[11px] font-medium">{panelLayoutLabels[layout]}</span>
+              <span className="text-caption2 font-medium">{panelLayoutLabels[layout]}</span>
             </button>
           ))}
         </div>
@@ -92,7 +92,7 @@ function LayoutPreview({
     <svg
       data-brand
       viewBox={`0 0 ${width} ${height}`}
-      className="h-16 w-auto rounded-[4px] bg-white shadow-[0_0_0_1px_rgb(0_0_0/0.12)]"
+      className="h-16 w-auto rounded-xs bg-white shadow-[0_0_0_1px_rgb(0_0_0/0.12)]"
       aria-hidden
     >
       {panels.map((panel) => (

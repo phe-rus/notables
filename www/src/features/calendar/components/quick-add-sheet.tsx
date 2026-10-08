@@ -1,5 +1,5 @@
 import type { Day } from "@notables/core";
-import { Button, CloseIcon, IconButton, Sheet, SparkleIcon, toast } from "@notables/ui";
+import { Button, CloseIcon, IconButton, Sheet, SparkleIcon, toast } from "@ultrapeach/ui";
 import { useState } from "react";
 import { t } from "../../../i18n/i18n";
 import { describeDay, formatClock } from "../lib/describe-alert";
@@ -80,13 +80,15 @@ function QuickAddForm({
           <CloseIcon size={18} />
         </IconButton>
       </div>
-      <p className="text-[13px] leading-snug text-label-secondary">{t("calendar.quickAddHint")}</p>
+      <p className="text-footnote leading-snug text-label-secondary">
+        {t("calendar.quickAddHint")}
+      </p>
       {preview?.title && (
-        <div className="flex items-center gap-3 rounded-[14px] bg-fill/50 px-3.5 py-3">
+        <div className="flex items-center gap-3 rounded-2xl bg-fill/50 px-3.5 py-3">
           <span className="text-label-secondary">{kindIcons[preview.kind]}</span>
           <span className="flex min-w-0 grow flex-col">
-            <span className="truncate text-[15px] font-semibold">{preview.title}</span>
-            <span className="truncate text-[13px] text-label-secondary">
+            <span className="truncate text-subheadline font-semibold">{preview.title}</span>
+            <span className="truncate text-footnote text-label-secondary">
               {t(`calendar.kind.${preview.kind}`)} · {describeDay(preview.date)}
               {preview.time ? ` · ${formatClock(preview.time)}` : ` · ${t("calendar.allDay")}`}
               {preview.repeat !== "never" ? ` · ${t(`calendar.repeat.${preview.repeat}`)}` : ""}

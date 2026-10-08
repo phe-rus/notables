@@ -1,3 +1,4 @@
+import { useNavigate } from "@tanstack/react-router";
 import {
   BookIcon,
   Button,
@@ -9,8 +10,7 @@ import {
   Sheet,
   spring,
   toast,
-} from "@notables/ui";
-import { useNavigate } from "@tanstack/react-router";
+} from "@ultrapeach/ui";
 import { motion } from "motion/react";
 import { type DragEvent, type ReactNode, useRef, useState } from "react";
 import { locale, t } from "../../../i18n/i18n";
@@ -189,14 +189,14 @@ function ImportFlow({ onClose }: { onClose: () => void }) {
               void review(await droppedFiles(event));
             }}
             className={cn(
-              "flex flex-col items-center gap-3 rounded-[22px] border-2 border-dashed px-6 py-10 text-center transition-colors",
+              "flex flex-col items-center gap-3 rounded-5xl border-2 border-dashed px-6 py-10 text-center transition-colors",
               dragging ? "border-accent bg-accent-soft/60" : "border-separator bg-fill/40",
             )}
           >
             <span className="flex size-14 items-center justify-center rounded-full bg-accent-soft text-accent-text">
               <BookIcon size={26} />
             </span>
-            <p className="text-[16px] font-semibold">{t("imports.dropTitle")}</p>
+            <p className="text-callout font-semibold">{t("imports.dropTitle")}</p>
             <p className="max-w-[380px] text-[14px] leading-snug text-label-secondary">
               {t("imports.dropBody")}
             </p>
@@ -246,7 +246,7 @@ function ImportFlow({ onClose }: { onClose: () => void }) {
             />
           </div>
           {stage.name === "importing" && (
-            <p className="text-[13px] text-label-tertiary">{t("imports.keepOpen")}</p>
+            <p className="text-footnote text-label-tertiary">{t("imports.keepOpen")}</p>
           )}
         </div>
       )}
@@ -269,12 +269,12 @@ function ImportFlow({ onClose }: { onClose: () => void }) {
               />
             ))}
             {stage.plan.series.length === 0 && (
-              <p className="py-8 text-center text-[15px] text-label-secondary">
+              <p className="py-8 text-center text-subheadline text-label-secondary">
                 {t("imports.nothing")}
               </p>
             )}
             {stage.plan.skipped.length > 0 && (
-              <p className="text-[13px] text-label-tertiary">
+              <p className="text-footnote text-label-tertiary">
                 {t("imports.skippingOthers", { count: stage.plan.skipped.length })}
               </p>
             )}
@@ -310,15 +310,15 @@ function PlannedSeriesCard({
   const merging = series.mergeInto !== null && series.merge;
   const skip = new Set(merging ? series.skippedVolumes : []);
   return (
-    <section className="flex flex-col gap-2 rounded-[18px] border border-separator/70 bg-elevated p-4">
+    <section className="flex flex-col gap-2 rounded-4xl border border-separator/70 bg-elevated p-4">
       <input
         value={series.title}
         onChange={(event) => onRename(event.target.value)}
         aria-label={t("imports.seriesTitle")}
-        className="control-field rounded-[10px] px-3 py-2 text-[16px] font-semibold"
+        className="control-field rounded-lg px-3 py-2 text-callout font-semibold"
       />
       <div className="flex flex-wrap items-center justify-between gap-2">
-        <span className="text-[12px] text-label-tertiary">
+        <span className="text-caption text-label-tertiary">
           {[
             choosesDrawnKind(series) ? null : kindLabel(series.kind),
             series.books.length > 1 ? partCountLabel(series.books.length, series.partLabel) : null,
@@ -346,7 +346,7 @@ function PlannedSeriesCard({
         </Choice>
       )}
       {merging && series.skippedVolumes.length > 0 && (
-        <p className="ps-1 text-[13px] text-label-secondary">
+        <p className="ps-1 text-footnote text-label-secondary">
           {t("imports.alreadyThere", {
             what: numberedLabel(series.skippedVolumes, series.partLabel),
           })}
@@ -376,7 +376,7 @@ function PlannedSeriesCard({
                 )}
                 {book.title || (book.volume === null ? series.title : "")}
               </span>
-              <span className="shrink-0 text-[13px] text-label-tertiary">
+              <span className="shrink-0 text-footnote text-label-tertiary">
                 {[
                   book.parts.length > 0
                     ? t("imports.partCount", { count: book.parts.length })
@@ -406,12 +406,12 @@ function Choice({
   children: ReactNode;
 }) {
   return (
-    <label className="flex cursor-pointer items-center gap-2.5 rounded-[12px] bg-fill/50 px-3 py-2.5 text-[14px] has-[:focus-visible]:ring-2 has-[:focus-visible]:ring-accent/70">
+    <label className="flex cursor-pointer items-center gap-2.5 rounded-xl bg-fill/50 px-3 py-2.5 text-[14px] has-[:focus-visible]:ring-2 has-[:focus-visible]:ring-accent/70">
       <input type="checkbox" className="sr-only" checked={checked} onChange={onToggle} />
       <span
         aria-hidden="true"
         className={cn(
-          "flex size-[20px] shrink-0 items-center justify-center rounded-[6px] transition-colors",
+          "flex size-[20px] shrink-0 items-center justify-center rounded-sm transition-colors",
           checked
             ? "bg-accent text-on-accent"
             : "shadow-[inset_0_0_0_1.5px_var(--color-label-tertiary)]",

@@ -1,10 +1,9 @@
-import { Switch } from "@notables/ui";
+import { LabeledContent, Section, Toggle } from "@ultrapeach/ui";
 import { useEffect, useState } from "react";
 import { t } from "../../../i18n/i18n";
 import { androidBridge } from "../../../platform/android-bridge";
 import { devicePlatform } from "../../../platform/device-platform";
 import { isTauri } from "../../../platform/runtime";
-import { SettingsGroup, SettingsRow } from "../../settings/components/settings-controls";
 import { desktopWidgetWanted, setDesktopWidget, supportsDesktopWidget } from "../lib/widget-bridge";
 
 /** The desktop widget switch, the home-screen widget, or where to find widgets. */
@@ -17,8 +16,8 @@ export function WidgetsSettingsSection() {
   const phone = isTauri() && (os === "ios" || os === "android");
 
   const row = supportsDesktopWidget() ? (
-    <SettingsRow label={t("widgets.desktop")} description={t("widgets.desktopHint")}>
-      <Switch
+    <LabeledContent label={t("widgets.desktop")} description={t("widgets.desktopHint")}>
+      <Toggle
         label={t("widgets.desktop")}
         checked={on}
         onChange={(next) => {
@@ -26,10 +25,10 @@ export function WidgetsSettingsSection() {
           void setDesktopWidget(next).catch(() => setOn(false));
         }}
       />
-    </SettingsRow>
+    </LabeledContent>
   ) : canPin ? (
     // Android offers the widget itself: the system sheet places it on the home screen.
-    <SettingsRow label={t("widgets.addToHome")} description={t("widgets.addToHomeHint")}>
+    <LabeledContent label={t("widgets.addToHome")} description={t("widgets.addToHomeHint")}>
       <button
         type="button"
         onClick={() => androidBridge()?.pinWidget()}
@@ -37,9 +36,9 @@ export function WidgetsSettingsSection() {
       >
         {t("common.add")}
       </button>
-    </SettingsRow>
+    </LabeledContent>
   ) : phone ? null : (
-    <SettingsRow label={t("widgets.preview")} description={t("widgets.previewHint")}>
+    <LabeledContent label={t("widgets.preview")} description={t("widgets.previewHint")}>
       <a
         href="/widget"
         target="_blank"
@@ -48,17 +47,17 @@ export function WidgetsSettingsSection() {
       >
         {t("common.open")}
       </a>
-    </SettingsRow>
+    </LabeledContent>
   );
 
   return (
-    <SettingsGroup
+    <Section
       title={t("widgets.title")}
       footer={
         phone ? t("widgets.phoneHint") : supportsDesktopWidget() ? undefined : t("widgets.webHint")
       }
     >
       {row}
-    </SettingsGroup>
+    </Section>
   );
 }
