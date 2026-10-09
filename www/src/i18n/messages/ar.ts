@@ -147,6 +147,8 @@ export const ar: Messages = {
   },
   nav: {
     main: "الرئيسي",
+    artifacts: "الأدوات",
+    workspace: "مساحة العمل",
     newNote: "ملاحظة جديدة",
     allNotes: "كل notables",
     library: "المكتبة",

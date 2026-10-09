@@ -151,6 +151,8 @@ export const sw: Messages = {
   },
   nav: {
     main: "Kuu",
+    artifacts: "Zana",
+    workspace: "Eneo la kazi",
     newNote: "Dokezo jipya",
     allNotes: "notables zote",
     library: "Maktaba",

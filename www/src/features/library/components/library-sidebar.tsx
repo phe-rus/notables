@@ -5,6 +5,7 @@ import {
   cn,
   GlobeIcon,
   InvoiceIcon,
+  LayoutIcon,
   LessonIcon,
   NoteIcon,
   PenIcon,
@@ -18,7 +19,7 @@ import {
   WalletIcon,
 } from "@ultrapeach/ui";
 import { AnimatePresence, motion } from "motion/react";
-import { type ReactNode, useState } from "react";
+import { type ReactNode, useEffect, useState } from "react";
 import { t } from "../../../i18n/i18n";
 import { shortcutLabel } from "../../../lib/keyboard/shortcuts";
 import { useBooks, useTrashedBooks } from "../../books/store/book-store";
@@ -37,7 +38,7 @@ import { isListedNote, useLibrary } from "../store/library-store";
 import { RECENT_WINDOW, useOpened } from "../store/recents-store";
 import { SidebarEditor } from "./sidebar-editor";
 import { SidebarProfileRow } from "./sidebar-profile-row";
-import { ActionRow, NavItem, SectionHeader } from "./sidebar-rows";
+import { ActionRow, DisclosureRow, NavItem, SectionHeader } from "./sidebar-rows";
 import { SidebarTopBar } from "./sidebar-top-bar";
 
 /** Where the app is: a view of notes, books or settings. */
@@ -57,6 +58,9 @@ export const sidebarIcons: Record<SidebarItemId, ReactNode> = {
   invoices: <InvoiceIcon size={17} />,
   published: <GlobeIcon size={17} />,
 };
+
+/** Places folded under Artifacts, so the sidebar stays short. */
+const artifactPlaces: readonly SidebarLocation[] = ["calendar", "wallet", "invoices"];
 
 const PINNED_LIMIT = 8;
 const RECENTS_LIMIT = 8;
@@ -84,8 +88,19 @@ export function Sidebar({
   const allSeries = useSeries();
   const bin = binSeriesAndBooks(trashedBooks, allSeries);
   const binCount = binNotes(library, trashedBooks).length + bin.books.length + bin.series.length;
-  const { order, hidden, counts } = usePreferences().sidebar;
+  const { order, hidden, counts, artifactsOpen } = usePreferences().sidebar;
   const [editing, setEditing] = useState(false);
+  // Arriving at Calendar, Wallet or Invoices opens Artifacts, so the place shows.
+  const inArtifacts = artifactPlaces.includes(active);
+  const [artifactsShown, setArtifactsShown] = useState(artifactsOpen || inArtifacts);
+  useEffect(() => {
+    if (inArtifacts) setArtifactsShown(true);
+  }, [inArtifacts]);
+  const toggleArtifacts = () => {
+    const open = !artifactsShown;
+    setArtifactsShown(open);
+    updatePreferences((p) => ({ ...p, sidebar: { ...p.sidebar, artifactsOpen: open } }));
+  };
   const navigate = useNavigate();
   const pinned = entries.filter((entry) => entry.pinned).slice(0, PINNED_LIMIT);
   // Notes opened on this device in the last two days; pinned ones already show above.
@@ -160,18 +175,39 @@ export function Sidebar({
           {t("common.search")}
         </ActionRow>
         {visible("books") && sidebarItem("books")}
-        <NavItem
-          to="/calendar"
-          active={active === "calendar"}
-          icon={<CalendarIcon size={17} />}
-          trailing={counts && upcoming > 0 ? upcoming : undefined}
+        <DisclosureRow
+          icon={<LayoutIcon size={17} />}
+          open={artifactsShown}
+          onToggle={toggleArtifacts}
+          controls="sidebar-artifacts"
         >
-          {t("nav.calendar")}
-        </NavItem>
-        <NavItem to="/wallet" active={active === "wallet"} icon={<WalletIcon size={17} />}>
-          {t("wallet.title")}
-        </NavItem>
-        {visible("invoices") && sidebarItem("invoices")}
+          {t("nav.artifacts")}
+        </DisclosureRow>
+        <AnimatePresence initial={false}>
+          {artifactsShown && (
+            <motion.div
+              id="sidebar-artifacts"
+              className="flex flex-col gap-px overflow-hidden ps-4"
+              initial={{ height: 0, opacity: 0 }}
+              animate={{ height: "auto", opacity: 1 }}
+              exit={{ height: 0, opacity: 0 }}
+              transition={spring.snappy}
+            >
+              <NavItem
+                to="/calendar"
+                active={active === "calendar"}
+                icon={<CalendarIcon size={17} />}
+                trailing={counts && upcoming > 0 ? upcoming : undefined}
+              >
+                {t("nav.calendar")}
+              </NavItem>
+              <NavItem to="/wallet" active={active === "wallet"} icon={<WalletIcon size={17} />}>
+                {t("wallet.title")}
+              </NavItem>
+              {visible("invoices") && sidebarItem("invoices")}
+            </motion.div>
+          )}
+        </AnimatePresence>
       </div>
 
       <div className="no-scrollbar -mx-2.5 flex grow flex-col gap-5 overflow-y-auto px-2.5 pb-4">
@@ -212,6 +248,7 @@ export function Sidebar({
               exit={{ opacity: 0, y: 4 }}
               transition={spring.snappy}
             >
+              <SectionHeader title={t("nav.workspace")} />
               <NavItem
                 to="/"
                 active={active === "all"}

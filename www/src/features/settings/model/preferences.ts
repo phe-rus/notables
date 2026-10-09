@@ -53,6 +53,8 @@ export interface SidebarPreferences {
   width: number;
   /** Desktop sidebar tucked away for more room. */
   collapsed: boolean;
+  /** Artifacts (Calendar, Wallet, Invoices) shown open. */
+  artifactsOpen: boolean;
 }
 
 export const sidebarWidth = { min: 220, max: 360, default: 264 } as const;
@@ -75,6 +77,7 @@ export const defaultPreferences: Preferences = {
     counts: true,
     width: sidebarWidth.default,
     collapsed: false,
+    artifactsOpen: false,
   },
   booksShelf: "all",
   haptics: true,
@@ -145,6 +148,7 @@ export function normalizePreferences(raw: unknown): Preferences {
           ? Math.round(Math.min(sidebarWidth.max, Math.max(sidebarWidth.min, sidebar.width)))
           : defaults.sidebar.width,
       collapsed: flag(sidebar.collapsed, defaults.sidebar.collapsed),
+      artifactsOpen: flag(sidebar.artifactsOpen, defaults.sidebar.artifactsOpen),
     },
     booksShelf: isMediaKind(input.booksShelf) ? input.booksShelf : "all",
     haptics: flag(input.haptics, defaults.haptics),

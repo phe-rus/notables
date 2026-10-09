@@ -1,5 +1,5 @@
 import { Link, type LinkProps } from "@tanstack/react-router";
-import { type ContextMenuItem, cn, spring, useContextMenu } from "@ultrapeach/ui";
+import { ChevronRightIcon, type ContextMenuItem, cn, spring, useContextMenu } from "@ultrapeach/ui";
 import { motion } from "motion/react";
 import type { ReactNode } from "react";
 
@@ -33,6 +33,42 @@ export function ActionRow({
       <kbd className="font-sans text-caption text-label-tertiary opacity-0 transition-opacity group-hover:opacity-100">
         {shortcut}
       </kbd>
+    </button>
+  );
+}
+
+/** A row that folds a few places away under one name, with a turning chevron. */
+export function DisclosureRow({
+  icon,
+  open,
+  onToggle,
+  controls,
+  children,
+}: {
+  icon: ReactNode;
+  open: boolean;
+  onToggle: () => void;
+  /** The id of the list it shows and hides. */
+  controls: string;
+  children: ReactNode;
+}) {
+  return (
+    <button
+      type="button"
+      aria-expanded={open}
+      aria-controls={controls}
+      onClick={onToggle}
+      className={cn(rowClass, "text-left hover:bg-fill/70")}
+    >
+      <span className="flex text-label-secondary">{icon}</span>
+      <span className="grow truncate">{children}</span>
+      <motion.span
+        className="flex text-label-tertiary rtl:-scale-x-100"
+        animate={{ rotate: open ? 90 : 0 }}
+        transition={spring.snappy}
+      >
+        <ChevronRightIcon size={14} />
+      </motion.span>
     </button>
   );
 }

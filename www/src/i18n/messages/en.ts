@@ -152,6 +152,8 @@ export const en = {
   },
   nav: {
     main: "Main",
+    artifacts: "Artifacts",
+    workspace: "Workspace",
     newNote: "New note",
     allNotes: "All notables",
     library: "Library",

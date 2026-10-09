@@ -144,6 +144,8 @@ export const zh: Messages = {
   },
   nav: {
     main: "主菜单",
+    artifacts: "工具",
+    workspace: "工作区",
     newNote: "新建笔记",
     allNotes: "所有笔记",
     library: "资料库",

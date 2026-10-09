@@ -160,7 +160,9 @@ Shipped and tested in the browser (Playwright) unless noted:
   on Apple, solid floating bars on Android (glass there looked out of place),
   pre-paint appearance script. Tab bar: Notes, Wallet, Invoices, Settings;
   no tab haptics. Sidebar laid out like Claude's (actions and places, then
-  notes views, then Pinned and Recents). "All notables" replaces All Notes.
+  notes views under Workspace, then Pinned and Recents); Calendar, Wallet
+  and Invoices fold under Artifacts (`sidebar.artifactsOpen`), which opens
+  itself on those pages. "All notables" replaces All Notes.
 - Settings is a list of pages (`features/settings/components/settings-catalog.tsx`,
   routes `/settings` and `/settings/$page`), split view on wide windows.
   Privacy & Security shows the Lock (spec 0004), switched off until its

@@ -152,6 +152,8 @@ export const es: Messages = {
   },
   nav: {
     main: "Principal",
+    artifacts: "Herramientas",
+    workspace: "Espacio de trabajo",
     newNote: "Nueva nota",
     allNotes: "Todos los notables",
     library: "Biblioteca",

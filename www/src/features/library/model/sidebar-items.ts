@@ -34,9 +34,9 @@ export const sidebarItemTitles: Record<SidebarItemId, string> = {
 };
 
 /**
- * Books and Invoices are places of their own, listed under Search beside
- * Calendar and Wallet; the rest are views of your notes, listed after All
- * Notes in the order people choose.
+ * Books and Invoices are places of their own, listed under Search (Invoices
+ * folded into Artifacts with Calendar and Wallet); the rest are views of
+ * your notes, listed under Workspace in the order people choose.
  */
 export const sidebarItemSections: Record<SidebarItemId, "places" | "notes"> = {
   books: "places",
