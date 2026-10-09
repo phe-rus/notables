@@ -18,6 +18,7 @@ import { AnimatePresence, motion } from "motion/react";
 import { useEffect, useState } from "react";
 import { t } from "../../../../i18n/i18n";
 import { ReadAlong } from "../../../listening/components/read-along";
+import { rateName } from "../../../listening/lib/narration-settings";
 import { useAudiobookSession } from "../../../listening/store/listening-store";
 import { BookCover } from "../../components/book-cover";
 import { structureOf, unitName } from "../../model/structure-labels";
@@ -200,8 +201,11 @@ function PlayerScreen({ book, player }: { book: BookEntry; player: AudiobookPlay
           </div>
 
           <div className="flex items-center gap-2">
-            <Pill label={`Speed ${nextSpeed}×`} onClick={() => player.setSpeed(nextSpeed)}>
-              {player.speed}×
+            <Pill
+              label={`${t("listening.speed")}: ${rateName(player.speed, SPEEDS)}, ${player.speed}×`}
+              onClick={() => player.setSpeed(nextSpeed)}
+            >
+              {rateName(player.speed, SPEEDS)}
             </Pill>
             <Pill
               label={nextSleep === null ? "Turn off sleep timer" : "Change sleep timer"}

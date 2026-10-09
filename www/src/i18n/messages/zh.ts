@@ -330,6 +330,14 @@ export const zh: Messages = {
     storedBrowser: "笔记存储在此浏览器中",
   },
   listening: {
+    rates: {
+      slow: "慢速",
+      normal: "正常",
+      brisk: "稍快",
+      fast: "快速",
+      faster: "更快",
+      fastest: "最快",
+    },
     couldNotTranscribe: "无法转写这一章",
     transcript: "转写文本",
     transcriptReadyBody: "现在文字会随着你的收听同步显示。",

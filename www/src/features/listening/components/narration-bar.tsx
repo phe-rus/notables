@@ -13,6 +13,7 @@ import { motion } from "motion/react";
 import { t } from "../../../i18n/i18n";
 import {
   NARRATION_RATES,
+  rateName,
   setNarrationSettings,
   useNarrationSettings,
 } from "../lib/narration-settings";
@@ -91,10 +92,11 @@ export function NarrationBar({
       <button
         type="button"
         onClick={() => setNarrationSettings({ rate: nextRate })}
-        aria-label={`${t("listening.speed")} ${nextRate}×`}
-        className="rounded-full px-2.5 py-1 text-footnote font-semibold tabular-nums transition-colors hover:bg-fill/60"
+        aria-label={`${t("listening.speed")}: ${rateName(settings.rate)}, ${settings.rate}×`}
+        title={`${settings.rate}×`}
+        className="rounded-full px-2.5 py-1 text-footnote font-semibold transition-colors hover:bg-fill/60"
       >
-        {settings.rate}×
+        {rateName(settings.rate)}
       </button>
       <button
         type="button"

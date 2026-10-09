@@ -1,10 +1,11 @@
-import { LabeledContent, Section, SegmentedControl } from "@ultrapeach/ui";
+import { LabeledContent, Section } from "@ultrapeach/ui";
 import { useEffect, useState } from "react";
 import { PickerInput } from "../../../components/form/form-fields";
 import { t } from "../../../i18n/i18n";
 import { useModelPacks } from "../lib/model-packs";
 import {
   NARRATION_RATES,
+  rateName,
   setNarrationSettings,
   useNarrationSettings,
 } from "../lib/narration-settings";
@@ -54,12 +55,17 @@ export function ListeningSettingsSection() {
           />
         )}
       </LabeledContent>
-      <LabeledContent label={t("listening.speed")} wide>
-        <SegmentedControl<string>
+      <LabeledContent label={t("listening.speed")}>
+        <PickerInput
           label={t("listening.speed")}
           value={String(settings.rate)}
           onChange={(rate) => setNarrationSettings({ rate: Number(rate) })}
-          options={NARRATION_RATES.map((rate) => ({ value: String(rate), label: `${rate}×` }))}
+          className="w-auto min-w-[8.5rem] py-1.5 text-subheadline"
+          options={NARRATION_RATES.map((rate) => ({
+            value: String(rate),
+            label: rateName(rate),
+            detail: `${rate}×`,
+          }))}
         />
       </LabeledContent>
     </Section>

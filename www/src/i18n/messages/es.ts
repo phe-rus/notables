@@ -341,6 +341,14 @@ export const es: Messages = {
     storedBrowser: "Notas guardadas en este navegador",
   },
   listening: {
+    rates: {
+      slow: "Lenta",
+      normal: "Normal",
+      brisk: "Ágil",
+      fast: "Rápida",
+      faster: "Más rápida",
+      fastest: "Muy rápida",
+    },
     couldNotTranscribe: "No se pudo transcribir este capítulo",
     transcript: "Transcripción",
     transcriptReadyBody: "Ahora las palabras siguen lo que escuchas.",

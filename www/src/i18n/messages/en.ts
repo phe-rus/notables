@@ -341,6 +341,14 @@ export const en = {
     storedBrowser: "Notes stored in this browser",
   },
   listening: {
+    rates: {
+      slow: "Slow",
+      normal: "Normal",
+      brisk: "Brisk",
+      fast: "Fast",
+      faster: "Faster",
+      fastest: "Fastest",
+    },
     couldNotTranscribe: "Couldn’t transcribe this chapter",
     transcript: "Transcript",
     transcriptReadyBody: "The words now follow along as you listen.",

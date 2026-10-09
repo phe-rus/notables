@@ -357,6 +357,14 @@ export const ar: Messages = {
     storedBrowser: "الملاحظات محفوظة في هذا المتصفح",
   },
   listening: {
+    rates: {
+      slow: "بطيئة",
+      normal: "عادية",
+      brisk: "نشطة",
+      fast: "سريعة",
+      faster: "أسرع",
+      fastest: "الأسرع",
+    },
     couldNotTranscribe: "تعذّر تفريغ هذا الفصل",
     transcript: "النص",
     transcriptReadyBody: "تتبع الكلمات الآن ما تستمع إليه.",

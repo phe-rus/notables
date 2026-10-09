@@ -340,6 +340,14 @@ export const sw: Messages = {
     storedBrowser: "Madokezo yamehifadhiwa kwenye kivinjari hiki",
   },
   listening: {
+    rates: {
+      slow: "Polepole",
+      normal: "Kawaida",
+      brisk: "Haraka kidogo",
+      fast: "Haraka",
+      faster: "Haraka zaidi",
+      fastest: "Haraka sana",
+    },
     couldNotTranscribe: "Imeshindwa kunukuu sura hii",
     transcript: "Nukuu",
     transcriptReadyBody: "Sasa maneno yanafuata unaposikiliza.",
