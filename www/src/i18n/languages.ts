@@ -6,6 +6,7 @@ export const languages = [
   { id: "pt", name: "Português", dir: "ltr" },
   { id: "sw", name: "Kiswahili", dir: "ltr" },
   { id: "ar", name: "العربية", dir: "rtl" },
+  { id: "zh", name: "简体中文", dir: "ltr" },
 ] as const;
 
 export type LanguageId = (typeof languages)[number]["id"];

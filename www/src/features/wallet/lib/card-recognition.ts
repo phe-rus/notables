@@ -74,7 +74,9 @@ export function suggestCardFields(text: string): CardSuggestions {
   };
 }
 
-const languages = { en: "eng", fr: "fra", es: "spa", pt: "por", sw: "swa", ar: "ara" };
+// Chinese reads with the English model for now: card numbers, dates and
+// Latin names come through, and chi_sim would add about 20 MB to the app.
+const languages = { en: "eng", fr: "fra", es: "spa", pt: "por", sw: "swa", ar: "ara", zh: "eng" };
 let active: (() => void) | null = null;
 
 export function cancelCardRecognition() {

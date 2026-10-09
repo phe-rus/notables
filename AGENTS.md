@@ -37,8 +37,8 @@ Shared app components are in `www/src/components`, platform glue in
 - Apple-like, premium, system-aware UX: respect the OS, its settings and
   its conventions on every platform.
 - Every user-facing string goes through `t()` from `www/src/i18n/i18n.ts`;
-  add new keys to all six catalogs in `www/src/i18n/messages/` (en, fr,
-  es, pt, sw, ar). A test checks they all match.
+  add new keys to all seven catalogs in `www/src/i18n/messages/` (en, fr,
+  es, pt, sw, ar, zh). A test checks they all match.
 
 ## Before every push
 
@@ -128,7 +128,9 @@ Shipped and tested in the browser (Playwright) unless noted:
   parts over chapters (`lib/chapter-outline.ts`), whole series delete
   through Recently Deleted (batch ids), and imports that guess the kind,
   find parts and merge into existing series (`imports/lib/import-targets.ts`).
-- Six languages with RTL for Arabic. Main surfaces are translated; some
+- Seven languages with RTL for Arabic; Simplified Chinese (`zh`, one
+  plural form) also serves Traditional Chinese devices for now, and the
+  wallet reads cards in Chinese with the English OCR model. Main surfaces are translated; some
   deeper screens (invoice editor, importers, readers' minor labels) are
   still English.
 - Peer-to-peer sharing with specific people (`features/sharing`,

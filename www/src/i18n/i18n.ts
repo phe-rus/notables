@@ -6,10 +6,11 @@ import { es } from "./messages/es";
 import { fr } from "./messages/fr";
 import { pt } from "./messages/pt";
 import { sw } from "./messages/sw";
+import { zh } from "./messages/zh";
 
 type DeepPartial<T> = { [K in keyof T]?: T[K] extends string ? string : DeepPartial<T[K]> };
 
-const catalogs: Record<LanguageId, DeepPartial<Messages>> = { en, fr, es, pt, sw, ar };
+const catalogs: Record<LanguageId, DeepPartial<Messages>> = { en, fr, es, pt, sw, ar, zh };
 
 /** "system" follows the device's language when Notables speaks it. */
 export type LanguageChoice = LanguageId | "system";

@@ -7,6 +7,7 @@ import { es } from "../../src/i18n/messages/es";
 import { fr } from "../../src/i18n/messages/fr";
 import { pt } from "../../src/i18n/messages/pt";
 import { sw } from "../../src/i18n/messages/sw";
+import { zh } from "../../src/i18n/messages/zh";
 
 function keys(node: unknown, prefix = ""): string[] {
   if (typeof node === "string") return [prefix];
@@ -21,10 +22,18 @@ describe("i18n", () => {
 
   it("has every message in every language", () => {
     const english = keys(en).sort();
-    for (const [id, catalog] of Object.entries({ fr, es, pt, sw, ar })) {
+    for (const [id, catalog] of Object.entries({ fr, es, pt, sw, ar, zh })) {
       expect({ id, keys: keys(catalog).sort() }).toEqual({ id, keys: english });
     }
-    expect(languages.map((language) => language.id)).toEqual(["en", "fr", "es", "pt", "sw", "ar"]);
+    expect(languages.map((language) => language.id)).toEqual([
+      "en",
+      "fr",
+      "es",
+      "pt",
+      "sw",
+      "ar",
+      "zh",
+    ]);
   });
 
   it("fills placeholders and picks plural forms", () => {
@@ -42,5 +51,8 @@ describe("i18n", () => {
     expect(t("books.chapterCount", { count: 2 })).toBe("فصلان");
     expect(t("books.chapterCount", { count: 5 })).toBe("5 فصول");
     expect(t("books.chapterCount", { count: 11 })).toBe("11 فصلًا");
+    setLanguageChoice("zh");
+    expect(t("books.chapterCount", { count: 1 })).toBe("1 章");
+    expect(t("settings.title")).toBe("设置");
   });
 });
