@@ -283,6 +283,11 @@ Right after the store work (9 October):
   (`AndroidSpeech.kt`, `www/src/platform/android-speech.ts`, the `android`
   voice provider) builds but has not been heard on a phone. iOS device
   voices sound poor in the WebView; the natural voice is the answer there.
+- Owner idea (10 Oct): "Add to Notables" from anywhere: long press or
+  right click text, a link or a page in other apps or the browser and save
+  it to a note with a link to its source. Needs an iOS share extension, an
+  Android share and text selection target (ACTION_SEND, PROCESS_TEXT), and
+  a desktop browser extension. Not designed yet; `/architect` it first.
 - Dismiss the glib Dependabot alert (GTK3 under Tauri on Linux, no fix
   available).
 
