@@ -290,8 +290,9 @@ Network (being discussed with the owner, no code yet): sync across your
 own devices without an account, encrypted end to end, Cloudflare only
 passing data through, people by a separate public ID, opt-in public
 sharing. Read **Proposed** [ADR-0007](docs/adr/0007-linked-devices-pass-through-network.md)
-first; the next step is `/architect` for its Stage A. Don't build it until
-the owner accepts it.
+first. Stage A is spec [0005](docs/specs/www/0005-linked-devices/index.md)
+(Proposed): the owner answers its six open questions and accepts both,
+then `/develop` starts at its step 1. Don't build it before that.
 
 The long plan, stage by stage, is in [docs/STAGES.md](docs/STAGES.md).
 Resume from its first unfinished stage (now Stage 1, UltraPeach).
