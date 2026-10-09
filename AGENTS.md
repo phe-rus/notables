@@ -180,7 +180,7 @@ Shipped and tested in the browser (Playwright) unless noted:
   to the internal track. Needs `PLAY_SERVICE_ACCOUNT_JSON` (service account
   `notables-play-release@pherus.iam.gserviceaccount.com`). iOS TestFlight
   job is written but off (`IOS_RELEASE` variable) until the Apple login gets
-  the Admin role on team LP7BW696WY.
+  the Admin role on team LP7BW596WY.
 
 ## Next
 

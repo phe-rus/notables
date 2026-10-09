@@ -109,7 +109,7 @@ jobs:
     env:
       APPLE_API_KEY: ${{ secrets.APPLE_API_KEY_ID }}
       APPLE_API_ISSUER: ${{ secrets.APPLE_API_ISSUER }}
-      APPLE_DEVELOPMENT_TEAM: LP7BW696WY
+      APPLE_DEVELOPMENT_TEAM: LP7BW596WY
     steps:
       - uses: actions/checkout@v4
       - uses: oven-sh/setup-bun@v2
