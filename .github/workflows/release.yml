@@ -57,9 +57,11 @@ jobs:
         with:
           distribution: temurin
           java-version: 21
-      - uses: android-actions/setup-android@v3
-      - name: Install the NDK
-        run: sdkmanager "ndk;${NDK_VERSION}"
+      # The runner ships the Android SDK; add the platform and NDK we build with.
+      - name: Install the Android platform and NDK
+        run: |
+          yes | "$ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager" --licenses > /dev/null
+          "$ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager" "platforms;android-37" "ndk;${NDK_VERSION}"
       - uses: dtolnay/rust-toolchain@stable
         with:
           targets: aarch64-linux-android
