@@ -257,6 +257,13 @@ gh workflow run ci.yml                            # the web checks, on demand
 The tag gives the version; the run number gives the build number, so every
 upload is newer than the last.
 
+Workflows (9 October): actions on Node 24 (checkout v7, setup-node v7,
+setup-java v6, upload-artifact v7), Linux jobs pinned to `ubuntu-24.04`
+(not `ubuntu-latest`, which moves to Ubuntu 26 from 19 October), Play
+upload with `tracks`. Never set `ITSAppUsesNonExemptEncryption` in
+`Info.ios.plist` without an approved encryption document's code: it makes
+TestFlight refuse the upload; each build asks in TestFlight instead.
+
 ## Next
 
 Right after the store work (9 October):
