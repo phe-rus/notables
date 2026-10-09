@@ -12,5 +12,6 @@ instead of editing.
 | 0004 | [A custom editor on Lexical](./0004-custom-lexical-editor.md)                           | Accepted |
 | 0005 | [Identity via Pherus, later](./0005-identity-via-pherus-later.md)                       | Accepted |
 | 0006 | [Device-first, peer-to-peer sharing, optional cloud backup](./0006-device-first-peer-sharing-optional-backup.md) | Accepted |
+| 0007 | [Linked devices, a pass-through network, and people by public ID](./0007-linked-devices-pass-through-network.md) | Proposed |
 
 New ADRs use [`template.md`](./template.md).

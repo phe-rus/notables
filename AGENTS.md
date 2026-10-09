@@ -286,6 +286,13 @@ Right after the store work (9 October):
 - Dismiss the glib Dependabot alert (GTK3 under Tauri on Linux, no fix
   available).
 
+Network (being discussed with the owner, no code yet): sync across your
+own devices without an account, encrypted end to end, Cloudflare only
+passing data through, people by a separate public ID, opt-in public
+sharing. Read **Proposed** [ADR-0007](docs/adr/0007-linked-devices-pass-through-network.md)
+first; the next step is `/architect` for its Stage A. Don't build it until
+the owner accepts it.
+
 The long plan, stage by stage, is in [docs/STAGES.md](docs/STAGES.md).
 Resume from its first unfinished stage (now Stage 1, UltraPeach).
 

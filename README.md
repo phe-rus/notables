@@ -1,39 +1,45 @@
 <p align="center">
-  <img src="docs/media/banner.jpg" width="100%" alt="Notables: a calm place for everything you write. Three phones show a book page, a handwritten travel note and the calendar.">
+  <img src="www/src-tauri/icons/source/app-icon-desktop.svg" width="96" height="96" alt="The Notables icon: an ink N with a honey full stop on warm paper">
 </p>
 
+<h1 align="center">Notables</h1>
+
 <p align="center">
-  <b>Notes, journals, stories, books, comics, audiobooks, invoices and plans,</b><br>
+  <b>Anything notable, always with you.</b><br>
+  Notes, journals, stories, books, comics, audiobooks, invoices and plans,<br>
   kept on your own devices and shared only when you choose.
 </p>
 
 <p align="center">
   <img alt="Local first" src="https://img.shields.io/badge/local--first-no%20account%20needed-e98a2a">
   <img alt="Platforms" src="https://img.shields.io/badge/platforms-web%20%C2%B7%20macOS%20%C2%B7%20Windows%20%C2%B7%20Linux%20%C2%B7%20Android%20%C2%B7%20iOS-2a2520">
-  <img alt="Six languages" src="https://img.shields.io/badge/languages-6-6b8afd">
+  <img alt="Seven languages" src="https://img.shields.io/badge/languages-7-6b8afd">
   <a href="LICENSE"><img alt="MIT license" src="https://img.shields.io/badge/license-MIT-2f9e5b"></a>
 </p>
 
 <p align="center">
-  <a href="#-get-notables">Get it</a> ·
+  <a href="https://notables.pherus.org"><b>Open the web app</b></a> ·
+  <a href="https://pherus.org/showcase/notables">See it in action</a> ·
   <a href="#-what-you-can-do">Features</a> ·
-  <a href="#-private-by-design">Privacy</a> ·
-  <a href="#-inside-the-repository">Inside</a> ·
   <a href="DEVELOPERS.md">Build it</a> ·
   <a href="docs/ROADMAP.md">Roadmap</a>
 </p>
 
+<p align="center">
+  <a href="https://pherus.org/showcase/notables"><img src="https://pherus.org/showcase/notables-journal.jpg" width="49%" alt="A journal entry, A slow Sunday, open beside the notes list and the sidebar"></a>
+  <a href="https://pherus.org/showcase/notables"><img src="https://pherus.org/showcase/notables-invoice.jpg" width="49%" alt="An invoice for Harbour Café being edited, with its signed PDF preview and QR check"></a>
+</p>
+
 ---
 
-Notables is one app for writing, reading and keeping things: a quick note,
-a journal, a story that grows into a book, a comic you're drawing, an
+Notables is one calm app for writing, reading and keeping things: a quick
+note, a journal, a story that grows into a book, a comic you're drawing, an
 audiobook you're listening to, an invoice a client can verify. It opens
-straight away, works without a connection, and never asks you to sign up.
-Everything lives on your device first.
+straight away, works without a connection and never asks you to sign up.
 
-It's built from a single codebase for the web, macOS, Windows, Linux,
-Android and iOS, and it follows each system's own conventions: its fonts,
-haptics, keyboard, dark mode and text size.
+One codebase runs on the web, macOS, Windows, Linux, Android and iOS, and on
+each it follows the system's own fonts, haptics, keyboard, dark mode and
+text size.
 
 ## 📥 Get Notables
 
@@ -50,143 +56,122 @@ haptics, keyboard, dark mode and text size.
   <tr>
     <td width="50%" valign="top">
       <h3>📝 Write anything</h3>
-      Notes, journals, stories, articles, lessons and plans in an editor made
-      for words: headings, quotes, lists, checklists, highlights, links,
-      photos and audio, with Markdown shortcuts and a choice of fonts.
+      An editor made for words: headings, lists, checklists, highlights,
+      photos and audio, Markdown shortcuts and a choice of fonts. Swipe a
+      note to pin or delete it, or hold and slide to select several.
     </td>
     <td width="50%" valign="top">
-      <h3>✍️ Write by hand</h3>
-      Handwriting pages inside any note, with pen pressure and palm
-      rejection. Draw comic, manga and picture-book pages in the studio,
-      and come back to edit every stroke.
+      <h3>✍️ Write and draw by hand</h3>
+      Handwriting pages with pen pressure and palm rejection, and a studio
+      for comic, manga and picture-book pages where every stroke stays
+      editable.
     </td>
   </tr>
   <tr>
     <td valign="top">
       <h3>📚 Make and read books</h3>
-      Gather notes into books with parts and chapters, then read them with
-      real page turns. Import EPUB, PDF, CBZ and audio, and read comics and
-      manga in readers made for them.
+      Gather notes into books with parts and chapters and read them with
+      real page turns. Import EPUB, PDF, CBZ and audio; comics and manga get
+      readers of their own.
     </td>
     <td valign="top">
       <h3>🎧 Listen and read along</h3>
-      Audiobooks play throughout the app with a mini player. Read-along
-      follows the words as they're spoken, transcribed on your device, and
-      any note can be read aloud in a natural voice.
+      Audiobooks with a mini player, read-along that follows each word, and
+      any note read aloud in a natural voice that runs on your device.
     </td>
   </tr>
   <tr>
     <td valign="top">
       <h3>🎙️ Record and transcribe</h3>
-      Speak, and Notables writes it down with Whisper running on your
-      device. Recordings stay beside the words they became.
+      Speak, and Whisper writes it down on your device. Recordings stay
+      beside the words they became.
     </td>
     <td valign="top">
       <h3>🗓️ Plan your days</h3>
-      Plans, reminders, birthdays, anniversaries, deadlines and trips over
-      several days. Day, week, month and year views, public holidays for
-      your country, and "Type it" to add a plan from a sentence.
+      Plans, reminders, birthdays, deadlines and trips in day, week, month
+      and year views, with your country's public holidays and "Type it" to
+      add a plan from a sentence.
     </td>
   </tr>
   <tr>
     <td valign="top">
       <h3>🧾 Invoices you can prove</h3>
-      Invoices, receipts and quotes with your business profile. Each carries
-      a signed seal and a QR code, so anyone can check that a document is
-      genuine and unchanged.
+      Invoices, receipts and quotes with your business profile, each with a
+      signed seal and a QR code anyone can scan to check it's genuine.
     </td>
     <td valign="top">
-      <h3>🌐 Publish when you're ready</h3>
-      Turn any note into a public page that readers can heart and rate.
-      Update it or take it down whenever you like.
+      <h3>💳 A private wallet</h3>
+      Copies of your bank cards, IDs, passport and SIM details, scanned with
+      the camera and encrypted on your device. They never leave it.
     </td>
   </tr>
   <tr>
     <td valign="top">
-      <h3>🤝 Share with people, not servers</h3>
-      Write together with specific people, device to device, and see who's
-      around in Connections. Nothing passes through an account.
+      <h3>🌐 Publish or share</h3>
+      Turn a note into a public page readers can heart and rate, or write
+      together with specific people, device to device.
     </td>
     <td valign="top">
       <h3>📦 Take it all with you</h3>
-      Export to EPUB, PDF, Word, HTML, Markdown, plain text, CBZ, image
-      archives and audiobook folders. Deleted things wait a week in
-      Recently Deleted.
-    </td>
-  </tr>
-  <tr>
-    <td valign="top">
-      <h3>📲 At a glance</h3>
-      A Today widget for your home screen or desktop with your next plans
-      and pinned notes, haptics that follow your system, and
-      <code>notables://</code> links straight to a note or a book.
-    </td>
-    <td valign="top">
-      <h3>🌍 In your language</h3>
-      English, French, Spanish, Portuguese, Swahili and Arabic, with the
-      whole interface turning right to left for Arabic.
+      Export to EPUB, PDF, Word, HTML, Markdown, text, CBZ and audiobook
+      folders. Deleted things wait a week in Recently Deleted.
     </td>
   </tr>
 </table>
+
+Plus a Today widget, `notables://` links to any note or book, and the whole
+interface in English, French, Spanish, Portuguese, Swahili, Arabic (right
+to left) and Simplified Chinese.
 
 ## 🔒 Private by design
 
 - **No account.** Notables works fully the moment it opens. Your name stays
   on your device and appears only on what you publish.
-- **On your device first.** Notes live in a database on your device and
-  media as ordinary files. It all works offline.
-- **AI only if you ask.** AI help is off by default. Turn it on with your
-  own Claude, Gemini or OpenRouter key, and it talks to that provider alone.
+- **On your device first.** Notes live in a database on your device, media
+  as ordinary files, and it all works offline.
+- **AI only if you ask.** Off by default; turn it on with your own Claude,
+  Gemini or OpenRouter key and it talks to that provider alone.
 - **Speech stays local.** Transcription and natural voices run on your
-  device, from model packs you choose to download.
+  device from model packs you choose to download.
+
+## 🧭 Where it's going
+
+Notables is young (version 0.1). The next big piece is **your devices,
+together**: link a phone, a laptop and the web by scanning a code, no
+account, and pick up wherever you left off. Devices on the same network talk
+directly; otherwise Cloudflare only passes encrypted data through and keeps
+nothing. After that come friends by a shareable ID, writing together, and
+opt-in public sharing helped along by the people who read it. The plan is
+in [ADR-0007](docs/adr/0007-linked-devices-pass-through-network.md), still
+being discussed, and the [roadmap](docs/ROADMAP.md) has the rest.
 
 ## 🗂️ Inside the repository
-
-One codebase ships everywhere. The parts worth a look:
 
 | Path | What it is |
 |---|---|
 | [`www/`](www) | The app: TanStack Start and React on Cloudflare Workers, and the frontend of every native build |
 | [`www/src-tauri/`](www/src-tauri) | The Tauri 2 shell for iOS, Android, macOS, Windows and Linux: SQLite storage, media, on-device Whisper and voices, the encrypted wallet |
-| [`packages/ultrapeach/`](packages/ultrapeach) | **UltraPeach**, our design language: tokens, Dynamic Type text styles, materials, platform variants and components ([its rules](packages/ultrapeach/AGENTS.md)) |
-| [`packages/pluraliti/`](packages/pluraliti) | **Pluraliti**, the custom rich text editor built on Lexical and Yjs |
-| [`packages/sync/`](packages/sync) | Yjs persistence and the peer-to-peer mesh for sharing between devices |
+| [`packages/ultrapeach/`](packages/ultrapeach) | **UltraPeach**, our design language: tokens, text styles, materials, platform variants and components |
+| [`packages/pluraliti/`](packages/pluraliti) | **Pluraliti**, the rich text editor built on Lexical and Yjs |
+| [`packages/sync/`](packages/sync) | Yjs persistence and the peer-to-peer mesh |
 | [`packages/notable-core/`](packages/notable-core) | Shared models: notes, invoicing, calendar recurrence |
-| [`docs/`](docs) | [Architecture](docs/ARCHITECTURE.md), [decisions](docs/adr), feature [specs](docs/specs/www) and the [stage plan](docs/STAGES.md) |
-
-Big choices are written down as decision records before they're built:
-[local first](docs/adr/0003-local-first-private-server-authoritative-social.md),
-[a custom editor](docs/adr/0004-custom-lexical-editor.md) and
-[device-to-device sharing](docs/adr/0006-device-first-peer-sharing-optional-backup.md)
-are good places to start.
+| [`docs/`](docs) | [Architecture](docs/ARCHITECTURE.md), [decisions](docs/adr), [specs](docs/specs/www) and the [stage plan](docs/STAGES.md) |
 
 ## 🛠️ Build it yourself
-
-Notables is open source. The web app runs with two commands:
 
 ```sh
 bun install
 bun run dev        # http://localhost:3000
 ```
 
-Native apps, the stack, the repository map, checks and deployment are all
-in **[DEVELOPERS.md](DEVELOPERS.md)**. How to propose a change is in
-[CONTRIBUTING.md](CONTRIBUTING.md).
-
-## 🧭 Where it's going
-
-Notables is young (version 0.1). Coming next: streaming transcription
-while you record, optional sign-in with cloud backup and a relay for
-sharing when people aren't online together, lessons and flashcards, and
-public releases on the App Store and Google Play. The
-[roadmap](docs/ROADMAP.md) has the details.
+Native apps, checks and deployment are in **[DEVELOPERS.md](DEVELOPERS.md)**;
+how to propose a change is in [CONTRIBUTING.md](CONTRIBUTING.md).
 
 ## 🍑 Made by Pherus
 
 Notables is made by [Pherus](https://pherus.org), a small software studio
-in Kampala, Uganda. We build calm, private software that works offline
-first and feels at home on every platform. UltraPeach, the design
-language behind Notables, is ours too and will carry into our other apps.
+in Kampala, Uganda, building calm, private software that works offline
+first and feels at home on every platform.
 
 Questions, ideas or bugs: [open an issue](../../issues).
 
