@@ -23,8 +23,11 @@ update **Status** in `AGENTS.md`, and record lasting decisions in `docs/adr/`.
 
 ## Open questions
 
-- **Logo direction.** The current mark reads cartoonish. Needs a brief:
-  mood words, what to keep (the "N", the folded corner), and references.
+- **Logo direction** (decided 9 October): the curling honey page read as
+  cartoonish. The mark is now a sheet of warm paper with a quiet dog-ear,
+  the ink N and a honey full stop; orange only in the dot. Full-bleed for
+  iOS (`icons/source/app-icon.svg`), framed for desktop, web and the in-app
+  mark (`app-icon-desktop.svg`). Android keeps its adaptive N on paper.
 
 ## Stage 1: UltraPeach foundation · in progress
 

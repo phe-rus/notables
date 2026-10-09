@@ -153,7 +153,10 @@ jobs:
           echo "APPLE_API_KEY_PATH=$key" >> "$GITHUB_ENV"
       - name: Generate the Xcode project
         working-directory: www
-        run: test -d src-tauri/gen/apple || bun run tauri ios init --ci
+        # A fresh project carries Tauri's placeholder icon; put ours in.
+        run: |
+          test -d src-tauri/gen/apple || bun run tauri ios init --ci
+          cp src-tauri/icons/ios/*.png src-tauri/gen/apple/Assets.xcassets/AppIcon.appiconset/
       - name: Build the signed app
         working-directory: www
         # Signing is automatic: Xcode fetches certificates and profiles with the API key.

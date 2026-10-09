@@ -65,7 +65,7 @@ Preserve these fixes found on a physical Android phone:
 ## Physical phone evidence
 
 The user wants actual mobile device testing before further feature expansion.
-The connected phone was TECNO CI6, Android 13, adb serial `085452525P011328`.
+The connected phone was the owner's TECNO CI6 (Android 13).
 An emulator was also connected. Always select the phone explicitly and confirm
 it is still attached. Never assume an emulator result is physical target evidence.
 
@@ -80,9 +80,7 @@ native permission or file selection dialogs only. Reconfirm attachment before
 selecting the physical target.
 
 The empty prototype vault was migrated to device storage on the phone and
-reopened after a full process restart without a credential. Its previous synthetic
-credential was `Wallet-test-2026`, retained here solely for historical fixture
-recovery, never for product setup. The final migration implementation also rotates
+reopened after a full process restart without a credential. The final migration implementation also rotates
 the data key and preserves card revisions and retry receipts atomically. The
 final rotation also succeeded on the phone; restart after that final rotation
 remains to be checked. An

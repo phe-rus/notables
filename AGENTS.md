@@ -174,11 +174,10 @@ Shipped and tested in the browser (Playwright) unless noted:
 - Stores (9 October): bundle ID and Android package are
   `notables.pherus.org` everywhere (same style as Opes).
   Google Play: app "Notables" (Pherus organization account), internal
-  track live from CI (0.1.2), tester list "Pherus developers"
-  (pherus@pherus.org, la.niina.me@gmail.com), opt-in link
-  https://play.google.com/apps/internaltest/4701559714852983698.
+  track live from CI (0.1.2), tester list "Pherus developers" (the
+  opt-in link is on the Internal testing page, Testers tab).
   Apple: team PHERUS .CO -SMC LIMITED, `LP7BW596WY`; the owner's own login
-  (la.niina.me) is Admin but Certificates, Identifiers & Profiles only opens
+  is Admin but Certificates, Identifiers & Profiles only opens
   for the Account Holder login. App Store Connect app "Notables by Pherus"
   (the name "Notables" is taken; the home screen still says Notables),
   TestFlight internal group "Pherus developers" with automatic distribution.

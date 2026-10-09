@@ -15,8 +15,10 @@
 </p>
 
 <p align="center">
+  <a href="#-get-notables">Get it</a> ·
   <a href="#-what-you-can-do">Features</a> ·
   <a href="#-private-by-design">Privacy</a> ·
+  <a href="#-inside-the-repository">Inside</a> ·
   <a href="DEVELOPERS.md">Build it</a> ·
   <a href="docs/ROADMAP.md">Roadmap</a>
 </p>
@@ -32,6 +34,15 @@ Everything lives on your device first.
 It's built from a single codebase for the web, macOS, Windows, Linux,
 Android and iOS, and it follows each system's own conventions: its fonts,
 haptics, keyboard, dark mode and text size.
+
+## 📥 Get Notables
+
+| Where | Status |
+|---|---|
+| **Web** | [notables.pherus.org](https://notables.pherus.org) |
+| **Android** | Testing on Google Play (invite only for now) |
+| **iPhone and iPad** | Testing on TestFlight (invite only for now) |
+| **macOS, Windows, Linux** | Build from source ([DEVELOPERS.md](DEVELOPERS.md)); installers to follow |
 
 ## ✨ What you can do
 
@@ -129,6 +140,26 @@ haptics, keyboard, dark mode and text size.
 - **Speech stays local.** Transcription and natural voices run on your
   device, from model packs you choose to download.
 
+## 🗂️ Inside the repository
+
+One codebase ships everywhere. The parts worth a look:
+
+| Path | What it is |
+|---|---|
+| [`www/`](www) | The app: TanStack Start and React on Cloudflare Workers, and the frontend of every native build |
+| [`www/src-tauri/`](www/src-tauri) | The Tauri 2 shell for iOS, Android, macOS, Windows and Linux: SQLite storage, media, on-device Whisper and voices, the encrypted wallet |
+| [`packages/ultrapeach/`](packages/ultrapeach) | **UltraPeach**, our design language: tokens, Dynamic Type text styles, materials, platform variants and components ([its rules](packages/ultrapeach/AGENTS.md)) |
+| [`packages/pluraliti/`](packages/pluraliti) | **Pluraliti**, the custom rich text editor built on Lexical and Yjs |
+| [`packages/sync/`](packages/sync) | Yjs persistence and the peer-to-peer mesh for sharing between devices |
+| [`packages/notable-core/`](packages/notable-core) | Shared models: notes, invoicing, calendar recurrence |
+| [`docs/`](docs) | [Architecture](docs/ARCHITECTURE.md), [decisions](docs/adr), feature [specs](docs/specs/www) and the [stage plan](docs/STAGES.md) |
+
+Big choices are written down as decision records before they're built:
+[local first](docs/adr/0003-local-first-private-server-authoritative-social.md),
+[a custom editor](docs/adr/0004-custom-lexical-editor.md) and
+[device-to-device sharing](docs/adr/0006-device-first-peer-sharing-optional-backup.md)
+are good places to start.
+
 ## 🛠️ Build it yourself
 
 Notables is open source. The web app runs with two commands:
@@ -147,7 +178,17 @@ in **[DEVELOPERS.md](DEVELOPERS.md)**. How to propose a change is in
 Notables is young (version 0.1). Coming next: streaming transcription
 while you record, optional sign-in with cloud backup and a relay for
 sharing when people aren't online together, lessons and flashcards, and
-the iOS app. The [roadmap](docs/ROADMAP.md) has the details.
+public releases on the App Store and Google Play. The
+[roadmap](docs/ROADMAP.md) has the details.
+
+## 🍑 Made by Pherus
+
+Notables is made by [Pherus](https://pherus.org), a small software studio
+in Kampala, Uganda. We build calm, private software that works offline
+first and feels at home on every platform. UltraPeach, the design
+language behind Notables, is ours too and will carry into our other apps.
+
+Questions, ideas or bugs: [open an issue](../../issues).
 
 ## 📄 License
 

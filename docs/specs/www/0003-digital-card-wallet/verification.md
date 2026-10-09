@@ -74,7 +74,7 @@ formatting, Clippy with warnings denied on the host, and diff whitespace checks
 also passed. Android compilation retains three preexisting unused import warnings
 in unrelated modules.
 
-The physical TECNO CI6, serial `085452525P011328`, was confirmed attached alongside
+The physical TECNO CI6 was confirmed attached alongside
 an emulator. No APK was installed and no phone application was operated in this
 resume session. Coordination about resuming device interaction is still pending.
 No new physical runtime evidence is claimed. Do not clear or replace the existing

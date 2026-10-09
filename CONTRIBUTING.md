@@ -14,7 +14,8 @@ bun run test
 bun run check       # all of the above
 ```
 
-CI runs the same commands on every pull request.
+Run them before you push. CI runs the same checks, but only when started by
+hand (Actions minutes are limited); a maintainer runs it on your pull request.
 
 ## Branches
 
