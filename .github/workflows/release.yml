@@ -110,6 +110,8 @@ jobs:
       APPLE_API_KEY: ${{ secrets.APPLE_API_KEY_ID }}
       APPLE_API_ISSUER: ${{ secrets.APPLE_API_ISSUER }}
       APPLE_DEVELOPMENT_TEAM: LP7BW596WY
+      # Native code (whisper.cpp) must target the app's minimum iOS, not the SDK's.
+      IPHONEOS_DEPLOYMENT_TARGET: "15.0"
     steps:
       - uses: actions/checkout@v4
       - uses: oven-sh/setup-bun@v2

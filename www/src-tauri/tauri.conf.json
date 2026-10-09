@@ -49,6 +49,11 @@
     },
     "android": {
       "debugApplicationIdSuffix": ".debug"
+    },
+    "iOS": {
+      "developmentTeam": "LP7BW596WY",
+      "minimumSystemVersion": "15.0",
+      "frameworks": ["Accelerate"]
     }
   },
   "plugins": {
