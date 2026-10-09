@@ -261,19 +261,14 @@ upload is newer than the last.
 
 Right after the store work (9 October):
 
-- BLOCKING iOS: v0.1.6 (9 October) reached Google Play, but TestFlight
-  refused the upload: "Invalid Export Compliance Code ... key value [] in
-  the app's Info.plist doesn't match ... export compliance documentation".
-  Get the code from App Store Connect (App Information > App Encryption
-  Documentation > the approved document), add
-  `<key>ITSEncryptionExportComplianceCode</key><string>CODE</string>` to
-  `www/src-tauri/Info.ios.plist`, then rerun iOS only:
-  `git tag ios-v0.1.6 && git push origin ios-v0.1.6`.
-- App Store Connect: the owner is filling the App Encryption
-  Documentation (standard algorithms, not available in France). When it
-  shows an `ITSEncryptionExportComplianceCode`, add it to
-  `www/src-tauri/Info.ios.plist` so builds stop asking. Then fill the App
-  Store page from `docs/store/listing.md` and the screenshots.
+- iOS export compliance: App Store Connect has no encryption document
+  (only "Upload"), so `Info.ios.plist` must not set
+  `ITSAppUsesNonExemptEncryption`: set to true without a document's code,
+  altool rejects the upload ("Invalid Export Compliance Code", v0.1.6).
+  Each build asks in TestFlight instead (standard encryption, not in
+  France). Uploading a document later would give a code to add with the key.
+- Fill the App Store page from `docs/store/listing.md` and the
+  screenshots.
 - Tag a new release (`v0.1.6`) and check on both phones: TestFlight shows
   the new version, About shows it, the natural voice and Whisper download
   and play, the notes list swipes and hold-and-slide selection.

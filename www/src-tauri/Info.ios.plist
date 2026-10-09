@@ -14,10 +14,8 @@
   <string>Notables saves images and exports you choose to your photo library.</string>
   <key>NSFaceIDUsageDescription</key>
   <string>Notables uses Face ID to unlock your wallet and other places you lock.</string>
-  <!-- Export compliance, answered once here instead of on every build: the
-       wallet seals records with ChaCha20-Poly1305 (Rust, not Apple's), a
-       standard algorithm. Not offered in France until its declaration is filed. -->
-  <key>ITSAppUsesNonExemptEncryption</key>
-  <true/>
+  <!-- No ITSAppUsesNonExemptEncryption here: set to true, Apple also wants
+       the code of an approved encryption document, and there is none. Each
+       TestFlight build asks instead: standard encryption, not in France. -->
 </dict>
 </plist>
