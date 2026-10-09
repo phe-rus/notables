@@ -36,12 +36,12 @@ env:
 jobs:
   version:
     name: Version
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     outputs:
       name: ${{ steps.version.outputs.name }}
       code: ${{ steps.version.outputs.code }}
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
       - id: version
         # The tag gives the version people see; the run number gives every
         # upload a higher build number, as both stores require.
@@ -57,16 +57,16 @@ jobs:
     if: >-
       (github.event_name == 'workflow_dispatch' && inputs.stores != 'ios') ||
       (github.event_name == 'push' && !startsWith(github.ref_name, 'ios-'))
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
       - uses: oven-sh/setup-bun@v2
         with:
           bun-version: ${{ env.BUN_VERSION }}
-      - uses: actions/setup-node@v4
+      - uses: actions/setup-node@v7
         with:
           node-version: 22
-      - uses: actions/setup-java@v4
+      - uses: actions/setup-java@v6
         with:
           distribution: temurin
           java-version: 21
@@ -104,10 +104,10 @@ jobs:
           serviceAccountJsonPlainText: ${{ secrets.PLAY_SERVICE_ACCOUNT_JSON }}
           packageName: notables.pherus.org
           releaseFiles: www/src-tauri/gen/android/app/build/outputs/bundle/universalRelease/*.aab
-          track: ${{ inputs.track || 'internal' }}
+          tracks: ${{ inputs.track || 'internal' }}
           releaseName: ${{ needs.version.outputs.name }} (${{ needs.version.outputs.code }})
           status: completed
-      - uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@v7
         with:
           name: android-${{ needs.version.outputs.name }}
           path: www/src-tauri/gen/android/app/build/outputs/bundle/universalRelease/*.aab
@@ -129,11 +129,11 @@ jobs:
       # Native code (whisper.cpp) must target the app's minimum iOS, not the SDK's.
       IPHONEOS_DEPLOYMENT_TARGET: "15.0"
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
       - uses: oven-sh/setup-bun@v2
         with:
           bun-version: ${{ env.BUN_VERSION }}
-      - uses: actions/setup-node@v4
+      - uses: actions/setup-node@v7
         with:
           node-version: 22
       - uses: dtolnay/rust-toolchain@stable
