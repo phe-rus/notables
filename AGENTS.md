@@ -172,21 +172,42 @@ Shipped and tested in the browser (Playwright) unless noted:
   note screen stamps `updatedAt` only for real edits.
 
 - Stores (9 October): bundle ID and Android package are
-  `notables.pherus.org` everywhere (same style as Opes).
-  Google Play: app "Notables" (Pherus organization account), internal
-  track live from CI (0.1.2), tester list "Pherus developers" (the
-  opt-in link is on the Internal testing page, Testers tab).
-  Apple: team PHERUS .CO -SMC LIMITED, `LP7BW596WY`; the owner's own login
-  is Admin but Certificates, Identifiers & Profiles only opens
-  for the Account Holder login. App Store Connect app "Notables by Pherus"
-  (the name "Notables" is taken; the home screen still says Notables),
-  TestFlight internal group "Pherus developers" with automatic distribution.
-  First iOS build 0.1.3 (10005) is in TestFlight. Every iOS build asks the
-  export compliance question: standard encryption, not available in France
-  (until the French declaration is filed before the App Store launch).
-  iOS links Accelerate for whisper.cpp (`bundle.iOS.frameworks`).
-  Keys and passwords live in `secrets/` at the repo root (gitignored, backed
-  up by the owner; its README lists every GitHub secret).
+  `notables.pherus.org` everywhere (same style as Opes). The repo is public
+  (MIT); keys live in `secrets/` at the root (gitignored, backed up by the
+  owner; its README lists every GitHub secret).
+  Google Play: app "Notables" (Pherus organization account), internal track
+  fed by CI, tester list "Pherus developers". Store listing done: texts from
+  `docs/store/listing.md`, icon, feature graphic, 6 phone screenshots,
+  Productivity, support@pherus.org, +256772769734, notables.pherus.org,
+  privacy https://pherus.org/legal/privacy-policy, advertising ID "No".
+  Still owed before production: data safety, content rating, target audience.
+  Apple: team PHERUS .CO -SMC LIMITED, `LP7BW596WY`. Certificates,
+  Identifiers & Profiles only opens for the Account Holder login. App Store
+  Connect app "Notables by Pherus" ("Notables" is taken; the home screen
+  still says Notables), TestFlight internal group "Pherus developers" with
+  automatic distribution. Each iOS build asks export compliance: standard
+  encryption, not available in France (until the French declaration is
+  filed). The App Store page (texts, screenshots, category) is not filled
+  in yet; everything is in `docs/store/listing.md`.
+  Store screenshots: regenerate with a Playwright script against `bun run
+  dev` (iPhone 430x932 at 3x, iPad 1024x1366 at 2x, Android 412x892 at 3x),
+  composed with Newsreader headlines and Caveat accents on paper.
+  Tagline: "Anything notable, always with you." Store metadata may not name
+  other apps.
+- Brand (9 October): the mark is warm paper with a quiet dog-ear, the ink N
+  and a honey full stop (`icons/source/app-icon.svg` full-bleed for iOS,
+  `app-icon-desktop.svg` framed for desktop, web and `AppMark`). Android
+  keeps its adaptive icon. CI copies `icons/ios` into the fresh Xcode
+  project.
+- iOS: `Info.ios.plist` holds the usage descriptions (camera, microphone,
+  speech, photo saving, Face ID); a missing one ends the app instantly.
+  Accelerate is linked for whisper.cpp (`bundle.iOS.frameworks`).
+- Android: bar icons follow the app's appearance through
+  `AndroidBridge.setSystemBarsDark` (a light app on a dark phone).
+- Settings: every page tile uses the Appearance lavender.
+- pherus.org privacy policy: a "Notables app" section (en, zh, fr) is
+  committed in `~/pherus/pherus` but not pushed or deployed until the owner
+  reviews it.
 
 ## Releasing
 
@@ -206,6 +227,12 @@ The tag gives the version; the run number gives the build number, so every
 upload is newer than the last.
 
 ## Next
+
+Right after the store work (9 October): fill the App Store Connect page
+from `docs/store/listing.md` and the screenshots; a notes list preview
+length setting (1 to 5 lines, like Mail) instead of the fixed single line;
+dismiss the glib Dependabot alert (GTK3 under Tauri on Linux, no fix
+available); test 0.1.5 on both phones (camera in setup, bar icons).
 
 The long plan, stage by stage, is in [docs/STAGES.md](docs/STAGES.md).
 Resume from its first unfinished stage (now Stage 1, UltraPeach).

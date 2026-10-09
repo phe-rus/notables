@@ -11,7 +11,8 @@ in step with this file. Limits are in brackets.
 - **Privacy policy:** https://pherus.org/legal/privacy-policy (section 4 covers Notables; [docs/PRIVACY.md](../PRIVACY.md) is the long form)
 - **Support / website:** https://github.com/phe-rus/notables
 - **Marketing URL:** https://notables.pherus.org
-- **Contact email:** pherus@pherus.org
+- **Support email:** support@pherus.org (company and privacy: pherus@pherus.org)
+- **Phone:** +256772769734
 - **Price:** free, no ads, no in-app purchases
 - **Copyright:** 2026 Pherus
 
@@ -107,4 +108,4 @@ Notables is open source: github.com/phe-rus/notables
 ## Release notes template
 
 What's new in this test: [one or two plain sentences]. Tell us what you
-think from TestFlight or by email at pherus@pherus.org.
+think from TestFlight or by email at support@pherus.org.
