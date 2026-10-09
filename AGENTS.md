@@ -118,9 +118,17 @@ Shipped and tested in the browser (Playwright) unless noted:
 - Natural voice on the device (spec 0001, in progress): Supertonic 3 via
   ONNX Runtime (`src-tauri/src/voice`), versioned checksummed model packs
   (`src-tauri/src/models`, served by `/models/$` from R2), Settings >
-  Downloads. Whisper now downloads as the `whisper-base` pack. Not live
-  until the packs are published (`bun run models:publish <id>`) and the
-  Worker is deployed; the bucket and database rename (AC-14) is still open.
+  Downloads. Whisper now downloads as the `whisper-base` pack. Both packs
+  were published to R2 on 9 October (`bun run models:publish <id>`, the
+  manifest at https://notables.pherus.org/models/manifest.json); before
+  that every download failed with "Check your connection", which is how
+  a missing manifest shows. Publishing resumes after a dropped upload
+  (only a manifest entry counts as published) and retries each file;
+  this connection drops large uploads often. Not yet heard on a phone. The bucket and
+  database rename (AC-14) is still open.
+- Read-aloud speeds have names (Slow, Normal, Brisk, Fast, Faster,
+  Fastest; `rateName` in `listening/lib/narration-settings.ts`), in
+  Settings > Listening, the read-aloud bar and the audiobook player.
 - Four media kinds (spec 0002, built, awaiting `/check verify` and `/test`):
   every item and series is a book, comic, manga or audiobook
   (`books/model/media-kind.ts`, read through `getBookStore().kindOf`),
@@ -210,9 +218,19 @@ Shipped and tested in the browser (Playwright) unless noted:
   `AndroidBridge.setSystemBarsDark` (a light app on a dark phone).
 - Settings: every page icon is a round tile in the person's accent color.
   About reads the installed version from the shell (`getVersion`).
-- Notes list: preview of 0 to 5 lines (Settings > Notes list, default 2,
-  like Mail); group labels line up with the titles; the pin shows only in
-  search results.
+- Notes list (`features/library/components/notes-list.tsx`): preview of 0
+  to 5 lines (default 2, like Mail), order, dates, pinned at top, swipe
+  actions, all in Settings > Notes list. Rows (`note-row.tsx`) swipe right
+  to pin and left for More and Delete (both sides chosen in Settings; a
+  full swipe runs the outer action). Touch and hold: let go for the menu,
+  or slide to select every note passed, like Photos
+  (`lib/use-hold-to-select.ts`, which stops scrolling once the hold lands
+  and scrolls near the edges); the selection bar pins, changes kind or
+  deletes. The note menu is seven rows; Font and Kind open in its place
+  (`openFollowUpMenu` in UltraPeach). No drag to reorder (the owner
+  doesn't want it) and no Lock action until the Lock ships. Tested with
+  real touch events in Chromium at phone size, not yet on a phone.
+- Languages: seven, with Simplified Chinese (`zh`).
 - iOS release: CI stamps the tag's version into `tauri.conf.json` and the
   generated Info.plist before building (TestFlight builds had all stayed
   at 0.1.0). `Info.ios.plist` declares `ITSAppUsesNonExemptEncryption`
@@ -241,11 +259,22 @@ upload is newer than the last.
 
 ## Next
 
-Right after the store work (9 October): fill the App Store Connect page
-from `docs/store/listing.md` and the screenshots; finish the App
-Encryption Documentation (standard algorithms, not in France) and add its
-code to `Info.ios.plist`; dismiss the glib Dependabot alert (GTK3 under Tauri on Linux, no fix
-available); test 0.1.5 on both phones (camera in setup, bar icons).
+Right after the store work (9 October):
+
+- App Store Connect: the owner is filling the App Encryption
+  Documentation (standard algorithms, not available in France). When it
+  shows an `ITSEncryptionExportComplianceCode`, add it to
+  `www/src-tauri/Info.ios.plist` so builds stop asking. Then fill the App
+  Store page from `docs/store/listing.md` and the screenshots.
+- Tag a new release (`v0.1.6`) and check on both phones: TestFlight shows
+  the new version, About shows it, the natural voice and Whisper download
+  and play, the notes list swipes and hold-and-slide selection.
+- Android read aloud without the download: the WebView has no
+  speechSynthesis voices, so device voices need TextToSpeech through
+  `AndroidBridge.kt`. iOS device voices sound poor in the WebView; the
+  natural voice is the answer there.
+- Dismiss the glib Dependabot alert (GTK3 under Tauri on Linux, no fix
+  available).
 
 The long plan, stage by stage, is in [docs/STAGES.md](docs/STAGES.md).
 Resume from its first unfinished stage (now Stage 1, UltraPeach).

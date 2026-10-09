@@ -97,13 +97,28 @@ const contentTypeOf = (path: string) =>
       ? "text/plain"
       : "application/octet-stream";
 
+/** Large uploads sometimes drop mid-way; each file is tried a few times. */
+async function withRetries(attempt: () => Promise<void>, times = 4) {
+  for (let tried = 1; ; tried++) {
+    try {
+      return await attempt();
+    } catch (error) {
+      if (tried >= times) throw error;
+      console.log(`  retrying (${tried} of ${times - 1})`);
+    }
+  }
+}
+
 async function publish(pack: PackSource) {
   const bucket = await bucketName();
   const folder = `models/${pack.id}/${pack.version}`;
-  const probe = await fetch(`${MODELS_BASE_URL}/${pack.id}/${pack.version}/${pack.files[0]?.to}`, {
-    method: "HEAD",
-  });
-  if (probe.ok) throw new Error(`${folder} is already published; bump the version`);
+  // Published means listed in the manifest, which goes up last. Files
+  // without a manifest entry are an upload that stopped, safe to redo.
+  const listed = await fetch(`${MODELS_BASE_URL}/manifest.json`, { cache: "no-store" });
+  const published: Manifest = listed.ok ? await listed.json() : { schema: 1, packs: [] };
+  if (published.packs.some((p) => p.id === pack.id && p.version === pack.version)) {
+    throw new Error(`${folder} is already published; bump the version`);
+  }
 
   console.log(`Publishing ${pack.id} ${pack.version} to ${bucket}`);
   const files: ManifestFile[] = [];
@@ -118,7 +133,7 @@ async function publish(pack: PackSource) {
   }
   for (const { path, file } of local) {
     console.log(`  uploading ${path}`);
-    await upload(bucket, `${folder}/${path}`, file, contentTypeOf(path));
+    await withRetries(() => upload(bucket, `${folder}/${path}`, file, contentTypeOf(path)));
   }
 
   const current = await fetch(`${MODELS_BASE_URL}/manifest.json`, { cache: "no-store" });
