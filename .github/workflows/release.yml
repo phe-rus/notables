@@ -61,7 +61,7 @@ jobs:
       - name: Install the Android platform and NDK
         run: |
           yes | "$ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager" --licenses > /dev/null
-          "$ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager" "platforms;android-37" "ndk;${NDK_VERSION}"
+          "$ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager" "platforms;android-37.0" "build-tools;37.0.0" "ndk;${NDK_VERSION}"
       - uses: dtolnay/rust-toolchain@stable
         with:
           targets: aarch64-linux-android
