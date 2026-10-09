@@ -31,9 +31,11 @@ You start Notables on any device and it quietly creates your **private space**: 
 - **AC-11**: The person can make any device the home device. A newly linked device fills from the home device when it is online. The home device has no other power: if it is lost, every other device still has everything.
 - **AC-12**: "Remove This Device" (from any linked device) removes it from the space and rotates the root secret; the remaining devices get the new secret the next time they connect. A removed device keeps what it already had but receives nothing new, and is told so the next time it opens.
 - **AC-13**: Each note keeps version history: a version is recorded when a note goes quiet for two minutes or the app goes to the background, with time and device. "Version History" lists them; restoring one applies it as a new edit that syncs like any other, so nothing is lost.
-- **AC-14**: Settings > Linked Devices offers the recovery key (the root secret as 24 words). The app reminds the person to save it or export once the space has more than one device or a week has passed, and never again after they confirm.
+- **AC-14**: The recovery key (the root secret as 24 words) is shown once during first setup, with a "Save it later" choice, and is always available in Settings > Linked Devices. If it was skipped, the app reminds the person to save it or export once the space has more than one device or a week has passed, and never again after they confirm.
 - **AC-15**: "Export Everything" writes a backup folder to any place the person picks (native save dialog, a download on the web): every document, every media file, version history and a manifest, encrypted with a key derived from the root secret. "Import" on any device of the same space merges it in; on a fresh install, "Restore from Backup" asks for the recovery key, then creates the space from the backup. Importing an older backup never removes newer work.
-- **AC-16**: Settings, haptics and other per device preferences stay on each device and do not sync.
+- **AC-16**: Preferences sync to every device (appearance, accent, text size, fonts, notes list, sidebar order, listening, reminders, language). Only what belongs to one device stays on it: haptics on or off, window and sidebar width, the home device choice is shown but set per space, and system permissions. A change made on one device appears on the others like any edit.
+- **AC-20**: The wallet syncs between linked devices (encrypted records, the newest change wins per card). A wallet password stays per device: setting one on a device protects that device only, and another device does not need it.
+- **AC-21**: Everything runs on Cloudflare's free plan. The pass-through carries only document frames; photos and audio travel only over direct paths and wait otherwise. The Durable Object uses the SQLite backed class the free plan requires, with hibernation, and stores nothing.
 - **AC-17**: The web build warns once that a browser can lose its data after a week without a visit (Safari) and suggests linking a native device; it is never chosen as home device automatically.
 - **AC-18**: Everything works with no network at all on a single device, exactly as today.
 - **AC-19**: Every new string goes through `t()` in all seven catalogs; nothing new uses an em dash.
@@ -55,6 +57,7 @@ Recommendations settled in this spec (pick, why, runner up):
 - **History**: per note Yjs snapshots, with `gc: false` for note documents only (the library document keeps gc on). Why: snapshots need deleted items kept; notes are small, the library changes constantly. Runner up: storing whole copies, which wastes space.
 - **Backup format**: a folder `Notables Backup YYYY-MM-DD/` holding `manifest.json`, `docs/<id>.bin` (encrypted Yjs state), `media/<id>.bin` (encrypted) and `history/`. Why: plain files any folder or sync tool can hold; merging is Yjs. Runner up: one zip file.
 - **Limits**: up to 10 devices per space; the pass-through drops frames over 256 KB and asks the sender to chunk.
+- **Free plan**: media never goes through the pass-through (AC-21), and presence uses hibernating sockets so idle devices cost nothing.
 
 ## Design
 
@@ -87,7 +90,7 @@ Build approach: Tracer Bullet (the project default for production work): one thi
 7. **Home device and removal**: home flag, removal, rotation (AC-11, AC-12).
 8. **History**: note snapshots and Version History (AC-13).
 9. **Backups**: recovery key, export, import, restore (AC-14, AC-15), and the web warning (AC-17).
-10. **Wallet**: only after open question 1 is answered.
+10. **Wallet**: encrypted card records sync, newest change wins per card, wallet password per device (AC-20).
 
 Each step ends with checks run on real devices (the owner's iPhone, the TECNO, and the web), not emulators.
 
@@ -96,18 +99,18 @@ Each step ends with checks run on real devices (the owner's iPhone, the TECNO, a
 - Sync no longer needs PassID, and ADR-0005's reason to hold it back goes away, because the relay cannot read anything.
 - Losing every device without the recovery key or an export loses the space, by design. The reminders in AC-14 matter.
 - iPhones only sync while Notables is open; a desktop home device that stays running fixes that in Stage B.
-- Linux desktop WebKitGTK often ships without WebRTC; there the relay is the only path until a Rust transport exists (open question 4).
+- Linux desktop WebKitGTK often ships without WebRTC; there the relay is the only path until a Rust transport exists (open question 4), and on the free plan that means Linux syncs text but not media.
 - The pass-through costs Durable Object time and bandwidth; media through the relay is the expensive part.
 - Note documents keep their history and grow over time; Version History needs a way to prune old versions later.
 
-## Open questions for the owner
+## Owner answers (9 October 2026)
 
-1. **Wallet sync**: should cards sync between your devices in Stage A, and if a wallet password is set, should the other device need it too? (Recommendation: yes, last step of Stage A, and yes, the password stays per device.)
-2. **Recovery key**: show it once at setup, or only offer it in Settings with reminders? (Recommendation: Settings with reminders, so first launch stays calm.)
-3. **Settings sync**: should appearance and list settings follow you to every device? (Recommendation: no, they are per device, as AC-16 says.)
-4. **Linux desktop**: accept relay only on Linux until a Rust WebRTC or socket transport is built? (Recommendation: yes.)
-5. **Cloudflare budget**: a monthly cap for relayed bandwidth, after which media waits for a direct path? (Recommendation: decide after measuring step 5.)
-6. **Exports**: encrypted by default, as AC-15 says, with readable exports staying in the existing book export formats? (Recommendation: yes.)
+1. Wallet sync: **yes**, in Stage A, wallet password per device (AC-20).
+2. Recovery key: **both**, shown at setup and kept in Settings (AC-14).
+3. Settings sync: **yes**, except what belongs to one device (AC-16).
+4. Linux desktop: **open**. The owner asked why. WebKitGTK, the engine Tauri uses on Linux, is usually built without WebRTC on Ubuntu and Debian, so the Linux app cannot connect directly and would use the Cloudflare pass-through only, which on the free plan means text syncs but media waits. The alternative is a Rust WebRTC stack (`webrtc-rs`) for Linux alone. Recommendation: relay only for now.
+5. Cloudflare budget: **free plan only for now** (AC-21).
+6. Exports: **encrypted by default** (AC-15).
 
 ## Follow-up
 
