@@ -1,17 +1,7 @@
-import { Link, useNavigate } from "@tanstack/react-router";
-import {
-  Chip,
-  cn,
-  IconButton,
-  PenIcon,
-  PinIcon,
-  SearchField,
-  SidebarIcon,
-  spring,
-  useContextMenu,
-} from "@ultrapeach/ui";
+import { useNavigate } from "@tanstack/react-router";
+import { cn, IconButton, PenIcon, SearchField, SidebarIcon, spring } from "@ultrapeach/ui";
 import { AnimatePresence, motion } from "motion/react";
-import { useDeferredValue, useMemo, useState } from "react";
+import { useCallback, useDeferredValue, useEffect, useMemo, useRef, useState } from "react";
 import { CollapsedSidebarControls } from "../../../components/window/collapsed-sidebar-controls";
 import { t } from "../../../i18n/i18n";
 import { BookShelf, useShelfBooks } from "../../books/components/book-shelf";
@@ -20,17 +10,20 @@ import { search } from "../../search/lib/rank";
 import { useSearchableNotes } from "../../search/lib/use-searchable-notes";
 import type { ListPreferences } from "../../settings/model/preferences";
 import { usePreferences } from "../../settings/store/preferences-store";
-import { bucket, formatUpdated } from "../lib/date-format";
+import { bucket } from "../lib/date-format";
+import { useHoldToSelect } from "../lib/use-hold-to-select";
 import { type GroupId, groupOf, type View } from "../model/library-views";
-import { noteKindLabels } from "../model/note-kind-labels";
 import { isListedNote, type LibraryEntry, useLibraryReady } from "../store/library-store";
 import { GroupSwitcher } from "./group-switcher";
+import { NoteRow, type SwipeSide } from "./note-row";
+import { NotesSelectionBar } from "./notes-selection-bar";
 
 interface Group {
   label: string | null;
   items: Array<{ entry: LibraryEntry; snippet?: string }>;
 }
 
+/** Each in its standard order: newest first, or A to Z. */
 const sorters: Record<ListPreferences["sort"], (a: LibraryEntry, b: LibraryEntry) => number> = {
   edited: (a, b) => b.updatedAt - a.updatedAt,
   created: (a, b) => b.createdAt - a.createdAt,
@@ -53,6 +46,7 @@ export function NotesList({
   const ready = useLibraryReady();
   const preferences = usePreferences();
   const options = preferences.list;
+  const navigate = useNavigate();
   const [query, setQuery] = useState("");
   const deferredQuery = useDeferredValue(query.trim());
   const notes = useSearchableNotes(Boolean(deferredQuery));
@@ -74,28 +68,105 @@ export function NotesList({
           ]
         : [];
     }
+    const direction = options.order === "reversed" ? -1 : 1;
     const sorted = inView
       .map((note) => note.entry)
-      .sort((a, b) => Number(b.pinned) - Number(a.pinned) || sorters[options.sort](a, b));
+      .sort(
+        (a, b) =>
+          (options.pinnedOnTop ? Number(b.pinned) - Number(a.pinned) : 0) ||
+          direction * sorters[options.sort](a, b),
+      );
     const result: Group[] = [];
     for (const entry of sorted) {
-      const label = entry.pinned
-        ? t("nav.pinned")
-        : options.groupByDate && options.sort !== "title"
-          ? bucket(options.sort === "created" ? entry.createdAt : entry.updatedAt)
-          : null;
+      const label =
+        options.pinnedOnTop && entry.pinned
+          ? t("nav.pinned")
+          : options.groupByDate && options.sort !== "title"
+            ? bucket(options.sort === "created" ? entry.createdAt : entry.updatedAt)
+            : null;
       const group = result.at(-1);
       if (group && group.label === label) group.items.push({ entry });
       else result.push({ label, items: [{ entry }] });
     }
     return result;
-  }, [notes, view, deferredQuery, options.sort, options.groupByDate]);
+  }, [
+    notes,
+    view,
+    deferredQuery,
+    options.sort,
+    options.order,
+    options.groupByDate,
+    options.pinnedOnTop,
+  ]);
+
+  const listed = useMemo(() => groups.flatMap((group) => group.items), [groups]);
+  const order = useMemo(() => listed.map((item) => item.entry.id), [listed]);
+  const entryById = useMemo(
+    () => new Map(listed.map((item) => [item.entry.id, item.entry])),
+    [listed],
+  );
+
+  // Choosing several notes: hold one and slide, or Select in its menu or the header.
+  const [selecting, setSelecting] = useState(false);
+  const [selected, setSelected] = useState<ReadonlySet<string>>(new Set());
+  const [swiped, setSwiped] = useState<{ id: string; side: SwipeSide } | null>(null);
+  const select = useCallback((ids: ReadonlySet<string>) => {
+    setSelecting(true);
+    setSwiped(null);
+    setSelected(ids);
+  }, []);
+  const stopSelecting = useCallback(() => {
+    setSelecting(false);
+    setSelected(new Set());
+  }, []);
+  const toggle = (id: string) =>
+    setSelected((current) => {
+      const next = new Set(current);
+      if (next.has(id)) next.delete(id);
+      else next.add(id);
+      return next;
+    });
+  const chosen = listed.filter((item) => selected.has(item.entry.id)).map((item) => item.entry);
+  const allSelected = order.length > 0 && chosen.length === order.length;
+
+  // Another view or search starts fresh.
+  const place = `${view.id}\n${deferredQuery}`;
+  const [shownPlace, setShownPlace] = useState(place);
+  if (place !== shownPlace) {
+    setShownPlace(place);
+    stopSelecting();
+    setSwiped(null);
+  }
+  useEffect(() => {
+    if (!selecting) return;
+    const onKey = (event: KeyboardEvent) => {
+      if (event.key === "Escape") stopSelecting();
+    };
+    window.addEventListener("keydown", onKey);
+    return () => window.removeEventListener("keydown", onKey);
+  }, [selecting, stopSelecting]);
+
+  const menuFor = (entry: LibraryEntry) =>
+    noteMenu(entry, navigate, { onSelectMany: () => select(new Set([entry.id])) });
+
+  const scroller = useRef<HTMLDivElement>(null);
+  useHoldToSelect({
+    list: scroller,
+    order,
+    selecting,
+    selected,
+    select,
+    menu: (id) => {
+      const entry = entryById.get(id);
+      return entry ? menuFor(entry) : [];
+    },
+  });
 
   return (
     <section
       aria-label={view.title}
       className={cn(
-        "flex w-full flex-col bg-surface md:w-[330px] md:shrink-0 md:border-r md:border-separator/70",
+        "relative flex w-full flex-col bg-surface md:w-[330px] md:shrink-0 md:border-r md:border-separator/70",
         className,
       )}
     >
@@ -105,15 +176,43 @@ export function NotesList({
       >
         {preferences.sidebar.collapsed && <CollapsedSidebarControls />}
         <div data-tauri-drag-region className="flex items-center justify-between">
-          <div className="flex items-center gap-1">
-            <IconButton label={t("nav.showLibrary")} className="lg:hidden" onClick={onOpenSidebar}>
-              <SidebarIcon size={20} />
-            </IconButton>
-            <h1 className="text-title2 font-bold tracking-tight">{view.title}</h1>
+          <div className="flex min-w-0 items-center gap-1">
+            {!selecting && (
+              <IconButton
+                label={t("nav.showLibrary")}
+                className="lg:hidden"
+                onClick={onOpenSidebar}
+              >
+                <SidebarIcon size={20} />
+              </IconButton>
+            )}
+            <h1 className="truncate text-title2 font-bold tracking-tight">
+              {selecting
+                ? chosen.length === 0
+                  ? t("notes.selectTitle")
+                  : t("notes.selectedCount", { count: chosen.length })
+                : view.title}
+            </h1>
           </div>
-          <IconButton label={t("nav.newNote")} tone="accent" onClick={onCreateNote}>
-            <PenIcon size={20} strokeWidth={1.9} />
-          </IconButton>
+          <div className="flex shrink-0 items-center gap-1">
+            {(selecting || order.length > 0) && (
+              <button
+                type="button"
+                onClick={() => (selecting ? stopSelecting() : select(new Set()))}
+                className={cn(
+                  "h-8 rounded-full px-3 text-subheadline text-accent-text transition-colors hover:bg-fill",
+                  selecting && "font-semibold",
+                )}
+              >
+                {selecting ? t("common.done") : t("notes.select")}
+              </button>
+            )}
+            {!selecting && (
+              <IconButton label={t("nav.newNote")} tone="accent" onClick={onCreateNote}>
+                <PenIcon size={20} strokeWidth={1.9} />
+              </IconButton>
+            )}
+          </div>
         </div>
         {groupOf(view.id) && <GroupSwitcher group={groupOf(view.id) as GroupId} active={view.id} />}
         <SearchField
@@ -123,7 +222,11 @@ export function NotesList({
         />
       </header>
 
-      <div className="flex grow flex-col overflow-y-auto px-2.5 pb-28 md:pb-8">
+      <div
+        ref={scroller}
+        onScroll={() => swiped && setSwiped(null)}
+        className="flex grow flex-col overflow-y-auto px-2.5 pb-28 md:pb-8"
+      >
         <BookShelf
           books={shelfBooks}
           label={view.id === "comic" ? t("notes.yourComics") : t("notes.yourManga")}
@@ -152,9 +255,26 @@ export function NotesList({
                     entry={entry}
                     snippet={snippet}
                     active={entry.id === activeId}
-                    // Search mixes pinned notes in with the rest, without the Pinned heading.
-                    pinMark={Boolean(deferredQuery) && entry.pinned}
+                    // Without the Pinned heading (searching, or pinned not on top), a pin marks them.
+                    pinMark={entry.pinned && (Boolean(deferredQuery) || !options.pinnedOnTop)}
                     options={options}
+                    selecting={selecting}
+                    selected={selected.has(entry.id)}
+                    swiped={swiped?.id === entry.id ? swiped.side : null}
+                    onSwipe={(side) => setSwiped(side ? { id: entry.id, side } : null)}
+                    menu={() => menuFor(entry)}
+                    onTap={() => {
+                      if (selecting) {
+                        toggle(entry.id);
+                        return true;
+                      }
+                      // A tap while a row is open closes it, as on iOS.
+                      if (swiped) {
+                        setSwiped(null);
+                        return true;
+                      }
+                      return false;
+                    }}
                   />
                 </motion.div>
               ))}
@@ -162,83 +282,17 @@ export function NotesList({
           </div>
         ))}
       </div>
-    </section>
-  );
-}
-
-/** Written out whole so Tailwind finds each class. */
-const previewClamp: Record<number, string> = {
-  1: "line-clamp-1",
-  2: "line-clamp-2",
-  3: "line-clamp-3",
-  4: "line-clamp-4",
-  5: "line-clamp-5",
-};
-
-function NoteRow({
-  entry,
-  snippet,
-  active,
-  pinMark,
-  options,
-}: {
-  entry: LibraryEntry;
-  snippet?: string;
-  active: boolean;
-  pinMark: boolean;
-  options: ListPreferences;
-}) {
-  const navigate = useNavigate();
-  const menu = useContextMenu(() => noteMenu(entry, navigate));
-  const kind = entry.kind === "note" || !options.kindTags ? null : noteKindLabels[entry.kind];
-  const compact = options.density === "compact";
-  return (
-    <Link
-      to="/notes/$noteId"
-      params={{ noteId: entry.id }}
-      search={(s) => s}
-      {...menu}
-      className={cn(
-        "group relative isolate flex touch-manipulation flex-col rounded-xl px-3 no-underline transition-colors duration-fast [-webkit-touch-callout:none]",
-        compact ? "gap-px py-2" : "gap-[3px] py-3",
-        !active && "hover:bg-fill/60",
-      )}
-    >
-      {active && (
-        <motion.span
-          layoutId="note-selection"
-          className="absolute inset-0 -z-10 rounded-xl bg-accent-soft"
-          transition={spring.snappy}
-        />
-      )}
-      <span className="flex items-center gap-1.5 text-subheadline font-semibold text-label">
-        {pinMark && <PinIcon size={13} className="text-accent-text" />}
-        <span className="truncate">{entry.title || t("notes.newNote")}</span>
-        {compact && (
-          <span className="ml-auto shrink-0 text-caption font-normal text-label-tertiary">
-            {formatUpdated(entry.updatedAt)}
-          </span>
+      <AnimatePresence>
+        {selecting && (
+          <NotesSelectionBar
+            chosen={chosen}
+            allSelected={allSelected}
+            onToggleAll={() => setSelected(new Set(allSelected ? [] : order))}
+            onDone={stopSelecting}
+          />
         )}
-      </span>
-      {(options.previewLines > 0 || snippet) && (
-        <span
-          className={cn(
-            "text-footnote text-label-secondary",
-            previewClamp[options.previewLines || 1],
-          )}
-        >
-          {!compact && <b className="font-medium text-label">{formatUpdated(entry.updatedAt)}</b>}
-          {!compact && "  "}
-          {snippet ?? (entry.excerpt || t("notes.noText"))}
-        </span>
-      )}
-      {!compact && (kind || entry.publicationId) && (
-        <span className="mt-[3px] flex gap-1.5">
-          {entry.publicationId && <Chip tone="public">{t("notes.public")}</Chip>}
-          {kind && <Chip tone={active ? "accent" : "neutral"}>{kind}</Chip>}
-        </span>
-      )}
-    </Link>
+      </AnimatePresence>
+    </section>
   );
 }
 

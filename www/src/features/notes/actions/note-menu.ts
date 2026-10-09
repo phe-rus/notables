@@ -1,6 +1,7 @@
 import { NoteKind } from "@notables/core";
 import type { useNavigate } from "@tanstack/react-router";
-import { type ContextMenuItem, toast } from "@ultrapeach/ui";
+import { type ContextMenuItem, openFollowUpMenu, toast } from "@ultrapeach/ui";
+import { t } from "../../../i18n/i18n";
 import { appLinkFor } from "../../../platform/app-links";
 import { publicUrl } from "../../../platform/public-url";
 import { noteFontLabels, noteFonts } from "../../library/model/note-fonts";
@@ -14,9 +15,9 @@ type Navigate = ReturnType<typeof useNavigate>;
 export function noteFontItems(entry: LibraryEntry): ContextMenuItem[] {
   const current = entry.font ?? null;
   return [
-    { heading: "Font" },
+    { heading: t("notes.font") },
     {
-      label: "Same as Settings",
+      label: t("notes.sameAsSettings"),
       checked: current === null,
       onSelect: () => getLibrary().update(entry.id, { font: undefined }),
     },
@@ -28,60 +29,82 @@ export function noteFontItems(entry: LibraryEntry): ContextMenuItem[] {
   ];
 }
 
-/** What right-click or long-press on a note offers. */
-export function noteMenu(entry: LibraryEntry, navigate: Navigate): ContextMenuItem[] {
-  const library = getLibrary();
+/** Choosing the kind of one or more notes; a check marks the kind they all share. */
+export function noteKindItems(entries: LibraryEntry[]): ContextMenuItem[] {
+  const shared = entries.every((entry) => entry.kind === entries[0]?.kind)
+    ? entries[0]?.kind
+    : undefined;
+  return [
+    { heading: t("notes.kind") },
+    ...NoteKind.options.map((kind) => ({
+      label: noteKindLabels[kind],
+      checked: shared === kind,
+      onSelect: () => {
+        const moving = entries.filter((entry) => entry.kind !== kind);
+        if (moving.length === 0) return;
+        for (const entry of moving) getLibrary().update(entry.id, { kind });
+        toast(t("notes.movedTo", { kind: noteKindLabels[kind] }), {
+          description: moving.length === 1 ? moving[0]?.title || undefined : undefined,
+        });
+      },
+    })),
+  ];
+}
+
+/** Pins every note, or unpins them when all of them are pinned already. */
+export function togglePinned(entries: LibraryEntry[]) {
+  const pinned = !entries.every((entry) => entry.pinned);
+  for (const entry of entries) getLibrary().update(entry.id, { pinned });
+}
+
+export function copyAppLink(entry: LibraryEntry) {
+  void navigator.clipboard
+    .writeText(appLinkFor(`notes/${entry.id}`))
+    .then(() =>
+      toast.success(t("notes.appLinkCopied"), { description: t("notes.appLinkCopiedBody") }),
+    );
+}
+
+/**
+ * What right-click or long-press on a note offers. Kept short, like an iOS
+ * menu: Font and Kind open their own lists in its place.
+ */
+export function noteMenu(
+  entry: LibraryEntry,
+  navigate: Navigate,
+  { onSelectMany }: { onSelectMany?: () => void } = {},
+): ContextMenuItem[] {
   return [
     {
-      label: "Open",
+      label: t("common.open"),
       onSelect: () => void navigate({ to: "/notes/$noteId", params: { noteId: entry.id } }),
     },
     {
-      label: entry.pinned ? "Unpin" : "Pin",
-      onSelect: () => library.update(entry.id, { pinned: !entry.pinned }),
+      label: entry.pinned ? t("notes.unpin") : t("notes.pin"),
+      onSelect: () => togglePinned([entry]),
     },
-    {
-      label: "Copy app link",
-      onSelect: () => {
-        void navigator.clipboard
-          .writeText(appLinkFor(`notes/${entry.id}`))
-          .then(() =>
-            toast.success("App link copied", { description: "Opens this note in Notables." }),
-          );
-      },
-    },
+    ...(onSelectMany ? [{ label: t("notes.select"), onSelect: onSelectMany }] : []),
+    { label: t("notes.copyAppLink"), onSelect: () => copyAppLink(entry) },
     ...(entry.publicationId
       ? [
           {
-            label: "Copy public link",
+            label: t("notes.copyPublicLink"),
             onSelect: () => {
               void navigator.clipboard
                 .writeText(publicUrl(`/p/${entry.publicationId}`))
-                .then(() => toast.success("Link copied"));
+                .then(() => toast.success(t("notes.linkCopied")));
             },
           },
         ]
       : []),
     "divider",
-    ...noteFontItems(entry),
-    "divider",
-    { heading: "Kind" },
-    ...NoteKind.options.map((kind) => ({
-      label: noteKindLabels[kind],
-      checked: entry.kind === kind,
-      onSelect: () => {
-        if (kind === entry.kind) return;
-        library.update(entry.id, { kind });
-        toast(`Moved to ${noteKindLabels[kind]}`, { description: entry.title || undefined });
-      },
-    })),
+    { label: t("notes.fontMenu"), onSelect: () => openFollowUpMenu(noteFontItems(entry)) },
+    { label: t("notes.kindMenu"), onSelect: () => openFollowUpMenu(noteKindItems([entry])) },
     "divider",
     {
-      label: "Delete",
+      label: t("common.delete"),
       destructive: true,
-      onSelect: () => {
-        moveNotesToBin([entry]);
-      },
+      onSelect: () => moveNotesToBin([entry]),
     },
   ];
 }

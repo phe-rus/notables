@@ -6,6 +6,7 @@ export {
   type ContextMenuItem,
   closeContextMenu,
   openContextMenu,
+  openFollowUpMenu,
   openMenu,
 } from "./components/context-menu/context-menu-store";
 export * from "./components/context-menu/use-context-menu";

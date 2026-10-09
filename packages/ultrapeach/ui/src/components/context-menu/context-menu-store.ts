@@ -28,6 +28,8 @@ export interface OpenMenu {
 }
 
 let menu: OpenMenu | null = null;
+/** The menu shown most recently, kept after it closes so a follow-up can stand in its place. */
+let last: OpenMenu | null = null;
 let nextId = 1;
 const listeners = new Set<() => void>();
 const emit = () => {
@@ -37,6 +39,19 @@ const emit = () => {
 /** Opens a menu at a point, such as where a pointer was pressed. */
 export function openContextMenu(x: number, y: number, items: ContextMenuItem[], touch = false) {
   menu = { id: nextId++, x, y, items, touch, alignX: "start", alignY: "top" };
+  last = menu;
+  emit();
+}
+
+/**
+ * Opens a second menu where the last one stood, the way an iOS menu swaps
+ * in a submenu: a long list (a note's fonts, its kinds) stays one row in the
+ * first menu instead of making it tall.
+ */
+export function openFollowUpMenu(items: ContextMenuItem[]) {
+  if (!last) return;
+  menu = { ...last, id: nextId++, items };
+  last = menu;
   emit();
 }
 
@@ -65,6 +80,7 @@ export function openMenu(
     alignX: right ? "end" : "start",
     alignY: above ? "bottom" : "top",
   };
+  last = menu;
   emit();
 }
 

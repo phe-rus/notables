@@ -35,9 +35,23 @@ export interface ListPreferences {
   /** Show the kind (Journal, Story…) under each note. */
   kindTags: boolean;
   sort: ListSort;
+  /** Newest first (A to Z by title), or the other way round. */
+  order: ListOrder;
   /** Group notes under Today, Yesterday, Previous 7 Days… */
   groupByDate: boolean;
+  /** Pinned notes in their own group at the top. */
+  pinnedOnTop: boolean;
+  /** The date before each preview. */
+  showDates: boolean;
+  /** What a swipe to the right, then to the left, does on a note. */
+  swipeRight: SwipeAction;
+  swipeLeft: SwipeAction;
 }
+
+export type ListOrder = "standard" | "reversed";
+
+export const swipeActions = ["pin", "delete", "copyLink", "none"] as const;
+export type SwipeAction = (typeof swipeActions)[number];
 
 export type ListSort = "edited" | "created" | "title";
 
@@ -69,7 +83,12 @@ export const defaultPreferences: Preferences = {
     previewLines: 2,
     kindTags: true,
     sort: "edited",
+    order: "standard",
     groupByDate: true,
+    pinnedOnTop: true,
+    showDates: true,
+    swipeRight: "pin",
+    swipeLeft: "delete",
   },
   sidebar: {
     order: [...sidebarItemIds],
@@ -137,7 +156,12 @@ export function normalizePreferences(raw: unknown): Preferences {
           : defaults.list.previewLines,
       kindTags: flag(list.kindTags, defaults.list.kindTags),
       sort: oneOf(list.sort, ["edited", "created", "title"], defaults.list.sort),
+      order: oneOf(list.order, ["standard", "reversed"], defaults.list.order),
       groupByDate: flag(list.groupByDate, defaults.list.groupByDate),
+      pinnedOnTop: flag(list.pinnedOnTop, defaults.list.pinnedOnTop),
+      showDates: flag(list.showDates, defaults.list.showDates),
+      swipeRight: oneOf(list.swipeRight, swipeActions, defaults.list.swipeRight),
+      swipeLeft: oneOf(list.swipeLeft, swipeActions, defaults.list.swipeLeft),
     },
     sidebar: {
       order,
