@@ -68,7 +68,7 @@ export function NotesList({
       return hits.length
         ? [
             {
-              label: `${hits.length} ${hits.length === 1 ? "result" : "results"}`,
+              label: t("notes.results", { count: hits.length }),
               items: hits.map((hit) => ({ entry: hit.item.entry, snippet: hit.snippet?.text })),
             },
           ]
@@ -134,7 +134,7 @@ export function NotesList({
         {groups.map((group, index) => (
           <div key={group.label ?? `group-${index}`} className="flex flex-col">
             {group.label && (
-              <h2 className="px-2.5 pt-3 pb-1 text-caption font-medium text-label-tertiary">
+              <h2 className="px-3 pt-3 pb-1 text-caption font-medium text-label-tertiary">
                 {group.label}
               </h2>
             )}
@@ -152,6 +152,8 @@ export function NotesList({
                     entry={entry}
                     snippet={snippet}
                     active={entry.id === activeId}
+                    // Search mixes pinned notes in with the rest, without the Pinned heading.
+                    pinMark={Boolean(deferredQuery) && entry.pinned}
                     options={options}
                   />
                 </motion.div>
@@ -164,15 +166,26 @@ export function NotesList({
   );
 }
 
+/** Written out whole so Tailwind finds each class. */
+const previewClamp: Record<number, string> = {
+  1: "line-clamp-1",
+  2: "line-clamp-2",
+  3: "line-clamp-3",
+  4: "line-clamp-4",
+  5: "line-clamp-5",
+};
+
 function NoteRow({
   entry,
   snippet,
   active,
+  pinMark,
   options,
 }: {
   entry: LibraryEntry;
   snippet?: string;
   active: boolean;
+  pinMark: boolean;
   options: ListPreferences;
 }) {
   const navigate = useNavigate();
@@ -199,7 +212,7 @@ function NoteRow({
         />
       )}
       <span className="flex items-center gap-1.5 text-subheadline font-semibold text-label">
-        {entry.pinned && <PinIcon size={13} className="text-accent-text" />}
+        {pinMark && <PinIcon size={13} className="text-accent-text" />}
         <span className="truncate">{entry.title || t("notes.newNote")}</span>
         {compact && (
           <span className="ml-auto shrink-0 text-caption font-normal text-label-tertiary">
@@ -207,8 +220,13 @@ function NoteRow({
           </span>
         )}
       </span>
-      {(options.preview || snippet) && (
-        <span className="truncate text-footnote text-label-secondary">
+      {(options.previewLines > 0 || snippet) && (
+        <span
+          className={cn(
+            "text-footnote text-label-secondary",
+            previewClamp[options.previewLines || 1],
+          )}
+        >
           {!compact && <b className="font-medium text-label">{formatUpdated(entry.updatedAt)}</b>}
           {!compact && "  "}
           {snippet ?? (entry.excerpt || t("notes.noText"))}

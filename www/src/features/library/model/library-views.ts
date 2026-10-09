@@ -125,5 +125,6 @@ export function summarize(text: string): { title: string; excerpt: string } {
     .map((line) => line.trim())
     .filter(Boolean);
   const [first = "", ...rest] = lines;
-  return { title: first.slice(0, 120), excerpt: rest.join(" ").slice(0, 200) };
+  // Enough for the longest list preview, five lines.
+  return { title: first.slice(0, 120), excerpt: rest.join(" ").slice(0, 400) };
 }

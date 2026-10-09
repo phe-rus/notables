@@ -1,6 +1,11 @@
 import { LabeledContent, Section, SegmentedControl, Toggle } from "@ultrapeach/ui";
+import { PickerInput } from "../../../../components/form/form-fields";
 import { t } from "../../../../i18n/i18n";
-import type { ListPreferences } from "../../model/preferences";
+import {
+  type ListPreferences,
+  type PreviewLines,
+  previewLineCounts,
+} from "../../model/preferences";
 import { updatePreferences, usePreferences } from "../../store/preferences-store";
 
 const setList = (change: Partial<ListPreferences>) =>
@@ -34,11 +39,16 @@ export function NotesListPage() {
           ]}
         />
       </LabeledContent>
-      <LabeledContent label={t("settings.showPreview")} description={t("settings.showPreviewHint")}>
-        <Toggle
-          label={t("settings.showPreview")}
-          checked={list.preview}
-          onChange={(preview) => setList({ preview })}
+      <LabeledContent label={t("settings.preview")} description={t("settings.previewHint")}>
+        <PickerInput
+          label={t("settings.preview")}
+          value={String(list.previewLines)}
+          onChange={(lines) => setList({ previewLines: Number(lines) as PreviewLines })}
+          className="w-auto min-w-[7.5rem] py-1.5 text-subheadline"
+          options={previewLineCounts.map((count) => ({
+            value: String(count),
+            label: count ? t("settings.previewLines", { count }) : t("settings.previewNone"),
+          }))}
         />
       </LabeledContent>
       <LabeledContent label={t("settings.showKinds")} description={t("settings.showKindsHint")}>

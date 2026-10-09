@@ -152,9 +152,18 @@ jobs:
           echo "APPLE_API_KEY_PATH=$key" >> "$GITHUB_ENV"
       - name: Generate the Xcode project
         working-directory: www
-        # A fresh project carries Tauri's placeholder icon; put ours in.
+        # The project is generated here, so its Info.plist takes the version
+        # from tauri.conf.json, not from the build's --config: stamp both, or
+        # every TestFlight build stays at the first version. A fresh project
+        # also carries Tauri's placeholder icon; put ours in.
         run: |
+          jq '.version = "${{ needs.version.outputs.name }}"' src-tauri/tauri.conf.json > "$RUNNER_TEMP/tauri.conf.json"
+          mv "$RUNNER_TEMP/tauri.conf.json" src-tauri/tauri.conf.json
           test -d src-tauri/gen/apple || bun run tauri ios init --ci
+          for plist in src-tauri/gen/apple/*_iOS/Info.plist; do
+            /usr/libexec/PlistBuddy -c "Set :CFBundleShortVersionString ${{ needs.version.outputs.name }}" "$plist"
+            /usr/libexec/PlistBuddy -c "Set :CFBundleVersion ${{ needs.version.outputs.code }}" "$plist"
+          done
           cp src-tauri/icons/ios/*.png src-tauri/gen/apple/Assets.xcassets/AppIcon.appiconset/
       - name: Build the signed app
         working-directory: www

@@ -30,8 +30,8 @@ export type TextSize = "small" | "medium" | "large";
 
 export interface ListPreferences {
   density: "comfortable" | "compact";
-  /** Show the first lines of each note under its title. */
-  preview: boolean;
+  /** How many lines of each note show under its title, as in Mail; 0 hides them. */
+  previewLines: PreviewLines;
   /** Show the kind (Journal, Story…) under each note. */
   kindTags: boolean;
   sort: ListSort;
@@ -40,6 +40,9 @@ export interface ListPreferences {
 }
 
 export type ListSort = "edited" | "created" | "title";
+
+export const previewLineCounts = [0, 1, 2, 3, 4, 5] as const;
+export type PreviewLines = (typeof previewLineCounts)[number];
 
 export interface SidebarPreferences {
   /** Every customizable item, in the order shown. */
@@ -61,7 +64,7 @@ export const defaultPreferences: Preferences = {
   noteFont: "default",
   list: {
     density: "comfortable",
-    preview: true,
+    previewLines: 2,
     kindTags: true,
     sort: "edited",
     groupByDate: true,
@@ -123,7 +126,12 @@ export function normalizePreferences(raw: unknown): Preferences {
     noteFont: oneOf(input.noteFont, noteFonts, defaults.noteFont),
     list: {
       density: oneOf(list.density, ["comfortable", "compact"], defaults.list.density),
-      preview: flag(list.preview, defaults.list.preview),
+      // Before the line count, the preview was only on or off.
+      previewLines: previewLineCounts.includes(list.previewLines as PreviewLines)
+        ? (list.previewLines as PreviewLines)
+        : list.preview === false
+          ? 0
+          : defaults.list.previewLines,
       kindTags: flag(list.kindTags, defaults.list.kindTags),
       sort: oneOf(list.sort, ["edited", "created", "title"], defaults.list.sort),
       groupByDate: flag(list.groupByDate, defaults.list.groupByDate),

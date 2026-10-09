@@ -204,7 +204,17 @@ Shipped and tested in the browser (Playwright) unless noted:
   Accelerate is linked for whisper.cpp (`bundle.iOS.frameworks`).
 - Android: bar icons follow the app's appearance through
   `AndroidBridge.setSystemBarsDark` (a light app on a dark phone).
-- Settings: every page tile uses the Appearance lavender.
+- Settings: every page icon is a round tile in the person's accent color.
+  About reads the installed version from the shell (`getVersion`).
+- Notes list: preview of 0 to 5 lines (Settings > Notes list, default 2,
+  like Mail); group labels line up with the titles; the pin shows only in
+  search results.
+- iOS release: CI stamps the tag's version into `tauri.conf.json` and the
+  generated Info.plist before building (TestFlight builds had all stayed
+  at 0.1.0). `Info.ios.plist` declares `ITSAppUsesNonExemptEncryption`
+  true (the wallet's own ChaCha20-Poly1305); once App Store Connect gives
+  an `ITSEncryptionExportComplianceCode`, add it there too and builds stop
+  asking.
 - pherus.org privacy policy has a "Notables app" section 4 (en, zh, fr),
   live since 9 October; source `~/pherus/pherus/www/data/legal/privacy-policy.json`.
 
@@ -228,9 +238,9 @@ upload is newer than the last.
 ## Next
 
 Right after the store work (9 October): fill the App Store Connect page
-from `docs/store/listing.md` and the screenshots; a notes list preview
-length setting (1 to 5 lines, like Mail) instead of the fixed single line;
-dismiss the glib Dependabot alert (GTK3 under Tauri on Linux, no fix
+from `docs/store/listing.md` and the screenshots; finish the App
+Encryption Documentation (standard algorithms, not in France) and add its
+code to `Info.ios.plist`; dismiss the glib Dependabot alert (GTK3 under Tauri on Linux, no fix
 available); test 0.1.5 on both phones (camera in setup, bar icons).
 
 The long plan, stage by stage, is in [docs/STAGES.md](docs/STAGES.md).

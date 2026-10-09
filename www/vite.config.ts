@@ -72,6 +72,7 @@ export default defineConfig({
       // import doesn't reload the page in development.
       "@anthropic-ai/sdk",
       "@tauri-apps/plugin-deep-link",
+      "@tauri-apps/api/app",
       "@tauri-apps/api/core",
       "@tauri-apps/api/event",
       "@tauri-apps/plugin-notification",
