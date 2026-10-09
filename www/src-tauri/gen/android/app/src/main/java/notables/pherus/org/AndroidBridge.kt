@@ -71,6 +71,13 @@ class AndroidBridge(private val activity: Activity, private val webView: WebView
     }
   }
 
+  /** Maker and model, e.g. "TECNO CAMON 19", for About. */
+  @JavascriptInterface
+  fun deviceModel(): String {
+    val maker = Build.MANUFACTURER.replaceFirstChar { it.uppercase() }
+    return if (Build.MODEL.startsWith(maker, ignoreCase = true)) Build.MODEL else "$maker ${Build.MODEL}"
+  }
+
   /** The phone's voices as JSON, or null while the speech engine starts. */
   @JavascriptInterface
   fun speechVoices(): String? = speech.voices()

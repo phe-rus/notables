@@ -47,6 +47,7 @@ argon2 = "=0.5.3"
 zeroize = "1"
 base64 = "0.22"
 uuid = { version = "1", features = ["v4", "serde"] }
+tauri-plugin-os = "2"
 
 [profile.release]
 codegen-units = 1

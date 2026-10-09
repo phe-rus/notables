@@ -14,6 +14,8 @@ interface AndroidBridge {
   speechVoices?(): string | null;
   speak?(id: string, text: string, lang: string, voiceId: string, rate: number): void;
   stopSpeaking?(): void;
+  /** Maker and model, e.g. "TECNO CAMON 19", for About. */
+  deviceModel?(): string;
 }
 
 export function androidBridge(): AndroidBridge | undefined {

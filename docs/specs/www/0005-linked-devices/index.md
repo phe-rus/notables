@@ -108,7 +108,7 @@ Each step ends with checks run on real devices (the owner's iPhone, the TECNO, a
 1. Wallet sync: **yes**, in Stage A, wallet password per device (AC-20).
 2. Recovery key: **both**, shown at setup and kept in Settings (AC-14).
 3. Settings sync: **yes**, except what belongs to one device (AC-16).
-4. Linux desktop: **open**. The owner asked why. WebKitGTK, the engine Tauri uses on Linux, is usually built without WebRTC on Ubuntu and Debian, so the Linux app cannot connect directly and would use the Cloudflare pass-through only, which on the free plan means text syncs but media waits. The alternative is a Rust WebRTC stack (`webrtc-rs`) for Linux alone. Recommendation: relay only for now.
+4. Linux desktop: **relay only for now** (accepted 10 October). The owner asked why. WebKitGTK, the engine Tauri uses on Linux, is usually built without WebRTC on Ubuntu and Debian, so the Linux app cannot connect directly and would use the Cloudflare pass-through only, which on the free plan means text syncs but media waits. The alternative is a Rust WebRTC stack (`webrtc-rs`) for Linux alone. Recommendation: relay only for now.
 5. Cloudflare budget: **free plan only for now** (AC-21).
 6. Exports: **encrypted by default** (AC-15).
 

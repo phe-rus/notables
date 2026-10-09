@@ -90,6 +90,7 @@ jobs:
       - name: Build the signed app bundle
         working-directory: www
         env:
+          VITE_BUILD_NUMBER: ${{ needs.version.outputs.code }}
           ANDROID_KEYSTORE_PASSWORD: ${{ secrets.ANDROID_KEYSTORE_PASSWORD }}
           ANDROID_KEY_ALIAS: notables
         # aarch64 only: ort has no prebuilt ONNX Runtime for other Android ABIs.
@@ -167,6 +168,8 @@ jobs:
           cp src-tauri/icons/ios/*.png src-tauri/gen/apple/Assets.xcassets/AppIcon.appiconset/
       - name: Build the signed app
         working-directory: www
+        env:
+          VITE_BUILD_NUMBER: ${{ needs.version.outputs.code }}
         # Signing is automatic: Xcode fetches certificates and profiles with the API key.
         run: |
           bun run tauri ios build --export-method app-store-connect --config \

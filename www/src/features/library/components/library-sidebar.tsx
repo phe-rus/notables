@@ -88,11 +88,12 @@ export function Sidebar({
   const allSeries = useSeries();
   const bin = binSeriesAndBooks(trashedBooks, allSeries);
   const binCount = binNotes(library, trashedBooks).length + bin.books.length + bin.series.length;
-  const { order, hidden, counts, artifactsOpen } = usePreferences().sidebar;
+  const { order, hidden, counts } = usePreferences().sidebar;
   const [editing, setEditing] = useState(false);
   // Arriving at Calendar, Wallet or Invoices opens Artifacts, so the place shows.
   const inArtifacts = artifactPlaces.includes(active);
-  const [artifactsShown, setArtifactsShown] = useState(artifactsOpen || inArtifacts);
+  // Closed on every launch, so the sidebar starts short; only being on one of its pages opens it.
+  const [artifactsShown, setArtifactsShown] = useState(inArtifacts);
   useEffect(() => {
     if (inArtifacts) setArtifactsShown(true);
   }, [inArtifacts]);
