@@ -4,9 +4,10 @@
  * has set up a Gemini key.
  */
 
+import type { AndroidVoice } from "../../../platform/android-speech";
 import type { NaturalVoiceInfo } from "./natural-voice";
 
-export type VoiceProvider = "system" | "gemini" | "device-neural";
+export type VoiceProvider = "system" | "android" | "gemini" | "device-neural";
 
 export interface Voice {
   id: string;
@@ -69,6 +70,27 @@ export function fromSystem(voice: SpeechSynthesisVoice): Voice {
     natural: NATURAL.test(voice.name),
     offline: voice.localService,
   };
+}
+
+/**
+ * The phone's own voices on Android. Their ids are codes ("en-us-x-iom-local"),
+ * so each is named by its language and a number.
+ */
+export function fromAndroid(voices: AndroidVoice[], numbered: (n: number) => string): Voice[] {
+  const counts = new Map<string, number>();
+  return voices.map((voice) => {
+    const n = (counts.get(voice.lang) ?? 0) + 1;
+    counts.set(voice.lang, n);
+    return {
+      id: `android:${voice.id}`,
+      provider: "android" as const,
+      name: `${voice.language} · ${numbered(n)}`,
+      lang: voice.lang,
+      // Android's "high" and "very high" voices are its neural ones.
+      natural: voice.quality >= 400,
+      offline: !voice.network,
+    };
+  });
 }
 
 /** Gemini's prebuilt voices speak every language they support. */

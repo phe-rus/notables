@@ -13,10 +13,14 @@ import notables.pherus.org.widgets.TodayWidgetProvider
 /**
  * What the page asks of Android directly, as `window.NotablesAndroid`
  * (www/src/platform/android-bridge.ts): system haptics, status and
- * navigation bar icons that match the app's appearance, and adding the
- * Today widget to the home screen.
+ * navigation bar icons that match the app's appearance, adding the
+ * Today widget to the home screen, and the phone's voices for reading aloud.
  */
 class AndroidBridge(private val activity: Activity, private val webView: WebView) {
+  /** Started on first use, so the app opens without waiting for the speech engine. */
+  private var started: AndroidSpeech? = null
+  private val speech: AndroidSpeech
+    get() = started ?: AndroidSpeech(activity, webView).also { started = it }
 
   /** Whether this launcher lets an app offer its widget for the home screen. */
   @JavascriptInterface
@@ -65,6 +69,23 @@ class AndroidBridge(private val activity: Activity, private val webView: WebView
       controller.isAppearanceLightStatusBars = !dark
       controller.isAppearanceLightNavigationBars = !dark
     }
+  }
+
+  /** The phone's voices as JSON, or null while the speech engine starts. */
+  @JavascriptInterface
+  fun speechVoices(): String? = speech.voices()
+
+  @JavascriptInterface
+  fun speak(id: String, text: String, lang: String, voiceId: String, rate: Float) =
+    speech.speak(id, text, lang, voiceId, rate)
+
+  @JavascriptInterface
+  fun stopSpeaking() = speech.stop()
+
+  /** Lets the speech engine go with the activity. */
+  fun close() {
+    started?.shutdown()
+    started = null
   }
 
   companion object {

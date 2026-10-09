@@ -330,6 +330,7 @@ export const zh: Messages = {
     storedBrowser: "笔记存储在此浏览器中",
   },
   listening: {
+    voiceNumber: "语音 {count}",
     rates: {
       slow: "慢速",
       normal: "正常",

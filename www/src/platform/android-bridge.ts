@@ -10,6 +10,10 @@ interface AndroidBridge {
   haptic(kind: HapticKind): void;
   /** Dark icons for a light app and light icons for a dark one. Optional: older app builds lack it. */
   setSystemBarsDark?(dark: boolean): void;
+  /** The phone's voices (android-speech.ts). Optional: older app builds lack them. */
+  speechVoices?(): string | null;
+  speak?(id: string, text: string, lang: string, voiceId: string, rate: number): void;
+  stopSpeaking?(): void;
 }
 
 export function androidBridge(): AndroidBridge | undefined {

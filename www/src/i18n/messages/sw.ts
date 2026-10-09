@@ -340,6 +340,7 @@ export const sw: Messages = {
     storedBrowser: "Madokezo yamehifadhiwa kwenye kivinjari hiki",
   },
   listening: {
+    voiceNumber: "Sauti {count}",
     rates: {
       slow: "Polepole",
       normal: "Kawaida",

@@ -341,6 +341,7 @@ export const en = {
     storedBrowser: "Notes stored in this browser",
   },
   listening: {
+    voiceNumber: "Voice {count}",
     rates: {
       slow: "Slow",
       normal: "Normal",

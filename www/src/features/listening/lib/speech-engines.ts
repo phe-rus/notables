@@ -1,3 +1,4 @@
+import { androidSpeak, androidStopSpeaking } from "../../../platform/android-speech";
 import { readAiKey } from "../../ai/store/ai-settings";
 import { clampPace, synthesizeNatural } from "./natural-voice";
 import { systemVoiceKey } from "./voices";
@@ -47,6 +48,19 @@ export class SystemSpeech implements SpeechEngine {
   cancel() {
     this.#current = null;
     speechSynthesis.cancel();
+  }
+}
+
+/** The phone's own voices on Android, through the app's bridge. */
+export class AndroidSpeech implements SpeechEngine {
+  constructor(private readonly voiceId: string) {}
+
+  speak(text: string, { rate, lang }: SpeechOptions) {
+    return androidSpeak(text, lang, this.voiceId, rate);
+  }
+
+  cancel() {
+    androidStopSpeaking();
   }
 }
 

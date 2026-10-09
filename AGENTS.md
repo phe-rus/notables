@@ -269,10 +269,10 @@ Right after the store work (9 October):
 - Tag a new release (`v0.1.6`) and check on both phones: TestFlight shows
   the new version, About shows it, the natural voice and Whisper download
   and play, the notes list swipes and hold-and-slide selection.
-- Android read aloud without the download: the WebView has no
-  speechSynthesis voices, so device voices need TextToSpeech through
-  `AndroidBridge.kt`. iOS device voices sound poor in the WebView; the
-  natural voice is the answer there.
+- Check the phone's own voices on Android: TextToSpeech through the bridge
+  (`AndroidSpeech.kt`, `www/src/platform/android-speech.ts`, the `android`
+  voice provider) builds but has not been heard on a phone. iOS device
+  voices sound poor in the WebView; the natural voice is the answer there.
 - Dismiss the glib Dependabot alert (GTK3 under Tauri on Linux, no fix
   available).
 
@@ -280,8 +280,7 @@ The long plan, stage by stage, is in [docs/STAGES.md](docs/STAGES.md).
 Resume from its first unfinished stage (now Stage 1, UltraPeach).
 
 
-- Android: read aloud through TextToSpeech, the startup notification
-  check, export to content:// locations, an x86_64 build for ChromeOS.
+- Android: the startup notification check, export to content:// locations, an x86_64 build for ChromeOS.
 - Mobile testing: calendar pinch zoom and book contents on real phones.
 - Translate the remaining screens.
 - Whisper while recording (streaming, native).

@@ -357,6 +357,7 @@ export const ar: Messages = {
     storedBrowser: "الملاحظات محفوظة في هذا المتصفح",
   },
   listening: {
+    voiceNumber: "الصوت {count}",
     rates: {
       slow: "بطيئة",
       normal: "عادية",

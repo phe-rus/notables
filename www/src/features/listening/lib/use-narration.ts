@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import { type MessageKey, t } from "../../../i18n/i18n";
+import { androidSpeechAvailable, androidVoices } from "../../../platform/android-speech";
 import { getAiSettings, readAiKey } from "../../ai/store/ai-settings";
 import {
   getNarrationSettings,
@@ -14,6 +15,7 @@ import {
   warmNaturalVoice,
 } from "./natural-voice";
 import {
+  AndroidSpeech,
   DeviceNeuralSpeech,
   GeminiSpeech,
   type SpeechEngine,
@@ -21,6 +23,7 @@ import {
   UnavailableSpeech,
 } from "./speech-engines";
 import {
+  fromAndroid,
   fromSystem,
   geminiVoices,
   naturalVoices,
@@ -42,13 +45,19 @@ export async function availableVoices(
   lang: string,
   natural?: NaturalVoiceInfo | null,
 ): Promise<Voice[]> {
-  const [system, info] = await Promise.all([
+  const [system, android, info] = await Promise.all([
     systemVoices(),
+    androidVoices(),
     natural === undefined ? naturalVoiceInfo() : natural,
   ]);
   const gemini = getAiSettings().enabled && (await readAiKey("gemini")) ? geminiVoices : [];
   return rankVoices(
-    [...naturalVoices(info, lang, describeStyle), ...system.map(fromSystem), ...gemini],
+    [
+      ...naturalVoices(info, lang, describeStyle),
+      ...system.map(fromSystem),
+      ...fromAndroid(android, (count) => t("listening.voiceNumber", { count })),
+      ...gemini,
+    ],
     lang,
   );
 }
@@ -74,7 +83,10 @@ async function engineFor(
       return new DeviceNeuralSpeech(info.version, info.sampleRate ?? 44_100, style);
     }
   }
-  if (!speechSupported()) return new UnavailableSpeech(t("common.notAvailable"));
+  if (chosen.provider === "android") return new AndroidSpeech(chosen.id.slice("android:".length));
+  if (!speechSupported() && !androidSpeechAvailable()) {
+    return new UnavailableSpeech(t("common.notAvailable"));
+  }
   return new SystemSpeech(chosen.provider === "system" ? chosen.id.slice("system:".length) : null);
 }
 

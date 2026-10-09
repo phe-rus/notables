@@ -341,6 +341,7 @@ export const pt: Messages = {
     storedBrowser: "Notas guardadas neste navegador",
   },
   listening: {
+    voiceNumber: "Voz {count}",
     rates: {
       slow: "Lenta",
       normal: "Normal",
