@@ -205,8 +205,10 @@ Shipped and tested in the browser (Playwright) unless noted:
 - Android: bar icons follow the app's appearance through
   `AndroidBridge.setSystemBarsDark` (a light app on a dark phone).
 - Settings: every page tile uses the Appearance lavender.
-- pherus.org privacy policy has a "Notables app" section (en, zh, fr),
-  source in `~/pherus/pherus/www/data/legal/privacy-policy.json`.
+- pherus.org privacy policy: a "Notables app" section (en, zh, fr) is
+  committed in `~/pherus/pherus` (`www/data/legal/privacy-policy.json`) but
+  NOT yet pushed or deployed: run `git push` there, then `bun run deploy`
+  in `www/`. Both stores already link to that page.
 
 ## Releasing
 
