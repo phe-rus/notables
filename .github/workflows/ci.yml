@@ -1,9 +1,17 @@
 name: CI
 
+# Runs only when asked (Actions tab or `gh workflow run ci.yml`), never on a
+# plain push: Actions minutes are limited, and every push is checked locally
+# first (see "Before every push" in AGENTS.md). macOS minutes count 10 times
+# and Windows twice on a private repository, so the native shells are opt-in.
+
 on:
-  push:
-    branches: [main]
-  pull_request:
+  workflow_dispatch:
+    inputs:
+      native:
+        description: Also build the desktop shells (Linux, macOS, Windows)
+        type: boolean
+        default: false
 
 concurrency:
   group: ci-${{ github.ref }}
@@ -30,6 +38,7 @@ jobs:
   native:
     name: Native shell (${{ matrix.platform }})
     needs: web
+    if: inputs.native
     strategy:
       fail-fast: false
       matrix:

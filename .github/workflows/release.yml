@@ -2,13 +2,24 @@ name: Release
 
 # Builds signed store packages and sends them to testers:
 # Android to the Google Play internal track, iOS to TestFlight.
-# Push a tag such as v0.2.0, or run it by hand from the Actions tab.
+# Only a release tag starts it, never a commit:
+#   v0.2.0          both stores
+#   android-v0.2.0  Google Play only
+#   ios-v0.2.0      TestFlight only
+# or run it by hand from the Actions tab and pick the stores.
+# Costs per run on a private repository: Android about 15 minutes, iOS about
+# 15 macOS minutes, which count 10 times (about 150 of the 2,000 a month).
 
 on:
   push:
-    tags: ["v*"]
+    tags: ["v*", "android-v*", "ios-v*"]
   workflow_dispatch:
     inputs:
+      stores:
+        description: Which stores to build for
+        type: choice
+        options: [both, android, ios]
+        default: both
       track:
         description: Google Play track
         type: choice
@@ -36,7 +47,7 @@ jobs:
         # The tag gives the version people see; the run number gives every
         # upload a higher build number, as both stores require.
         run: |
-          if [[ "$GITHUB_REF_TYPE" == "tag" ]]; then name="${GITHUB_REF_NAME#v}"
+          if [[ "$GITHUB_REF_TYPE" == "tag" ]]; then name="${GITHUB_REF_NAME##*v}"
           else name="$(jq -r .version www/src-tauri/tauri.conf.json)"; fi
           echo "name=$name" >> "$GITHUB_OUTPUT"
           echo "code=$((10000 + GITHUB_RUN_NUMBER))" >> "$GITHUB_OUTPUT"
@@ -44,6 +55,9 @@ jobs:
   android:
     name: Android (Google Play)
     needs: version
+    if: >-
+      (github.event_name == 'workflow_dispatch' && inputs.stores != 'ios') ||
+      (github.event_name == 'push' && !startsWith(github.ref_name, 'ios-'))
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -104,7 +118,10 @@ jobs:
     needs: version
     # Off until the App Store Connect API key is in the repository secrets;
     # then set the repository variable IOS_RELEASE to true.
-    if: vars.IOS_RELEASE == 'true'
+    if: >-
+      vars.IOS_RELEASE == 'true' && (
+      (github.event_name == 'workflow_dispatch' && inputs.stores != 'android') ||
+      (github.event_name == 'push' && !startsWith(github.ref_name, 'android-')))
     runs-on: macos-latest
     env:
       APPLE_API_KEY: ${{ secrets.APPLE_API_KEY_ID }}

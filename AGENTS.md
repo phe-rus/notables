@@ -172,15 +172,38 @@ Shipped and tested in the browser (Playwright) unless noted:
   note screen stamps `updatedAt` only for real edits.
 
 - Stores (9 October): bundle ID and Android package are
-  `notables.pherus.org` everywhere (same style as Opes). Play Console app
-  "Notables" exists (Pherus organization account) with the "Pherus
-  developers" list on Internal testing. Release key in `secrets/` at the
-  repo root (gitignored; the owner backs it up), read by Gradle locally and
-  by `.github/workflows/release.yml` in CI: a `v*` tag sends a signed `.aab`
-  to the internal track. Needs `PLAY_SERVICE_ACCOUNT_JSON` (service account
-  `notables-play-release@pherus.iam.gserviceaccount.com`). iOS TestFlight
-  job is written but off (`IOS_RELEASE` variable) until the Apple login gets
-  the Admin role on team LP7BW596WY.
+  `notables.pherus.org` everywhere (same style as Opes).
+  Google Play: app "Notables" (Pherus organization account), internal
+  track live from CI (0.1.2), tester list "Pherus developers"
+  (pherus@pherus.org, la.niina.me@gmail.com), opt-in link
+  https://play.google.com/apps/internaltest/4701559714852983698.
+  Apple: team PHERUS .CO -SMC LIMITED, `LP7BW596WY`; the owner's own login
+  (la.niina.me) is Admin but Certificates, Identifiers & Profiles only opens
+  for the Account Holder login. App Store Connect app "Notables by Pherus"
+  (the name "Notables" is taken; the home screen still says Notables),
+  TestFlight internal group "Pherus developers" with automatic distribution.
+  First iOS build 0.1.3 (10005) is in TestFlight. Every iOS build asks the
+  export compliance question: standard encryption, not available in France
+  (until the French declaration is filed before the App Store launch).
+  iOS links Accelerate for whisper.cpp (`bundle.iOS.frameworks`).
+  Keys and passwords live in `secrets/` at the repo root (gitignored, backed
+  up by the owner; its README lists every GitHub secret).
+
+## Releasing
+
+CI never runs on a commit: GitHub Actions minutes are limited (2,000 a
+month; macOS minutes count 10 times). Check locally before pushing, as
+above. Builds start only from a tag or by hand:
+
+```sh
+git tag v0.2.0 && git push origin v0.2.0          # Google Play and TestFlight
+git tag android-v0.2.0 && git push origin android-v0.2.0   # Play only
+git tag ios-v0.2.0 && git push origin ios-v0.2.0           # TestFlight only
+gh workflow run ci.yml                            # the web checks, on demand
+```
+
+The tag gives the version; the run number gives the build number, so every
+upload is newer than the last.
 
 ## Next
 
