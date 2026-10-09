@@ -7,8 +7,7 @@ name: Release
 #   android-v0.2.0  Google Play only
 #   ios-v0.2.0      TestFlight only
 # or run it by hand from the Actions tab and pick the stores.
-# Costs per run on a private repository: Android about 15 minutes, iOS about
-# 15 macOS minutes, which count 10 times (about 150 of the 2,000 a month).
+# A run takes about 15 minutes per store; free on this public repository.
 
 on:
   push:

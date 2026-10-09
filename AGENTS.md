@@ -190,9 +190,10 @@ Shipped and tested in the browser (Playwright) unless noted:
 
 ## Releasing
 
-CI never runs on a commit: GitHub Actions minutes are limited (2,000 a
-month; macOS minutes count 10 times). Check locally before pushing, as
-above. Builds start only from a tag or by hand:
+The repository is public (9 October 2026), so standard GitHub runners,
+macOS included, cost nothing. CI still never runs on a commit, by the
+owner's choice: check locally before pushing, as above. Builds start only
+from a tag or by hand:
 
 ```sh
 git tag v0.2.0 && git push origin v0.2.0          # Google Play and TestFlight
