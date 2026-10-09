@@ -2,11 +2,17 @@
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0">
 <dict>
+  <!-- iOS ends the app the moment it touches a protected resource without
+       saying why, so every one Notables uses needs a line here. -->
   <key>NSCameraUsageDescription</key>
   <string>Notables uses the camera to scan cards, receipts and documents, and to take photos for your notes. Images stay on this device.</string>
   <key>NSMicrophoneUsageDescription</key>
   <string>Notables records voice notes and stories when you tap the microphone.</string>
   <key>NSSpeechRecognitionUsageDescription</key>
   <string>Notables transcribes your recordings into text on this device.</string>
+  <key>NSPhotoLibraryAddUsageDescription</key>
+  <string>Notables saves images and exports you choose to your photo library.</string>
+  <key>NSFaceIDUsageDescription</key>
+  <string>Notables uses Face ID to unlock your wallet and other places you lock.</string>
 </dict>
 </plist>

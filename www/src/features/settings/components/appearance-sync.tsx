@@ -1,5 +1,6 @@
 import { defaultAccent } from "@ultrapeach/tokens";
 import { useEffect } from "react";
+import { androidBridge } from "../../../platform/android-bridge";
 import { devicePlatform } from "../../../platform/device-platform";
 import { textSizes } from "../model/preferences";
 import { usePreferences } from "../store/preferences-store";
@@ -26,6 +27,19 @@ export function AppearanceSync() {
       String(textSizes[textSize].bodyPx / textSizes.medium.bodyPx),
     );
   }, [theme, accent, textSize]);
+
+  // Android draws status and navigation bar icons for the system's appearance;
+  // tell it the app's, or a light app on a dark phone gets white icons on white.
+  useEffect(() => {
+    const bridge = androidBridge();
+    const setDark = bridge?.setSystemBarsDark?.bind(bridge);
+    if (!setDark) return;
+    const media = window.matchMedia("(prefers-color-scheme: dark)");
+    const apply = () => setDark(theme === "dark" || (theme === "system" && media.matches));
+    apply();
+    media.addEventListener("change", apply);
+    return () => media.removeEventListener("change", apply);
+  }, [theme]);
 
   return null;
 }

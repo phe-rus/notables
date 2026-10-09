@@ -6,6 +6,9 @@ import { t } from "../../../i18n/i18n";
 import { useAuthorName } from "../../../platform/author-preferences";
 import { type SettingsPageId, settingsGroups, settingsPages } from "./settings-catalog";
 
+/** Every page shares one tile color, the Appearance lavender, so the list reads as one set. */
+const tileColor = accents.lavender.light.accentText;
+
 const row =
   "flex min-h-12 items-center gap-3 px-3.5 py-2 no-underline transition-colors hover:bg-fill/50 active:bg-fill";
 
@@ -66,7 +69,7 @@ export function SettingsList({ current }: { current: SettingsPageId | null }) {
                 >
                   <span
                     className="flex size-[30px] shrink-0 items-center justify-center rounded-lg text-white"
-                    style={{ backgroundColor: accents[page.tint].light.accentText }}
+                    style={{ backgroundColor: tileColor }}
                   >
                     {page.icon}
                   </span>

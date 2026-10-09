@@ -1,4 +1,3 @@
-import type { AccentId } from "@ultrapeach/tokens";
 import {
   BellIcon,
   BrushIcon,
@@ -50,8 +49,6 @@ export interface SettingsPage {
   id: SettingsPageId;
   readonly title: string;
   icon: ReactNode;
-  /** The color of its icon tile, from the accent palette. */
-  tint: AccentId;
   content: () => ReactNode;
   /** Shown only where it means something (haptics need a vibration motor). */
   available?: () => boolean;
@@ -66,7 +63,6 @@ export const settingsPages: Record<SettingsPageId, SettingsPage> = {
       return t("settings.you");
     },
     icon: null,
-    tint: "blush",
     content: () => <ProfilePage />,
   }),
   appearance: page({
@@ -75,7 +71,6 @@ export const settingsPages: Record<SettingsPageId, SettingsPage> = {
       return t("settings.appearance");
     },
     icon: <BrushIcon size={17} />,
-    tint: "lavender",
     content: () => <AppearancePage />,
   }),
   notes: page({
@@ -84,7 +79,6 @@ export const settingsPages: Record<SettingsPageId, SettingsPage> = {
       return t("settings.notesList");
     },
     icon: <NoteIcon size={17} />,
-    tint: "honey",
     content: () => <NotesListPage />,
   }),
   sidebar: page({
@@ -93,7 +87,6 @@ export const settingsPages: Record<SettingsPageId, SettingsPage> = {
       return t("settings.sidebar");
     },
     icon: <SidebarIcon size={17} />,
-    tint: "graphite",
     content: () => <SidebarPage />,
   }),
   privacy: page({
@@ -102,7 +95,6 @@ export const settingsPages: Record<SettingsPageId, SettingsPage> = {
       return t("settings.privacy");
     },
     icon: <LockIcon size={17} />,
-    tint: "blush",
     content: () => <PrivacyPage />,
   }),
   listening: page({
@@ -111,7 +103,6 @@ export const settingsPages: Record<SettingsPageId, SettingsPage> = {
       return t("listening.title");
     },
     icon: <HeadphonesIcon size={17} />,
-    tint: "ocean",
     content: () => (
       <>
         <ListeningSettingsSection />
@@ -125,7 +116,6 @@ export const settingsPages: Record<SettingsPageId, SettingsPage> = {
       return t("reminders.title");
     },
     icon: <BellIcon size={17} />,
-    tint: "rose",
     content: () => <ReminderSettingsSection />,
   }),
   haptics: page({
@@ -134,7 +124,6 @@ export const settingsPages: Record<SettingsPageId, SettingsPage> = {
       return t("haptics.title");
     },
     icon: <TouchIcon size={17} />,
-    tint: "sage",
     content: () => <HapticsSettingsSection />,
     available: hapticsAvailable,
   }),
@@ -144,7 +133,6 @@ export const settingsPages: Record<SettingsPageId, SettingsPage> = {
       return t("widgets.title");
     },
     icon: <LayoutIcon size={17} />,
-    tint: "honey",
     content: () => <WidgetsSettingsSection />,
     available: isTauri,
   }),
@@ -154,7 +142,6 @@ export const settingsPages: Record<SettingsPageId, SettingsPage> = {
       return t("settings.ai");
     },
     icon: <SparkleIcon size={17} />,
-    tint: "lavender",
     content: () => <AiSettingsSection />,
   }),
   about: page({
@@ -163,7 +150,6 @@ export const settingsPages: Record<SettingsPageId, SettingsPage> = {
       return t("settings.about");
     },
     icon: <VerifiedIcon size={17} />,
-    tint: "graphite",
     content: () => <AboutPage />,
   }),
 };

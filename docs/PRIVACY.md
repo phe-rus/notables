@@ -1,6 +1,8 @@
 # Privacy policy
 
-**Notables, by Pherus.** Last updated 9 October 2026.
+**Notables, by Pherus.** Last updated 9 October 2026. The official policy is
+at [pherus.org/legal/privacy-policy](https://pherus.org/legal/privacy-policy);
+this page explains the app in more detail.
 
 Notables is built to keep what you write on your own devices. This policy
 explains, plainly, what stays with you and the few cases where something

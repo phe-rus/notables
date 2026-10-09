@@ -7,11 +7,13 @@ import android.os.Build
 import android.view.HapticFeedbackConstants
 import android.webkit.JavascriptInterface
 import android.webkit.WebView
+import androidx.core.view.WindowCompat
 import notables.pherus.org.widgets.TodayWidgetProvider
 
 /**
  * What the page asks of Android directly, as `window.NotablesAndroid`
- * (www/src/platform/android-bridge.ts): system haptics, and adding the
+ * (www/src/platform/android-bridge.ts): system haptics, status and
+ * navigation bar icons that match the app's appearance, and adding the
  * Today widget to the home screen.
  */
 class AndroidBridge(private val activity: Activity, private val webView: WebView) {
@@ -50,6 +52,19 @@ class AndroidBridge(private val activity: Activity, private val webView: WebView
       else -> return
     }
     webView.post { webView.performHapticFeedback(constant) }
+  }
+
+  /**
+   * The bars' icons follow the app's own appearance, which can differ from
+   * the system's: a light app on a dark phone needs dark icons to show.
+   */
+  @JavascriptInterface
+  fun setSystemBarsDark(dark: Boolean) {
+    activity.runOnUiThread {
+      val controller = WindowCompat.getInsetsController(activity.window, activity.window.decorView)
+      controller.isAppearanceLightStatusBars = !dark
+      controller.isAppearanceLightNavigationBars = !dark
+    }
   }
 
   companion object {

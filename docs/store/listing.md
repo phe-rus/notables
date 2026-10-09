@@ -5,8 +5,10 @@ in step with this file. Limits are in brackets.
 
 ## Shared
 
+- **Tagline:** Note down anything notable, always with you.
+
 - **Category:** Productivity (secondary on the App Store: Books)
-- **Privacy policy:** https://github.com/phe-rus/notables/blob/main/docs/PRIVACY.md
+- **Privacy policy:** https://pherus.org/legal/privacy-policy (section 4 covers Notables; [docs/PRIVACY.md](../PRIVACY.md) is the long form)
 - **Support / website:** https://github.com/phe-rus/notables
 - **Marketing URL:** https://notables.pherus.org
 - **Contact email:** pherus@pherus.org
@@ -17,11 +19,11 @@ in step with this file. Limits are in brackets.
 
 **Name** [30]: Notables by Pherus
 
-**Subtitle** [30]: Notes, books and plans offline
+**Subtitle** [30]: Anything notable, with you
 
 **Promotional text** [170]:
-A calm place for everything you write. Notes, journals, books, comics,
-audiobooks, invoices and plans, kept on your iPhone. No account needed.
+Notes, books, plans and invoices in one beautifully made app. Write, draw,
+record, read and publish, all on your device, offline, with no account.
 
 **Keywords** [100]:
 notes,journal,diary,writing,books,reader,audiobook,comics,invoice,calendar,planner,handwriting
@@ -33,16 +35,19 @@ notes,journal,diary,writing,books,reader,audiobook,comics,invoice,calendar,plann
 **App name** [30]: Notables
 
 **Short description** [80]:
-Notes, journals, books, audiobooks, invoices and plans. Private, offline first.
+Anything notable, always with you. Notes, books, plans and invoices, offline.
 
 **Full description** [4000]: the full description below.
 
 ## Full description
 
-Notables is one calm place for everything you write, read and keep: a quick
-note, a journal, a story that grows into a book, a comic you're drawing, an
-audiobook you're listening to, an invoice a client can verify. It opens
-straight away, works without a connection, and never asks you to sign up.
+Most notes apps stop at notes. Notables keeps going.
+
+Anything notable, always with you: a thought on the bus, a journal, a story
+that grows into a book, a comic you draw by hand, the audiobook you're
+halfway through, an invoice a client can verify. One app, made with care
+down to the last detail, that opens instantly, works offline and never
+asks you to sign up.
 
 WRITE ANYTHING
 Notes, journals, stories, lessons and plans in an editor made for words:

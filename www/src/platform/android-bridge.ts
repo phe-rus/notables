@@ -8,6 +8,8 @@ interface AndroidBridge {
   canPinWidget(): boolean;
   pinWidget(): boolean;
   haptic(kind: HapticKind): void;
+  /** Dark icons for a light app and light icons for a dark one. Optional: older app builds lack it. */
+  setSystemBarsDark?(dark: boolean): void;
 }
 
 export function androidBridge(): AndroidBridge | undefined {
