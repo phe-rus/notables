@@ -133,7 +133,7 @@ function FranchiseContent({ task, onClose }: { task: FranchiseTask; onClose: () 
             <button
               type="submit"
               disabled={!name.trim()}
-              className="shrink-0 rounded-full bg-accent px-4 text-[14px] font-semibold text-on-accent transition-transform active:scale-[0.97] disabled:opacity-40"
+              className="shrink-0 rounded-full bg-accent px-4 text-subheadline font-semibold text-on-accent transition-transform active:scale-[0.97] disabled:opacity-40"
             >
               {task.type === "add" ? t("books.franchise.create") : t("common.save")}
             </button>

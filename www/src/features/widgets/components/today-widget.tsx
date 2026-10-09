@@ -42,7 +42,7 @@ export function TodayWidget() {
           <span className="text-caption font-semibold tracking-wide text-accent-text uppercase">
             {t("widgets.today")}
           </span>
-          <span className="text-[19px] leading-tight font-bold tracking-tight">{date}</span>
+          <span className="text-title3 leading-tight font-bold tracking-tight">{date}</span>
         </div>
         <button
           type="button"
@@ -57,7 +57,7 @@ export function TodayWidget() {
       <section className="flex min-h-0 flex-col gap-1.5" aria-label={snapshot.labels.upNext}>
         <h2 className="text-caption font-semibold text-label-tertiary">{snapshot.labels.upNext}</h2>
         {ready && snapshot.agenda.length === 0 && (
-          <p className="text-[14px] text-label-secondary">{snapshot.labels.nothingPlanned}</p>
+          <p className="text-subheadline text-label-secondary">{snapshot.labels.nothingPlanned}</p>
         )}
         <ul className="flex flex-col gap-1">
           {snapshot.agenda.slice(0, 4).map((item) => (
@@ -69,7 +69,7 @@ export function TodayWidget() {
               >
                 <span className="w-1 shrink-0 rounded-full" style={{ background: item.color }} />
                 <span className="flex min-w-0 flex-col">
-                  <span className="truncate text-[14px] font-medium">{item.title}</span>
+                  <span className="truncate text-subheadline font-medium">{item.title}</span>
                   <span className="truncate text-caption text-label-secondary">{item.when}</span>
                 </span>
               </button>
@@ -92,7 +92,7 @@ export function TodayWidget() {
                     type="button"
                     onClick={() => void openFromWidget(path(note.link))}
                     className={cn(
-                      "flex w-full items-center gap-2 rounded-lg px-2 py-1.5 text-left text-[14px] transition-colors hover:bg-fill/60",
+                      "flex w-full items-center gap-2 rounded-lg px-2 py-1.5 text-left text-subheadline transition-colors hover:bg-fill/60",
                     )}
                   >
                     {snapshot.pinned.length > 0 && (

@@ -30,7 +30,7 @@ export function ListeningSettingsSection() {
     <Section title={t("listening.title")} footer={t("listening.footer")}>
       <LabeledContent label={t("listening.voice")} stacked>
         {voices && voices.length === 0 ? (
-          <p className="text-[14px] text-label-secondary">{t("listening.noVoices")}</p>
+          <p className="text-subheadline text-label-secondary">{t("listening.noVoices")}</p>
         ) : (
           <PickerInput
             label={t("listening.voice")}

@@ -90,7 +90,7 @@ export function Picker<T extends string>({
         onClick={() => setOpen((current) => !current)}
         onKeyDown={onTriggerKey}
         className={cn(
-          "flex w-full min-w-0 items-center gap-2 rounded-lg control-field px-3 py-2 text-start text-[14px] text-label",
+          "flex w-full min-w-0 items-center gap-2 rounded-lg control-field px-3 py-2 text-start text-subheadline text-label",
           className,
         )}
       >
@@ -307,7 +307,7 @@ function SelectList<T extends string>({
               setQuery(event.target.value);
               setActive(0);
             }}
-            className="min-w-0 grow bg-transparent text-[14px] text-label outline-none placeholder:text-label-tertiary"
+            className="min-w-0 grow bg-transparent text-subheadline text-label outline-none placeholder:text-label-tertiary"
           />
         </div>
       )}
@@ -336,7 +336,7 @@ function SelectList<T extends string>({
               onPointerMove={() => setActive(index)}
               onClick={() => onPick(option.value)}
               className={cn(
-                "flex min-h-8 cursor-default items-center gap-2 rounded-lg px-2 py-1.5 text-[14px] [@media(pointer:coarse)]:min-h-11",
+                "flex min-h-8 cursor-default items-center gap-2 rounded-lg px-2 py-1.5 text-subheadline [@media(pointer:coarse)]:min-h-11",
                 focused ? "bg-fill" : "",
                 chosen ? "font-semibold text-label" : "text-label",
               )}

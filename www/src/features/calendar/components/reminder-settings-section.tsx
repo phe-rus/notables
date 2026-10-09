@@ -36,7 +36,7 @@ export function ReminderSettingsSection() {
           <button
             type="button"
             onClick={() => void requestPermission("notifications").then(setPermission)}
-            className="text-[14px] font-medium text-accent-text"
+            className="text-subheadline font-medium text-accent-text"
           >
             {t("common.allow")}
           </button>
@@ -44,7 +44,7 @@ export function ReminderSettingsSection() {
           <button
             type="button"
             onClick={alertFeedback}
-            className="text-[14px] font-medium text-accent-text"
+            className="text-subheadline font-medium text-accent-text"
           >
             {t("reminders.tryIt")}
           </button>

@@ -89,7 +89,7 @@ export function VerifyScreen() {
                 extra={
                   <>
                     {matchedNumber && (
-                      <p className="rounded-2xl bg-success/10 px-4 py-2.5 text-center text-[14px] font-medium">
+                      <p className="rounded-2xl bg-success/10 px-4 py-2.5 text-center text-subheadline font-medium">
                         The number and check code match {matchedNumber} as issued from this device.
                       </p>
                     )}
@@ -166,11 +166,11 @@ export function VerifyScreen() {
                   onChange={(event) => setPasted(event.target.value)}
                   placeholder="Or paste a verification link"
                   aria-label="Verification link"
-                  className="min-w-0 grow rounded-xl control-field px-3.5 py-2.5 text-[14px] text-label placeholder:text-label-tertiary"
+                  className="min-w-0 grow rounded-xl control-field px-3.5 py-2.5 text-subheadline text-label placeholder:text-label-tertiary"
                 />
                 <button
                   type="submit"
-                  className="rounded-xl bg-inverse px-4 text-[14px] font-semibold text-on-inverse disabled:opacity-40"
+                  className="rounded-xl bg-inverse px-4 text-subheadline font-semibold text-on-inverse disabled:opacity-40"
                   disabled={!pasted.trim()}
                 >
                   Check
@@ -186,7 +186,7 @@ export function VerifyScreen() {
               />
 
               {problem && (
-                <p role="alert" className="text-center text-[14px] text-danger">
+                <p role="alert" className="text-center text-subheadline text-danger">
                   {problem}
                 </p>
               )}
@@ -219,7 +219,7 @@ function NumberCheckForm({
 
   return (
     <details className="group rounded-4xl border border-separator/70 bg-elevated px-4 py-3 open:pb-4">
-      <summary className="cursor-pointer list-none text-[14px] font-semibold text-label marker:hidden">
+      <summary className="cursor-pointer list-none text-subheadline font-semibold text-label marker:hidden">
         Check by number instead
         <span className="block text-footnote font-normal text-label-secondary">
           For documents issued from this device: type the number and check code on the paper.
@@ -253,7 +253,7 @@ function NumberCheckForm({
           onChange={(event) => setNumber(event.target.value)}
           placeholder="Number, e.g. INV-0042"
           aria-label="Document number"
-          className="min-w-0 rounded-xl control-field px-3 py-2.5 text-[14px]"
+          className="min-w-0 rounded-xl control-field px-3 py-2.5 text-subheadline"
         />
         <input
           value={code}
@@ -261,12 +261,12 @@ function NumberCheckForm({
           placeholder="Check code"
           aria-label="Check code"
           autoCapitalize="characters"
-          className="min-w-0 rounded-xl control-field px-3 py-2.5 font-mono text-[14px] uppercase"
+          className="min-w-0 rounded-xl control-field px-3 py-2.5 font-mono text-subheadline uppercase"
         />
         <button
           type="submit"
           disabled={busy || !number.trim() || !code.trim()}
-          className="rounded-xl bg-inverse px-4 py-2.5 text-[14px] font-semibold text-on-inverse disabled:opacity-40 max-sm:col-span-2"
+          className="rounded-xl bg-inverse px-4 py-2.5 text-subheadline font-semibold text-on-inverse disabled:opacity-40 max-sm:col-span-2"
         >
           {busy ? "Checking…" : "Check"}
         </button>

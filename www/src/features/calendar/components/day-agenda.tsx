@@ -102,7 +102,7 @@ export function DayAgenda({
         {holidays.map((holiday) => (
           <p
             key={holiday.name}
-            className="flex items-center gap-2 rounded-xl bg-danger/8 px-3 py-2 text-[14px] font-medium text-danger"
+            className="flex items-center gap-2 rounded-xl bg-danger/8 px-3 py-2 text-subheadline font-medium text-danger"
           >
             <span className="grow">{holiday.name}</span>
             <span className="text-caption2 font-semibold uppercase opacity-70">
@@ -112,7 +112,7 @@ export function DayAgenda({
         ))}
         {dayEvents.length === 0 ? (
           <div className="flex flex-col gap-3 rounded-3xl bg-fill/40 px-4 py-4">
-            <p className="text-[14px] text-label-secondary">{t("calendar.nothingPlanned")}</p>
+            <p className="text-subheadline text-label-secondary">{t("calendar.nothingPlanned")}</p>
             <div className="flex flex-wrap gap-1.5">
               {(["plan", "reminder", "birthday", "trip"] as const).map((kind) => (
                 <QuickKind key={kind} icon={kindIcons[kind]} onClick={() => onAdd(kind)}>
@@ -167,7 +167,7 @@ export function DayAgenda({
                     <span className="truncate text-subheadline font-medium">
                       {event.title || t("calendar.someone")}
                     </span>
-                    <span className="truncate text-[12.5px] text-label-secondary">
+                    <span className="truncate text-caption text-label-secondary">
                       {describeDay(on)}
                       {age
                         ? ` · ${event.kind === "birthday" ? t("calendar.turning", { age }) : t("calendar.years", { count: age })}`
@@ -176,7 +176,7 @@ export function DayAgenda({
                   </span>
                   <span
                     className={cn(
-                      "shrink-0 text-[12.5px] font-semibold tabular-nums",
+                      "shrink-0 text-caption font-semibold tabular-nums",
                       inDays === 0 ? "text-accent-text" : "text-label-tertiary",
                     )}
                   >
@@ -328,7 +328,7 @@ function EventRow({
           >
             {eventTitle(event, day)}
           </span>
-          <span className="flex items-center gap-1.5 text-[12.5px] text-label-secondary">
+          <span className="flex items-center gap-1.5 text-caption text-label-secondary">
             <span className="text-label-tertiary">{kindIcons[event.kind]}</span>
             <span className="truncate">{when}</span>
             {age && <span className="shrink-0">· {t("calendar.turning", { age })}</span>}

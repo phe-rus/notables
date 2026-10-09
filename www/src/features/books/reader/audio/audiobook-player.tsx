@@ -245,7 +245,7 @@ function PlayerScreen({ book, player }: { book: BookEntry; player: AudiobookPlay
           ) : (
             <>
               {player.ready && player.tracks.length === 0 && (
-                <p className="px-3 text-[14px] text-label-secondary">
+                <p className="px-3 text-subheadline text-label-secondary">
                   No recordings in this book on this device yet.
                 </p>
               )}

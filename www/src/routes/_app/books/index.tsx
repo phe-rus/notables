@@ -7,7 +7,7 @@ export const Route = createFileRoute("/_app/books/")({
 function NoBookSelected() {
   return (
     <div className="flex grow flex-col items-center justify-center gap-2 p-10 text-center">
-      <p className="font-serif text-[26px] font-semibold text-label">
+      <p className="font-serif text-title2 font-semibold text-label">
         Every note can become a chapter.
       </p>
       <p className="text-subheadline text-label-secondary">Pick a book, or start a new one.</p>

@@ -14,7 +14,7 @@ export function BookScreen({ bookId, actions }: { bookId: string; actions?: Reac
   if (!book) {
     return (
       <div className="flex grow flex-col items-center justify-center gap-2 p-10 text-center">
-        <p className="font-serif text-[24px] font-semibold">{t("books.notOnDevice")}</p>
+        <p className="font-serif text-title2 font-semibold">{t("books.notOnDevice")}</p>
         <Link to="/books" className="mt-2 font-semibold text-accent-text">
           {t("books.backToBooks")}
         </Link>

@@ -166,7 +166,7 @@ function ImportFlow({ onClose }: { onClose: () => void }) {
   return (
     <>
       <header className="flex items-center justify-between px-5 pt-5 pb-3">
-        <h2 className="text-[19px] font-bold tracking-tight">{t("imports.title")}</h2>
+        <h2 className="text-title3 font-bold tracking-tight">{t("imports.title")}</h2>
         {stage.name !== "importing" && (
           <IconButton label={t("common.close")} onClick={onClose}>
             <CloseIcon size={18} />
@@ -197,7 +197,7 @@ function ImportFlow({ onClose }: { onClose: () => void }) {
               <BookIcon size={26} />
             </span>
             <p className="text-callout font-semibold">{t("imports.dropTitle")}</p>
-            <p className="max-w-[380px] text-[14px] leading-snug text-label-secondary">
+            <p className="max-w-[380px] text-subheadline leading-snug text-label-secondary">
               {t("imports.dropBody")}
             </p>
             <div className="mt-1 flex flex-wrap justify-center gap-2">
@@ -235,7 +235,7 @@ function ImportFlow({ onClose }: { onClose: () => void }) {
 
       {(stage.name === "reading" || stage.name === "importing") && (
         <div className="flex flex-col gap-3 px-5 pt-2 pb-8" aria-live="polite">
-          <p className="truncate text-[14px] text-label-secondary">
+          <p className="truncate text-subheadline text-label-secondary">
             {stage.name === "reading" ? t("imports.reading") : stage.label}
           </p>
           <div className="h-2 overflow-hidden rounded-full bg-fill">
@@ -364,7 +364,7 @@ function PlannedSeriesCard({
             <li
               key={book.key}
               className={cn(
-                "flex items-baseline justify-between gap-3 py-2 text-[14px]",
+                "flex items-baseline justify-between gap-3 py-2 text-subheadline",
                 skipped && "text-label-tertiary line-through",
               )}
             >
@@ -406,7 +406,7 @@ function Choice({
   children: ReactNode;
 }) {
   return (
-    <label className="flex cursor-pointer items-center gap-2.5 rounded-xl bg-fill/50 px-3 py-2.5 text-[14px] has-[:focus-visible]:ring-2 has-[:focus-visible]:ring-accent/70">
+    <label className="flex cursor-pointer items-center gap-2.5 rounded-xl bg-fill/50 px-3 py-2.5 text-subheadline has-[:focus-visible]:ring-2 has-[:focus-visible]:ring-accent/70">
       <input type="checkbox" className="sr-only" checked={checked} onChange={onToggle} />
       <span
         aria-hidden="true"

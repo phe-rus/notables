@@ -19,7 +19,7 @@ export function HapticsSettingsSection() {
           <button
             type="button"
             onClick={() => playHaptic("success")}
-            className="text-[14px] font-medium text-accent-text"
+            className="text-subheadline font-medium text-accent-text"
           >
             {t("haptics.tryIt")}
           </button>

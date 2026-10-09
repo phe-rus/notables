@@ -40,12 +40,13 @@ update **Status** in `AGENTS.md`, and record lasting decisions in `docs/adr/`.
       converted, 18 and 22 px snapped to 20 and 24.
 - [x] `data-theme` works on any element, with `color-scheme`; the recorder
       uses it instead of 18 copied dark hex values.
-- [ ] Remaining one-off values: 121 font sizes (84 are 14 px, which has no
-      Apple style: decide its role). Most remaining hex colors are content
-      (artwork, invoice paper, drawing and calendar colors) and stay.
-- [ ] Blush is too pale for control fills (toggles, selected states):
-      about 1.4:1 against white where 3:1 is needed. Decide a stronger
-      fill shade, then add a non-text contrast test to `tokens/test`.
+- [x] Remaining one-off font sizes: 14 px (84 uses) became `subheadline`,
+      the iOS row and button size; near matches snapped to their styles.
+      The 20 left are content or deliberately dense (artwork, invoice
+      paper, calendar month and year labels, tab bar labels, large input
+      text). Most remaining hex colors are content too and stay.
+- [x] Blush control fills: controls use rose `#d16988` (3:1 on every light
+      ground) while text keeps `#9e3b4f`; a non-text contrast test guards it.
 - [x] CSS layers: editor and book reader styles moved into `components`.
 - [x] SwiftUI names and one folder per control: `Switch` is `Toggle`,
       `Select` is `Picker`, choice controls split into `segmented-control/`,

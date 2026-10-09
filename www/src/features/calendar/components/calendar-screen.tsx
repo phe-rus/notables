@@ -260,7 +260,7 @@ export function CalendarScreen({
                 selected === today && (view === "month" || view === "day" || view === "week")
               }
               data-tooltip={t("calendar.goToToday")}
-              className="rounded-full px-3 py-1.5 text-[14px] font-medium text-accent-text transition-colors hover:bg-fill/60 disabled:text-label-tertiary disabled:hover:bg-transparent"
+              className="rounded-full px-3 py-1.5 text-subheadline font-medium text-accent-text transition-colors hover:bg-fill/60 disabled:text-label-tertiary disabled:hover:bg-transparent"
             >
               {t("calendar.today")}
             </button>
@@ -567,7 +567,7 @@ function HolidayButton() {
           />
         </Field>
         <div className="flex items-center justify-between gap-3">
-          <span className="text-[14px]">{t("calendar.observances")}</span>
+          <span className="text-subheadline">{t("calendar.observances")}</span>
           <Toggle
             label={t("calendar.observances")}
             checked={settings.observances}

@@ -132,7 +132,7 @@ export function SetupFlow() {
               setIndex(steps.indexOf("done"));
             }}
             className={cn(
-              "rounded-full px-3 py-1.5 text-[14px] font-medium text-label-secondary hover:bg-fill",
+              "rounded-full px-3 py-1.5 text-subheadline font-medium text-label-secondary hover:bg-fill",
               index < steps.indexOf("licence") + 1 && "invisible",
             )}
           >
@@ -194,7 +194,7 @@ export function SetupFlow() {
 function StepTitle({ title, children }: { title: string; children?: ReactNode }) {
   return (
     <div className="flex flex-col gap-2">
-      <h1 className="text-[30px] leading-tight font-bold tracking-tight">{title}</h1>
+      <h1 className="text-title leading-tight font-bold tracking-tight">{title}</h1>
       {children && <p className="text-callout leading-snug text-label-secondary">{children}</p>}
     </div>
   );
@@ -333,7 +333,7 @@ function NameStep({ onSubmit }: { onSubmit: () => void }) {
           placeholder={t("setup.namePlaceholder")}
           aria-label={t("setup.namePlaceholder")}
           autoComplete="name"
-          className="w-full rounded-2xl control-field px-4 py-3.5 text-[19px]"
+          className="w-full rounded-2xl control-field px-4 py-3.5 text-title3"
         />
       </form>
     </>
@@ -538,7 +538,7 @@ function PermissionRow({ kind, device }: { kind: PermissionKind; device: DeviceP
         </span>
       </span>
       {state === "granted" ? (
-        <span className="flex items-center gap-1 text-[14px] font-semibold text-success">
+        <span className="flex items-center gap-1 text-subheadline font-semibold text-success">
           <CheckIcon size={16} strokeWidth={2.6} />
           {t("common.allowed")}
         </span>

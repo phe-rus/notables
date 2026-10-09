@@ -158,7 +158,7 @@ export function AiAssist() {
                     to="/settings"
                     hash="ai"
                     onClick={close}
-                    className="rounded-full bg-inverse px-4 py-2 text-[14px] font-semibold text-on-inverse no-underline"
+                    className="rounded-full bg-inverse px-4 py-2 text-subheadline font-semibold text-on-inverse no-underline"
                   >
                     Open Settings
                   </Link>

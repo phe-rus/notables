@@ -51,7 +51,7 @@ export function ChapterPicker({ book, kind }: { book: BookEntry; kind: NoteKind 
           </li>
         ))}
         {available.length === 0 && (
-          <li className="px-3 py-2 text-[14px] text-label-tertiary">
+          <li className="px-3 py-2 text-subheadline text-label-tertiary">
             {deferredQuery
               ? t("books.nothingMatches")
               : t("books.noOthers", { kinds: noteKindPlural[kind] })}

@@ -3,7 +3,7 @@ import type { ComponentProps, InputHTMLAttributes, ReactNode, TextareaHTMLAttrib
 import { t } from "../../i18n/i18n";
 
 export const fieldClass =
-  "w-full min-w-0 rounded-lg control-field px-3 py-2 text-[14px] text-label placeholder:text-label-tertiary";
+  "w-full min-w-0 rounded-lg control-field px-3 py-2 text-subheadline text-label placeholder:text-label-tertiary";
 
 export function Field({
   label,

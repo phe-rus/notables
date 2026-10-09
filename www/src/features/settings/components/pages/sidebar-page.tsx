@@ -31,7 +31,7 @@ export function SidebarPage() {
           type="button"
           disabled={sidebar.width === sidebarWidth.default}
           onClick={() => setSidebar({ width: sidebarWidth.default })}
-          className="text-[14px] font-medium text-accent-text disabled:text-label-tertiary"
+          className="text-subheadline font-medium text-accent-text disabled:text-label-tertiary"
         >
           {t("common.reset")}
         </button>

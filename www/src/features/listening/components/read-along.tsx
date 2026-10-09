@@ -105,7 +105,7 @@ export function ReadAlong({
 
       {!working && !transcript?.complete && (
         <div className="flex flex-col items-start gap-2 px-3">
-          <p className="text-[14px] text-label-secondary">
+          <p className="text-subheadline text-label-secondary">
             {canTranscribeRecordings()
               ? t("listening.readAlongHint")
               : t("listening.readAlongWebHint")}

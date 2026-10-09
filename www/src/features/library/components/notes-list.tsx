@@ -198,12 +198,7 @@ function NoteRow({
           transition={spring.snappy}
         />
       )}
-      <span
-        className={cn(
-          "flex items-center gap-1.5 font-semibold text-label",
-          compact ? "text-[14px]" : "text-subheadline",
-        )}
-      >
+      <span className="flex items-center gap-1.5 text-subheadline font-semibold text-label">
         {entry.pinned && <PinIcon size={13} className="text-accent-text" />}
         <span className="truncate">{entry.title || t("notes.newNote")}</span>
         {compact && (
@@ -239,7 +234,7 @@ function EmptyList({ searching, onCreate }: { searching: boolean; onCreate: () =
         <button
           type="button"
           onClick={onCreate}
-          className="rounded-full bg-accent px-4 py-2 text-[14px] font-semibold text-on-accent transition-transform active:scale-[0.97]"
+          className="rounded-full bg-accent px-4 py-2 text-subheadline font-semibold text-on-accent transition-transform active:scale-[0.97]"
         >
           {t("notes.writeSomething")}
         </button>

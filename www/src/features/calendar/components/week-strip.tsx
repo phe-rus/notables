@@ -100,7 +100,7 @@ export function WeekStrip({
           );
         })}
       </motion.div>
-      <p className="px-4 pt-1 text-center text-[14px] font-medium text-label-secondary">
+      <p className="px-4 pt-1 text-center text-subheadline font-medium text-label-secondary">
         {fullDay().format(asDate(selected))}
       </p>
     </div>

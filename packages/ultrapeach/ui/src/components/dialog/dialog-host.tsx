@@ -74,7 +74,7 @@ function ConfirmCard({ dialog }: { dialog: PendingDialog }) {
             {dialog.title}
           </h2>
           {dialog.message && (
-            <p id={messageId} className="text-[14px] leading-snug text-label-secondary">
+            <p id={messageId} className="text-subheadline leading-snug text-label-secondary">
               {dialog.message}
             </p>
           )}

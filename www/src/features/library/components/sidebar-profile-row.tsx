@@ -7,11 +7,13 @@ export function SidebarProfileRow({ active }: { active: boolean }) {
   const name = useAuthorName();
   return (
     <div className="flex shrink-0 items-center gap-2.5 border-t border-separator/60 px-1.5 py-3">
-      <span className="flex size-8 shrink-0 items-center justify-center rounded-full bg-accent-soft text-[14px] font-semibold text-accent-text">
+      <span className="flex size-8 shrink-0 items-center justify-center rounded-full bg-accent-soft text-subheadline font-semibold text-accent-text">
         {(name || "N").slice(0, 1).toUpperCase()}
       </span>
       <span className="flex min-w-0 grow flex-col">
-        <span className="truncate text-[14px] font-medium">{name || t("nav.onThisDevice")}</span>
+        <span className="truncate text-subheadline font-medium">
+          {name || t("nav.onThisDevice")}
+        </span>
         <span className="truncate text-caption text-label-tertiary">{t("nav.noAccount")}</span>
       </span>
       <Link

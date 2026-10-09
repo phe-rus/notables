@@ -169,7 +169,7 @@ function RecorderSession({ title, onCancel, onFinish }: Omit<RecorderSheetProps,
           </p>
         )}
         {!transcription.supported && (
-          <p className="text-[14px] leading-snug text-label-tertiary">
+          <p className="text-subheadline leading-snug text-label-tertiary">
             Live transcription isn’t available on this device yet. Your recording is still saved
             with the note.
           </p>
@@ -235,13 +235,13 @@ function MicrophoneHelpCard({
   return (
     <div role="alert" className="flex flex-col gap-3 rounded-3xl bg-fill p-4">
       <p className="text-subheadline font-semibold text-label">{help.title}</p>
-      <p className="text-[14px] leading-snug text-label-secondary">{help.steps}</p>
+      <p className="text-subheadline leading-snug text-label-secondary">{help.steps}</p>
       <div className="flex flex-wrap gap-2">
         {help.canOpenSettings && (
           <button
             type="button"
             onClick={async () => setOpened(await openMicrophoneSettings())}
-            className="rounded-full bg-inverse px-4 py-2 text-[14px] font-semibold text-on-inverse transition-transform active:scale-[0.97]"
+            className="rounded-full bg-inverse px-4 py-2 text-subheadline font-semibold text-on-inverse transition-transform active:scale-[0.97]"
           >
             {opened ? "Settings opened" : "Open Settings"}
           </button>
@@ -249,7 +249,7 @@ function MicrophoneHelpCard({
         <button
           type="button"
           onClick={onRetry}
-          className="rounded-full bg-separator px-4 py-2 text-[14px] font-semibold text-label transition-transform active:scale-[0.97]"
+          className="rounded-full bg-separator px-4 py-2 text-subheadline font-semibold text-label transition-transform active:scale-[0.97]"
         >
           Try again
         </button>

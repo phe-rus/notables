@@ -152,7 +152,7 @@ function ShareContent({ entry, onClose }: { entry: LibraryEntry; onClose: () => 
                   <li key={inviteId} className="flex items-center gap-3 px-4 py-3">
                     <span
                       className={cn(
-                        "relative flex size-9 shrink-0 items-center justify-center rounded-full text-[14px] font-semibold",
+                        "relative flex size-9 shrink-0 items-center justify-center rounded-full text-subheadline font-semibold",
                         inviteId === OWNER ? "bg-accent text-on-accent" : "bg-fill text-label",
                       )}
                     >
@@ -220,7 +220,7 @@ function ShareContent({ entry, onClose }: { entry: LibraryEntry; onClose: () => 
           <button
             type="button"
             onClick={() => void stop()}
-            className="text-[14px] font-medium text-danger"
+            className="text-subheadline font-medium text-danger"
           >
             {owner ? t("sharing.stop") : t("sharing.leave")}
           </button>

@@ -92,7 +92,7 @@ export function SealResult({
       {extra}
 
       {check.summary && (
-        <dl className="grid w-full grid-cols-[auto_1fr] gap-x-6 gap-y-2.5 rounded-4xl border border-separator/70 bg-elevated p-5 text-[14px]">
+        <dl className="grid w-full grid-cols-[auto_1fr] gap-x-6 gap-y-2.5 rounded-4xl border border-separator/70 bg-elevated p-5 text-subheadline">
           <Row label="Document">
             {invoiceKindLabels[check.summary.kind]} {check.summary.no}
           </Row>

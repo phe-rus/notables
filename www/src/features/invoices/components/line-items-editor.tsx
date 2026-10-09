@@ -62,7 +62,7 @@ export function LineItemsEditor({
                   currency={currency}
                   onChange={(unitPrice) => update(item.id, { unitPrice })}
                 />
-                <span className="min-w-[96px] text-right text-[14px] font-medium tabular-nums">
+                <span className="min-w-[96px] text-right text-subheadline font-medium tabular-nums">
                   {formatMoney(lineAmount(item), currency)}
                 </span>
               </div>
@@ -73,7 +73,7 @@ export function LineItemsEditor({
       <button
         type="button"
         onClick={() => onChange([...items, newLineItem()])}
-        className="flex items-center justify-center gap-1.5 rounded-xl border border-dashed border-separator py-2.5 text-[14px] font-medium text-accent-text transition-colors hover:bg-fill/60"
+        className="flex items-center justify-center gap-1.5 rounded-xl border border-dashed border-separator py-2.5 text-subheadline font-medium text-accent-text transition-colors hover:bg-fill/60"
       >
         <PlusIcon size={15} strokeWidth={2.2} />
         Add item

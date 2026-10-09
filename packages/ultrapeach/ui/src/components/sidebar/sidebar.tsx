@@ -13,7 +13,7 @@ export function SidebarSection({ title, children }: { title: string; children: R
 /** Classes for a sidebar row; apply to the app's router link. */
 export function sidebarItemClass(active?: boolean): string {
   return cn(
-    "group flex items-center gap-2.5 rounded-2xl px-2.5 py-[7px] text-[14px] text-label no-underline transition-colors duration-fast",
+    "group flex items-center gap-2.5 rounded-2xl px-2.5 py-[7px] text-subheadline text-label no-underline transition-colors duration-fast",
     active ? "bg-accent-soft font-medium text-label" : "hover:bg-fill/70",
   );
 }

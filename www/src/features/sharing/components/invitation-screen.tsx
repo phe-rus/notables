@@ -35,10 +35,10 @@ export function InvitationScreen({ shareId }: { shareId: string }) {
       {invitation ? (
         <>
           <div className="flex max-w-[420px] flex-col gap-2">
-            <p className="text-[14px] font-medium text-label-secondary">
+            <p className="text-subheadline font-medium text-label-secondary">
               {t("sharing.invitedBy", { name: invitation.from || t("calendar.someone") })}
             </p>
-            <h1 className="font-serif text-[30px] leading-tight font-semibold">
+            <h1 className="font-serif text-title leading-tight font-semibold">
               {invitation.title || t("common.untitled")}
             </h1>
             <p className="text-subheadline leading-snug text-label-secondary">

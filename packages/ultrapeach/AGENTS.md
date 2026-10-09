@@ -76,6 +76,10 @@ size, `leading-<style>` the matching line height. All of them scale with
 | `text-footnote` | 13 | Secondary details, section headers |
 | `text-caption`, `text-caption2` | 12, 11 | Labels, timestamps, badges |
 
+There is no 14 px style: interface text that once used it is `subheadline`.
+A one-off size is only for content (artwork, printed paper) or a
+deliberately dense surface such as a calendar month cell.
+
 ## Corner radii
 
 `rounded-xs` 4, `sm` 6, `md` 8, `lg` 10, `xl` 12, `2xl` 14, `3xl` 16,

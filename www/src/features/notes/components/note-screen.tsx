@@ -318,7 +318,7 @@ function NoteEditorScreen({ entry, viewId }: { entry: LibraryEntry; viewId?: str
 function MissingNote() {
   return (
     <div className="flex grow flex-col items-center justify-center gap-2 p-10 text-center">
-      <p className="font-serif text-[24px] font-semibold">This note isn’t on this device</p>
+      <p className="font-serif text-title2 font-semibold">This note isn’t on this device</p>
       <p className="text-subheadline text-label-secondary">It may have been deleted.</p>
       <Link to="/" className="mt-2 font-semibold text-accent-text">
         Back to notes

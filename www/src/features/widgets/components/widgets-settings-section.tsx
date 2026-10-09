@@ -32,7 +32,7 @@ export function WidgetsSettingsSection() {
       <button
         type="button"
         onClick={() => androidBridge()?.pinWidget()}
-        className="text-[14px] font-medium text-accent-text"
+        className="text-subheadline font-medium text-accent-text"
       >
         {t("common.add")}
       </button>
@@ -43,7 +43,7 @@ export function WidgetsSettingsSection() {
         href="/widget"
         target="_blank"
         rel="noreferrer"
-        className="text-[14px] font-medium text-accent-text"
+        className="text-subheadline font-medium text-accent-text"
       >
         {t("common.open")}
       </a>

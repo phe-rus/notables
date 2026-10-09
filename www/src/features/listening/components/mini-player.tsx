@@ -43,7 +43,7 @@ export function MiniPlayer({ className }: { className?: string }) {
               className="w-9 shrink-0"
             />
             <span className="flex min-w-0 flex-col">
-              <span className="truncate text-[14px] font-semibold text-label">
+              <span className="truncate text-subheadline font-semibold text-label">
                 {playback.track?.title}
               </span>
               <span className="truncate text-caption text-label-secondary">

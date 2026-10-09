@@ -68,7 +68,7 @@ function EditorRow({
       value={id}
       dragListener={false}
       dragControls={controls}
-      className="relative flex items-center gap-2.5 rounded-2xl bg-transparent px-1.5 py-[5px] text-[14px]"
+      className="relative flex items-center gap-2.5 rounded-2xl bg-transparent px-1.5 py-[5px] text-subheadline"
       whileDrag={{
         scale: 1.02,
         backgroundColor: "var(--color-elevated)",

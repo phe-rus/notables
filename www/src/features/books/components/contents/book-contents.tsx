@@ -416,7 +416,7 @@ export function BookContents({ book, chapters }: { book: BookEntry; chapters: Li
       </div>
       {adding && (
         <div className="flex flex-col gap-2 rounded-2xl bg-fill/50 px-4 py-3" aria-live="polite">
-          <p className="truncate text-[14px] text-label-secondary">{adding.label}</p>
+          <p className="truncate text-subheadline text-label-secondary">{adding.label}</p>
           <div className="h-1.5 overflow-hidden rounded-full bg-fill">
             <motion.div
               className="h-full rounded-full bg-accent"

@@ -53,7 +53,7 @@ export function HighlightsPanel({
             transition={spring.smooth}
           >
             <header className="flex items-center justify-between px-5 pt-[max(16px,env(safe-area-inset-top))] pb-3">
-              <h2 className="text-[19px] font-bold tracking-tight">Highlights</h2>
+              <h2 className="text-title3 font-bold tracking-tight">Highlights</h2>
               <IconButton label="Close" onClick={onClose}>
                 <CloseIcon size={18} />
               </IconButton>

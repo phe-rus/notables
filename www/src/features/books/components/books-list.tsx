@@ -201,7 +201,7 @@ function BooksListContent({ activeId, onOpenSidebar, className }: BooksListProps
             <button
               type="button"
               onClick={() => createBook()}
-              className="rounded-full bg-accent px-4 py-2 text-[14px] font-semibold text-on-accent transition-transform active:scale-[0.97]"
+              className="rounded-full bg-accent px-4 py-2 text-subheadline font-semibold text-on-accent transition-transform active:scale-[0.97]"
             >
               {t("books.makeBook")}
             </button>

@@ -28,9 +28,10 @@ export function walletOcrAssets(native: boolean): Plugin {
           emit(join(core, file), `core/${file}`);
       }
       // Barcode reading (PDF417 on IDs, QR codes), with its license.
-      const zxing = dirname(require.resolve("zxing-wasm/package.json"));
-      emit(join(zxing, "dist/reader/zxing_reader.wasm"), "zxing_reader.wasm");
-      emit(join(zxing, "LICENSE"), "licenses/zxing-wasm.LICENSE");
+      // zxing-wasm doesn't export its package.json, so find it from the wasm.
+      const zxingReader = require.resolve("zxing-wasm/reader/zxing_reader.wasm");
+      emit(zxingReader, "zxing_reader.wasm");
+      emit(join(dirname(zxingReader), "../../LICENSE"), "licenses/zxing-wasm.LICENSE");
       for (const language of ["eng", "fra", "spa", "por", "swa", "ara"]) {
         const directory = dirname(require.resolve(`@tesseract.js-data/${language}/package.json`));
         emit(

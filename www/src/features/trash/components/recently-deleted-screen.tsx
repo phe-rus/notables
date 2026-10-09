@@ -124,7 +124,7 @@ export function RecentlyDeletedScreen({ onOpenSidebar }: { onOpenSidebar: () => 
                 <TrashIcon size={26} />
               </span>
               <p className="text-callout font-semibold">{t("trash.nothingTitle")}</p>
-              <p className="max-w-[300px] text-[14px] text-label-secondary">
+              <p className="max-w-[300px] text-subheadline text-label-secondary">
                 {t("trash.nothingBody")}
               </p>
             </div>

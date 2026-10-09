@@ -160,12 +160,12 @@ export function AiSettingsSection() {
                     onChange={(event) => setKey(event.target.value)}
                     placeholder={hasKey ? "••••••••  (saved)" : info.keyHint}
                     aria-label={`${info.label} API key`}
-                    className="min-w-0 grow rounded-lg control-field px-3 py-2 font-mono text-[14px]"
+                    className="min-w-0 grow rounded-lg control-field px-3 py-2 font-mono text-subheadline"
                   />
                   <button
                     type="submit"
                     disabled={!key.trim() && !hasKey}
-                    className="rounded-lg bg-inverse px-3.5 text-[14px] font-semibold text-on-inverse disabled:opacity-40"
+                    className="rounded-lg bg-inverse px-3.5 text-subheadline font-semibold text-on-inverse disabled:opacity-40"
                   >
                     {key.trim() ? "Save" : hasKey ? "Remove" : "Save"}
                   </button>
@@ -194,7 +194,7 @@ export function AiSettingsSection() {
                   type="button"
                   disabled={!hasKey || busy !== null}
                   onClick={() => void test()}
-                  className="self-start rounded-lg bg-fill px-3.5 py-2 text-[14px] font-semibold disabled:opacity-40"
+                  className="self-start rounded-lg bg-fill px-3.5 py-2 text-subheadline font-semibold disabled:opacity-40"
                 >
                   {busy === "test" ? "Testing…" : "Test connection"}
                 </button>
@@ -235,13 +235,13 @@ function ModelChooser({
 
   if (!hasKey) {
     return (
-      <p className="text-[14px] text-label-secondary">
+      <p className="text-subheadline text-label-secondary">
         Save a key and the models it can use appear here.
       </p>
     );
   }
   if (loading && models.length === 0) {
-    return <p className="text-[14px] text-label-secondary">Finding models for your key…</p>;
+    return <p className="text-subheadline text-label-secondary">Finding models for your key…</p>;
   }
   return (
     <div className="flex w-full flex-col gap-2">

@@ -182,7 +182,7 @@ export function QrScanner({
         </span>
       )}
       {!ready && (
-        <span className="absolute inset-0 flex items-center justify-center text-[14px] text-white/70">
+        <span className="absolute inset-0 flex items-center justify-center text-subheadline text-white/70">
           Starting camera…
         </span>
       )}

@@ -24,7 +24,7 @@ function BookRoute() {
           <Link
             to="/read/$bookId"
             params={{ bookId }}
-            className="inline-flex h-[34px] items-center rounded-full bg-inverse px-4 text-[14px] font-semibold text-on-inverse no-underline transition-transform active:scale-[0.97]"
+            className="inline-flex h-[34px] items-center rounded-full bg-inverse px-4 text-subheadline font-semibold text-on-inverse no-underline transition-transform active:scale-[0.97]"
           >
             {book ? <ReadLabel book={book} /> : t("books.action.read")}
           </Link>

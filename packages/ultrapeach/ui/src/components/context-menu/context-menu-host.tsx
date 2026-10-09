@@ -157,7 +157,7 @@ function Menu({ menu }: { menu: OpenMenu }) {
               item.onSelect();
             }}
             className={cn(
-              "flex items-center gap-2.5 rounded-lg px-2.5 text-start text-[14px] transition-colors disabled:opacity-40",
+              "flex items-center gap-2.5 rounded-lg px-2.5 text-start text-subheadline transition-colors disabled:opacity-40",
               menu.touch ? "py-2.5" : "py-1.5",
               item.destructive ? "text-danger" : "text-label",
               focused === current &&

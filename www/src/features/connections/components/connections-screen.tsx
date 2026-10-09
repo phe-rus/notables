@@ -312,7 +312,7 @@ function SharedNoteRow({
           className={cn("size-2 shrink-0 rounded-full", here ? "bg-success" : "bg-separator")}
         />
         <span className="flex min-w-0 flex-col">
-          <span className="truncate text-[14px] font-medium text-label">{title}</span>
+          <span className="truncate text-subheadline font-medium text-label">{title}</span>
           <span className="truncate text-caption text-label-tertiary">
             {t(`connections.relation.${note.relation}`)}
           </span>
@@ -338,7 +338,7 @@ function EmptyState({ onInvite }: { onInvite: () => void }) {
       <span className="flex size-16 items-center justify-center rounded-full bg-accent-soft text-accent-text">
         <PeopleIcon size={30} />
       </span>
-      <p className="font-serif text-[24px] font-semibold tracking-tight">
+      <p className="font-serif text-title2 font-semibold tracking-tight">
         {t("connections.emptyTitle")}
       </p>
       <p className="max-w-[380px] text-subheadline leading-snug text-label-secondary">

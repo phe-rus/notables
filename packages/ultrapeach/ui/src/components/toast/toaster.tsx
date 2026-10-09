@@ -184,7 +184,7 @@ function ToastItem({
             <AnimatePresence mode="popLayout" initial={false}>
               <motion.span
                 key={toast.title}
-                className="text-[14px] leading-5 font-semibold"
+                className="text-subheadline leading-5 font-semibold"
                 initial={{ opacity: 0, y: 6, filter: "blur(4px)" }}
                 animate={{ opacity: 1, y: 0, filter: "blur(0px)" }}
                 exit={{ opacity: 0, y: -6, filter: "blur(4px)" }}

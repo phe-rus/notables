@@ -7,7 +7,7 @@ export const SearchField = forwardRef<HTMLInputElement, InputHTMLAttributes<HTML
     return (
       <label
         className={cn(
-          "control-field flex items-center gap-2 rounded-lg px-2.5 py-2 text-[14px] text-label-tertiary",
+          "control-field flex items-center gap-2 rounded-lg px-2.5 py-2 text-subheadline text-label-tertiary",
           className,
         )}
       >

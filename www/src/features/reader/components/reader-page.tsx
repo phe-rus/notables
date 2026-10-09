@@ -86,7 +86,7 @@ function AuthorByline({
 }) {
   return (
     <div className="flex items-center gap-2.5">
-      <span className="flex size-[34px] items-center justify-center rounded-full bg-accent text-[14px] font-bold text-on-accent">
+      <span className="flex size-[34px] items-center justify-center rounded-full bg-accent text-subheadline font-bold text-on-accent">
         {name.slice(0, 1).toUpperCase()}
       </span>
       <div className="flex flex-col">

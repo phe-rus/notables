@@ -13,7 +13,7 @@ export function SectionHeader({ title, action }: { title: string; action?: React
 }
 
 const rowClass =
-  "group relative isolate flex items-center gap-2.5 rounded-md px-2.5 py-[6px] text-[14px] text-label no-underline transition-colors duration-fast";
+  "group relative isolate flex items-center gap-2.5 rounded-md px-2.5 py-[6px] text-subheadline text-label no-underline transition-colors duration-fast";
 
 export function ActionRow({
   icon,

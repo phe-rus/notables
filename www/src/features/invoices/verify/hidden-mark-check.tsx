@@ -124,7 +124,7 @@ export function HiddenMarkCheck({ expected, source }: { expected: string; source
         <button
           type="button"
           onClick={() => setState("checking")}
-          className="self-center rounded-full bg-fill px-4 py-2 text-[14px] font-semibold"
+          className="self-center rounded-full bg-fill px-4 py-2 text-subheadline font-semibold"
         >
           Look again
         </button>

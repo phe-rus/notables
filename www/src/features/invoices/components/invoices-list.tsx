@@ -151,22 +151,22 @@ export function InvoicesList({
               <BusinessIcon size={18} />
             </span>
             <span className="flex flex-col">
-              <span className="text-[14px] font-semibold">{t("invoices.setUpBusiness")}</span>
-              <span className="text-[12.5px] leading-snug text-label-secondary">
+              <span className="text-subheadline font-semibold">{t("invoices.setUpBusiness")}</span>
+              <span className="text-caption leading-snug text-label-secondary">
                 {t("invoices.setUpBusinessBody")}
               </span>
             </span>
           </button>
         )}
         {all.length > 0 && invoices.length === 0 && (
-          <p className="px-6 pt-12 text-center text-[14px] text-label-secondary">
+          <p className="px-6 pt-12 text-center text-subheadline text-label-secondary">
             No {filter === "all" ? "documents" : `${invoiceKindLabels[filter].toLowerCase()}s`} yet.
           </p>
         )}
         {all.length === 0 && (
           <div className="flex flex-col items-center gap-2 px-6 pt-16 text-center">
             <p className="text-subheadline font-semibold">Get paid, beautifully</p>
-            <p className="text-[14px] leading-snug text-label-secondary">
+            <p className="text-subheadline leading-snug text-label-secondary">
               Invoices, receipts and quotes, signed on this device so anyone can scan them to check
               they’re genuine.
             </p>
@@ -265,7 +265,7 @@ function InvoiceRow({ invoice, active }: { invoice: InvoiceDocument; active: boo
           <span className="truncate text-subheadline font-semibold text-label">
             {invoice.client.name || "No client yet"}
           </span>
-          <span className="shrink-0 text-[14px] font-semibold tabular-nums text-label">
+          <span className="shrink-0 text-subheadline font-semibold tabular-nums text-label">
             {formatMoney(total, invoice.currency)}
           </span>
         </span>

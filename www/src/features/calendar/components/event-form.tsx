@@ -172,7 +172,7 @@ export function EventForm({
 
         {event.kind === "reminder" && !target.isNew && (
           <div className="flex items-center justify-between rounded-xl bg-fill/50 px-3.5 py-2.5">
-            <span className="text-[14px]">{t("calendar.done")}</span>
+            <span className="text-subheadline">{t("calendar.done")}</span>
             <Toggle
               label={t("calendar.done")}
               checked={event.done?.includes(target.day) ?? false}
@@ -235,7 +235,7 @@ export function EventForm({
               </Field>
             )}
             <div className="flex items-center justify-between rounded-xl bg-fill/50 px-3.5 py-2.5">
-              <span className="text-[14px]">{t("calendar.allDay")}</span>
+              <span className="text-subheadline">{t("calendar.allDay")}</span>
               <Toggle
                 label={t("calendar.allDay")}
                 checked={allDay}
@@ -339,7 +339,7 @@ export function EventForm({
           <button
             type="button"
             onClick={(e) => remove(e.currentTarget)}
-            className="text-[14px] font-medium text-danger"
+            className="text-subheadline font-medium text-danger"
           >
             {t("common.delete")}
           </button>
@@ -458,7 +458,7 @@ function BirthDate({
         </Field>
       </div>
       <div className="flex items-center justify-between rounded-xl bg-fill/50 px-3.5 py-2.5">
-        <span className="text-[14px]">{t("calendar.yearUnknown")}</span>
+        <span className="text-subheadline">{t("calendar.yearUnknown")}</span>
         <Toggle
           label={t("calendar.yearUnknown")}
           checked={!known}

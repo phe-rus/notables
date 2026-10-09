@@ -138,7 +138,7 @@ export function GroupBlock({
               {entries.length > 0 ? (
                 children
               ) : (
-                <li className="px-3 py-2 text-[14px] text-label-tertiary">
+                <li className="px-3 py-2 text-subheadline text-label-tertiary">
                   {t("books.group.empty")}
                 </li>
               )}

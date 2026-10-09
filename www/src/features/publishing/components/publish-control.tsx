@@ -119,7 +119,7 @@ export function PublishControl({ entry, doc }: { entry: LibraryEntry; doc: Y.Doc
                 href={link}
                 target="_blank"
                 rel="noreferrer"
-                className="inline-flex h-[34px] items-center rounded-full border border-separator px-3.5 text-[14px] font-semibold text-label no-underline hover:bg-fill"
+                className="inline-flex h-[34px] items-center rounded-full border border-separator px-3.5 text-subheadline font-semibold text-label no-underline hover:bg-fill"
               >
                 View
               </a>
