@@ -40,3 +40,6 @@ www/src-tauri/gen/schemas/
 
 # Model packs downloaded for publishing
 .models-cache/
+
+# Signing keys and store credentials: never committed, backed up by the owner.
+/secrets/

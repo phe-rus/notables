@@ -35,7 +35,7 @@ impl DeviceKeyStore {
         if reference.is_empty() || reference.len() > 256 {
             return Err(WalletError::CorruptVault);
         }
-        keyring::Entry::new("org.pherus.notables.wallet", reference)
+        keyring::Entry::new("notables.pherus.org.wallet", reference)
             .map_err(|_| WalletError::SecureStoreUnavailable)
     }
 }

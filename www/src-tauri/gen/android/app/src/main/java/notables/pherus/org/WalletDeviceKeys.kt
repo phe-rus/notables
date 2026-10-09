@@ -1,4 +1,4 @@
-package org.pherus.notables
+package notables.pherus.org
 
 import android.content.Context
 import android.security.keystore.KeyGenParameterSpec

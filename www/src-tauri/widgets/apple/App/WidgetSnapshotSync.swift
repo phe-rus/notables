@@ -36,7 +36,7 @@ final class WidgetSnapshotSync {
         guard let support = FileManager.default.urls(
             for: .applicationSupportDirectory, in: .userDomainMask
         ).first else { return nil }
-        let identifier = Bundle.main.bundleIdentifier ?? "org.pherus.notables"
+        let identifier = Bundle.main.bundleIdentifier ?? "notables.pherus.org"
         return [
             support.appendingPathComponent("\(identifier)/widgets/today.json"),
             support.appendingPathComponent("widgets/today.json"),

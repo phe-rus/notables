@@ -1,4 +1,4 @@
-package org.pherus.notables
+package notables.pherus.org
 
 import android.app.Activity
 import android.appwidget.AppWidgetManager
@@ -7,7 +7,7 @@ import android.os.Build
 import android.view.HapticFeedbackConstants
 import android.webkit.JavascriptInterface
 import android.webkit.WebView
-import org.pherus.notables.widgets.TodayWidgetProvider
+import notables.pherus.org.widgets.TodayWidgetProvider
 
 /**
  * What the page asks of Android directly, as `window.NotablesAndroid`

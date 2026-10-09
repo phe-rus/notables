@@ -2,7 +2,7 @@
   "$schema": "../node_modules/@tauri-apps/cli/config.schema.json",
   "productName": "Notables",
   "version": "0.1.0",
-  "identifier": "org.pherus.notables",
+  "identifier": "notables.pherus.org",
   "build": {
     "frontendDist": "../dist/client",
     "devUrl": "http://localhost:3000",

@@ -44,7 +44,7 @@ After `bun tauri ios init`, in Xcode (`gen/apple/notables.xcodeproj`):
 3. Add `apple/App/WidgetSnapshotSync.swift` to the app target, and call
    `WidgetSnapshotSync.shared.start()` once at launch.
 4. On both targets, **Signing & Capabilities › + App Groups** and add
-   `group.org.pherus.notables`.
+   `group.notables.pherus.org`.
 
 Widgets can only read the shared App Group, so the app copies the snapshot
 there whenever it goes to the background and asks iOS to redraw.

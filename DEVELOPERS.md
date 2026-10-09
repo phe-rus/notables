@@ -73,7 +73,7 @@ On Linux a leftover `notables` process makes new launches exit silently
 (the app is single instance): `pkill -f target/debug/notables`.
 
 The native apps keep notes in SQLite, and photos and recordings as files,
-in the app's data folder (`~/.local/share/org.pherus.notables` on Linux).
+in the app's data folder (`~/.local/share/notables.pherus.org` on Linux).
 
 ## Android
 
@@ -108,7 +108,7 @@ adb install -r src-tauri/gen/android/app/build/outputs/apk/universal/debug/app-u
   open `chrome://inspect`, or talk to it over the DevTools protocol:
 
   ```sh
-  adb forward tcp:9333 localabstract:webview_devtools_remote_$(adb shell pidof org.pherus.notables.debug)
+  adb forward tcp:9333 localabstract:webview_devtools_remote_$(adb shell pidof notables.pherus.org.debug)
   ```
 
 ## iOS

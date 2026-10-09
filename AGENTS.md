@@ -171,6 +171,17 @@ Shipped and tested in the browser (Playwright) unless noted:
   change came from (`DocumentChange.origin` in packages/pluraliti), and the
   note screen stamps `updatedAt` only for real edits.
 
+- Stores (9 October): bundle ID and Android package are
+  `notables.pherus.org` everywhere (same style as Opes). Play Console app
+  "Notables" exists (Pherus organization account) with the "Pherus
+  developers" list on Internal testing. Release key in `secrets/` at the
+  repo root (gitignored; the owner backs it up), read by Gradle locally and
+  by `.github/workflows/release.yml` in CI: a `v*` tag sends a signed `.aab`
+  to the internal track. Needs `PLAY_SERVICE_ACCOUNT_JSON` (service account
+  `notables-play-release@pherus.iam.gserviceaccount.com`). iOS TestFlight
+  job is written but off (`IOS_RELEASE` variable) until the Apple login gets
+  the Admin role on team LP7BW696WY.
+
 ## Next
 
 The long plan, stage by stage, is in [docs/STAGES.md](docs/STAGES.md).

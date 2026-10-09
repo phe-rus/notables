@@ -74,7 +74,7 @@ struct TodayWidgetView: View {
 @main
 struct NotablesWidget: Widget {
     var body: some WidgetConfiguration {
-        StaticConfiguration(kind: "org.pherus.notables.today", provider: TodayProvider()) { entry in
+        StaticConfiguration(kind: "notables.pherus.org.today", provider: TodayProvider()) { entry in
             TodayWidgetView(entry: entry)
         }
         .configurationDisplayName("Notables")

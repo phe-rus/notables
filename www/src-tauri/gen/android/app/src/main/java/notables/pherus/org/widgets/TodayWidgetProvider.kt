@@ -1,4 +1,4 @@
-package org.pherus.notables.widgets
+package notables.pherus.org.widgets
 
 import android.app.PendingIntent
 import android.appwidget.AppWidgetManager
@@ -10,7 +10,7 @@ import android.net.Uri
 import android.view.View
 import android.widget.RemoteViews
 import org.json.JSONObject
-import org.pherus.notables.R
+import notables.pherus.org.R
 import java.io.File
 
 /**

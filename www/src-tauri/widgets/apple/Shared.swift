@@ -3,7 +3,7 @@ import Foundation
 /// Shared by the app and the widget extension (add this file to both targets).
 enum NotablesWidgets {
     /// The App Group both targets belong to (Signing & Capabilities › App Groups).
-    static let appGroup = "group.org.pherus.notables"
+    static let appGroup = "group.notables.pherus.org"
     static let fileName = "today.json"
 
     static var sharedSnapshotURL: URL? {

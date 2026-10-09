@@ -22,7 +22,7 @@ impl DeviceKeyStore {
                         &[],
                     )?
                     .l()?;
-                let name = env.new_string("org.pherus.notables.WalletDeviceKeys")?;
+                let name = env.new_string("notables.pherus.org.WalletDeviceKeys")?;
                 let class = env
                     .call_method(
                         loader,

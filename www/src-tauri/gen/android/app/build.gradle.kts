@@ -14,16 +14,39 @@ val tauriProperties = Properties().apply {
     }
 }
 
+// Release signing: CI passes the key through ANDROID_KEYSTORE_* variables;
+// a developer machine keeps it in secrets/keystore.properties at the repo root (gitignored).
+val releaseSigning = Properties().apply {
+    val local = rootProject.file("../../../../secrets/keystore.properties")
+    if (local.exists()) local.inputStream().use { load(it) }
+    System.getenv("ANDROID_KEYSTORE_PATH")?.let { setProperty("storeFile", it) }
+    System.getenv("ANDROID_KEYSTORE_PASSWORD")?.let {
+        setProperty("storePassword", it)
+        setProperty("keyPassword", it)
+    }
+    System.getenv("ANDROID_KEY_ALIAS")?.let { setProperty("keyAlias", it) }
+}
+
 android {
     compileSdk = 37
-    namespace = "org.pherus.notables"
+    namespace = "notables.pherus.org"
     defaultConfig {
         manifestPlaceholders["usesCleartextTraffic"] = "false"
-        applicationId = "org.pherus.notables"
+        applicationId = "notables.pherus.org"
         minSdk = 24
         targetSdk = 37
         versionCode = tauriProperties.getProperty("tauri.android.versionCode", "1").toInt()
         versionName = tauriProperties.getProperty("tauri.android.versionName", "1.0")
+    }
+    signingConfigs {
+        if (releaseSigning.getProperty("storeFile") != null) {
+            create("release") {
+                storeFile = file(releaseSigning.getProperty("storeFile"))
+                storePassword = releaseSigning.getProperty("storePassword")
+                keyAlias = releaseSigning.getProperty("keyAlias")
+                keyPassword = releaseSigning.getProperty("keyPassword")
+            }
+        }
     }
     buildTypes {
         getByName("debug") {
@@ -40,6 +63,7 @@ android {
             }
         }
         getByName("release") {
+            signingConfigs.findByName("release")?.let { signingConfig = it }
             optimization {
                enable = true
             }
