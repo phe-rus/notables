@@ -1,7 +1,8 @@
 import { type RefObject, useEffect } from "react";
+import { ownsFloatingLayer } from "../lib/floating-layers";
 
 /** Marks a floating layer (a pop-up list, a menu) whose clicks belong to what opened it. */
-export const FLOATING_LAYER = "data-floating-layer";
+export { FLOATING_LAYER } from "../lib/floating-layers";
 
 /**
  * Calls `onDismiss` when the user presses Escape or clicks outside `ref`
@@ -17,17 +18,23 @@ export function useDismiss(
     if (!active) return;
     const onPointerDown = (event: PointerEvent) => {
       const target = event.target as Element;
-      if (ref.current?.contains(target) || target.closest?.(`[${FLOATING_LAYER}]`)) return;
+      const surface = ref.current;
+      if (surface && (surface.contains(target) || ownsFloatingLayer(surface, target))) return;
       onDismiss();
     };
     const onKeyDown = (event: KeyboardEvent) => {
-      if (event.key === "Escape") onDismiss();
+      if (event.defaultPrevented) return;
+      if (ref.current && ownsFloatingLayer(ref.current, document.activeElement)) return;
+      if (event.key === "Escape") {
+        event.preventDefault();
+        onDismiss();
+      }
     };
     document.addEventListener("pointerdown", onPointerDown);
-    document.addEventListener("keydown", onKeyDown);
+    window.addEventListener("keydown", onKeyDown);
     return () => {
       document.removeEventListener("pointerdown", onPointerDown);
-      document.removeEventListener("keydown", onKeyDown);
+      window.removeEventListener("keydown", onKeyDown);
     };
   }, [ref, active, onDismiss]);
 }

@@ -1,12 +1,12 @@
-import { AnimatePresence, motion } from "motion/react";
+import { AnimatePresence, motion, useIsPresent } from "motion/react";
 import { useEffect, useLayoutEffect, useRef, useState, useSyncExternalStore } from "react";
 import { FLOATING_LAYER } from "../../hooks/use-dismiss";
 import { CheckIcon } from "../../icons/icons";
 import { cn } from "../../lib/class-names";
+import { registerFloatingLayer } from "../../lib/floating-layers";
 import { screenEdges } from "../../lib/screen-edges";
 import { spring } from "../../motion/transitions";
 import {
-  type ContextMenuItem,
   closeContextMenu,
   getContextMenu,
   type OpenMenu,
@@ -19,11 +19,8 @@ export function ContextMenuHost() {
   return <AnimatePresence>{menu && <Menu key={menu.id} menu={menu} />}</AnimatePresence>;
 }
 
-type Action = Extract<ContextMenuItem, { onSelect: () => void }>;
-const isAction = (item: ContextMenuItem): item is Action =>
-  typeof item === "object" && "onSelect" in item;
-
 function Menu({ menu }: { menu: OpenMenu }) {
+  const present = useIsPresent();
   const ref = useRef<HTMLDivElement>(null);
   const [position, setPosition] = useState({
     left: menu.x,
@@ -32,10 +29,15 @@ function Menu({ menu }: { menu: OpenMenu }) {
     originY: 0,
     maxHeight: undefined as number | undefined,
   });
-  const actions = menu.items.filter(isAction).filter((item) => !item.disabled);
   const [focused, setFocused] = useState(-1);
-  const focusedRef = useRef(focused);
-  focusedRef.current = focused;
+
+  useLayoutEffect(() => {
+    const surface = ref.current;
+    if (!surface || !present) return;
+    const unregister = menu.anchor ? registerFloatingLayer(surface, menu.anchor) : undefined;
+    surface.focus();
+    return unregister;
+  }, [menu.anchor, present]);
 
   // Keep the whole menu on screen, opening up or left when near an edge. The
   // layout size, not the on-screen one: the menu is still mid-scale here.
@@ -67,55 +69,73 @@ function Menu({ menu }: { menu: OpenMenu }) {
   }, [menu]);
 
   useEffect(() => {
+    if (!present) return;
     const onPointer = (event: PointerEvent) => {
-      if (!ref.current?.contains(event.target as Node)) closeContextMenu();
+      if (!ref.current?.contains(event.target as Node)) closeContextMenu(false);
     };
-    const onKey = (event: KeyboardEvent) => {
-      if (event.key === "Escape") closeContextMenu();
-      if (event.key === "ArrowDown" || event.key === "ArrowUp") {
-        event.preventDefault();
-        setFocused((index) => {
-          const step = event.key === "ArrowDown" ? 1 : -1;
-          return (index + step + actions.length) % actions.length;
-        });
-      }
-      if (event.key === "Enter") {
-        event.preventDefault();
-        const action = actions[focusedRef.current];
-        if (action) {
-          closeContextMenu();
-          action.onSelect();
-        }
-      }
+    const close = () => closeContextMenu(false);
+    const onScroll = (event: Event) => {
+      if (!ref.current?.contains(event.target as Node)) close();
     };
-    const close = () => closeContextMenu();
     // Opened by a long-press: ignore the finger lifting off.
     const timer = setTimeout(() => {
       window.addEventListener("pointerdown", onPointer, true);
     }, 0);
-    window.addEventListener("keydown", onKey);
     window.addEventListener("resize", close);
     window.addEventListener("blur", close);
-    window.addEventListener("scroll", close, true);
+    window.addEventListener("scroll", onScroll, true);
     return () => {
       clearTimeout(timer);
       window.removeEventListener("pointerdown", onPointer, true);
-      window.removeEventListener("keydown", onKey);
       window.removeEventListener("resize", close);
       window.removeEventListener("blur", close);
-      window.removeEventListener("scroll", close, true);
+      window.removeEventListener("scroll", onScroll, true);
     };
-  }, [actions]);
+  }, [present]);
 
   let actionIndex = -1;
   return (
     <motion.div
       ref={ref}
       role="menu"
+      tabIndex={-1}
+      onKeyDown={(event) => {
+        if (!present) return;
+        if (event.key === "Escape") {
+          event.preventDefault();
+          event.stopPropagation();
+          closeContextMenu();
+          return;
+        }
+        if (event.key === "Tab") {
+          closeContextMenu();
+          return;
+        }
+        const keys = ["ArrowDown", "ArrowUp", "Home", "End"];
+        if (!keys.includes(event.key)) return;
+        event.preventDefault();
+        const controls = Array.from(
+          ref.current?.querySelectorAll<HTMLButtonElement>("[role=menuitem]:not(:disabled)") ?? [],
+        );
+        if (!controls.length) return;
+        const current = controls.indexOf(document.activeElement as HTMLButtonElement);
+        const next =
+          event.key === "Home"
+            ? 0
+            : event.key === "End"
+              ? controls.length - 1
+              : event.key === "ArrowDown"
+                ? (current + 1) % controls.length
+                : current < 0
+                  ? controls.length - 1
+                  : (current - 1 + controls.length) % controls.length;
+        controls[next]?.focus();
+      }}
       {...{ [FLOATING_LAYER]: "" }}
       className={cn(
         "glass-menu fixed z-[75] flex min-w-[200px] max-w-[min(280px,calc(100vw-24px))] flex-col overflow-y-auto overscroll-contain rounded-3xl p-1.5",
         menu.touch && "min-w-[240px]",
+        !present && "pointer-events-none",
       )}
       style={{
         left: position.left,
@@ -150,7 +170,9 @@ function Menu({ menu }: { menu: OpenMenu }) {
             key={item.label}
             type="button"
             role="menuitem"
+            tabIndex={-1}
             disabled={item.disabled}
+            onFocus={() => setFocused(current)}
             onPointerEnter={() => !item.disabled && setFocused(current)}
             onClick={() => {
               closeContextMenu();

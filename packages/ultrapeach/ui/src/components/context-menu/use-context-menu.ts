@@ -22,11 +22,12 @@ export function useContextMenu(items: () => ContextMenuItem[]) {
     onContextMenu(event: MouseEvent) {
       event.preventDefault();
       cancel();
-      openContextMenu(event.clientX, event.clientY, items(), false);
+      openContextMenu(event.clientX, event.clientY, items(), false, event.currentTarget);
     },
     onPointerDown(event: PointerEvent) {
       if (event.pointerType !== "touch") return;
       const { clientX: x, clientY: y } = event;
+      const anchor = event.currentTarget;
       cancel();
       press.current = {
         x,
@@ -35,7 +36,7 @@ export function useContextMenu(items: () => ContextMenuItem[]) {
           press.current = null;
           suppressClick.current = true;
           haptic("medium");
-          openContextMenu(x, y, items(), true);
+          openContextMenu(x, y, items(), true, anchor);
         }, LONG_PRESS_MS),
       };
     },

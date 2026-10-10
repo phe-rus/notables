@@ -132,7 +132,7 @@ small feedback, `bouncy` for playful moments. Haptics go through `haptic()`.
 | `SearchField` | `search-field/` | |
 | `Section` | `section/` | A titled, inset group of rows with a footer, as in iOS Settings |
 | `SegmentedControl` | `segmented-control/` | Turns into a `Picker` when its labels don't fit |
-| `Sheet` | `sheet/` | |
+| `Sheet` | `sheet/` | Focus behavior and remaining overlay boundaries: [review record](../../docs/reviews/2026-10-10-ultrapeach-sheet-focus.md). |
 | `Sidebar` | `sidebar/` | |
 | `StatusIndicator` | `status-indicator/` | |
 | `SwatchPicker` | `swatch-picker/` | |

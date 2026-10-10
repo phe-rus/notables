@@ -16,6 +16,7 @@ export type ContextMenuItem =
 
 export interface OpenMenu {
   id: number;
+  anchor: Element | null;
   x: number;
   y: number;
   items: ContextMenuItem[];
@@ -37,8 +38,14 @@ const emit = () => {
 };
 
 /** Opens a menu at a point, such as where a pointer was pressed. */
-export function openContextMenu(x: number, y: number, items: ContextMenuItem[], touch = false) {
-  menu = { id: nextId++, x, y, items, touch, alignX: "start", alignY: "top" };
+export function openContextMenu(
+  x: number,
+  y: number,
+  items: ContextMenuItem[],
+  touch = false,
+  anchor: Element | null = typeof document === "undefined" ? null : document.activeElement,
+) {
+  menu = { id: nextId++, anchor, x, y, items, touch, alignX: "start", alignY: "top" };
   last = menu;
   emit();
 }
@@ -73,6 +80,7 @@ export function openMenu(
   const gap = 6;
   menu = {
     id: nextId++,
+    anchor,
     x: right ? rect.right : rect.left,
     y: above ? rect.top - gap : rect.bottom + gap,
     items,
@@ -84,9 +92,17 @@ export function openMenu(
   emit();
 }
 
-export function closeContextMenu() {
+export function closeContextMenu(restoreFocus = true) {
   if (!menu) return;
+  const anchor = menu.anchor;
   menu = null;
+  if (
+    restoreFocus &&
+    typeof HTMLElement !== "undefined" &&
+    anchor instanceof HTMLElement &&
+    anchor.isConnected
+  )
+    anchor.focus();
   emit();
 }
 

@@ -81,6 +81,8 @@ Gotchas learned the hard way:
 
 ## Status (October 2026)
 
+- Ultrapeach Sheet, menu ownership and modal background hardening are complete for the current checkpoint. Read [the Sheet focus record](docs/reviews/2026-10-10-ultrapeach-sheet-focus.md) for browser evidence and remaining boundaries. The owner requested committing without releasing, then returning to Pherus UI adoption.
+
 Shipped and tested in the browser (Playwright) unless noted:
 
 - Library, editor, publishing, books with page turns, highlights, recycle
@@ -265,6 +267,8 @@ upload with `tracks`. Never set `ITSAppUsesNonExemptEncryption` in
 TestFlight refuse the upload; each build asks in TestFlight instead.
 
 ## Next
+
+- Return to Pherus UI adoption. Do not expand Notables cleanup first. The owner dislikes native date dialogs: calendar event-form.tsx and invoices invoice-screen.tsx still use type="date". A shared Ultrapeach date picker is pending, not implemented.
 
 Right after the store work (9 October):
 

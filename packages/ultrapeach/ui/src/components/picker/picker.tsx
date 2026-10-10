@@ -13,6 +13,7 @@ import { createPortal } from "react-dom";
 import { FLOATING_LAYER } from "../../hooks/use-dismiss";
 import { CheckIcon, SearchIcon, SelectorIcon } from "../../icons/icons";
 import { cn } from "../../lib/class-names";
+import { registerFloatingLayer } from "../../lib/floating-layers";
 import { haptic } from "../../lib/haptics";
 import { screenEdges } from "../../lib/screen-edges";
 import { spring } from "../../motion/transitions";
@@ -204,9 +205,12 @@ function SelectList<T extends string>({
   const activeOption = shown[Math.min(active, shown.length - 1)];
 
   useLayoutEffect(() => {
+    if (!root.current) return;
+    const unregister = registerFloatingLayer(root.current, anchor);
     if (searchable) search.current?.focus();
     else list.current?.focus();
-  }, [searchable]);
+    return unregister;
+  }, [searchable, anchor]);
 
   // The chosen option starts in view, then follows the keyboard.
   useEffect(() => {
