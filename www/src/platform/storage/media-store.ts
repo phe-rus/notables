@@ -1,6 +1,8 @@
 import { createId } from "@notables/core";
 import { isTauri } from "../runtime";
+import { inBrowserSession } from "../session/browser-session-store";
 import { browserMedia } from "./backends/browser/browser-media";
+import { memoryMedia } from "./backends/memory/memory-backends";
 import { nativeMedia } from "./backends/native/native-backends";
 import type { MediaBackend } from "./backends/storage-backend";
 
@@ -10,7 +12,7 @@ import type { MediaBackend } from "./backends/storage-backend";
  */
 let backend: MediaBackend | undefined;
 const media = () => {
-  backend ??= isTauri() ? nativeMedia : browserMedia;
+  backend ??= isTauri() ? nativeMedia : inBrowserSession() ? memoryMedia : browserMedia;
   return backend;
 };
 

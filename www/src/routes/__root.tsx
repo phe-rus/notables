@@ -57,6 +57,8 @@ function RootDocument({ children }: { children: ReactNode }) {
   const publicPage = pathname.startsWith("/p/") || pathname.startsWith("/verify");
   // The desktop widget is its own small window; the app's services run in the main one.
   const widget = pathname === "/widget";
+  // A browser waiting to pair has no library yet, and must not start one (spec 0005).
+  const pairing = pathname === "/link";
   const language = useLanguage();
   const direction = languages.find((entry) => entry.id === language)?.dir ?? "ltr";
   return (
@@ -74,7 +76,7 @@ function RootDocument({ children }: { children: ReactNode }) {
             {/* A new language redraws every screen in it. */}
             <Fragment key={language}>{children}</Fragment>
             {/* Audiobooks keep playing from page to page. */}
-            {!widget && <ListeningSession />}
+            {!widget && !pairing && <ListeningSession />}
           </MediaResolverProvider>
           <Toaster />
           <DialogHost />

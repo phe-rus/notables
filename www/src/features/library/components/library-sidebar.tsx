@@ -22,6 +22,7 @@ import { AnimatePresence, motion } from "motion/react";
 import { type ReactNode, useEffect, useState } from "react";
 import { t } from "../../../i18n/i18n";
 import { shortcutLabel } from "../../../lib/keyboard/shortcuts";
+import { inBrowserSession } from "../../../platform/session/browser-session-store";
 import { useBooks, useTrashedBooks } from "../../books/store/book-store";
 import { useSeries } from "../../books/store/series-store";
 import { useUpcomingCount } from "../../calendar/store/use-upcoming-count";
@@ -202,9 +203,11 @@ export function Sidebar({
               >
                 {t("nav.calendar")}
               </NavItem>
-              <NavItem to="/wallet" active={active === "wallet"} icon={<WalletIcon size={17} />}>
-                {t("wallet.title")}
-              </NavItem>
+              {!inBrowserSession() && (
+                <NavItem to="/wallet" active={active === "wallet"} icon={<WalletIcon size={17} />}>
+                  {t("wallet.title")}
+                </NavItem>
+              )}
               {visible("invoices") && sidebarItem("invoices")}
             </motion.div>
           )}

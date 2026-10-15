@@ -1,5 +1,7 @@
 import { isTauri } from "../runtime";
+import { inBrowserSession } from "../session/browser-session-store";
 import { browserNoteContent } from "./backends/browser/browser-note-content";
+import { memoryNoteContent } from "./backends/memory/memory-backends";
 import { nativeNoteContent } from "./backends/native/native-backends";
 import type { NoteContentBackend, SerializedDocument } from "./backends/storage-backend";
 
@@ -9,7 +11,11 @@ import type { NoteContentBackend, SerializedDocument } from "./backends/storage-
  */
 let backend: NoteContentBackend | undefined;
 const contents = () => {
-  backend ??= isTauri() ? nativeNoteContent : browserNoteContent;
+  backend ??= isTauri()
+    ? nativeNoteContent
+    : inBrowserSession()
+      ? memoryNoteContent
+      : browserNoteContent;
   return backend;
 };
 

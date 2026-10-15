@@ -28,6 +28,7 @@ import { motion } from "motion/react";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { t } from "../../../i18n/i18n";
 import { getDeviceId } from "../../../platform/device-identity";
+import { inBrowserSession } from "../../../platform/session/browser-session-store";
 import { saveMedia } from "../../../platform/storage/media-store";
 import { saveNoteContent } from "../../../platform/storage/note-content-cache";
 import { AiAssist } from "../../ai/components/ai-assist";
@@ -84,6 +85,8 @@ function SharedAwareEditor({ entry, viewId }: { entry: LibraryEntry; viewId?: st
 
 function NoteEditorScreen({ entry, viewId }: { entry: LibraryEntry; viewId?: string }) {
   const { provider, status } = useNoteProvider(entry.id);
+  // A browser showing a phone's notes leaves recording, read aloud and stored photos to the phone.
+  const browser = inBrowserSession();
   const navigate = useNavigate();
   const view = getView(viewId);
   // Chapters written for a book lead back to it.
@@ -216,8 +219,8 @@ function NoteEditorScreen({ entry, viewId }: { entry: LibraryEntry; viewId?: str
             </span>
             <div className="contents" onPointerDownCapture={editFromTools}>
               <BlockToolbar
-                onRecord={startRecording}
-                resolvePhoto={storePhoto}
+                onRecord={browser ? undefined : startRecording}
+                resolvePhoto={browser ? undefined : storePhoto}
                 className="@max-[860px]/note:hidden"
               />
             </div>
@@ -256,7 +259,7 @@ function NoteEditorScreen({ entry, viewId }: { entry: LibraryEntry; viewId?: str
                   {t("common.done")}
                 </button>
               )}
-              <ReadAloudButton root={articleRef} title={entry.title} />
+              {!browser && <ReadAloudButton root={articleRef} title={entry.title} />}
               <AiAssist />
               <IconButton
                 size="icon-sm"
@@ -355,8 +358,8 @@ function NoteEditorScreen({ entry, viewId }: { entry: LibraryEntry; viewId?: str
           className="glass-menu absolute inset-x-3 bottom-[max(12px,env(safe-area-inset-bottom))] z-20 mx-auto flex max-w-[480px] rounded-full px-2 py-1 @min-[860px]/note:hidden"
         >
           <BlockToolbar
-            onRecord={startRecording}
-            resolvePhoto={storePhoto}
+            onRecord={browser ? undefined : startRecording}
+            resolvePhoto={browser ? undefined : storePhoto}
             menuPlacement="above"
             className="w-full justify-around"
           />

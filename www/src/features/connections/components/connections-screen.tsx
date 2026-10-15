@@ -18,7 +18,8 @@ import { Link } from "@tanstack/react-router";
 import { AnimatePresence, motion } from "motion/react";
 import { useDeferredValue, useState } from "react";
 import { CollapsedSidebarControls } from "../../../components/window/collapsed-sidebar-controls";
-import { locale, t } from "../../../i18n/i18n";
+import { t } from "../../../i18n/i18n";
+import { ago } from "../../../lib/time/relative-time";
 import { type LibraryEntry, useLibrary } from "../../library/store/library-store";
 import { usePreferences } from "../../settings/store/preferences-store";
 import { handOver } from "../../sharing/lib/hand-over";
@@ -177,19 +178,6 @@ function Avatar({ person, size = "small" }: { person: Person; size?: "small" | "
       )}
     </span>
   );
-}
-
-const relative = () => new Intl.RelativeTimeFormat(locale(), { numeric: "auto" });
-
-/** "3 hours ago", "yesterday", "2 weeks ago". */
-function ago(at: number, now = Date.now()): string {
-  const minutes = Math.round((at - now) / 60_000);
-  if (Math.abs(minutes) < 60) return relative().format(Math.min(-1, minutes), "minute");
-  const hours = Math.round(minutes / 60);
-  if (Math.abs(hours) < 24) return relative().format(hours, "hour");
-  const days = Math.round(hours / 24);
-  if (Math.abs(days) < 14) return relative().format(days, "day");
-  return relative().format(Math.round(days / 7), "week");
 }
 
 function PersonCard({ person }: { person: Person }) {

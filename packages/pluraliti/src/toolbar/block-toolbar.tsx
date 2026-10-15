@@ -158,15 +158,12 @@ export function BlockToolbar({
           if (file) void insertPhoto(file);
         }}
       />
-      <IconButton
-        size="icon-sm"
-        variant="ghost"
-        label="Record audio"
-        onClick={onRecord}
-        disabled={!onRecord}
-      >
-        <MicIcon size={19} />
-      </IconButton>
+      {/* Left out where recording isn't offered (a browser showing a phone's notes). */}
+      {onRecord && (
+        <IconButton size="icon-sm" variant="ghost" label="Record audio" onClick={onRecord}>
+          <MicIcon size={19} />
+        </IconButton>
+      )}
       {studio && (
         <IconButton
           size="icon-sm"

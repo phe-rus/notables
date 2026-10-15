@@ -15,6 +15,8 @@ import { TabBar } from "../components/layout/tab-bar";
 import { useWarmRoutes } from "../components/layout/use-warm-routes";
 import { BooksList } from "../features/books/components/books-list";
 import { ReminderRunner } from "../features/calendar/components/reminder-runner";
+import { PhoneStatusBanner } from "../features/devices/components/phone-status-banner";
+import { startBrowserSessions } from "../features/devices/lib/browser-sessions";
 import { InvoicesList } from "../features/invoices/components/invoices-list";
 import { Sidebar, type SidebarLocation } from "../features/library/components/library-sidebar";
 import { NotesList } from "../features/library/components/notes-list";
@@ -37,6 +39,8 @@ import { isShortcut } from "../lib/keyboard/shortcuts";
 import { markAppReady } from "../platform/app-ready";
 import { createNativeTranscription } from "../platform/native-transcription";
 import { preventPageZoom } from "../platform/page-zoom";
+import { isTauri } from "../platform/runtime";
+import { inBrowserSession } from "../platform/session/browser-session-store";
 
 /** iOS sheet motion: quick to start, long gentle settle. */
 const drawerEase = [0.32, 0.72, 0, 1] as const;
@@ -114,23 +118,33 @@ function AppShell() {
     return () => window.removeEventListener("keydown", onKey);
   }, [createNote]);
 
-  // A new device starts with setup; the splash waits for the library.
+  // A browser is a window onto a phone (spec 0005): it pairs first, and the
+  // phone has done setup. A new device starts with setup; the splash waits for the library.
+  const browser = inBrowserSession();
   useEffect(() => {
-    if (needsSetup()) void navigate({ to: "/welcome", replace: true });
-  }, [navigate]);
+    if (browser) return;
+    if (!isTauri() && import.meta.env.PROD) void navigate({ to: "/link", replace: true });
+    else if (needsSetup()) void navigate({ to: "/welcome", replace: true });
+  }, [navigate, browser]);
+  // A phone serves the browsers it approved while it runs.
+  useEffect(() => {
+    if (isTauri()) startBrowserSessions();
+  }, []);
   useEffect(() => {
     if (libraryReady) markAppReady();
   }, [libraryReady]);
 
   // A first visit finds a short guide and a few examples instead of nothing.
   useEffect(() => {
-    // Not before setup, whose last step offers to start fresh instead.
-    if (libraryReady && !needsSetup()) void seedWelcomeLibrary();
-  }, [libraryReady]);
+    // Not before setup, whose last step offers to start fresh instead, and never
+    // from a browser, whose library is the phone's.
+    if (libraryReady && !browser && !needsSetup()) void seedWelcomeLibrary();
+  }, [libraryReady, browser]);
 
   // Recently Deleted erases what's been there a week: on launch, then hourly.
+  // The phone does this for a browser.
   useEffect(() => {
-    if (!libraryReady) return;
+    if (!libraryReady || browser) return;
     // Then media nothing uses any more; the sweep itself runs at most daily.
     const tidy = () =>
       void eraseExpired()
@@ -139,7 +153,7 @@ function AppShell() {
     tidy();
     const timer = window.setInterval(tidy, 60 * 60 * 1000);
     return () => window.clearInterval(timer);
-  }, [libraryReady]);
+  }, [libraryReady, browser]);
 
   // Close the drawer whenever the place changes.
   useEffect(() => setDrawerOpen(false), [pathname, viewId]);
@@ -156,9 +170,11 @@ function AppShell() {
   return (
     <div className="flex h-dvh overflow-hidden bg-sidebar">
       <AppearanceSync />
-      {libraryReady && <ReminderRunner />}
-      {libraryReady && <ShareSessionsRunner />}
-      {libraryReady && <WidgetPublisher />}
+      {/* Reminders, sharing and widgets run on the phone, never in a browser it serves. */}
+      {libraryReady && !browser && <ReminderRunner />}
+      {libraryReady && !browser && <ShareSessionsRunner />}
+      {libraryReady && !browser && <WidgetPublisher />}
+      {browser && <PhoneStatusBanner />}
       <ModelPacksRunner />
       <SearchPalette />
 

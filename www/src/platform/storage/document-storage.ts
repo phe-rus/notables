@@ -1,11 +1,14 @@
 import {
   createIndexedDbPersistence,
+  createSharedPersistence,
   createUpdateLogPersistence,
   type Persistence,
   type PersistenceBinding,
   type RemoteSync,
 } from "@notables/sync";
 import { isTauri } from "../runtime";
+import { phoneConnection } from "../session/phone-connection";
+import { createSessionPersistence } from "../session/session-persistence";
 import { nativeUpdateLog } from "./backends/native/native-backends";
 import { nativeStorage } from "./backends/native/native-commands";
 
@@ -13,14 +16,21 @@ let persistence: Persistence | undefined;
 
 /**
  * On-device storage for Yjs documents (the library and every note):
- * SQLite through the Rust core in the native apps, IndexedDB in browsers.
+ * SQLite through the Rust core in the native apps, IndexedDB in browsers,
+ * and the phone itself for a browser linked to one (spec 0005).
  */
 export function getPersistence(): Persistence {
   if (!persistence) {
+    const phone = phoneConnection();
     if (isTauri()) {
-      persistence = flushWhenHidden(createUpdateLogPersistence(nativeUpdateLog));
+      // Shared, so a browser this phone serves and its own editor can hold one note together.
+      persistence = flushWhenHidden(
+        createSharedPersistence(createUpdateLogPersistence(nativeUpdateLog)),
+      );
+    } else if (phone) {
+      persistence = createSessionPersistence(phone.client);
     } else {
-      persistence = createIndexedDbPersistence("notables");
+      persistence = createSharedPersistence(createIndexedDbPersistence("notables"));
       void requestPersistentStorage();
     }
   }

@@ -8,3 +8,6 @@ export const env: Cloudflare.Env = new Proxy({} as Cloudflare.Env, {
     throw new Error(`Worker binding "${String(binding)}" is not available inside the app.`);
   },
 });
+
+/** Durable Objects only run on the Worker; the app bundle never constructs one. */
+export class DurableObject {}

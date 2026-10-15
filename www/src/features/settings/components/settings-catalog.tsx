@@ -3,6 +3,7 @@ import {
   BrushIcon,
   HeadphonesIcon,
   LayoutIcon,
+  LinkIcon,
   LockIcon,
   NoteIcon,
   SidebarIcon,
@@ -14,8 +15,11 @@ import type { ReactNode } from "react";
 import { t } from "../../../i18n/i18n";
 import { hapticsAvailable } from "../../../platform/haptics";
 import { isTauri } from "../../../platform/runtime";
+import { inBrowserSession } from "../../../platform/session/browser-session-store";
 import { AiSettingsSection } from "../../ai/components/ai-settings-section";
 import { ReminderSettingsSection } from "../../calendar/components/reminder-settings-section";
+import { BrowserSessionPage } from "../../devices/components/browser-session-page";
+import { LinkedDevicesPage } from "../../devices/components/linked-devices-page";
 import { ListeningSettingsSection } from "../../listening/components/listening-settings-section";
 import { ModelPacksSection } from "../../listening/components/model-packs-section";
 import { WidgetsSettingsSection } from "../../widgets/components/widgets-settings-section";
@@ -32,6 +36,7 @@ export const settingsPageIds = [
   "appearance",
   "notes",
   "sidebar",
+  "devices",
   "privacy",
   "listening",
   "reminders",
@@ -55,6 +60,12 @@ export interface SettingsPage {
 }
 
 const page = (entry: SettingsPage) => entry;
+
+/** A browser showing a phone's notes leaves the phone's own settings to the phone (spec 0005, AC-28). */
+const onDevice =
+  (check: () => boolean = () => true) =>
+  () =>
+    !inBrowserSession() && check();
 
 export const settingsPages: Record<SettingsPageId, SettingsPage> = {
   profile: page({
@@ -89,6 +100,15 @@ export const settingsPages: Record<SettingsPageId, SettingsPage> = {
     icon: <SidebarIcon size={17} />,
     content: () => <SidebarPage />,
   }),
+  devices: page({
+    id: "devices",
+    get title() {
+      return t("devices.title");
+    },
+    icon: <LinkIcon size={17} />,
+    content: () => (inBrowserSession() ? <BrowserSessionPage /> : <LinkedDevicesPage />),
+    available: () => isTauri() || inBrowserSession(),
+  }),
   privacy: page({
     id: "privacy",
     get title() {
@@ -96,6 +116,7 @@ export const settingsPages: Record<SettingsPageId, SettingsPage> = {
     },
     icon: <LockIcon size={17} />,
     content: () => <PrivacyPage />,
+    available: onDevice(),
   }),
   listening: page({
     id: "listening",
@@ -109,6 +130,7 @@ export const settingsPages: Record<SettingsPageId, SettingsPage> = {
         <ModelPacksSection />
       </>
     ),
+    available: onDevice(),
   }),
   reminders: page({
     id: "reminders",
@@ -117,6 +139,7 @@ export const settingsPages: Record<SettingsPageId, SettingsPage> = {
     },
     icon: <BellIcon size={17} />,
     content: () => <ReminderSettingsSection />,
+    available: onDevice(),
   }),
   haptics: page({
     id: "haptics",
@@ -125,7 +148,7 @@ export const settingsPages: Record<SettingsPageId, SettingsPage> = {
     },
     icon: <TouchIcon size={17} />,
     content: () => <HapticsSettingsSection />,
-    available: hapticsAvailable,
+    available: onDevice(hapticsAvailable),
   }),
   widgets: page({
     id: "widgets",
@@ -134,7 +157,7 @@ export const settingsPages: Record<SettingsPageId, SettingsPage> = {
     },
     icon: <LayoutIcon size={17} />,
     content: () => <WidgetsSettingsSection />,
-    available: isTauri,
+    available: onDevice(isTauri),
   }),
   ai: page({
     id: "ai",
@@ -143,6 +166,7 @@ export const settingsPages: Record<SettingsPageId, SettingsPage> = {
     },
     icon: <SparkleIcon size={17} />,
     content: () => <AiSettingsSection />,
+    available: onDevice(),
   }),
   about: page({
     id: "about",
@@ -157,7 +181,7 @@ export const settingsPages: Record<SettingsPageId, SettingsPage> = {
 /** The list's groups, as iOS Settings groups its rows. */
 export const settingsGroups: readonly (readonly SettingsPageId[])[] = [
   ["appearance", "notes", "sidebar"],
-  ["privacy"],
+  ["devices", "privacy"],
   ["listening", "reminders", "haptics", "widgets", "ai"],
   ["about"],
 ];

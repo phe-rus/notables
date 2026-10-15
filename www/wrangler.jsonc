@@ -1,7 +1,7 @@
 {
   "$schema": "../node_modules/wrangler/config-schema.json",
   "name": "notables",
-  "main": "@tanstack/react-start/server-entry",
+  "main": "./src/server.ts",
   "compatibility_date": "2026-09-01",
   "compatibility_flags": ["nodejs_compat"],
   "observability": { "enabled": true },
@@ -15,5 +15,11 @@
       "migrations_dir": "migrations"
     }
   ],
-  "r2_buckets": [{ "binding": "MEDIA", "bucket_name": "notables-bucket" }]
+  "r2_buckets": [{ "binding": "MEDIA", "bucket_name": "notables-bucket" }],
+  // Rooms where a person's devices and browsers meet (spec 0005). They pass
+  // messages through and store nothing; SQLite backed, as the free plan needs.
+  "durable_objects": {
+    "bindings": [{ "name": "SPACE_ROOMS", "class_name": "SpaceRoom" }]
+  },
+  "migrations": [{ "tag": "v1", "new_sqlite_classes": ["SpaceRoom"] }]
 }

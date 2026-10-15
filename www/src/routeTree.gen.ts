@@ -10,6 +10,7 @@
 
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as AppRouteImport } from './routes/_app'
+import { Route as LinkRouteImport } from './routes/link'
 import { Route as VerifyRouteImport } from './routes/verify'
 import { Route as WelcomeRouteImport } from './routes/welcome'
 import { Route as WidgetRouteImport } from './routes/widget'
@@ -33,6 +34,11 @@ import { Route as MediaPublicationIdMediaIdRouteImport } from './routes/media/$p
 
 const AppRoute = AppRouteImport.update({
   id: '/_app',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const LinkRoute = LinkRouteImport.update({
+  id: '/link',
+  path: '/link',
   getParentRoute: () => rootRouteImport,
 } as any)
 const VerifyRoute = VerifyRouteImport.update({
@@ -139,6 +145,7 @@ const MediaPublicationIdMediaIdRoute =
 
 export interface FileRoutesByFullPath {
   '/': typeof AppIndexRoute
+  '/link': typeof LinkRoute
   '/verify': typeof VerifyRoute
   '/welcome': typeof WelcomeRoute
   '/widget': typeof WidgetRoute
@@ -160,6 +167,7 @@ export interface FileRoutesByFullPath {
   '/settings/': typeof AppSettingsIndexRoute
 }
 export interface FileRoutesByTo {
+  '/link': typeof LinkRoute
   '/verify': typeof VerifyRoute
   '/welcome': typeof WelcomeRoute
   '/widget': typeof WidgetRoute
@@ -184,6 +192,7 @@ export interface FileRoutesByTo {
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/_app': typeof AppRouteWithChildren
+  '/link': typeof LinkRoute
   '/verify': typeof VerifyRoute
   '/welcome': typeof WelcomeRoute
   '/widget': typeof WidgetRoute
@@ -209,6 +218,7 @@ export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
     | '/'
+    | '/link'
     | '/verify'
     | '/welcome'
     | '/widget'
@@ -230,6 +240,7 @@ export interface FileRouteTypes {
     | '/settings/'
   fileRoutesByTo: FileRoutesByTo
   to:
+    | '/link'
     | '/verify'
     | '/welcome'
     | '/widget'
@@ -253,6 +264,7 @@ export interface FileRouteTypes {
   id:
     | '__root__'
     | '/_app'
+    | '/link'
     | '/verify'
     | '/welcome'
     | '/widget'
@@ -277,6 +289,7 @@ export interface FileRouteTypes {
 }
 export interface RootRouteChildren {
   AppRoute: typeof AppRouteWithChildren
+  LinkRoute: typeof LinkRoute
   VerifyRoute: typeof VerifyRoute
   WelcomeRoute: typeof WelcomeRoute
   WidgetRoute: typeof WidgetRoute
@@ -294,6 +307,13 @@ declare module '@tanstack/react-router' {
       path: ''
       fullPath: '/'
       preLoaderRoute: typeof AppRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/link': {
+      id: '/link'
+      path: '/link'
+      fullPath: '/link'
+      preLoaderRoute: typeof LinkRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/verify': {
@@ -473,6 +493,7 @@ const AppRouteWithChildren = AppRoute._addFileChildren(AppRouteChildren)
 
 const rootRouteChildren: RootRouteChildren = {
   AppRoute: AppRouteWithChildren,
+  LinkRoute: LinkRoute,
   VerifyRoute: VerifyRoute,
   WelcomeRoute: WelcomeRoute,
   WidgetRoute: WidgetRoute,

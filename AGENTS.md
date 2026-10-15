@@ -99,6 +99,27 @@ Gotchas learned the hard way:
 
 ## Status (October 2026)
 
+- Browser sessions, spec 0005 steps 2 and 3 (16 Oct): the web is a window
+  onto a phone, like WhatsApp Web. `notables.pherus.org/link` shows a QR
+  code and code; the phone's Settings › Linked Devices › Link a Browser
+  scans or types it, both show four words (CPace, `packages/sync/src/pairing`),
+  and the phone approves. The browser then loads and saves every document
+  through the phone over a local WebRTC link with no STUN or TURN
+  (`packages/sync/src/session`, `www/src/platform/session`), keeping only
+  the session key. The `SpaceRoom` Durable Object (`www/src/server/spaces`,
+  worker entry `www/src/server.ts`) only introduces devices and stores
+  nothing. Open copies of a document share one stored copy
+  (`createSharedPersistence`), so a phone's editor and its browser edit
+  together. Checked end to end in Chromium (pairing, library, edits both
+  ways, reconnect, phone away banner, nothing in IndexedDB); not yet on the
+  TECNO with a real Wi-Fi path. The web hides the wallet, device settings,
+  read aloud and recording. Not deployed: the Worker needs `wrangler deploy`
+  for the room (Durable Object migration `v1`).
+- Live mode note: `tauri android dev` starts Vite in native mode, without
+  the Cloudflare plugin, so `/spaces/connect` doesn't exist there. Run
+  `bun run dev` yourself and start live mode with
+  `--config '{"build":{"beforeDevCommand":""}}'` to test linking on a phone.
+
 - Android performance and listening (15 Oct, measured on the TECNO):
   Android streams stored media through the local media server (the
   WebView applies byte ranges to `media://` responses itself, so audio
@@ -311,6 +332,13 @@ TestFlight refuse the upload; each build asks in TestFlight instead.
 
 ## Next
 
+- Browser sessions, next: test on the TECNO (unlocked) with ChromeOS
+  Chrome on the same Wi-Fi; photos and recordings from the phone (media on
+  demand over the link); the browser's AI help with the phone's key;
+  read only while the phone is away (AC-26); "Saved on this device" and the
+  sidebar's "On this device" should name the phone in a browser; a Hino
+  devices icon (Linked Devices uses LinkIcon); deploy the Worker; then
+  Android's foreground service and the iPhone ping (step 5).
 - Continue "Queued from the 15 October review" in docs/STAGES.md, and
   fold in the owner's evening notes there (reading and listening, natural
   voice only, image editing, the iOS keyboard bar, Hino gaps, Wallet,
