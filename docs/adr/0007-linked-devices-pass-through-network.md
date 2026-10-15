@@ -85,6 +85,18 @@ Cloudflare passing data through rather than keeping it.
 - Losing every linked device without an export or a PassID backup loses
   the space; the app must make export easy and remind people of it.
 
+## Amendment (15 October 2026): the web holds nothing
+
+The web is no longer a device of the space. `notables.pherus.org` is an
+empty shell that a phone approves by QR, like WhatsApp Web, and every note,
+photo and card is read and edited live from that phone over the transport
+ladder above; nothing is stored in the browser and it never holds the
+space's key. Browsers link only to phones, since computers have the desktop
+app. Android keeps serving through a foreground service with an ongoing
+notification; an iPhone serves while Notables is open and briefly after,
+and the browser can ask for a "tap to connect" notification. Details in
+spec 0005 (AC-22 to AC-26).
+
 ## Stages
 
 | Stage | Delivers |

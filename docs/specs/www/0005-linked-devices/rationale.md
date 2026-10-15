@@ -94,3 +94,31 @@ answer the owner already proposed.
   y-protocols sync messages, Cloudflare Durable Objects WebSocket
   hibernation, the CPace PAKE draft (IRTF CFRG), WhatsApp and Signal linked
   devices (pairing direction), the noble cryptography libraries.
+
+## Amendment, 15 October 2026: the browser as a live window onto a phone
+
+The owner asked whether the web version could be dropped, the way PlainApp
+serves a phone's content to a computer's browser. Three ways were weighed:
+
+- **The web keeps its own copy** (the original plan). Rejected: a browser
+  can lose its storage (Safari after a week), wallet cards could never live
+  there anyway, and a copy on a borrowed computer is a risk.
+- **The phone runs a local web server** (PlainApp). Rejected: a page at
+  `http://192.168.x.x` is not a secure context, so the microphone, camera,
+  clipboard and Web Crypto are refused; a certificate for a local address
+  warns; it works only on the same network; iOS stops the server moments
+  after the app leaves the screen.
+- **An empty HTTPS shell that talks to the phone over the encrypted link**
+  (chosen). The page loads securely from `notables.pherus.org`, holds
+  nothing, and reaches the phone directly on the same network or through
+  the pass-through elsewhere. It reuses the pairing, the room and the sync
+  engine, with memory in place of storage. WhatsApp Web worked this way
+  until 2021.
+
+Keeping an iPhone serving in the background was also weighed. A VPN style
+Network Extension runs in the background, but App Review allows it only for
+VPN services, it would take the person's single VPN slot, and it is limited
+to about 50 MB. Background audio is refused for this use, and background
+tasks run only when iOS chooses. The accepted answer is a notification the
+browser can ask for, which opens Notables with one tap.
+
