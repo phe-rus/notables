@@ -27,11 +27,19 @@ describe("paragraphsFrom", () => {
       line("Contents", 50, 700),
       line("Chapter 1 Low Tide", 50, 688),
       line("Chapter 2 The Lantern", 50, 676),
-      line("The tide had turned before anyone noticed the boat was missing from its mooring.", 50, 664),
+      line(
+        "The tide had turned before anyone noticed the boat was missing from its mooring.",
+        50,
+        664,
+      ),
       line("Nobody spoke of it until the evening bell rang over the empty harbour wall.", 50, 652),
     ];
     const paragraphs = paragraphsFrom(items);
-    expect(paragraphs.slice(0, 3)).toEqual(["Contents", "Chapter 1 Low Tide", "Chapter 2 The Lantern"]);
+    expect(paragraphs.slice(0, 3)).toEqual([
+      "Contents",
+      "Chapter 1 Low Tide",
+      "Chapter 2 The Lantern",
+    ]);
   });
 });
 
