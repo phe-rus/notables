@@ -147,7 +147,8 @@ export function InkBlock({
       }
       return true;
     }
-    if (event.pointerType === "touch") return fingerDraws;
+    // A finger draws only while the tools are open; otherwise it scrolls.
+    if (event.pointerType === "touch") return active && fingerDraws;
     return event.button === 0;
   };
 
@@ -314,6 +315,16 @@ export function InkBlock({
                     <TouchIcon size={20} />
                   </button>
                 )}
+                <button
+                  type="button"
+                  className="nt-ink-done"
+                  onClick={() => {
+                    setActive(false);
+                    setChoosingColor(false);
+                  }}
+                >
+                  Done
+                </button>
               </>
             )}
           </motion.div>
@@ -323,7 +334,7 @@ export function InkBlock({
         ref={surface}
         className={cn("nt-ink-surface", editable && `is-${tool}`)}
         // Fingers scroll the page unless they're drawing.
-        style={{ touchAction: editable && fingerDraws ? "none" : "pan-y" }}
+        style={{ touchAction: editable && active && fingerDraws ? "none" : "pan-y" }}
         onPointerDown={onPointerDown}
         onPointerMove={onPointerMove}
         onPointerUp={onPointerUp}

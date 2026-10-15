@@ -101,6 +101,11 @@ function NoteEditorScreen({ entry, viewId }: { entry: LibraryEntry; viewId?: str
   const [editing, setEditing] = useState(() => !entry.title);
   const reading = touch && !editing;
   const startEditing = useCallback(() => setEditing(true), []);
+  // Using the formatting tools means editing: a drawing or photo added
+  // while reading would land in a note that can't be edited.
+  const editFromTools = useCallback(() => {
+    if (touch) setEditing(true);
+  }, [touch]);
   // Photos are stored as media files and referenced by id, never inlined:
   // inline photos bloated the note and, on Android, could fail to save.
   const storePhoto = useCallback(async (file: File) => localMediaSrc(await saveMedia(file)), []);
@@ -209,11 +214,13 @@ function NoteEditorScreen({ entry, viewId }: { entry: LibraryEntry; viewId?: str
             >
               {entry.title || t("notes.newNote")}
             </span>
-            <BlockToolbar
-              onRecord={startRecording}
-              resolvePhoto={storePhoto}
-              className="@max-[860px]/note:hidden"
-            />
+            <div className="contents" onPointerDownCapture={editFromTools}>
+              <BlockToolbar
+                onRecord={startRecording}
+                resolvePhoto={storePhoto}
+                className="@max-[860px]/note:hidden"
+              />
+            </div>
             <div className="ms-auto flex shrink-0 items-center gap-1 @min-[600px]/note:gap-2">
               <StatusIndicator
                 state={
@@ -343,6 +350,7 @@ function NoteEditorScreen({ entry, viewId }: { entry: LibraryEntry; viewId?: str
         {/* The formatting tools float at the bottom wherever the top bar has no room for them. */}
         <motion.footer
           ref={tools}
+          onPointerDownCapture={editFromTools}
           {...riseMotion}
           className="glass-menu absolute inset-x-3 bottom-[max(12px,env(safe-area-inset-bottom))] z-20 mx-auto flex max-w-[480px] rounded-full px-2 py-1 @min-[860px]/note:hidden"
         >

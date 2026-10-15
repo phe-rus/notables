@@ -666,6 +666,21 @@
     transform: scale(0.92);
   }
 
+  /* Leaves the handwriting tools, as in Apple Notes; the page then scrolls under a finger. */
+  .nt-ink-done {
+    flex: none;
+    margin-inline-start: auto;
+    padding: 0 12px;
+    min-height: 40px;
+    border-radius: 9999px;
+    font-weight: 600;
+    color: var(--color-accent-text);
+  }
+
+  .nt-ink-done:active {
+    transform: scale(0.96);
+  }
+
   .nt-ink-tool[aria-pressed="true"] {
     background: var(--color-accent-soft);
     color: var(--color-accent-text);
