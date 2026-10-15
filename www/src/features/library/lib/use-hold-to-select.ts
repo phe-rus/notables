@@ -53,9 +53,15 @@ export function useHoldToSelect(options: Options) {
     let suppressClick = false;
     let lastPointer = "";
     let frame = 0;
+    /** The list's own overflow, while a hold has locked its scrolling. */
+    let lockedOverflow: string | null = null;
 
     const release = () => {
       if (!press) return;
+      if (lockedOverflow !== null) {
+        list.style.overflowY = lockedOverflow;
+        lockedOverflow = null;
+      }
       clearTimeout(press.timer);
       delete press.row.dataset.held;
       delete list.dataset.holding;
@@ -125,6 +131,11 @@ export function useHoldToSelect(options: Options) {
         timer: setTimeout(() => {
           current.held = true;
           row.dataset.held = "";
+          // Android's WebView has already chosen to scroll by the first
+          // move (its touchmoves can't be cancelled), so the list itself
+          // stops scrolling; auto-scroll near the edges still moves it.
+          lockedOverflow = list.style.overflowY;
+          list.style.overflowY = "hidden";
           // Rows read this to leave swiping alone while a hold is on.
           list.dataset.holding = "";
           haptic("medium");
@@ -133,11 +144,11 @@ export function useHoldToSelect(options: Options) {
       press = current;
     };
 
-    const onPointerMove = (event: PointerEvent) => {
-      if (!press || !event.isPrimary) return;
-      press.lastX = event.clientX;
-      press.lastY = event.clientY;
-      const distance = Math.hypot(event.clientX - press.x, event.clientY - press.y);
+    const moveTo = (x: number, y: number) => {
+      if (!press) return;
+      press.lastX = x;
+      press.lastY = y;
+      const distance = Math.hypot(x - press.x, y - press.y);
       if (!press.held) {
         if (distance > SLOP) release();
         return;
@@ -153,11 +164,15 @@ export function useHoldToSelect(options: Options) {
         extendTo(press.id);
         frame = requestAnimationFrame(autoScroll);
       }
-      extendTo(rowAt(event.clientX, event.clientY));
+      extendTo(rowAt(x, y));
     };
 
-    const onPointerUp = (event: PointerEvent) => {
-      if (!press || !event.isPrimary) return;
+    const onPointerMove = (event: PointerEvent) => {
+      if (event.isPrimary) moveTo(event.clientX, event.clientY);
+    };
+
+    const finish = () => {
+      if (!press) return;
       if (press.held) {
         suppressClick = true;
         setTimeout(() => {
@@ -171,9 +186,25 @@ export function useHoldToSelect(options: Options) {
       release();
     };
 
+    const onPointerUp = (event: PointerEvent) => {
+      if (event.isPrimary) finish();
+    };
+
+    // Android cancels the pointer once it starts its scroll; a hold carries
+    // on through touch events instead, until the finger lifts.
+    const onPointerCancel = () => {
+      if (!press?.held) release();
+    };
+
     // Once the hold lands the finger belongs to selecting, not scrolling.
     const onTouchMove = (event: TouchEvent) => {
-      if (press?.held) event.preventDefault();
+      if (!press?.held) return;
+      if (event.cancelable) event.preventDefault();
+      const touch = event.touches[0];
+      if (touch) moveTo(touch.clientX, touch.clientY);
+    };
+    const onTouchEnd = () => {
+      if (press?.held) finish();
     };
     // The lifting finger shouldn't also open the note.
     const onClick = (event: MouseEvent) => {
@@ -192,7 +223,9 @@ export function useHoldToSelect(options: Options) {
     list.addEventListener("pointerdown", onPointerDown);
     window.addEventListener("pointermove", onPointerMove);
     window.addEventListener("pointerup", onPointerUp);
-    window.addEventListener("pointercancel", release);
+    window.addEventListener("pointercancel", onPointerCancel);
+    window.addEventListener("touchend", onTouchEnd);
+    window.addEventListener("touchcancel", onTouchEnd);
     list.addEventListener("touchmove", onTouchMove, { passive: false });
     list.addEventListener("click", onClick, true);
     list.addEventListener("contextmenu", onContextMenu, true);
@@ -201,7 +234,9 @@ export function useHoldToSelect(options: Options) {
       list.removeEventListener("pointerdown", onPointerDown);
       window.removeEventListener("pointermove", onPointerMove);
       window.removeEventListener("pointerup", onPointerUp);
-      window.removeEventListener("pointercancel", release);
+      window.removeEventListener("pointercancel", onPointerCancel);
+      window.removeEventListener("touchend", onTouchEnd);
+      window.removeEventListener("touchcancel", onTouchEnd);
       list.removeEventListener("touchmove", onTouchMove);
       list.removeEventListener("click", onClick, true);
       list.removeEventListener("contextmenu", onContextMenu, true);
