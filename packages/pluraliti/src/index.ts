@@ -39,6 +39,7 @@ export {
   INSERT_IMAGE_COMMAND,
   INSERT_INK_COMMAND,
 } from "./plugins/media/media-plugin";
+export { ReadModePlugin } from "./plugins/read-mode/read-mode-plugin";
 export {
   type AudioClipRenderProps,
   DocumentView,

@@ -4,6 +4,7 @@ import {
   type DocumentChange,
   NotesEditor,
   NotesEditorContent,
+  ReadModePlugin,
 } from "@notables/pluraliti";
 import type { SyncStatus } from "@notables/sync";
 import {
@@ -19,6 +20,7 @@ import {
   ShareIcon,
   StatusIndicator,
   TrashIcon,
+  useMediaQuery,
 } from "@phe-rus/hino";
 import { Link, useNavigate } from "@tanstack/react-router";
 import { motion } from "motion/react";
@@ -90,6 +92,13 @@ function NoteEditorScreen({ entry, viewId }: { entry: LibraryEntry; viewId?: str
   const articleRef = useRef<HTMLElement>(null);
   const [sharing, setSharing] = useState(false);
   const [titleInBar, setTitleInBar] = useState(false);
+  // On touch screens a note opens for reading, so scrolling never brings up
+  // the keyboard; a tap on its text edits, and Done reads again. New notes
+  // open ready to type.
+  const touch = useMediaQuery("(pointer: coarse)");
+  const [editing, setEditing] = useState(() => !entry.title);
+  const reading = touch && !editing;
+  const startEditing = useCallback(() => setEditing(true), []);
   const shareSession = useShareSession(entry.id);
   const startRecording = useCallback(() => setRecording(true), []);
 
@@ -144,6 +153,7 @@ function NoteEditorScreen({ entry, viewId }: { entry: LibraryEntry; viewId?: str
 
   return (
     <NotesEditor id={entry.id} provider={provider} bootstrap={entry.origin === getDeviceId()}>
+      <ReadModePlugin reading={reading} onEdit={startEditing} />
       <div className="@container/note relative flex min-h-0 grow flex-col">
         <div
           className="relative flex min-h-0 grow flex-col overflow-y-auto"
@@ -211,6 +221,18 @@ function NoteEditorScreen({ entry, viewId }: { entry: LibraryEntry; viewId?: str
                   {statusLabel(status)}
                 </span>
               </StatusIndicator>
+              {touch && editing && (
+                <button
+                  type="button"
+                  onClick={() => {
+                    setEditing(false);
+                    (document.activeElement as HTMLElement | null)?.blur();
+                  }}
+                  className="min-h-11 px-2 text-body font-semibold text-accent-text"
+                >
+                  {t("common.done")}
+                </button>
+              )}
               <ReadAloudButton root={articleRef} title={entry.title} />
               <AiAssist />
               <IconButton

@@ -111,7 +111,8 @@ through apt, Windows) last. Notables follows Apple Notes closely.
 3. [ ] **Start fresh**: a clear choice after onboarding that removes the
    welcome examples, also in Settings.
 4. [ ] **Keyboard awareness** on iOS and Android, and a **read mode** so
-   scrolling a note does not bring up the keyboard.
+   scrolling a note does not bring up the keyboard. Read mode done 15 Oct
+   (`ReadModePlugin` in packages/pluraliti, Done in the note's top bar).
 5. [ ] **Hold and slide to select** on Android, as on iOS.
 6. [ ] **Drawing and handwriting**: easy to leave; image placement kept
    after a restart; deleting an image from the note side works, and
