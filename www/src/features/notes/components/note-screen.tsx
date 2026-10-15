@@ -1,4 +1,4 @@
-import { noteDoc } from "@notables/core";
+import { localMediaSrc, noteDoc } from "@notables/core";
 import {
   BlockToolbar,
   type DocumentChange,
@@ -28,6 +28,7 @@ import { motion } from "motion/react";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { t } from "../../../i18n/i18n";
 import { getDeviceId } from "../../../platform/device-identity";
+import { saveMedia } from "../../../platform/storage/media-store";
 import { saveNoteContent } from "../../../platform/storage/note-content-cache";
 import { AiAssist } from "../../ai/components/ai-assist";
 import { PendingNarration } from "../../books/narration/components/pending-narration";
@@ -100,6 +101,9 @@ function NoteEditorScreen({ entry, viewId }: { entry: LibraryEntry; viewId?: str
   const [editing, setEditing] = useState(() => !entry.title);
   const reading = touch && !editing;
   const startEditing = useCallback(() => setEditing(true), []);
+  // Photos are stored as media files and referenced by id, never inlined:
+  // inline photos bloated the note and, on Android, could fail to save.
+  const storePhoto = useCallback(async (file: File) => localMediaSrc(await saveMedia(file)), []);
   // The floating formatting tools sit above the keyboard; typing stays above them.
   const tools = useRef<HTMLElement>(null);
   const toolsTop = useCallback(() => {
@@ -205,7 +209,11 @@ function NoteEditorScreen({ entry, viewId }: { entry: LibraryEntry; viewId?: str
             >
               {entry.title || t("notes.newNote")}
             </span>
-            <BlockToolbar onRecord={startRecording} className="@max-[860px]/note:hidden" />
+            <BlockToolbar
+              onRecord={startRecording}
+              resolvePhoto={storePhoto}
+              className="@max-[860px]/note:hidden"
+            />
             <div className="ms-auto flex shrink-0 items-center gap-1 @min-[600px]/note:gap-2">
               <StatusIndicator
                 state={
@@ -340,6 +348,7 @@ function NoteEditorScreen({ entry, viewId }: { entry: LibraryEntry; viewId?: str
         >
           <BlockToolbar
             onRecord={startRecording}
+            resolvePhoto={storePhoto}
             menuPlacement="above"
             className="w-full justify-around"
           />
