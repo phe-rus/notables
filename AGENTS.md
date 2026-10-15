@@ -292,8 +292,10 @@ TestFlight refuse the upload; each build asks in TestFlight instead.
 - Work through "Queued from the 15 October review" in docs/STAGES.md, in
   order: Android smoothness and audio first (the TECNO is on Wi-Fi adb),
   then Hino (`@phe-rus/hino`, skill in `.agentic/skills/hino`) replacing
-  UltraPeach, whose DatePicker replaces the native date inputs in
-  event-form.tsx and invoice-screen.tsx. Desktop packaging waits.
+  UltraPeach (done 15 Oct). Dates use `DateField` (Hino's
+  `CompactDatePicker`, a month calendar, added in Hino 0.1.4); the event
+  form's Time is still a native time input, the next control for Hino.
+  Desktop packaging waits.
 
 Right after the store work (9 October):
 

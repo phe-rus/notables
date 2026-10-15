@@ -122,6 +122,10 @@ export const ar: Messages = {
     },
   },
   common: {
+    previousMonth: "الشهر السابق",
+    nextMonth: "الشهر التالي",
+    removeDate: "إزالة التاريخ",
+    noDate: "لا شيء",
     cancel: "إلغاء",
     save: "حفظ",
     delete: "حذف",

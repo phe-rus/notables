@@ -127,6 +127,10 @@ export const en = {
     },
   },
   common: {
+    previousMonth: "Previous month",
+    nextMonth: "Next month",
+    removeDate: "Remove date",
+    noDate: "None",
     cancel: "Cancel",
     save: "Save",
     delete: "Delete",

@@ -18,7 +18,13 @@ import {
 import { Link, useNavigate } from "@tanstack/react-router";
 import { useCallback, useId, useRef, useState } from "react";
 import { createPortal } from "react-dom";
-import { Field, FormSection, TextArea, TextInput } from "../../../components/form/form-fields";
+import {
+  DateField,
+  Field,
+  FormSection,
+  TextArea,
+  TextInput,
+} from "../../../components/form/form-fields";
 import { printPage } from "../../../platform/print-page";
 import { RecentClientPicker } from "../business/recent-client-picker";
 import { exportInvoicePdf } from "../export/export-invoice";
@@ -230,18 +236,19 @@ export function InvoiceScreen({ invoice }: { invoice: InvoiceDocument }) {
                   />
                 </Field>
                 <Field label={invoice.kind === "receipt" ? "Date paid" : "Date of issue"}>
-                  <TextInput
-                    type="date"
+                  <DateField
+                    label={invoice.kind === "receipt" ? "Date paid" : "Date of issue"}
                     value={invoice.issuedOn}
-                    onChange={(e) => e.target.value && set({ issuedOn: e.target.value })}
+                    onChange={(date) => date && set({ issuedOn: date })}
                   />
                 </Field>
                 {invoice.kind !== "receipt" && (
                   <Field label={invoice.kind === "quote" ? "Valid until" : "Due"}>
-                    <TextInput
-                      type="date"
+                    <DateField
+                      label={invoice.kind === "quote" ? "Valid until" : "Due"}
+                      optional
                       value={invoice.dueOn ?? ""}
-                      onChange={(e) => set({ dueOn: e.target.value || null })}
+                      onChange={(date) => set({ dueOn: date || null })}
                     />
                   </Field>
                 )}

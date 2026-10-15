@@ -126,6 +126,10 @@ export const sw: Messages = {
     },
   },
   common: {
+    previousMonth: "Mwezi uliopita",
+    nextMonth: "Mwezi ujao",
+    removeDate: "Ondoa tarehe",
+    noDate: "Hakuna",
     cancel: "Ghairi",
     save: "Hifadhi",
     delete: "Futa",

@@ -12,7 +12,13 @@ import {
 } from "@notables/core";
 import { Button, CloseIcon, IconButton, openMenu, Toggle, toast } from "@phe-rus/hino";
 import { useState } from "react";
-import { Field, PickerInput, TextArea, TextInput } from "../../../components/form/form-fields";
+import {
+  DateField,
+  Field,
+  PickerInput,
+  TextArea,
+  TextInput,
+} from "../../../components/form/form-fields";
 import { locale, t } from "../../../i18n/i18n";
 import { permissionState, requestPermission } from "../../../platform/permissions";
 import { alertLabel, allDayAlerts, timedAlerts } from "../lib/alert-choices";
@@ -193,21 +199,22 @@ export function EventForm({
           <>
             <div className="grid grid-cols-2 gap-2.5">
               <Field label={t("calendar.date")}>
-                <TextInput
-                  type="date"
+                <DateField
+                  label={t("calendar.date")}
                   min="0001-01-01"
                   max={`${LAST_YEAR}-12-31`}
                   value={event.date}
-                  onChange={(e) => e.target.value && set({ date: e.target.value })}
+                  onChange={(date) => date && set({ date })}
                 />
               </Field>
               {event.kind === "trip" || allDay ? (
                 <Field label={t("calendar.endsOn")}>
-                  <TextInput
-                    type="date"
+                  <DateField
+                    label={t("calendar.endsOn")}
+                    optional
                     min={event.date}
                     value={event.endDate ?? ""}
-                    onChange={(e) => set({ endDate: e.target.value || null })}
+                    onChange={(date) => set({ endDate: date || null })}
                   />
                 </Field>
               ) : (
@@ -294,11 +301,12 @@ export function EventForm({
 
         {!yearly && event.repeat !== "never" && (
           <Field label={t("calendar.ends")}>
-            <TextInput
-              type="date"
+            <DateField
+              label={t("calendar.ends")}
+              optional
               value={event.until ?? ""}
               min={event.date}
-              onChange={(e) => set({ until: e.target.value || null })}
+              onChange={(date) => set({ until: date || null })}
             />
           </Field>
         )}

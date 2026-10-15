@@ -127,6 +127,10 @@ export const es: Messages = {
     },
   },
   common: {
+    previousMonth: "Mes anterior",
+    nextMonth: "Mes siguiente",
+    removeDate: "Quitar la fecha",
+    noDate: "Ninguna",
     cancel: "Cancelar",
     save: "Guardar",
     delete: "Eliminar",

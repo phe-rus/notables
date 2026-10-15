@@ -119,6 +119,10 @@ export const zh: Messages = {
     },
   },
   common: {
+    previousMonth: "上个月",
+    nextMonth: "下个月",
+    removeDate: "移除日期",
+    noDate: "无",
     cancel: "取消",
     save: "保存",
     delete: "删除",
