@@ -1,5 +1,6 @@
 import { cn, Picker } from "@phe-rus/hino";
 import { CompactDatePicker } from "@phe-rus/hino/compact-date-picker";
+import { CompactTimePicker } from "@phe-rus/hino/compact-time-picker";
 import type { ComponentProps, InputHTMLAttributes, ReactNode, TextareaHTMLAttributes } from "react";
 import { locale, t } from "../../i18n/i18n";
 
@@ -64,6 +65,8 @@ export function PickerInput<T extends string>(props: ComponentProps<typeof Picke
   );
 }
 
+const appLocale = () => locale() ?? (typeof navigator === "undefined" ? "en" : navigator.language);
+
 /**
  * A date picked from a month calendar, never the system's date dialog.
  * `value` is `YYYY-MM-DD`; optional dates get a way to remove them.
@@ -90,13 +93,34 @@ export function DateField({
       onChange={onChange}
       min={min}
       max={max}
-      locale={locale() ?? (typeof navigator === "undefined" ? "en" : navigator.language)}
+      locale={appLocale()}
       placeholder={optional ? t("common.noDate") : undefined}
       labels={{
         previousMonth: t("common.previousMonth"),
         nextMonth: t("common.nextMonth"),
         clear: optional ? t("common.removeDate") : undefined,
       }}
+    />
+  );
+}
+
+/** A time of day (`HH:MM`) from columns of hours and minutes, never the system's dialog. */
+export function TimeField({
+  label,
+  value,
+  onChange,
+}: {
+  label: string;
+  value: string;
+  onChange: (value: string) => void;
+}) {
+  return (
+    <CompactTimePicker
+      label={label}
+      value={value}
+      onChange={onChange}
+      locale={appLocale()}
+      labels={{ hour: t("common.hour"), minute: t("common.minute"), period: t("common.amPm") }}
     />
   );
 }

@@ -127,6 +127,9 @@ export const es: Messages = {
     },
   },
   common: {
+    hour: "Hora",
+    minute: "Minuto",
+    amPm: "a. m. o p. m.",
     previousMonth: "Mes anterior",
     nextMonth: "Mes siguiente",
     removeDate: "Quitar la fecha",

@@ -127,6 +127,9 @@ export const en = {
     },
   },
   common: {
+    hour: "Hour",
+    minute: "Minute",
+    amPm: "AM or PM",
     previousMonth: "Previous month",
     nextMonth: "Next month",
     removeDate: "Remove date",

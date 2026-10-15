@@ -293,8 +293,8 @@ TestFlight refuse the upload; each build asks in TestFlight instead.
   order: Android smoothness and audio first (the TECNO is on Wi-Fi adb),
   then Hino (`@phe-rus/hino`, skill in `.agentic/skills/hino`) replacing
   UltraPeach (done 15 Oct). Dates use `DateField` (Hino's
-  `CompactDatePicker`, a month calendar, added in Hino 0.1.4); the event
-  form's Time is still a native time input, the next control for Hino.
+  `CompactDatePicker`, Hino 0.1.4) and times `TimeField` (Hino's
+  `CompactTimePicker`, 0.1.5); no native date or time inputs remain.
   Desktop packaging waits.
 
 Right after the store work (9 October):

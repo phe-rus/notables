@@ -131,6 +131,9 @@ export const fr: Messages = {
     },
   },
   common: {
+    hour: "Heure",
+    minute: "Minute",
+    amPm: "Matin ou après-midi",
     previousMonth: "Mois précédent",
     nextMonth: "Mois suivant",
     removeDate: "Retirer la date",

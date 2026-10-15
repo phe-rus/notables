@@ -122,6 +122,9 @@ export const ar: Messages = {
     },
   },
   common: {
+    hour: "الساعة",
+    minute: "الدقيقة",
+    amPm: "صباحًا أو مساءً",
     previousMonth: "الشهر السابق",
     nextMonth: "الشهر التالي",
     removeDate: "إزالة التاريخ",

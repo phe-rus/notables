@@ -119,6 +119,9 @@ export const zh: Messages = {
     },
   },
   common: {
+    hour: "时",
+    minute: "分",
+    amPm: "上午或下午",
     previousMonth: "上个月",
     nextMonth: "下个月",
     removeDate: "移除日期",

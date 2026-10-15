@@ -18,6 +18,7 @@ import {
   PickerInput,
   TextArea,
   TextInput,
+  TimeField,
 } from "../../../components/form/form-fields";
 import { locale, t } from "../../../i18n/i18n";
 import { permissionState, requestPermission } from "../../../platform/permissions";
@@ -219,22 +220,22 @@ export function EventForm({
                 </Field>
               ) : (
                 <Field label={t("calendar.time")}>
-                  <TextInput
-                    type="time"
+                  <TimeField
+                    label={t("calendar.time")}
                     value={event.time ?? ""}
-                    onChange={(e) => e.target.value && set({ time: e.target.value })}
+                    onChange={(time) => time && set({ time })}
                   />
                 </Field>
               )}
             </div>
             {!allDay && event.kind !== "reminder" && event.kind !== "deadline" && (
               <Field label={t("calendar.endTime")}>
-                <TextInput
-                  type="time"
+                <TimeField
+                  label={t("calendar.endTime")}
                   value={timeOf(endMinutes)}
-                  onChange={(e) => {
-                    if (!e.target.value) return;
-                    const end = minutesOf(e.target.value);
+                  onChange={(time) => {
+                    if (!time) return;
+                    const end = minutesOf(time);
                     const start = minutesOf(event.time ?? "09:00");
                     set({ duration: Math.max(5, end > start ? end - start : end + 1440 - start) });
                   }}

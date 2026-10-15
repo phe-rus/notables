@@ -126,6 +126,9 @@ export const sw: Messages = {
     },
   },
   common: {
+    hour: "Saa",
+    minute: "Dakika",
+    amPm: "Asubuhi au jioni",
     previousMonth: "Mwezi uliopita",
     nextMonth: "Mwezi ujao",
     removeDate: "Ondoa tarehe",
