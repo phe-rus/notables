@@ -1,4 +1,6 @@
 export { Awareness } from "y-protocols/awareness";
+export type { PeerMedia } from "./peer/media-exchange";
+export { mediaReferences } from "./peer/media-references";
 export * from "./peer/peer-mesh";
 export type { ControlMessage, Hello } from "./peer/peer-protocol";
 export * from "./persistence/bridge-persistence";

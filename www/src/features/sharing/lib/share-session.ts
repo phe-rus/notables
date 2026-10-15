@@ -1,8 +1,10 @@
+import { announceMediaArrived } from "@notables/pluraliti";
 import { Awareness, type ConnectedPeer, PeerMesh, type PersistenceBinding } from "@notables/sync";
 
 import * as Y from "yjs";
 import { getDeviceId } from "../../../platform/device-identity";
 import { getPersistence } from "../../../platform/storage/document-storage";
+import { hasMedia, loadMedia, saveMediaAs } from "../../../platform/storage/media-store";
 import { OWNER, type ShareCredentials } from "../model/share";
 import { forgetShare } from "../store/share-store";
 import { MailboxSignaling } from "./mailbox-signaling";
@@ -90,6 +92,9 @@ export class ShareSession {
         },
       },
     );
+    // Photos, recordings and drawings travel too, kept under their own ids.
+    mesh.shareMedia({ has: hasMedia, read: loadMedia, write: saveMediaAs });
+    mesh.on("media", announceMediaArrived);
     mesh.on("peers", (peers) => {
       this.#peers = peers;
       this.#emit();

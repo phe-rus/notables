@@ -25,7 +25,12 @@ export {
   useDrawingStudio,
 } from "./media/drawing-studio";
 export { MediaImage } from "./media/media-image";
-export { type MediaResolver, MediaResolverProvider, useMediaSource } from "./media/media-source";
+export {
+  announceMediaArrived,
+  type MediaResolver,
+  MediaResolverProvider,
+  useMediaSource,
+} from "./media/media-source";
 export {
   TranscriptionProvider,
   type TranscriptionService,

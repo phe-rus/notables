@@ -21,6 +21,15 @@ export async function saveMedia(file: Blob): Promise<string> {
   return id;
 }
 
+/** Stores a file under an id it already has, as when it arrives from another device. */
+export function saveMediaAs(id: string, file: Blob): Promise<void> {
+  return media().save(id, file);
+}
+
+export async function hasMedia(id: string): Promise<boolean> {
+  return (await media().load(id)) !== null;
+}
+
 export function loadMedia(id: string): Promise<Blob | null> {
   return media().load(id);
 }

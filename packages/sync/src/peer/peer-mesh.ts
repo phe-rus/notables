@@ -2,6 +2,8 @@ import type { Awareness } from "y-protocols/awareness";
 import { removeAwarenessStates } from "y-protocols/awareness";
 import type * as Y from "yjs";
 import { Emitter } from "../lib/typed-emitter";
+import { isMediaFrame, MediaExchange, type PeerMedia } from "./media-exchange";
+import { mediaReferences } from "./media-references";
 import {
   awarenessMessage,
   type ControlMessage,
@@ -55,9 +57,17 @@ interface Peer {
   clients: Set<number>;
 }
 
-type Events = { peers: (peers: ConnectedPeer[]) => void };
+type Events = {
+  peers: (peers: ConnectedPeer[]) => void;
+  /** A file the document refers to has arrived from another device. */
+  media: (id: string) => void;
+};
 
 const ANNOUNCE_EVERY = 12_000;
+/** After the document changes, wait this long before looking for new files to fetch. */
+const MEDIA_SETTLE = 1500;
+/** Sending pauses while more than this is queued on a channel. */
+const BUFFER_HIGH = 1024 * 1024;
 const GATHER_TIMEOUT = 4000;
 
 export const defaultIceServers: RTCIceServer[] = [
@@ -88,6 +98,8 @@ export class PeerMesh extends Emitter<Events> {
   #unsubscribe: (() => void) | null = null;
   #timer: ReturnType<typeof setInterval> | null = null;
   #stopped = false;
+  #media: MediaExchange | null = null;
+  #mediaTimer: ReturnType<typeof setTimeout> | null = null;
 
   constructor(
     readonly selfId: string,
@@ -110,6 +122,23 @@ export class PeerMesh extends Emitter<Events> {
       }));
   }
 
+  /**
+   * Also moves the files the document refers to as `${prefix}<id>`
+   * (photos, recordings, drawings), so every device can show them.
+   */
+  shareMedia(media: PeerMedia, prefix = "media:") {
+    this.#media = new MediaExchange(
+      media,
+      () => mediaReferences(this.doc, prefix),
+      (id, data) => {
+        const peer = this.#peers.get(id);
+        return peer ? this.#sendWhenReady(peer, data) : undefined;
+      },
+      (id) => this.emit("media", id),
+    );
+    this.#fetchMediaSoon();
+  }
+
   start() {
     if (this.#unsubscribe) return;
     this.#unsubscribe = this.signaling.subscribe((signal) => void this.#onSignal(signal));
@@ -125,6 +154,7 @@ export class PeerMesh extends Emitter<Events> {
     this.#unsubscribe?.();
     this.#unsubscribe = null;
     if (this.#timer) clearInterval(this.#timer);
+    if (this.#mediaTimer) clearTimeout(this.#mediaTimer);
     this.doc.off("update", this.#onDocUpdate);
     this.awareness.off("update", this.#onAwarenessUpdate);
     void this.signaling.send(null, { kind: "bye" }).catch(() => {});
@@ -202,8 +232,13 @@ export class PeerMesh extends Emitter<Events> {
       if (typeof event.data === "string") {
         void this.#onControl(peer, JSON.parse(event.data) as ControlMessage);
       } else if (peer.hello) {
+        const data = new Uint8Array(event.data);
+        if (isMediaFrame(data)) {
+          void this.#media?.receive(peer.id, data, this.#verifiedIds()).catch(() => {});
+          return;
+        }
         // The peer is the origin, so its changes aren't echoed back to it.
-        const reply = readMessage(new Uint8Array(event.data), this.doc, this.awareness, peer);
+        const reply = readMessage(data, this.doc, this.awareness, peer);
         if (reply) this.#send(peer, reply);
       }
     });
@@ -226,10 +261,44 @@ export class PeerMesh extends Emitter<Events> {
     this.#send(peer, syncStep1(this.doc));
     this.#send(peer, awarenessMessage(this.awareness, [this.doc.clientID]));
     this.emit("peers", this.peers);
+    this.#fetchMediaSoon();
   }
 
   #send(peer: Peer, data: Uint8Array) {
     if (peer.channel?.readyState === "open") peer.channel.send(data as Uint8Array<ArrayBuffer>);
+  }
+
+  /** Sends, first waiting while the channel's queue is full (large files). */
+  async #sendWhenReady(peer: Peer, data: Uint8Array) {
+    const channel = peer.channel;
+    if (!channel || channel.readyState !== "open") return;
+    if (channel.bufferedAmount > BUFFER_HIGH) {
+      channel.bufferedAmountLowThreshold = BUFFER_HIGH / 4;
+      await new Promise<void>((resolve) => {
+        const done = () => {
+          channel.removeEventListener("bufferedamountlow", done);
+          channel.removeEventListener("close", done);
+          resolve();
+        };
+        channel.addEventListener("bufferedamountlow", done);
+        channel.addEventListener("close", done);
+      });
+    }
+    this.#send(peer, data);
+  }
+
+  #verifiedIds(): string[] {
+    return [...this.#peers.values()].filter((peer) => peer.hello).map((peer) => peer.id);
+  }
+
+  /** Looks for files this device lacks once the document has settled. */
+  #fetchMediaSoon() {
+    if (!this.#media || this.#stopped) return;
+    if (this.#mediaTimer) clearTimeout(this.#mediaTimer);
+    this.#mediaTimer = setTimeout(() => {
+      this.#mediaTimer = null;
+      void this.#media?.fetchMissing(this.#verifiedIds()).catch(() => {});
+    }, MEDIA_SETTLE);
   }
 
   /**
@@ -237,6 +306,7 @@ export class PeerMesh extends Emitter<Events> {
    * that couldn't connect to each other directly still stay in step.
    */
   #onDocUpdate = (update: Uint8Array, origin: unknown) => {
+    this.#fetchMediaSoon();
     const message = updateMessage(update);
     for (const peer of this.#peers.values()) {
       if (peer.hello && peer !== origin) this.#send(peer, message);
