@@ -152,6 +152,13 @@ through apt, Windows) last. Notables follows Apple Notes closely.
 - **Wallet** is unfinished; **Privacy & Security** and the Lock (12:
   passcode, Face ID, fingerprint, face unlock, unlocking settings) are
   not done at all.
+- **Arabic (RTL)**: the sidebar and layouts don't mirror or adjust well.
+- **Pop-ups and the keyboard**: a dropdown with a text field (and its list)
+  hides behind the on-screen keyboard; fine when the keyboard is closed.
+  Pop-ups must place themselves in the visible area above the keyboard.
+- **Spreadsheet note kind** (expands 9): a grid like Excel for data entry,
+  aimed mainly at budgets: a year of income and spending by month and
+  category, with totals.
 
 ## Stage 2: Smoothness and the Rust core
 
