@@ -1,5 +1,6 @@
 import { invoke } from "@tauri-apps/api/core";
 import { useEffect, useState } from "react";
+import { locale } from "../../../i18n/i18n";
 import { isTauri } from "../../../platform/runtime";
 
 /** A model pack's state on this device (spec 0001). */
@@ -36,6 +37,16 @@ export const packLicense = (id: string) => invoke<string | null>("models_license
 /** Starts the automatic downloads; outcomes arrive as status events. */
 export const runAutoDownloads = (allowMetered: boolean) =>
   invoke<void>("models_auto", { allowMetered });
+
+/** A download's size in megabytes, in the reader's language. */
+export function packSize(bytes: number | null): string {
+  if (bytes === null) return "";
+  return new Intl.NumberFormat(locale(), {
+    style: "unit",
+    unit: "megabyte",
+    maximumFractionDigits: 0,
+  }).format(bytes / 1_000_000);
+}
 
 /** True when a newer version is listed than the one installed. */
 export const updateAvailable = (pack: PackStatus) =>

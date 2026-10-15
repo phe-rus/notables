@@ -50,7 +50,7 @@ export function NarrationBar({
       voices.length === 0
         ? [{ label: t("listening.noVoices"), disabled: true, onSelect: () => {} }]
         : voices.slice(0, 12).map((voice) => ({
-            label: `${voice.name}${voice.natural ? ` · ${t("listening.natural")}` : ""}${voice.provider === "gemini" ? " · Gemini" : ""}`,
+            label: voice.provider === "gemini" ? `${voice.name} · Gemini` : voice.name,
             checked: voice.id === current,
             onSelect: () => setNarrationSettings({ voiceId: voice.id }),
           })),

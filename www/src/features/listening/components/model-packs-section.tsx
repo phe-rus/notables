@@ -8,12 +8,13 @@ import {
   toast,
 } from "@phe-rus/hino";
 import { useState } from "react";
-import { locale, type MessageKey, t } from "../../../i18n/i18n";
+import { type MessageKey, t } from "../../../i18n/i18n";
 import {
   deletePack,
   downloadPack,
   type PackStatus,
   packLicense,
+  packSize,
   updateAvailable,
   useModelPacks,
 } from "../lib/model-packs";
@@ -32,20 +33,12 @@ const FAILURES: Record<NonNullable<PackStatus["reason"]>, MessageKey> = {
   "no-space": "listening.packs.noSpace",
 };
 
-function size(bytes: number | null): string {
-  if (bytes === null) return "";
-  return new Intl.NumberFormat(locale(), {
-    style: "unit",
-    unit: "megabyte",
-    maximumFractionDigits: 0,
-  }).format(bytes / 1_000_000);
-}
-
 function describe(pack: PackStatus): string {
   const percent = pack.bytes
     ? Math.min(99, Math.floor((pack.receivedBytes / pack.bytes) * 100))
     : 0;
-  const withSize = (text: string) => (pack.bytes === null ? text : `${text} · ${size(pack.bytes)}`);
+  const withSize = (text: string) =>
+    pack.bytes === null ? text : `${text} · ${packSize(pack.bytes)}`;
   switch (pack.state) {
     case "absent":
       return withSize(t("listening.packs.notDownloaded"));

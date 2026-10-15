@@ -368,7 +368,6 @@ export const pt: Messages = {
     storedBrowser: "Notas guardadas neste navegador",
   },
   listening: {
-    voiceNumber: "Voz {count}",
     rates: {
       slow: "Lenta",
       normal: "Normal",
@@ -382,13 +381,18 @@ export const pt: Messages = {
     transcriptReadyBody: "As palavras acompanham agora o que ouve.",
     title: "Ouvir",
     footer:
-      "As vozes naturais soam mais como uma pessoa. As vozes do dispositivo funcionam sem ligação; as vozes Gemini usam a sua chave Gemini.",
+      "A leitura em voz alta usa a voz natural, baixada uma vez neste dispositivo. As vozes do Gemini usam sua chave do Gemini.",
     voice: "Voz",
-    bestVoice: "A melhor disponível",
-    noVoices: "Este dispositivo não tem vozes para ler em voz alta.",
+    noVoices: "Baixe a voz natural abaixo para ouvir suas notas e livros.",
+    voiceNeeded: "Ler em voz alta precisa de uma voz",
+    voiceNeededBody: "Baixe a voz natural para ouvir suas notas e livros, mesmo offline.",
+    voiceNeededSize: "Baixe a voz natural ({size}) para ouvir suas notas e livros, mesmo offline.",
+    voiceInApp:
+      "A voz natural funciona no app Notables. No navegador, adicione uma chave do Gemini em Ajustes para usar as vozes do Gemini.",
+    voiceDownloading: "Baixando a voz",
+    voiceReadyLater: "Ler em voz alta ficará pronto quando terminar.",
+    voiceReady: "A voz natural está pronta",
     speed: "Velocidade",
-    natural: "Natural",
-    online: "Online",
     readingAloud: "A ler em voz alta",
     previousSentence: "Frase anterior",
     nextSentence: "Frase seguinte",
@@ -442,8 +446,7 @@ export const pt: Messages = {
       retry: "Tentar de novo",
       download: "Transferir",
       deleteTitle: "Apagar {name}?",
-      deleteVoiceMessage:
-        "Ler em voz alta vai usar as vozes do dispositivo até voltar a transferir.",
+      deleteVoiceMessage: "Ler em voz alta vai precisar do download de novo.",
       deleteTranscriptionMessage: "Para transcrever será preciso transferir de novo.",
       failed: "Não foi possível apagar",
       license: "Licença ({name})",

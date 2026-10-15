@@ -6,10 +6,9 @@ import {
   type SpeechEngine,
 } from "../../../src/features/listening/lib/speech-engines";
 import {
-  fromSystem,
+  geminiVoices,
   naturalVoices,
   rankVoices,
-  type Voice,
 } from "../../../src/features/listening/lib/voices";
 import { phraseAt, type TimedPhrase } from "../../../src/features/listening/store/transcript-store";
 
@@ -66,29 +65,6 @@ describe("read-along", () => {
   });
 });
 
-describe("voices", () => {
-  const voice = (id: string, lang: string, natural: boolean, offline = true): Voice => ({
-    id,
-    provider: "system",
-    name: id,
-    lang,
-    natural,
-    offline,
-  });
-  it("puts natural voices in the right language first", () => {
-    const ranked = rankVoices(
-      [
-        voice("plain-us", "en-US", false),
-        voice("natural-gb", "en-GB", true, false),
-        voice("natural-us", "en-US", true),
-        voice("french", "fr-FR", true),
-      ],
-      "en-US",
-    );
-    expect(ranked.map((v) => v.id)).toEqual(["natural-us", "natural-gb", "plain-us"]);
-  });
-});
-
 describe("natural voice", () => {
   const info = {
     version: "2026.10.1",
@@ -100,19 +76,24 @@ describe("natural voice", () => {
     defaultStyle: "F2",
     sampleRate: 44_100,
   };
-  const enhanced: Voice = {
-    id: "system:ava",
-    provider: "system",
-    name: "Ava (Enhanced)",
-    lang: "en-US",
-    natural: true,
-    offline: true,
-  };
-
-  it("ranks its default style above an exact Enhanced device voice", () => {
-    const ranked = rankVoices([enhanced, ...naturalVoices(info, "en-US", (id) => id)], "en-US");
-    expect(ranked.map((v) => v.id)).toEqual(["device-neural:F2", "device-neural:F1", "system:ava"]);
+  it("leads with its default style, ahead of Gemini's voices", () => {
+    const ranked = rankVoices(
+      [...geminiVoices, ...naturalVoices(info, "en-US", (id) => id)],
+      "en-US",
+    );
+    expect(ranked.slice(0, 2).map((v) => v.id)).toEqual(["device-neural:F2", "device-neural:F1"]);
     expect(ranked[0]?.name).toBe("Lina · F2");
+    expect(ranked[2]?.provider).toBe("gemini");
+  });
+
+  it("lists each voice once", () => {
+    const styles = naturalVoices(info, "en", (id) => id);
+    expect(rankVoices([...styles, ...styles], "en")).toHaveLength(2);
+  });
+
+  it("leaves only Gemini's voices for a language the pack does not speak", () => {
+    const ranked = rankVoices([...geminiVoices, ...naturalVoices(info, "sw", (id) => id)], "sw");
+    expect(ranked.every((v) => v.provider === "gemini")).toBe(true);
   });
 
   it("is not offered for languages the pack does not speak", () => {
@@ -136,21 +117,6 @@ describe("voice loudness", () => {
     const loud = new Float32Array([0.99, -0.5]);
     normalizePeak(loud);
     expect(loud[0]).toBeCloseTo(0.99);
-  });
-});
-
-describe("device voices", () => {
-  const voice = (name: string, lang: string, voiceURI = "") =>
-    ({ name, lang, voiceURI, localService: true, default: false }) as SpeechSynthesisVoice;
-
-  it("names voices uniquely when the system leaves their URI empty", () => {
-    const ids = [voice("English", "en-US"), voice("English", "en-GB")].map((v) => fromSystem(v).id);
-    expect(new Set(ids).size).toBe(2);
-  });
-
-  it("lists each voice once", () => {
-    const twice = [voice("Alex", "en-US", "alex"), voice("Alex", "en-US", "alex")].map(fromSystem);
-    expect(rankVoices(twice, "en-US")).toHaveLength(1);
   });
 });
 

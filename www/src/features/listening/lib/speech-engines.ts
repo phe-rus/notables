@@ -1,7 +1,5 @@
-import { androidSpeak, androidStopSpeaking } from "../../../platform/android-speech";
 import { readAiKey } from "../../ai/store/ai-settings";
 import { clampPace, synthesizeNatural, voiceSteps } from "./natural-voice";
-import { systemVoiceKey } from "./voices";
 
 export interface SpeechOptions {
   rate: number;
@@ -19,50 +17,6 @@ export interface SpeechEngine {
 }
 
 const cancelled = () => new DOMException("Speech was stopped.", "AbortError");
-
-/** The device's own voices, through the Web Speech API. */
-export class SystemSpeech implements SpeechEngine {
-  #current: SpeechSynthesisUtterance | null = null;
-
-  constructor(private readonly voiceKey: string | null) {}
-
-  async speak(text: string, { rate, lang }: SpeechOptions) {
-    const voices = speechSynthesis.getVoices();
-    const utterance = new SpeechSynthesisUtterance(text);
-    utterance.lang = lang;
-    utterance.rate = rate;
-    utterance.volume = 1;
-    const voice = voices.find((v) => systemVoiceKey(v) === this.voiceKey);
-    if (voice) utterance.voice = voice;
-    this.#current = utterance;
-    await new Promise<void>((resolve, reject) => {
-      utterance.onend = () => (this.#current === utterance ? resolve() : reject(cancelled()));
-      utterance.onerror = (event) =>
-        event.error === "interrupted" || event.error === "canceled"
-          ? reject(cancelled())
-          : reject(new Error(`Speech failed: ${event.error}`));
-      speechSynthesis.speak(utterance);
-    });
-  }
-
-  cancel() {
-    this.#current = null;
-    speechSynthesis.cancel();
-  }
-}
-
-/** The phone's own voices on Android, through the app's bridge. */
-export class AndroidSpeech implements SpeechEngine {
-  constructor(private readonly voiceId: string) {}
-
-  speak(text: string, { rate, lang }: SpeechOptions) {
-    return androidSpeak(text, lang, this.voiceId, rate);
-  }
-
-  cancel() {
-    androidStopSpeaking();
-  }
-}
 
 const GEMINI = "https://generativelanguage.googleapis.com/v1beta";
 let ttsModel: Promise<string> | null = null;
@@ -294,15 +248,4 @@ export class DeviceNeuralSpeech implements SpeechEngine {
     this.#generation += 1;
     this.#playback.cancel();
   }
-}
-
-/** Says why reading aloud can't start, in place of speaking. */
-export class UnavailableSpeech implements SpeechEngine {
-  constructor(private readonly reason: string) {}
-
-  async speak(): Promise<void> {
-    throw new Error(this.reason);
-  }
-
-  cancel() {}
 }

@@ -1,6 +1,5 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import { type MessageKey, t } from "../../../i18n/i18n";
-import { androidSpeechAvailable, androidVoices } from "../../../platform/android-speech";
 import { getAiSettings, readAiKey } from "../../ai/store/ai-settings";
 import {
   getNarrationSettings,
@@ -14,24 +13,9 @@ import {
   naturalVoiceInfo,
   warmNaturalVoice,
 } from "./natural-voice";
-import {
-  AndroidSpeech,
-  DeviceNeuralSpeech,
-  GeminiSpeech,
-  type SpeechEngine,
-  SystemSpeech,
-  UnavailableSpeech,
-} from "./speech-engines";
-import {
-  fromAndroid,
-  fromSystem,
-  geminiVoices,
-  naturalVoices,
-  rankVoices,
-  speechSupported,
-  systemVoices,
-  type Voice,
-} from "./voices";
+import { DeviceNeuralSpeech, GeminiSpeech, type SpeechEngine } from "./speech-engines";
+import { offerVoice } from "./voice-download";
+import { geminiVoices, naturalVoices, rankVoices, type Voice } from "./voices";
 
 /** A natural voice style's descriptor; its name is never translated. */
 export function describeStyle(styleId: string): string {
@@ -45,49 +29,31 @@ export async function availableVoices(
   lang: string,
   natural?: NaturalVoiceInfo | null,
 ): Promise<Voice[]> {
-  const [system, android, info] = await Promise.all([
-    systemVoices(),
-    androidVoices(),
-    natural === undefined ? naturalVoiceInfo() : natural,
-  ]);
+  const info = natural === undefined ? await naturalVoiceInfo() : natural;
   const gemini = getAiSettings().enabled && (await readAiKey("gemini")) ? geminiVoices : [];
-  return rankVoices(
-    [
-      ...naturalVoices(info, lang, describeStyle),
-      ...system.map(fromSystem),
-      ...fromAndroid(android, (count) => t("listening.voiceNumber", { count })),
-      ...gemini,
-    ],
-    lang,
-  );
+  return rankVoices([...naturalVoices(info, lang, describeStyle), ...gemini], lang);
 }
 
 /**
- * The engine for the chosen voice, else the best one for `lang`. A session
- * keeps the natural voice version it started with (`pinned`), so an update
- * that lands mid book never changes the voice under the reader.
+ * The engine for the chosen voice, else the best one for `lang`, or null
+ * when no voice is downloaded for it. A session keeps the natural voice
+ * version it started with (`pinned`), so an update that lands mid book
+ * never changes the voice under the reader.
  */
 async function engineFor(
   settings: NarrationSettings,
   lang: string,
   pinned: NaturalVoiceInfo | null,
-): Promise<SpeechEngine> {
-  const voices = await availableVoices(lang, pinned ?? undefined);
+): Promise<SpeechEngine | null> {
+  const info = pinned ?? (await naturalVoiceInfo());
+  const voices = await availableVoices(lang, info);
   const chosen = voices.find((voice) => voice.id === settings.voiceId) ?? voices[0];
-  if (!chosen) return new UnavailableSpeech(t("listening.noVoiceForLanguage"));
-  if (chosen.provider === "gemini") return new GeminiSpeech(chosen.id.slice("gemini:".length));
-  if (chosen.provider === "device-neural") {
-    const info = pinned ?? (await naturalVoiceInfo());
-    if (info) {
-      const style = chosen.id.slice("device-neural:".length);
-      return new DeviceNeuralSpeech(info.version, info.sampleRate ?? 44_100, style);
-    }
+  if (chosen?.provider === "gemini") return new GeminiSpeech(chosen.id.slice("gemini:".length));
+  if (chosen && info) {
+    const style = chosen.id.slice("device-neural:".length);
+    return new DeviceNeuralSpeech(info.version, info.sampleRate ?? 44_100, style);
   }
-  if (chosen.provider === "android") return new AndroidSpeech(chosen.id.slice("android:".length));
-  if (!speechSupported() && !androidSpeechAvailable()) {
-    return new UnavailableSpeech(t("common.notAvailable"));
-  }
-  return new SystemSpeech(chosen.provider === "system" ? chosen.id.slice("system:".length) : null);
+  return null;
 }
 
 /**
@@ -114,8 +80,13 @@ export function useNarration(lang: string, title: string) {
       close();
       pinned.current = await naturalVoiceInfo();
       const engine = await engineFor(getNarrationSettings(), lang, pinned.current);
+      // Reading aloud needs a downloaded voice; offer it instead.
+      if (!engine) {
+        await offerVoice(lang, pinned.current);
+        return;
+      }
       const next = new Narrator(lines, engine, { rate: getNarrationSettings().rate, lang }, from);
-      // The natural voice was deleted mid session: carry on with a device voice.
+      // The natural voice was deleted mid session: carry on with Gemini, if set up.
       next.recover = async (error) => {
         if (!(error instanceof NaturalVoiceMissing)) return null;
         pinned.current = null;
@@ -135,7 +106,7 @@ export function useNarration(lang: string, title: string) {
     if (!current) return;
     let cancelled = false;
     void engineFor(settings, lang, pinned.current).then((engine) => {
-      if (!cancelled && narrator.current === current) {
+      if (engine && !cancelled && narrator.current === current) {
         current.reconfigure(engine, { rate: settings.rate, lang });
       }
     });

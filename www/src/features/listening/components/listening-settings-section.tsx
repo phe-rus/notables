@@ -2,6 +2,7 @@ import { LabeledContent, Section } from "@phe-rus/hino";
 import { useEffect, useState } from "react";
 import { PickerInput } from "../../../components/form/form-fields";
 import { t } from "../../../i18n/i18n";
+import { isTauri } from "../../../platform/runtime";
 import { useModelPacks } from "../lib/model-packs";
 import {
   NARRATION_RATES,
@@ -29,29 +30,26 @@ export function ListeningSettingsSection() {
 
   return (
     <Section title={t("listening.title")} footer={t("listening.footer")}>
-      <LabeledContent label={t("listening.voice")} stacked>
-        {voices && voices.length === 0 ? (
-          <p className="text-subheadline text-label-secondary">{t("listening.noVoices")}</p>
-        ) : (
+      <LabeledContent
+        label={t("listening.voice")}
+        description={
+          voices?.length === 0
+            ? t(isTauri() ? "listening.noVoices" : "listening.voiceInApp")
+            : undefined
+        }
+        stacked={voices !== null && voices.length > 0}
+      >
+        {voices && voices.length > 0 && (
           <PickerInput
             label={t("listening.voice")}
-            value={settings.voiceId ?? ""}
-            onChange={(voiceId) => setNarrationSettings({ voiceId: voiceId || null })}
+            value={voices.find((voice) => voice.id === settings.voiceId)?.id ?? voices[0]?.id ?? ""}
+            onChange={(voiceId) => setNarrationSettings({ voiceId })}
             className="py-2 text-subheadline"
-            options={[
-              { value: "", label: t("listening.bestVoice") },
-              ...(voices ?? []).map((voice) => ({
-                value: voice.id,
-                label: voice.name,
-                detail: voice.natural
-                  ? t("listening.natural")
-                  : voice.provider === "gemini"
-                    ? "Gemini"
-                    : voice.offline
-                      ? undefined
-                      : t("listening.online"),
-              })),
-            ]}
+            options={voices.map((voice) => ({
+              value: voice.id,
+              label: voice.name,
+              detail: voice.provider === "gemini" ? "Gemini" : undefined,
+            }))}
           />
         )}
       </LabeledContent>

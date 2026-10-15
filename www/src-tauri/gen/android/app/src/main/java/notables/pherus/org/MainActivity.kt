@@ -16,17 +16,8 @@ class MainActivity : TauriActivity() {
     fitAboveKeyboard(findViewById(android.R.id.content))
   }
 
-  private var bridge: AndroidBridge? = null
-
   override fun onWebViewCreate(webView: WebView) {
-    bridge = AndroidBridge(this, webView).also {
-      webView.addJavascriptInterface(it, AndroidBridge.NAME)
-    }
-  }
-
-  override fun onDestroy() {
-    bridge?.close()
-    super.onDestroy()
+    webView.addJavascriptInterface(AndroidBridge(this, webView), AndroidBridge.NAME)
   }
 
   /** Leaving the app shows what changed on the home-screen widget right away. */

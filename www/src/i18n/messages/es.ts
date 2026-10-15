@@ -368,7 +368,6 @@ export const es: Messages = {
     storedBrowser: "Notas guardadas en este navegador",
   },
   listening: {
-    voiceNumber: "Voz {count}",
     rates: {
       slow: "Lenta",
       normal: "Normal",
@@ -382,13 +381,20 @@ export const es: Messages = {
     transcriptReadyBody: "Ahora las palabras siguen lo que escuchas.",
     title: "Escuchar",
     footer:
-      "Las voces naturales suenan más como una persona. Las voces del dispositivo funcionan sin conexión; las voces de Gemini usan tu clave de Gemini.",
+      "La lectura en voz alta usa la voz natural, descargada una vez en este dispositivo. Las voces de Gemini usan tu clave de Gemini.",
     voice: "Voz",
-    bestVoice: "La mejor disponible",
-    noVoices: "Este dispositivo no tiene voces para leer en voz alta.",
+    noVoices: "Descarga la voz natural aquí abajo para escuchar tus notas y libros.",
+    voiceNeeded: "Leer en voz alta necesita una voz",
+    voiceNeededBody:
+      "Descarga la voz natural para escuchar tus notas y libros, incluso sin conexión.",
+    voiceNeededSize:
+      "Descarga la voz natural ({size}) para escuchar tus notas y libros, incluso sin conexión.",
+    voiceInApp:
+      "La voz natural funciona en la app Notables. En el navegador, añade una clave de Gemini en Ajustes para usar las voces de Gemini.",
+    voiceDownloading: "Descargando la voz",
+    voiceReadyLater: "Leer en voz alta estará listo cuando termine.",
+    voiceReady: "La voz natural está lista",
     speed: "Velocidad",
-    natural: "Natural",
-    online: "En línea",
     readingAloud: "Leyendo en voz alta",
     previousSentence: "Frase anterior",
     nextSentence: "Frase siguiente",
@@ -442,8 +448,7 @@ export const es: Messages = {
       retry: "Reintentar",
       download: "Descargar",
       deleteTitle: "¿Eliminar {name}?",
-      deleteVoiceMessage:
-        "Leer en voz alta usará las voces del dispositivo hasta que la vuelvas a descargar.",
+      deleteVoiceMessage: "Leer en voz alta necesitará descargarla de nuevo.",
       deleteTranscriptionMessage: "Para transcribir habrá que descargarla de nuevo.",
       failed: "No se pudo eliminar",
       license: "Licencia ({name})",

@@ -367,7 +367,6 @@ export const en = {
     storedBrowser: "Notes stored in this browser",
   },
   listening: {
-    voiceNumber: "Voice {count}",
     rates: {
       slow: "Slow",
       normal: "Normal",
@@ -381,13 +380,19 @@ export const en = {
     transcriptReadyBody: "The words now follow along as you listen.",
     title: "Listening",
     footer:
-      "Natural voices sound most like a person. Device voices work offline; Gemini voices use your Gemini key.",
+      "Read aloud uses the natural voice, downloaded once to this device. Gemini voices use your Gemini key.",
     voice: "Voice",
-    bestVoice: "Best available",
-    noVoices: "This device has no voices for reading aloud.",
+    noVoices: "Download the natural voice below to read notes and books aloud.",
+    voiceNeeded: "Read aloud needs a voice",
+    voiceNeededBody: "Download the natural voice to hear notes and books read aloud, even offline.",
+    voiceNeededSize:
+      "Download the natural voice ({size}) to hear notes and books read aloud, even offline.",
+    voiceInApp:
+      "The natural voice runs in the Notables app. In the browser, add a Gemini key in Settings to use Gemini voices.",
+    voiceDownloading: "Downloading the voice",
+    voiceReadyLater: "Read aloud will be ready when it finishes.",
+    voiceReady: "The natural voice is ready",
     speed: "Speed",
-    natural: "Natural",
-    online: "Online",
     readingAloud: "Reading aloud",
     previousSentence: "Previous sentence",
     nextSentence: "Next sentence",
@@ -441,7 +446,7 @@ export const en = {
       retry: "Retry",
       download: "Download",
       deleteTitle: "Delete {name}?",
-      deleteVoiceMessage: "Read aloud will use the device’s voices until you download it again.",
+      deleteVoiceMessage: "Read aloud will need the download again.",
       deleteTranscriptionMessage: "Transcribing will need the download again.",
       failed: "Couldn’t delete it",
       license: "License ({name})",

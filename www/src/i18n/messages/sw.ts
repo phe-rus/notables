@@ -367,7 +367,6 @@ export const sw: Messages = {
     storedBrowser: "Madokezo yamehifadhiwa kwenye kivinjari hiki",
   },
   listening: {
-    voiceNumber: "Sauti {count}",
     rates: {
       slow: "Polepole",
       normal: "Kawaida",
@@ -381,13 +380,19 @@ export const sw: Messages = {
     transcriptReadyBody: "Sasa maneno yanafuata unaposikiliza.",
     title: "Kusikiliza",
     footer:
-      "Sauti asilia husikika zaidi kama mtu. Sauti za kifaa hufanya kazi bila mtandao; sauti za Gemini hutumia ufunguo wako wa Gemini.",
+      "Kusoma kwa sauti hutumia sauti asilia, inayopakuliwa mara moja kwenye kifaa hiki. Sauti za Gemini hutumia ufunguo wako wa Gemini.",
     voice: "Sauti",
-    bestVoice: "Bora inayopatikana",
-    noVoices: "Kifaa hiki hakina sauti za kusoma kwa sauti.",
+    noVoices: "Pakua sauti asilia hapa chini ili usikilize madokezo na vitabu vyako.",
+    voiceNeeded: "Kusoma kwa sauti kunahitaji sauti",
+    voiceNeededBody: "Pakua sauti asilia ili usikilize madokezo na vitabu, hata bila mtandao.",
+    voiceNeededSize:
+      "Pakua sauti asilia ({size}) ili usikilize madokezo na vitabu, hata bila mtandao.",
+    voiceInApp:
+      "Sauti asilia hufanya kazi katika programu ya Notables. Kwenye kivinjari, ongeza ufunguo wa Gemini katika Mipangilio ili utumie sauti za Gemini.",
+    voiceDownloading: "Inapakua sauti",
+    voiceReadyLater: "Kusoma kwa sauti kutakuwa tayari ikimaliza.",
+    voiceReady: "Sauti asilia iko tayari",
     speed: "Kasi",
-    natural: "Asilia",
-    online: "Mtandaoni",
     readingAloud: "Inasoma kwa sauti",
     previousSentence: "Sentensi iliyotangulia",
     nextSentence: "Sentensi inayofuata",
@@ -441,7 +446,7 @@ export const sw: Messages = {
       retry: "Jaribu tena",
       download: "Pakua",
       deleteTitle: "Ufute {name}?",
-      deleteVoiceMessage: "Kusoma kwa sauti kutatumia sauti za kifaa hadi utakapopakua tena.",
+      deleteVoiceMessage: "Kusoma kwa sauti kutahitaji kupakua tena.",
       deleteTranscriptionMessage: "Kunukuu kutahitaji kupakua tena.",
       failed: "Imeshindwa kufuta",
       license: "Leseni ({name})",

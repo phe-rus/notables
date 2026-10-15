@@ -371,7 +371,6 @@ export const fr: Messages = {
     storedBrowser: "Notes enregistrées dans ce navigateur",
   },
   listening: {
-    voiceNumber: "Voix {count}",
     rates: {
       slow: "Lente",
       normal: "Normale",
@@ -385,13 +384,20 @@ export const fr: Messages = {
     transcriptReadyBody: "Les mots suivent désormais l’écoute.",
     title: "Écoute",
     footer:
-      "Les voix naturelles ressemblent le plus à une vraie personne. Les voix de l’appareil fonctionnent hors ligne ; les voix Gemini utilisent votre clé Gemini.",
+      "La lecture à voix haute utilise la voix naturelle, téléchargée une fois sur cet appareil. Les voix Gemini utilisent votre clé Gemini.",
     voice: "Voix",
-    bestVoice: "La meilleure disponible",
-    noVoices: "Cet appareil n’a pas de voix pour la lecture à voix haute.",
+    noVoices: "Téléchargez la voix naturelle ci-dessous pour écouter vos notes et vos livres.",
+    voiceNeeded: "La lecture à voix haute demande une voix",
+    voiceNeededBody:
+      "Téléchargez la voix naturelle pour écouter vos notes et vos livres, même hors connexion.",
+    voiceNeededSize:
+      "Téléchargez la voix naturelle ({size}) pour écouter vos notes et vos livres, même hors connexion.",
+    voiceInApp:
+      "La voix naturelle fonctionne dans l’app Notables. Dans le navigateur, ajoutez une clé Gemini dans Réglages pour utiliser les voix Gemini.",
+    voiceDownloading: "Téléchargement de la voix",
+    voiceReadyLater: "La lecture à voix haute sera prête à la fin du téléchargement.",
+    voiceReady: "La voix naturelle est prête",
     speed: "Vitesse",
-    natural: "Naturelle",
-    online: "En ligne",
     readingAloud: "Lecture à voix haute",
     previousSentence: "Phrase précédente",
     nextSentence: "Phrase suivante",
@@ -445,8 +451,7 @@ export const fr: Messages = {
       retry: "Réessayer",
       download: "Télécharger",
       deleteTitle: "Supprimer {name} ?",
-      deleteVoiceMessage:
-        "La lecture à voix haute utilisera les voix de l’appareil jusqu’à un nouveau téléchargement.",
+      deleteVoiceMessage: "La lecture à voix haute demandera de la télécharger à nouveau.",
       deleteTranscriptionMessage: "La transcription demandera un nouveau téléchargement.",
       failed: "Suppression impossible",
       license: "Licence ({name})",

@@ -3,7 +3,7 @@ import { t } from "../../../i18n/i18n";
 
 /** The voice and pace for reading aloud, remembered on this device. */
 export interface NarrationSettings {
-  /** A voice id from voices.ts, or null for the best available. */
+  /** A voice id from voices.ts, or null for the natural voice's default style. */
   voiceId: string | null;
   rate: number;
   /** Phones fetch voice downloads over mobile data, not only Wi-Fi. */
@@ -32,7 +32,13 @@ let cached: NarrationSettings | undefined;
 export function getNarrationSettings(): NarrationSettings {
   if (cached) return cached;
   try {
-    cached = { ...defaults, ...JSON.parse(localStorage.getItem(KEY) ?? "{}") };
+    const saved: NarrationSettings = {
+      ...defaults,
+      ...JSON.parse(localStorage.getItem(KEY) ?? "{}"),
+    };
+    // The device's own voices were dropped; a choice of one falls back to the best.
+    const known = /^(device-neural|gemini):/.test(saved.voiceId ?? "");
+    cached = known ? saved : { ...saved, voiceId: null };
   } catch {
     cached = defaults;
   }
