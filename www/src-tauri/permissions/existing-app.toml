@@ -13,6 +13,8 @@ commands.allow = [
   "storage_note_content_save",
   "storage_note_content_remove",
   "storage_media_save",
+  "storage_media_save_part",
+  "storage_media_commit",
   "storage_media_remove",
   "storage_media_base",
   "storage_meta_get",

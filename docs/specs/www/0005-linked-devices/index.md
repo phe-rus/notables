@@ -1,8 +1,8 @@
 # 0005. Your devices, together: a private space, linking and encrypted sync
 
 **Date**: 2026-10-09
-**Status**: Proposed
-**Decision record**: Stage A of [ADR-0007](../../../adr/0007-linked-devices-pass-through-network.md) (Proposed). Nothing here is built.
+**Status**: Accepted (15 October 2026)
+**Decision record**: Stage A of [ADR-0007](../../../adr/0007-linked-devices-pass-through-network.md) (Accepted). Nothing here is built.
 
 ## Summary
 
@@ -111,6 +111,12 @@ Each step ends with checks run on real devices (the owner's iPhone, the TECNO, a
 4. Linux desktop: **relay only for now** (accepted 10 October). The owner asked why. WebKitGTK, the engine Tauri uses on Linux, is usually built without WebRTC on Ubuntu and Debian, so the Linux app cannot connect directly and would use the Cloudflare pass-through only, which on the free plan means text syncs but media waits. The alternative is a Rust WebRTC stack (`webrtc-rs`) for Linux alone. Recommendation: relay only for now.
 5. Cloudflare budget: **free plan only for now** (AC-21).
 6. Exports: **encrypted by default** (AC-15).
+
+## Owner answers (15 October 2026)
+
+7. The web links like WhatsApp Web: it scans a QR code from a linked device and keeps a copy of notes, but **wallet cards are never stored in the browser**; they show only while a linked native device is reachable, fetched live over the encrypted connection. This narrows AC-20 for the web.
+8. The **first device** of a space is its home device by default; the person can move it to any other device later (AC-11).
+9. Linking must never mix spaces: a device on the same network that belongs to someone else never joins or sees your space (already true by AC-8, since rooms and keys come from the root secret).
 
 ## Follow-up
 

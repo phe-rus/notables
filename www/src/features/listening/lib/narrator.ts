@@ -1,5 +1,8 @@
 import type { SpeechEngine } from "./speech-engines";
 
+/** Lines rendered ahead of the one being read, so slow voices keep up. */
+const LOOKAHEAD = 2;
+
 export interface NarratorState {
   index: number;
   playing: boolean;
@@ -58,10 +61,16 @@ export class Narrator {
     this.#set({ playing: true, error: null });
     while (run === this.#run && this.#state.index < this.lines.length) {
       const line = this.lines[this.#state.index] ?? "";
-      const next = this.lines[this.#state.index + 1];
-      if (next) this.engine.prepare?.(next, this.options);
       try {
-        await this.engine.speak(line, this.options);
+        // Ask for this line before the ones after it: engines render in the
+        // order they're asked, and asking for the next line first doubled
+        // the wait for the first word.
+        const speaking = this.engine.speak(line, this.options);
+        for (let ahead = 1; ahead <= LOOKAHEAD; ahead++) {
+          const next = this.lines[this.#state.index + ahead];
+          if (next) this.engine.prepare?.(next, this.options);
+        }
+        await speaking;
       } catch (error) {
         if (run !== this.#run) return;
         if (error instanceof DOMException && error.name === "AbortError") return;

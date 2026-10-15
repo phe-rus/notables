@@ -376,6 +376,16 @@ export function buildImportPlan(
     });
   }
 
+  // Loose tracks that all lead with one title before their chapter number
+  // ("The Hobbit - Chapter 1", "The Hobbit - Chapter 2") are that book.
+  const looseTitles = new Set(
+    tracks
+      .filter((track) => segments(track.path).length <= 1 && !/^\s*\d/.test(track.name))
+      .map((track) => parseName(track.name))
+      .map((name) => (name.chapter !== null && name.volume === null ? name.title : "")),
+  );
+  const looseTitle = looseTitles.size === 1 ? [...looseTitles][0] || null : null;
+
   // Audio: each file is a chapter. Books come from folders ("Narnia/Book 2/..."),
   // a volume in the folder name ("Red Priest - Volume 5/..."), or in file names.
   for (const track of tracks) {
@@ -395,7 +405,7 @@ export function buildImportPlan(
       : // Loose files without a volume are one book, whatever their names say.
         named.volume !== null
         ? named.series
-        : "Audiobook";
+        : (looseTitle ?? "Audiobook");
     const volume = bookFolder?.volume ?? topParts?.volume ?? named.volume;
     const seriesKey = seriesTitle.toLowerCase();
     const entry = seriesFor(seriesKey, seriesTitle, "audio", top);

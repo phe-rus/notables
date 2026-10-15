@@ -164,8 +164,73 @@
     color: #8b8478;
   }
 
+  /*
+   * Scrubbers, the iOS way: a thin track filled up to the position (set as
+   * --progress, 0 to 100) and a white knob that grows while dragged.
+   */
   .book-scrubber {
-    accent-color: var(--color-accent-text);
+    appearance: none;
+    height: 28px;
+    background: transparent;
+    cursor: pointer;
+    touch-action: none;
+  }
+  .book-scrubber::-webkit-slider-runnable-track {
+    height: 4px;
+    border-radius: 9999px;
+    background: linear-gradient(
+      to right,
+      var(--color-label-secondary) calc(var(--progress, 0) * 1%),
+      var(--color-fill) calc(var(--progress, 0) * 1%)
+    );
+  }
+  .book-scrubber::-moz-range-track {
+    height: 4px;
+    border-radius: 9999px;
+    background: var(--color-fill);
+  }
+  .book-scrubber::-moz-range-progress {
+    height: 4px;
+    border-radius: 9999px;
+    background: var(--color-label-secondary);
+  }
+  .book-scrubber::-webkit-slider-thumb {
+    appearance: none;
+    width: 18px;
+    height: 18px;
+    margin-top: -7px;
+    border-radius: 9999px;
+    background: #fff;
+    box-shadow:
+      0 0.5px 4px rgb(0 0 0 / 0.12),
+      0 4px 10px rgb(0 0 0 / 0.14);
+    transition: transform 0.15s ease;
+  }
+  .book-scrubber::-moz-range-thumb {
+    width: 18px;
+    height: 18px;
+    border: none;
+    border-radius: 9999px;
+    background: #fff;
+    box-shadow:
+      0 0.5px 4px rgb(0 0 0 / 0.12),
+      0 4px 10px rgb(0 0 0 / 0.14);
+  }
+  .book-scrubber:active::-webkit-slider-thumb {
+    transform: scale(1.3);
+  }
+  .book-scrubber:focus-visible {
+    outline: none;
+  }
+  .book-scrubber:focus-visible::-webkit-slider-thumb {
+    box-shadow:
+      0 0 0 3px color-mix(in srgb, var(--color-accent) 45%, transparent),
+      0 4px 10px rgb(0 0 0 / 0.14);
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .book-scrubber::-webkit-slider-thumb {
+      transition: none;
+    }
   }
 
   /* Highlights, drawn with the CSS Custom Highlight API. */

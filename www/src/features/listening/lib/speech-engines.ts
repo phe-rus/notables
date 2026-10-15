@@ -1,6 +1,6 @@
 import { androidSpeak, androidStopSpeaking } from "../../../platform/android-speech";
 import { readAiKey } from "../../ai/store/ai-settings";
-import { clampPace, synthesizeNatural } from "./natural-voice";
+import { clampPace, synthesizeNatural, voiceSteps } from "./natural-voice";
 import { systemVoiceKey } from "./voices";
 
 export interface SpeechOptions {
@@ -226,6 +226,13 @@ export class GeminiSpeech implements SpeechEngine {
  */
 export class DeviceNeuralSpeech implements SpeechEngine {
   #playback = new BufferedPlayback();
+  /**
+   * Renders run one at a time in the order asked, so the line being read
+   * never waits behind the ones after it. Stopping drops those not started.
+   */
+  #queue: Promise<unknown> = Promise.resolve();
+  #generation = 0;
+  #warm = false;
 
   constructor(
     /** The pack version, fixed for the whole session. */
@@ -238,13 +245,31 @@ export class DeviceNeuralSpeech implements SpeechEngine {
     const speed = clampPace(rate);
     const key = [text, lang, this.style, speed, this.version].join("|");
     return this.#playback.audio(key, async () => {
-      const samples = await synthesizeNatural({
-        text,
-        lang,
-        version: this.version,
-        style: this.style,
-        speed,
+      const generation = this.#generation;
+      const render = this.#queue.then(() => {
+        if (generation !== this.#generation) throw cancelled();
+        const started = performance.now();
+        const steps = voiceSteps.get();
+        return synthesizeNatural({
+          text,
+          lang,
+          version: this.version,
+          style: this.style,
+          speed,
+          steps,
+        }).then((samples) => {
+          // The first line also loads the voice, so it says nothing about pace.
+          if (this.#warm)
+            voiceSteps.learn(
+              performance.now() - started,
+              (samples.length / this.sampleRate) * 1000,
+            );
+          this.#warm = true;
+          return samples;
+        });
       });
+      this.#queue = render.catch(() => {});
+      const samples = await render;
       const buffer = this.#playback.context.createBuffer(
         1,
         Math.max(1, samples.length),
@@ -266,6 +291,7 @@ export class DeviceNeuralSpeech implements SpeechEngine {
   }
 
   cancel() {
+    this.#generation += 1;
     this.#playback.cancel();
   }
 }

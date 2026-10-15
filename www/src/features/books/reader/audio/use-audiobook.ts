@@ -174,6 +174,9 @@ export function useAudiobook(
     setTime(element.currentTime);
   }, []);
 
+  /** Exactly where playback is now, for anything that follows it every frame. */
+  const position = useCallback(() => audio.current?.currentTime ?? 0, []);
+
   const skip = useCallback(
     (seconds: number) => seek((audio.current?.currentTime ?? 0) + seconds),
     [seek],
@@ -339,6 +342,7 @@ export function useAudiobook(
     toggle,
     seek,
     skip,
+    position,
     playTrack,
     setSpeed,
     setSleepTimer,

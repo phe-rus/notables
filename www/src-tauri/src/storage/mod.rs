@@ -8,7 +8,7 @@ mod database;
 mod documents;
 mod error;
 mod media;
-#[cfg(target_os = "linux")]
+#[cfg(any(target_os = "linux", target_os = "android"))]
 pub mod media_server;
 mod note_content;
 pub mod protocol;
@@ -81,6 +81,14 @@ impl Storage {
 
     pub fn save_media(&self, id: &str, mime_type: &str, bytes: &[u8]) -> Result<()> {
         media::save(&*self.connection()?, &self.media_dir, id, mime_type, bytes)
+    }
+
+    pub fn write_media_part(&self, id: &str, offset: u64, bytes: &[u8]) -> Result<()> {
+        media::write_part(&self.media_dir, id, offset, bytes)
+    }
+
+    pub fn commit_media(&self, id: &str, mime_type: &str) -> Result<()> {
+        media::commit(&*self.connection()?, &self.media_dir, id, mime_type)
     }
 
     /// A stored file's path and type.

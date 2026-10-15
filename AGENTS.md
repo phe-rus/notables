@@ -75,11 +75,31 @@ Gotchas learned the hard way:
   `BINDGEN_EXTRA_CLANG_ARGS_aarch64_linux_android=--sysroot=$NDK_HOME/toolchains/llvm/prebuilt/linux-x86_64/sysroot`.
   aarch64 only: `ort` has no prebuilt ONNX Runtime for x86_64 Android.
   On Android, binary IPC bodies arrive as JSON arrays (`src/ipc_bytes.rs`).
+- Live coding on Android (frontend edits appear on the phone in about a
+  second, no APK): `adb reverse tcp:3000 tcp:3000`, then from `www/`
+  `bun run tauri android dev "TECNO CI6" --host 127.0.0.1`. Without
+  `--host` Tauri hands the phone the Linux container's address, which it
+  can't reach. Debug builds allow plain HTTP for this
+  (`gen/android/app/src/debug/res/xml`); release allows it only to the
+  app's own media server on 127.0.0.1.
 - Dev server: `cd www && bun run dev` (port 3000). Desktop app:
   `bun run tauri dev`. On Linux a leftover `notables` process makes new
   launches exit silently (single instance); `pkill -f target/debug/notables`.
 
 ## Status (October 2026)
+
+- Android performance and listening (15 Oct, measured on the TECNO):
+  Android streams stored media through the local media server (the
+  WebView applies byte ranges to `media://` responses itself, so audio
+  stalled after 4 MB and seeking failed); large files save in base64
+  pieces (`storage_media_save_part`); `RECORD_AUDIO` declared (recording
+  was refused); the natural voice lowers its flow matching steps (5 to 3)
+  per device when it can't keep up (`voiceSteps` in
+  `listening/lib/natural-voice.ts`); long books paginate one chapter at a
+  time (`books/reader/use-book-pages.tsx`; 883 pages opened in 0.55 s, was
+  a 9.2 s freeze); iOS-style scrubbers; read aloud skips a contents list.
+  Open: the PDF importer flattens each page into one paragraph, so its
+  contents lists and chapters aren't recognised (next).
 
 - Ultrapeach Sheet, menu ownership and modal background hardening are complete for the current checkpoint. Read [the Sheet focus record](docs/reviews/2026-10-10-ultrapeach-sheet-focus.md) for browser evidence and remaining boundaries. The owner requested committing without releasing, then returning to Pherus UI adoption.
 
@@ -268,7 +288,11 @@ TestFlight refuse the upload; each build asks in TestFlight instead.
 
 ## Next
 
-- Return to Pherus UI adoption. Do not expand Notables cleanup first. The owner dislikes native date dialogs: calendar event-form.tsx and invoices invoice-screen.tsx still use type="date". A shared Ultrapeach date picker is pending, not implemented.
+- Work through "Queued from the 15 October review" in docs/STAGES.md, in
+  order: Android smoothness and audio first (the TECNO is on Wi-Fi adb),
+  then Hino (`@phe-rus/hino`, skill in `.agentic/skills/hino`) replacing
+  UltraPeach, whose DatePicker replaces the native date inputs in
+  event-form.tsx and invoice-screen.tsx. Desktop packaging waits.
 
 Right after the store work (9 October):
 
@@ -295,13 +319,13 @@ Right after the store work (9 October):
 - Dismiss the glib Dependabot alert (GTK3 under Tauri on Linux, no fix
   available).
 
-Network (being discussed with the owner, no code yet): sync across your
-own devices without an account, encrypted end to end, Cloudflare only
-passing data through, people by a separate public ID, opt-in public
-sharing. Read **Proposed** [ADR-0007](docs/adr/0007-linked-devices-pass-through-network.md)
-first. Stage A is spec [0005](docs/specs/www/0005-linked-devices/index.md)
-(Proposed): the owner answers its six open questions and accepts both,
-then `/develop` starts at its step 1. Don't build it before that.
+Network (accepted 15 October, no code yet): sync across your own devices
+without an account, encrypted end to end, Cloudflare only passing data
+through, people by a separate public ID, opt-in public sharing. Read
+[ADR-0007](docs/adr/0007-linked-devices-pass-through-network.md) first.
+Stage A is spec [0005](docs/specs/www/0005-linked-devices/index.md),
+accepted with all answers; `/develop` starts at its step 1 once the
+Android, Hino and fresh start items ahead of it are done.
 
 The long plan, stage by stage, is in [docs/STAGES.md](docs/STAGES.md).
 Resume from its first unfinished stage (now Stage 1, UltraPeach).

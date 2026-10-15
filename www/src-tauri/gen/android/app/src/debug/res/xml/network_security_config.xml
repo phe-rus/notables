@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Debug builds only: `tauri android dev` loads the app from the
+     laptop's dev server over plain HTTP. Release builds use the strict
+     main/res/xml version. -->
+<network-security-config>
+    <base-config cleartextTrafficPermitted="true" />
+</network-security-config>

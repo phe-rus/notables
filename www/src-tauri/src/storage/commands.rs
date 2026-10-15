@@ -104,6 +104,31 @@ pub async fn storage_media_save(app: AppHandle, request: Request<'_>) -> Result<
     .await
 }
 
+/// One base64 piece of a file at `offset`; Android sends large files this
+/// way, since its binary IPC bodies arrive as JSON number arrays.
+#[tauri::command]
+pub async fn storage_media_save_part(
+    app: AppHandle,
+    id: String,
+    offset: u64,
+    data: String,
+) -> Result<()> {
+    use base64::Engine;
+    let bytes = base64::engine::general_purpose::STANDARD
+        .decode(data)
+        .map_err(|_| StorageError::MissingInput("base64 piece"))?;
+    with_storage(app, move |storage| {
+        storage.write_media_part(&id, offset, &bytes)
+    })
+    .await
+}
+
+/// Finishes a file sent in pieces.
+#[tauri::command]
+pub async fn storage_media_commit(app: AppHandle, id: String, mime_type: String) -> Result<()> {
+    with_storage(app, move |storage| storage.commit_media(&id, &mime_type)).await
+}
+
 #[tauri::command]
 pub async fn storage_media_remove(app: AppHandle, id: String) -> Result<()> {
     with_storage(app, move |storage| storage.remove_media(&id)).await
@@ -122,16 +147,16 @@ pub async fn storage_meta_set(app: AppHandle, key: String, value: String) -> Res
 }
 
 /// Where the WebView's media player should load stored media from, when it
-/// can't use the `media` protocol (Linux); null elsewhere.
+/// can't use the `media` protocol (Linux, Android); null elsewhere.
 #[tauri::command]
 pub fn storage_media_base(app: tauri::AppHandle) -> Option<String> {
-    #[cfg(target_os = "linux")]
+    #[cfg(any(target_os = "linux", target_os = "android"))]
     {
         use tauri::Manager;
         app.try_state::<super::media_server::MediaServer>()
             .map(|server| server.base.clone())
     }
-    #[cfg(not(target_os = "linux"))]
+    #[cfg(not(any(target_os = "linux", target_os = "android")))]
     {
         let _ = app;
         None

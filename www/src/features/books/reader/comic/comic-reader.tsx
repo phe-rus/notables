@@ -2,7 +2,15 @@ import { useMediaSource } from "@notables/pluraliti";
 import { Link } from "@tanstack/react-router";
 import { ChevronLeftIcon, ChevronRightIcon, CloseIcon, cn } from "@ultrapeach/ui";
 import { AnimatePresence, motion, type PanInfo } from "motion/react";
-import { useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState } from "react";
+import {
+  type CSSProperties,
+  useCallback,
+  useEffect,
+  useLayoutEffect,
+  useMemo,
+  useRef,
+  useState,
+} from "react";
 import { useBookKind } from "../../lib/book-kind";
 import { chapterPages } from "../../lib/chapter-media";
 import { directionOf } from "../../model/media-kind";
@@ -210,6 +218,11 @@ export function ComicReader({ book }: { book: BookEntry }) {
           value={first}
           onChange={(event) => setPage(Number(event.target.value))}
           className="book-scrubber grow"
+          style={
+            {
+              "--progress": pages.length > 1 ? (first / (pages.length - 1)) * 100 : 0,
+            } as CSSProperties
+          }
         />
         <span className="shrink-0 text-footnote text-white/70 tabular-nums" aria-live="polite">
           {pages.length ? `${shown} / ${pages.length}` : ""}

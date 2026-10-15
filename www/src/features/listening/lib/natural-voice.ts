@@ -46,6 +46,8 @@ export async function synthesizeNatural(request: {
   version: string;
   style: string | null;
   speed: number;
+  /** Fewer flow matching steps for devices that can't keep up. */
+  steps?: number;
 }): Promise<Float32Array> {
   try {
     const bytes = await invoke<ArrayBuffer>("voice_synthesize", request);
@@ -56,3 +58,44 @@ export async function synthesizeNatural(request: {
     throw new Error((error as { message?: string } | null)?.message ?? String(error));
   }
 }
+
+const STEPS_KEY = "notables:voice:steps";
+const STEPS = { max: 5, min: 3 } as const;
+
+/**
+ * The natural voice's steps on this device. Five sound smoothest; a phone
+ * that can't render a line before the last one ends gets fewer, measured
+ * on the phone itself, and keeps them for next time.
+ */
+export const voiceSteps = {
+  get(): number {
+    try {
+      const saved = Number(localStorage.getItem(STEPS_KEY));
+      if (saved >= STEPS.min && saved <= STEPS.max) return saved;
+    } catch {
+      // Storage refused: start at full quality.
+    }
+    return STEPS.max;
+  },
+
+  /** Adjusts after a line took `renderMs` to make `audioMs` of speech. */
+  learn(renderMs: number, audioMs: number): number {
+    const current = voiceSteps.get();
+    const ratio = renderMs / Math.max(audioMs, 1);
+    // Rendering must stay ahead of reading, with room for a busy moment.
+    const next =
+      ratio > 0.85
+        ? Math.max(STEPS.min, current - 1)
+        : ratio < 0.45
+          ? Math.min(STEPS.max, current + 1)
+          : current;
+    if (next !== current) {
+      try {
+        localStorage.setItem(STEPS_KEY, String(next));
+      } catch {
+        // Not remembered; measured again next time.
+      }
+    }
+    return next;
+  },
+};

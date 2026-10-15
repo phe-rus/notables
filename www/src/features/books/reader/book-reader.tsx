@@ -8,9 +8,19 @@ import {
   toast,
 } from "@ultrapeach/ui";
 import { AnimatePresence, motion } from "motion/react";
-import { useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState } from "react";
+import {
+  type CSSProperties,
+  useCallback,
+  useEffect,
+  useLayoutEffect,
+  useMemo,
+  useRef,
+  useState,
+} from "react";
+import { flushSync } from "react-dom";
+import { createRoot } from "react-dom/client";
 import { NarrationBar } from "../../listening/components/narration-bar";
-import { buildScript, type ScriptLine } from "../../listening/lib/narration-script";
+import { buildScript, type ScriptLine, storyStart } from "../../listening/lib/narration-script";
 import { clearReading, paintReading, rangesForLine } from "../../listening/lib/reading-highlight";
 import { useNarration } from "../../listening/lib/use-narration";
 import { HighlightPalette } from "../highlights/components/highlight-palette";
@@ -24,7 +34,7 @@ import { BookPage } from "./book-page";
 import { BookStage, CLOSED_SPREAD, FRONT_COVER } from "./book-stage";
 import { measurePage, type PageGeometry } from "./page-geometry";
 import { useBookContent } from "./use-book-content";
-import { usePageCount } from "./use-page-count";
+import { useBookPages } from "./use-book-pages";
 import { useReadingPosition } from "./use-reading-position";
 
 /**
@@ -54,7 +64,6 @@ function positionLabel(page: number, total: number, spread: boolean): string {
 export function BookReader({ book }: { book: BookEntry }) {
   const chapters = useBookContent(book);
   const stage = useRef<HTMLDivElement>(null);
-  const measurer = useRef<HTMLDivElement>(null);
   const [geometry, setGeometry] = useState<PageGeometry | null>(null);
   const [page, setPage] = useReadingPosition(book.id, FRONT_COVER);
   const root = useRef<HTMLDivElement>(null);
@@ -77,23 +86,25 @@ export function BookReader({ book }: { book: BookEntry }) {
     return () => observer.disconnect();
   }, []);
 
-  const total = usePageCount(measurer, geometry, chapters);
+  const pages = useBookPages(book, chapters, geometry);
+  const { total, locate, starts, setFocus } = pages;
 
   useEffect(() => {
     if (total > 0 && page > total - 1) setPage(total - 1);
   }, [page, setPage, total]);
 
+  // Count the section being read first, and keep it in the measurer.
+  useEffect(() => setFocus(locate(Math.max(0, page)).section), [locate, page, setFocus]);
+
   const flow = useMemo(() => {
     if (!geometry || !chapters) return null;
-    return (offset: number) => (
-      <BookFlow
-        book={book}
-        chapters={chapters}
-        geometry={geometry}
-        style={{ transform: `translateX(${-offset}px)` }}
-      />
-    );
-  }, [book, chapters, geometry]);
+    const step = geometry.textWidth + geometry.columnGap;
+    return (index: number) => {
+      const { section, local } = locate(index);
+      const part = pages.sections[section];
+      return part ? pages.flowFor(part, { transform: `translateX(${-local * step}px)` }) : null;
+    };
+  }, [chapters, geometry, locate, pages.flowFor, pages.sections]);
 
   const onPositionChange = useCallback(
     (position: number) => setPage(geometry?.spread ? fromSpread(position) : position),
@@ -102,41 +113,69 @@ export function BookReader({ book }: { book: BookEntry }) {
 
   const label = positionLabel(page, total, geometry?.spread ?? false);
 
-  /** The page a range falls on, measured in the off-screen flow. */
+  /**
+   * The page a chapter's text is on: exact when its section is in the
+   * measurer, else the section's first page (refined once it's measured).
+   */
   const pageOf = useCallback(
-    (range: Range | undefined): number | null => {
-      const flowElement = measurer.current?.querySelector<HTMLElement>(".book-flow");
-      const rect = range?.getClientRects()[0];
-      if (!geometry || !flowElement || !rect) return null;
-      const column = geometry.textWidth + geometry.columnGap;
-      const index = Math.floor((rect.left - flowElement.getBoundingClientRect().left + 1) / column);
-      return Math.max(0, Math.min(index, total - 1));
+    (noteId: string, find: (container: HTMLElement) => Range | undefined): number | null => {
+      const section = pages.sectionOfChapter(noteId);
+      if (section < 0) return null;
+      const container = pages.measurerRef.current;
+      const exact =
+        section === pages.measuring && container ? pages.pageInMeasurer(find(container)) : null;
+      return Math.min(exact ?? starts[section] ?? 0, Math.max(0, total - 1));
     },
-    [geometry, total],
+    [
+      pages.measurerRef,
+      pages.measuring,
+      pages.pageInMeasurer,
+      pages.sectionOfChapter,
+      starts,
+      total,
+    ],
   );
 
   /** Turns to the page a highlight is on. */
   const turnTo = (entry: HighlightEntry) => {
     setListOpen(false);
-    const container = measurer.current;
-    const index = container ? pageOf(rangesFor(container, entry)[0]) : null;
+    const index = pageOf(entry.noteId, (container) => rangesFor(container, entry)[0]);
     if (index !== null) setPage(index);
   };
 
   /** Reads the book aloud from the page that's open. */
   const listen = () => {
-    const flowElement = measurer.current?.querySelector(".book-flow");
-    if (!flowElement) return;
-    const lines = buildScript(flowElement, lang);
+    if (!chapters || !geometry) return;
+    // The text from the open chapter on, rendered off the page: detached
+    // elements are never laid out, so a long book costs no layout here.
+    const opening = locate(Math.max(0, page)).section;
+    const host = document.createElement("div");
+    const detached = createRoot(host);
+    flushSync(() =>
+      detached.render(
+        <BookFlow
+          book={book}
+          chapters={chapters.slice(Math.max(0, opening - 1))}
+          first={Math.max(0, opening - 1)}
+          titlePage={opening === 0}
+          geometry={geometry}
+        />,
+      ),
+    );
+    const lines = buildScript(host, lang);
+    detached.unmount();
     if (lines.length === 0) {
       toast("Nothing to read aloud yet");
       return;
     }
-    const firstVisible = geometry?.spread ? Math.max(0, toSpread(page)) : Math.max(0, page);
-    const from = lines.findIndex((line) => {
-      const at = pageOf(measurer.current ? rangesForLine(measurer.current, line)[0] : undefined);
+    const firstVisible = geometry.spread ? Math.max(0, toSpread(page)) : Math.max(0, page);
+    const visible = lines.findIndex((line) => {
+      const at = pageOf(line.section, (container) => rangesForLine(container, line)[0]);
       return at !== null && at >= firstVisible;
     });
+    // From the opening pages, start with the story rather than its contents list.
+    const from =
+      opening <= 1 ? Math.max(visible, storyStart(lines.map((line) => line.text))) : visible;
     script.current = lines;
     narration
       .start(
@@ -159,7 +198,7 @@ export function BookReader({ book }: { book: BookEntry }) {
       return;
     }
     if (stage.current) paintReading(rangesForLine(stage.current, line));
-    const at = measurer.current ? pageOf(rangesForLine(measurer.current, line)[0]) : null;
+    const at = pageOf(line.section, (container) => rangesForLine(container, line)[0]);
     if (at === null) return;
     const visible = geometry?.spread ? [toSpread(page), toSpread(page) + 1] : [page];
     if (!visible.includes(at)) setPage(at);
@@ -240,14 +279,8 @@ export function BookReader({ book }: { book: BookEntry }) {
       >
         {geometry && chapters && (
           <>
-            {/* Off-screen copy of the flow, used only to count pages. */}
-            <div
-              ref={measurer}
-              aria-hidden="true"
-              className="pointer-events-none invisible absolute -left-[99999px]"
-            >
-              <BookFlow book={book} chapters={chapters} geometry={geometry} />
-            </div>
+            {/* Off-screen flow of one section, to count and locate pages. */}
+            {pages.measurer}
             {flow && total > 0 && (
               <motion.div
                 initial={{ opacity: 0, scale: 0.96, y: 12 }}
@@ -301,7 +334,7 @@ export function BookReader({ book }: { book: BookEntry }) {
         )}
       </AnimatePresence>
 
-      <footer className="flex shrink-0 items-center gap-3 px-6 pt-2 pb-[max(14px,env(safe-area-inset-bottom))]">
+      <footer className="flex shrink-0 flex-col items-stretch px-6 pt-2 pb-[max(14px,env(safe-area-inset-bottom))]">
         <label className="sr-only" htmlFor="book-progress">
           Jump to page
         </label>
@@ -312,8 +345,18 @@ export function BookReader({ book }: { book: BookEntry }) {
           max={Math.max(FRONT_COVER, total - 1)}
           value={page}
           onChange={(event) => setPage(Number(event.target.value))}
-          className="book-scrubber grow"
+          className="book-scrubber w-full"
+          style={
+            {
+              "--progress":
+                total > 1 ? ((page - FRONT_COVER) / (total - 1 - FRONT_COVER)) * 100 : 0,
+            } as CSSProperties
+          }
         />
+        {/* Wide windows show the position in the top bar instead. */}
+        <p className="text-center text-caption text-label-secondary tabular-nums sm:hidden">
+          {total ? label : ""}
+        </p>
       </footer>
     </div>
   );

@@ -12,6 +12,7 @@ import { useCallback, useEffect, useMemo, useState } from "react";
 import { setDrawerOpen, useDrawerOpen } from "../components/layout/drawer-store";
 import { ResizeHandle } from "../components/layout/resize-handle";
 import { TabBar } from "../components/layout/tab-bar";
+import { useWarmRoutes } from "../components/layout/use-warm-routes";
 import { BooksList } from "../features/books/components/books-list";
 import { ReminderRunner } from "../features/calendar/components/reminder-runner";
 import { InvoicesList } from "../features/invoices/components/invoices-list";
@@ -48,6 +49,7 @@ export const Route = createFileRoute("/_app")({
 });
 
 function AppShell() {
+  useWarmRoutes();
   const { view: viewId } = Route.useSearch();
   const view = getView(viewId);
   const navigate = useNavigate();

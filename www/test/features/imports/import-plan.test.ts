@@ -138,6 +138,17 @@ describe("buildImportPlan", () => {
     ]);
   });
 
+  it("names loose tracks after the title they all lead with", () => {
+    const plan = buildImportPlan([
+      file("The Test Book - Chapter 2.mp3"),
+      file("The Test Book - Chapter 1.mp3"),
+    ]);
+    expect(plan.series.map((series) => series.title)).toEqual(["The Test Book"]);
+    expect(plan.series[0]?.books[0]?.chapters).toHaveLength(2);
+    // Numbered first ("01 - Prologue") the name is the chapter's, not the book's.
+    expect(buildImportPlan([file("01 - Prologue.m4a")]).series[0]?.title).toBe("Audiobook");
+  });
+
   it("reads seasons and episodes from loose files", () => {
     const plan = buildImportPlan([
       file("Night Stories S01E02.mp3"),

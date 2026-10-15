@@ -1,7 +1,10 @@
-//! Linux only: WebKitGTK's media player (GStreamer) can't read from the
-//! app's `media://` scheme, so audio and video would never play. Stored
-//! media is served to it over HTTP instead, on 127.0.0.1 with a random port
-//! and a secret token that changes every launch, with the same byte ranges.
+//! Linux and Android: their media players can't stream from the app's
+//! `media://` scheme. WebKitGTK's (GStreamer) can't read it at all, and
+//! Android's WebView applies byte ranges to intercepted responses itself,
+//! skipping `start` bytes into a body that already begins there, so every
+//! read past the first chunk fails and audio stalls. Stored media is served
+//! to them over HTTP instead, on 127.0.0.1 with a random port and a secret
+//! token that changes every launch, with real byte ranges.
 
 use std::io::{BufRead, BufReader, Write};
 use std::net::{TcpListener, TcpStream};

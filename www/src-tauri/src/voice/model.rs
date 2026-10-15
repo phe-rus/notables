@@ -18,6 +18,9 @@ use crate::models::Pack;
 /// 8; 5 reads a 188 character line word for word (checked with Whisper) in
 /// two thirds of the time.
 const STEPS: usize = 5;
+/// The fewest steps a slow device may ask for: on a Helio G85 phone five
+/// steps ran 1.15x slower than speech and three ran at 0.75x (15 Oct 2026).
+const MIN_STEPS: usize = 3;
 /// Silence between the pieces of a long text.
 const GAP_SECONDS: f32 = 0.1;
 
@@ -142,7 +145,9 @@ impl Model {
         lang: &str,
         style: Option<&str>,
         speed: f32,
+        steps: Option<usize>,
     ) -> Result<Vec<f32>> {
+        self.steps = steps.map_or(STEPS, |steps| steps.clamp(MIN_STEPS, STEPS));
         if !self.languages.iter().any(|known| known == lang) {
             return Err(VoiceError::UnsupportedLanguage(lang.to_owned()));
         }
@@ -262,7 +267,7 @@ mod tests {
         for (index, (lang, line)) in lines.iter().enumerate() {
             for speed in [1.0, 1.5] {
                 let started = std::time::Instant::now();
-                let audio = model.synthesize(line, lang, None, speed).unwrap();
+                let audio = model.synthesize(line, lang, None, speed, None).unwrap();
                 let seconds = audio.len() as f32 / 44100.0;
                 println!(
                     "{lang} x{speed}: {:?} for {seconds:.2}s of audio",
@@ -296,11 +301,13 @@ mod tests {
             lit the great lamp, and watched the ships pass safely through the narrow, \
             rocky channel until the morning light returned.";
         println!("{} characters", line.chars().count());
-        model.synthesize("Warm up.", "en", None, 1.0).unwrap();
+        model.synthesize("Warm up.", "en", None, 1.0, None).unwrap();
         for steps in [8, 6, 5, 4, 3] {
             model.steps = steps;
             let started = std::time::Instant::now();
-            let audio = model.synthesize(line, "en", None, 1.0).unwrap();
+            let audio = model
+                .synthesize(line, "en", None, 1.0, Some(model.steps))
+                .unwrap();
             let took = started.elapsed();
             let resampled: Vec<f32> = (0..audio.len() * 16000 / 44100)
                 .map(|i| audio[i * 44100 / 16000])
@@ -319,7 +326,9 @@ mod tests {
         }
         model.steps = STEPS;
         for speed in [0.6, 0.7, 0.8, 1.5, 1.8, 2.0] {
-            let audio = model.synthesize(line, "en", None, speed).unwrap();
+            let audio = model
+                .synthesize(line, "en", None, speed, Some(model.steps))
+                .unwrap();
             let resampled: Vec<f32> = (0..audio.len() * 16000 / 44100)
                 .map(|i| audio[i * 44100 / 16000])
                 .collect();

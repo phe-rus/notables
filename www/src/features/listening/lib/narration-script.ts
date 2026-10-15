@@ -66,3 +66,29 @@ export function buildScript(
   }
   return lines;
 }
+
+/** "Contents", "Table of Contents", with any trailing punctuation. */
+const CONTENTS = /^(?:table of\s+)?contents\W*$/i;
+
+/** A line reduced for comparing headings: no page numbers or dot leaders. */
+const headingKey = (line: string) =>
+  line
+    .toLowerCase()
+    .replace(/[.…·\s]*\d+\s*$/, "")
+    .replace(/\s+/g, " ")
+    .trim();
+
+/**
+ * Where the story starts in lines read from the beginning of a book:
+ * past a contents list, at the line where its first entry appears again
+ * (the chapter itself). 0 when there's no contents list.
+ */
+export function storyStart(lines: string[], within = 400): number {
+  const contents = lines.slice(0, within).findIndex((line) => CONTENTS.test(line.trim()));
+  if (contents < 0) return 0;
+  const first = lines[contents + 1];
+  const key = first ? headingKey(first) : "";
+  if (!key || key.length > 120) return 0;
+  const start = lines.findIndex((line, index) => index > contents + 1 && headingKey(line) === key);
+  return Math.max(0, start);
+}

@@ -1,6 +1,6 @@
 # 0007. Linked devices, a pass-through network, and people by public ID
 
-- **Status:** Proposed (under discussion with the owner; nothing built yet)
+- **Status:** Accepted (15 October 2026; nothing built yet)
 - **Date:** 2026-10-09
 - **Would update:** [0003](./0003-local-first-private-server-authoritative-social.md), [0005](./0005-identity-via-pherus-later.md), [0006](./0006-device-first-peer-sharing-optional-backup.md)
 

@@ -32,16 +32,38 @@ pub fn save(
     mime_type: &str,
     bytes: &[u8],
 ) -> Result<()> {
-    let file = path(media_dir, id)?;
     // Write beside the target and rename, so a crash never leaves half a file.
+    std::fs::write(path(media_dir, id)?.with_extension("part"), bytes)?;
+    commit(connection, media_dir, id, mime_type)
+}
+
+/// Writes one piece of a file being saved in pieces, at `offset`. The first
+/// piece (offset 0) starts the file afresh. Android's WebView can only send
+/// binary bodies as JSON number arrays, so large files cross in pieces.
+pub fn write_part(media_dir: &Path, id: &str, offset: u64, bytes: &[u8]) -> Result<()> {
+    use std::io::{Seek, SeekFrom, Write};
+    let partial = path(media_dir, id)?.with_extension("part");
+    let mut file = std::fs::OpenOptions::new()
+        .create(true)
+        .write(true)
+        .truncate(offset == 0)
+        .open(partial)?;
+    file.seek(SeekFrom::Start(offset))?;
+    file.write_all(bytes)?;
+    Ok(())
+}
+
+/// Moves a fully written `.part` file into place and indexes it.
+pub fn commit(connection: &Connection, media_dir: &Path, id: &str, mime_type: &str) -> Result<()> {
+    let file = path(media_dir, id)?;
     let partial = file.with_extension("part");
-    std::fs::write(&partial, bytes)?;
+    let size = std::fs::metadata(&partial)?.len();
     std::fs::rename(&partial, &file)?;
     connection.execute(
         "INSERT INTO media (id, mime_type, size_bytes, created_at) VALUES (?1, ?2, ?3, ?4)
          ON CONFLICT (id) DO UPDATE SET mime_type = excluded.mime_type,
                                         size_bytes = excluded.size_bytes",
-        params![id, mime_type, bytes.len() as i64, now_ms()],
+        params![id, mime_type, size as i64, now_ms()],
     )?;
     Ok(())
 }
@@ -103,6 +125,26 @@ mod tests {
         remove(&connection, &dir, "clip-1").unwrap();
         assert!(find(&connection, &dir, "clip-1").unwrap().is_none());
         remove(&connection, &dir, "clip-1").unwrap();
+        std::fs::remove_dir_all(dir).unwrap();
+    }
+
+    #[test]
+    fn saves_a_file_sent_in_pieces() {
+        let connection = open_in_memory().unwrap();
+        let dir = std::env::temp_dir().join(format!("notables-media-parts-{}", now_ms()));
+        std::fs::create_dir_all(&dir).unwrap();
+
+        // A stale piece from an interrupted save is replaced by a new first piece.
+        write_part(&dir, "book-1", 0, b"stale and longer").unwrap();
+        write_part(&dir, "book-1", 0, b"chap").unwrap();
+        write_part(&dir, "book-1", 4, b"ter").unwrap();
+        assert!(find(&connection, &dir, "book-1").unwrap().is_none());
+
+        commit(&connection, &dir, "book-1", "audio/mpeg").unwrap();
+        let (file, mime) = find(&connection, &dir, "book-1").unwrap().unwrap();
+        assert_eq!(mime, "audio/mpeg");
+        assert_eq!(std::fs::read(&file).unwrap(), b"chapter");
+        assert!(!file.with_extension("part").exists());
         std::fs::remove_dir_all(dir).unwrap();
     }
 }

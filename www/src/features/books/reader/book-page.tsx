@@ -7,7 +7,7 @@ import type { PageGeometry } from "./page-geometry";
 
 /**
  * One face of the book: the front cover, the inside cover, a page of the
- * flow (a clipped window onto the multi-column text), or blank paper.
+ * flow (a clipped window onto its section's columns), or blank paper.
  */
 export function BookPage({
   index,
@@ -22,7 +22,8 @@ export function BookPage({
   total: number;
   book: BookEntry;
   geometry: PageGeometry;
-  flow: (offset: number) => ReactNode;
+  /** The text of page `index`, positioned to show just that page. */
+  flow: (index: number) => ReactNode;
 }) {
   if (index === FRONT_COVER) {
     return (
@@ -57,7 +58,7 @@ export function BookPage({
               height: geometry.textHeight,
             }}
           >
-            {flow(index * (geometry.textWidth + geometry.columnGap))}
+            {flow(index)}
           </div>
           {index > 0 && (
             <span

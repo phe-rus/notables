@@ -15,7 +15,7 @@ import {
   spring,
 } from "@ultrapeach/ui";
 import { AnimatePresence, motion } from "motion/react";
-import { useEffect, useState } from "react";
+import { type CSSProperties, useEffect, useState } from "react";
 import { t } from "../../../../i18n/i18n";
 import { ReadAlong } from "../../../listening/components/read-along";
 import { rateName } from "../../../listening/lib/narration-settings";
@@ -149,6 +149,11 @@ function PlayerScreen({ book, player }: { book: BookEntry; player: AudiobookPlay
               value={Math.min(time, duration || time)}
               onChange={(event) => player.seek(Number(event.target.value))}
               className="book-scrubber w-full"
+              style={
+                {
+                  "--progress": duration > 0 ? (Math.min(time, duration) / duration) * 100 : 0,
+                } as CSSProperties
+              }
             />
             <div className="flex justify-between text-caption text-label-tertiary tabular-nums">
               <span>{clock(time)}</span>
@@ -243,6 +248,7 @@ function PlayerScreen({ book, player }: { book: BookEntry; player: AudiobookPlay
               src={track.src}
               plainTranscript={track.transcript}
               time={time}
+              position={player.position}
               playing={player.playing}
               onSeek={player.seek}
             />
@@ -322,10 +328,14 @@ function Equalizer() {
   return (
     <span className="inline-flex h-3 items-end justify-center gap-[2px]" aria-hidden="true">
       {[0, 0.2, 0.4].map((delay) => (
+        // A transform runs on the compositor; animating height laid out and
+        // painted the whole player every frame while audio played.
         <motion.span
           key={delay}
-          className="w-[3px] rounded-full bg-current"
-          animate={{ height: ["30%", "100%", "45%", "80%", "30%"] }}
+          className="h-full w-[3px] origin-bottom rounded-full bg-current"
+          animate={{
+            transform: ["scaleY(0.3)", "scaleY(1)", "scaleY(0.45)", "scaleY(0.8)", "scaleY(0.3)"],
+          }}
           transition={{ duration: 1.1, repeat: Number.POSITIVE_INFINITY, delay }}
         />
       ))}

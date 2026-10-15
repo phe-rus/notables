@@ -1,4 +1,5 @@
 import { describe, expect, it } from "bun:test";
+import { storyStart } from "../../../src/features/listening/lib/narration-script";
 import { Narrator } from "../../../src/features/listening/lib/narrator";
 import {
   normalizePeak,
@@ -150,5 +151,23 @@ describe("device voices", () => {
   it("lists each voice once", () => {
     const twice = [voice("Alex", "en-US", "alex"), voice("Alex", "en-US", "alex")].map(fromSystem);
     expect(rankVoices(twice, "en-US")).toHaveLength(1);
+  });
+});
+
+describe("storyStart", () => {
+  it("skips a contents list to where its first chapter begins", () => {
+    const lines = [
+      "The Paper Harbour",
+      "Contents",
+      "Chapter 1 Low Tide ........ 3",
+      "Chapter 2 The Lantern ...... 17",
+      "Chapter 1 Low Tide",
+      "The boats were late again that morning.",
+    ];
+    expect(storyStart(lines)).toBe(4);
+  });
+
+  it("starts at the beginning when there is no contents list", () => {
+    expect(storyStart(["Chapter 1", "It rained."])).toBe(0);
   });
 });

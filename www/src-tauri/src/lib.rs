@@ -85,6 +85,8 @@ pub fn run() {
             storage::commands::storage_note_content_save,
             storage::commands::storage_note_content_remove,
             storage::commands::storage_media_save,
+            storage::commands::storage_media_save_part,
+            storage::commands::storage_media_commit,
             storage::commands::storage_media_remove,
             storage::commands::storage_media_base,
             storage::commands::storage_meta_get,
@@ -156,7 +158,7 @@ pub fn run() {
                 }
             });
             app.manage(Storage::open(&data_dir)?);
-            #[cfg(target_os = "linux")]
+            #[cfg(any(target_os = "linux", target_os = "android"))]
             match storage::media_server::MediaServer::start(app.handle().clone()) {
                 Ok(server) => {
                     app.manage(server);

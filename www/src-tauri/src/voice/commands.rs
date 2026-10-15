@@ -2,7 +2,7 @@ use tauri::ipc::Response;
 use tauri::{AppHandle, Manager};
 
 use super::error::{Result, VoiceError};
-use super::{Voice, VoiceInfo};
+use super::{Delivery, Voice, VoiceInfo};
 use crate::models::Models;
 
 #[tauri::command]
@@ -20,6 +20,7 @@ pub async fn voice_warm(app: AppHandle) {
 }
 
 /// Returns raw little-endian f32 mono samples at the pack's sample rate.
+/// `steps` trades smoothness for speed on devices that can't keep up.
 #[tauri::command]
 pub async fn voice_synthesize(
     app: AppHandle,
@@ -28,6 +29,7 @@ pub async fn voice_synthesize(
     version: String,
     style: Option<String>,
     speed: f32,
+    steps: Option<usize>,
 ) -> Result<Response> {
     let samples = tauri::async_runtime::spawn_blocking(move || {
         app.state::<Voice>().synthesize(
@@ -35,8 +37,11 @@ pub async fn voice_synthesize(
             &text,
             &lang,
             &version,
-            style.as_deref(),
-            speed,
+            Delivery {
+                style: style.as_deref(),
+                speed,
+                steps,
+            },
         )
     })
     .await

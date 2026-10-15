@@ -95,6 +95,39 @@ update **Status** in `AGENTS.md`, and record lasting decisions in `docs/adr/`.
 7. [ ] The notes list on phones: Apple polish.
 8. [ ] Drawer: the first open after launch drops one long frame.
 
+## Queued from the 15 October review (in this order)
+
+The owner's order: Android smoothness and audio, then Hino, then a fresh
+start after onboarding, then sync (spec 0005, accepted), then optional
+PassID, the person's own cloud (Google Drive, iCloud), people and
+AirDrop-like sharing, the torrent-like network; desktop packaging (deb
+through apt, Windows) last. Notables follows Apple Notes closely.
+
+1. [ ] **Android smoothness and audio.** iOS feels smooth; Android lags
+   everywhere. Audio lags on both: audiobook playback, the read-aloud
+   voice, read-along highlighting drifting from the audio.
+2. [ ] **Hino** (`@phe-rus/hino`, source in `~/pherus/hino`) replaces
+   `packages/ultrapeach`; its DatePicker replaces the native date inputs.
+3. [ ] **Start fresh**: a clear choice after onboarding that removes the
+   welcome examples, also in Settings.
+4. [ ] **Keyboard awareness** on iOS and Android, and a **read mode** so
+   scrolling a note does not bring up the keyboard.
+5. [ ] **Hold and slide to select** on Android, as on iOS.
+6. [ ] **Drawing and handwriting**: easy to leave; image placement kept
+   after a restart; deleting an image from the note side works, and
+   deleting a note deletes its images.
+7. [ ] **Slash commands** for blocks and options, **hashtags** for tags,
+   and a way to turn a line into a reminder.
+8. [ ] **Attachments, as in Apple Notes**: scan text, scan documents, take
+   a photo or video, choose a photo or video, record audio, attach a file;
+   scan and fill in details automatically.
+9. [ ] **Formatting**: alignment, bulleted, numbered and checklists,
+   tables, and a spreadsheet note kind.
+10. [ ] **Layouts** for tablets, foldables and ChromeOS.
+11. [ ] **Folders** to organize notes.
+12. [ ] **Locking** with a passcode, Face ID, fingerprint or face unlock
+    (the Lock, spec 0004).
+
 ## Stage 2: Smoothness and the Rust core
 
 Make lag invisible: never block a frame, answer instantly, finish later.

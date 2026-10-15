@@ -22,6 +22,15 @@ use model::Model;
 pub const PACK_ID: &str = "supertonic-3";
 /// Versions kept loaded at once (the current one, and one being replaced).
 const MAX_LOADED: usize = 2;
+/// How a line is spoken.
+pub struct Delivery<'a> {
+    pub style: Option<&'a str>,
+    pub speed: f32,
+    /// Fewer flow matching steps for devices that can't keep up; `None`
+    /// for full smoothness.
+    pub steps: Option<usize>,
+}
+
 /// An unused voice is unloaded after this long.
 const IDLE_UNLOAD: Duration = Duration::from_secs(10 * 60);
 /// The pace range that still sounds natural.
@@ -129,9 +138,13 @@ impl Voice {
         text: &str,
         lang: &str,
         version: &str,
-        style: Option<&str>,
-        speed: f32,
+        delivery: Delivery<'_>,
     ) -> Result<Vec<f32>> {
+        let Delivery {
+            style,
+            speed,
+            steps,
+        } = delivery;
         let base = lang.split(['-', '_']).next().unwrap_or(lang).to_lowercase();
         let speed = if speed.is_finite() { speed } else { 1.0 };
         let speed = speed.clamp(SPEED_RANGE.0, SPEED_RANGE.1);
@@ -139,7 +152,7 @@ impl Voice {
         Self::ensure(&mut loaded, models, version)?;
         loaded.last_used = Some(Instant::now());
         let model = loaded.models.last_mut().ok_or(VoiceError::NotInstalled)?;
-        model.synthesize(text, &base, style, speed)
+        model.synthesize(text, &base, style, speed, steps)
     }
 
     /// Drops every loaded session, waiting for any synthesis in progress.

@@ -13,6 +13,7 @@ export function ReadAlong({
   src,
   plainTranscript,
   time,
+  position,
   playing,
   onSeek,
 }: {
@@ -20,6 +21,8 @@ export function ReadAlong({
   /** A transcript without timings, shown when there's no timed one. */
   plainTranscript: string;
   time: number;
+  /** The player's exact position, read every frame while playing. */
+  position?: () => number;
   playing: boolean;
   onSeek: (seconds: number) => void;
 }) {
@@ -29,7 +32,22 @@ export function ReadAlong({
   );
   const list = useRef<HTMLOListElement>(null);
   const phrases = transcript?.phrases ?? [];
-  const current = phraseAt(phrases, time * 1000);
+  const [live, setLive] = useState(-1);
+  const current = playing && position ? live : phraseAt(phrases, time * 1000);
+
+  // The player reports its time about four times a second, which left the
+  // lit line trailing the voice; while playing, follow it every frame and
+  // re-render only when the line changes.
+  useEffect(() => {
+    if (!playing || !position) return;
+    let frame = 0;
+    const follow = () => {
+      setLive(phraseAt(phrases, position() * 1000));
+      frame = requestAnimationFrame(follow);
+    };
+    follow();
+    return () => cancelAnimationFrame(frame);
+  }, [phrases, playing, position]);
 
   // Keep the spoken line in view while playing.
   useEffect(() => {
