@@ -1,6 +1,6 @@
+import { Button } from "@phe-rus/hino";
+import { type AccentId, accents } from "@phe-rus/hino/tokens";
 import { useForm } from "@tanstack/react-form";
-import { type AccentId, accents } from "@ultrapeach/tokens";
-import { Button } from "@ultrapeach/ui";
 import { useRef, useState } from "react";
 import { Field, PickerInput, TextInput } from "../../../components/form/form-fields";
 import { t } from "../../../i18n/i18n";
@@ -285,7 +285,7 @@ export function ManualCardForm({
         )}
       </form.Subscribe>
       <div className="flex flex-wrap gap-3">
-        <Button type="submit" variant="primary" disabled={busy}>
+        <Button type="submit" variant="default" disabled={busy}>
           {busy ? t("wallet.saving") : t("common.save")}
         </Button>
         <Button disabled={busy} onClick={() => showWallet(card ? "detail" : "home")}>

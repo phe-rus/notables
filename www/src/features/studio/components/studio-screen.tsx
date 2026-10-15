@@ -15,7 +15,7 @@ import {
   spring,
   toast,
   UndoIcon,
-} from "@ultrapeach/ui";
+} from "@phe-rus/hino";
 import { motion } from "motion/react";
 import { type ReactNode, useEffect, useRef, useState } from "react";
 import { saveMedia } from "../../../platform/storage/media-store";
@@ -214,14 +214,28 @@ export function StudioScreen({
           Cancel
         </Button>
         <div className="flex items-center gap-1">
-          <IconButton label="Undo" disabled={!history.canUndo} onClick={history.undo}>
+          <IconButton
+            size="icon-sm"
+            variant="ghost"
+            label="Undo"
+            disabled={!history.canUndo}
+            onClick={history.undo}
+          >
             <UndoIcon size={19} />
           </IconButton>
-          <IconButton label="Redo" disabled={!history.canRedo} onClick={history.redo}>
+          <IconButton
+            size="icon-sm"
+            variant="ghost"
+            label="Redo"
+            disabled={!history.canRedo}
+            onClick={history.redo}
+          >
             <RedoIcon size={19} />
           </IconButton>
           <PageMenu scene={scene} onChange={(next) => history.apply(() => next)} />
           <IconButton
+            size="icon-sm"
+            variant="ghost"
             label={zoom === 1 ? "Zoom in" : "Fit page"}
             onClick={() => setZoom((value) => (value === 1 ? 2 : 1))}
           >
@@ -230,7 +244,7 @@ export function StudioScreen({
             </span>
           </IconButton>
         </div>
-        <Button variant="primary" onClick={() => void finish()} disabled={saving}>
+        <Button variant="default" onClick={() => void finish()} disabled={saving}>
           {saving ? "Saving…" : "Done"}
         </Button>
       </header>
@@ -371,7 +385,12 @@ export function StudioScreen({
           <ToolButton tool="bubble" current={tool} onPick={setTool}>
             <BubbleIcon size={19} />
           </ToolButton>
-          <IconButton label="Add a picture" onClick={() => pictureInput.current?.click()}>
+          <IconButton
+            size="icon-sm"
+            variant="ghost"
+            label="Add a picture"
+            onClick={() => pictureInput.current?.click()}
+          >
             <PhotoIcon size={19} />
           </IconButton>
           <input
@@ -420,9 +439,10 @@ function ToolButton({
 }) {
   return (
     <IconButton
+      size="icon-sm"
       label={toolLabels[tool]}
       aria-pressed={current === tool}
-      tone={current === tool ? "accent" : "default"}
+      variant={current === tool ? "link" : "ghost"}
       className={cn(current === tool && "bg-accent/15")}
       onClick={() => onPick(tool)}
     >

@@ -1,4 +1,4 @@
-import { CloseIcon, cn, IconButton, spring } from "@ultrapeach/ui";
+import { CloseIcon, cn, IconButton, spring } from "@phe-rus/hino";
 import { AnimatePresence, motion } from "motion/react";
 import type { BookChapter } from "../../reader/use-book-content";
 import type { HighlightEntry } from "../store/highlight-store";
@@ -54,7 +54,7 @@ export function HighlightsPanel({
           >
             <header className="flex items-center justify-between px-5 pt-[max(16px,env(safe-area-inset-top))] pb-3">
               <h2 className="text-title3 font-bold tracking-tight">Highlights</h2>
-              <IconButton label="Close" onClick={onClose}>
+              <IconButton size="icon-sm" variant="ghost" label="Close" onClick={onClose}>
                 <CloseIcon size={18} />
               </IconButton>
             </header>

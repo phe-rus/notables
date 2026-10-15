@@ -6,7 +6,7 @@ import {
   Sheet,
   Toggle,
   toast,
-} from "@ultrapeach/ui";
+} from "@phe-rus/hino";
 import { useState } from "react";
 import { locale, type MessageKey, t } from "../../../i18n/i18n";
 import {

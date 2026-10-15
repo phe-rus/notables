@@ -1,4 +1,4 @@
-import type { HapticKind } from "@ultrapeach/ui";
+import type { HapticKind } from "@phe-rus/hino";
 
 /**
  * What the Android app offers the page directly (AndroidBridge.kt in

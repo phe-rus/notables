@@ -5,7 +5,6 @@ import {
   type InvoiceKind,
   invoiceKindLabels,
 } from "@notables/core";
-import { Link, useNavigate } from "@tanstack/react-router";
 import {
   BusinessIcon,
   Chip,
@@ -18,7 +17,8 @@ import {
   spring,
   toast,
   useContextMenu,
-} from "@ultrapeach/ui";
+} from "@phe-rus/hino";
+import { Link, useNavigate } from "@tanstack/react-router";
 import { AnimatePresence, motion } from "motion/react";
 import { useState } from "react";
 import { CollapsedSidebarControls } from "../../../components/window/collapsed-sidebar-controls";
@@ -72,13 +72,21 @@ export function InvoicesList({
         {collapsed && <CollapsedSidebarControls />}
         <div data-tauri-drag-region className="flex items-center justify-between">
           <div className="flex items-center gap-1">
-            <IconButton label={t("nav.showLibrary")} className="lg:hidden" onClick={onOpenSidebar}>
+            <IconButton
+              size="icon-sm"
+              variant="ghost"
+              label={t("nav.showLibrary")}
+              className="lg:hidden"
+              onClick={onOpenSidebar}
+            >
               <SidebarIcon size={20} />
             </IconButton>
             <h1 className="text-title2 font-bold tracking-tight">{t("invoices.title")}</h1>
           </div>
           <div className="flex items-center gap-1">
             <IconButton
+              size="icon-sm"
+              variant="ghost"
               label={
                 business
                   ? `${t("invoices.yourBusiness")}: ${business.issuer.name}`
@@ -89,8 +97,9 @@ export function InvoicesList({
               <BusinessIcon size={20} />
             </IconButton>
             <IconButton
+              size="icon-sm"
               label="New invoice, receipt or quote"
-              tone="accent"
+              variant="link"
               onClick={(event) => {
                 openMenu(
                   event.currentTarget,

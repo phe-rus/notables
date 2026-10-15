@@ -1,5 +1,5 @@
+import { cn, IconButton, PenIcon, SearchField, SidebarIcon, spring } from "@phe-rus/hino";
 import { useNavigate } from "@tanstack/react-router";
-import { cn, IconButton, PenIcon, SearchField, SidebarIcon, spring } from "@ultrapeach/ui";
 import { AnimatePresence, motion } from "motion/react";
 import { useCallback, useDeferredValue, useEffect, useMemo, useRef, useState } from "react";
 import { CollapsedSidebarControls } from "../../../components/window/collapsed-sidebar-controls";
@@ -179,6 +179,8 @@ export function NotesList({
           <div className="flex min-w-0 items-center gap-1">
             {!selecting && (
               <IconButton
+                size="icon-sm"
+                variant="ghost"
                 label={t("nav.showLibrary")}
                 className="lg:hidden"
                 onClick={onOpenSidebar}
@@ -208,7 +210,12 @@ export function NotesList({
               </button>
             )}
             {!selecting && (
-              <IconButton label={t("nav.newNote")} tone="accent" onClick={onCreateNote}>
+              <IconButton
+                size="icon-sm"
+                label={t("nav.newNote")}
+                variant="link"
+                onClick={onCreateNote}
+              >
                 <PenIcon size={20} strokeWidth={1.9} />
               </IconButton>
             )}

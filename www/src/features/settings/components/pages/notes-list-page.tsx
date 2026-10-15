@@ -1,4 +1,4 @@
-import { LabeledContent, Section, SegmentedControl, Toggle } from "@ultrapeach/ui";
+import { LabeledContent, Section, SegmentedControl, Toggle } from "@phe-rus/hino";
 import { PickerInput } from "../../../../components/form/form-fields";
 import { t } from "../../../../i18n/i18n";
 import {

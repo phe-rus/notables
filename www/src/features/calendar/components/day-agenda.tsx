@@ -9,7 +9,7 @@ import {
   isYearlyKind,
   occurrencesBetween,
 } from "@notables/core";
-import { BellIcon, CheckIcon, cn, RepeatIcon, toast, useContextMenu } from "@ultrapeach/ui";
+import { BellIcon, CheckIcon, cn, RepeatIcon, toast, useContextMenu } from "@phe-rus/hino";
 import type { ReactNode } from "react";
 import { locale, t } from "../../../i18n/i18n";
 import { describeDay, formatClock } from "../lib/describe-alert";

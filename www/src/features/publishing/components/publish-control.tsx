@@ -7,7 +7,7 @@ import {
   Popover,
   toast,
   useDismiss,
-} from "@ultrapeach/ui";
+} from "@phe-rus/hino";
 import { useCallback, useId, useRef, useState } from "react";
 import type * as Y from "yjs";
 import { getAuthorName } from "../../../platform/author-preferences";
@@ -64,8 +64,9 @@ export function PublishControl({ entry, doc }: { entry: LibraryEntry; doc: Y.Doc
   return (
     <div ref={root} className="relative">
       <IconButton
+        size="icon-sm"
         label={published ? "Published" : "Publish"}
-        tone={published ? "accent" : "default"}
+        variant={published ? "link" : "ghost"}
         className="@min-[600px]/note:hidden"
         aria-expanded={open}
         aria-controls={panelId}
@@ -74,7 +75,7 @@ export function PublishControl({ entry, doc }: { entry: LibraryEntry; doc: Y.Doc
         <GlobeIcon size={20} />
       </IconButton>
       <Button
-        variant={published ? "secondary" : "primary"}
+        variant={published ? "secondary" : "default"}
         className="@max-[600px]/note:hidden"
         aria-expanded={open}
         aria-controls={panelId}
@@ -112,7 +113,7 @@ export function PublishControl({ entry, doc }: { entry: LibraryEntry; doc: Y.Doc
               </span>
             </button>
             <div className="flex gap-2">
-              <Button variant="primary" className="grow" disabled={busy !== null} onClick={publish}>
+              <Button variant="default" className="grow" disabled={busy !== null} onClick={publish}>
                 {busy === "publish" ? "Updating…" : "Update"}
               </Button>
               <a
@@ -152,7 +153,7 @@ export function PublishControl({ entry, doc }: { entry: LibraryEntry; doc: Y.Doc
                 className="rounded-2xl control-field px-3.5 py-2.5 text-subheadline text-label"
               />
             </label>
-            <Button variant="primary" disabled={busy !== null} onClick={publish}>
+            <Button variant="default" disabled={busy !== null} onClick={publish}>
               {busy === "publish" ? "Publishing…" : "Publish"}
             </Button>
           </>

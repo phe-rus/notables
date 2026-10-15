@@ -1,4 +1,4 @@
-import { Button } from "@ultrapeach/ui";
+import { Button } from "@phe-rus/hino";
 import { useEffect, useId, useRef, useState } from "react";
 import { createPortal } from "react-dom";
 import { t } from "../../../i18n/i18n";

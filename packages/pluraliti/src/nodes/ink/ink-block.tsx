@@ -8,7 +8,7 @@ import {
   PenIcon,
   TouchIcon,
   UndoIcon,
-} from "@ultrapeach/ui";
+} from "@phe-rus/hino";
 import { $getNodeByKey, type NodeKey, UNDO_COMMAND } from "lexical";
 import { AnimatePresence, motion } from "motion/react";
 import { type PointerEvent, useEffect, useRef, useState } from "react";

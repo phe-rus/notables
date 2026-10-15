@@ -1,4 +1,3 @@
-import { Link } from "@tanstack/react-router";
 import {
   ChevronRightIcon,
   type ContextMenuItem,
@@ -6,7 +5,8 @@ import {
   openMenu,
   spring,
   useContextMenu,
-} from "@ultrapeach/ui";
+} from "@phe-rus/hino";
+import { Link } from "@tanstack/react-router";
 import { AnimatePresence, motion } from "motion/react";
 import { type ReactNode, useId, useState } from "react";
 import { t } from "../../../../i18n/i18n";

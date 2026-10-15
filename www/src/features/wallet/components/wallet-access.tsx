@@ -1,4 +1,4 @@
-import { Button } from "@ultrapeach/ui";
+import { Button } from "@phe-rus/hino";
 import { t } from "../../../i18n/i18n";
 import { initializeWallet, useWallet } from "../store/wallet-store";
 
@@ -15,7 +15,7 @@ export function WalletAccess() {
       </p>
       {!initialized &&
         (status?.secureStoreAvailable ? (
-          <Button variant="primary" disabled={busy} onClick={() => void initializeWallet()}>
+          <Button variant="default" disabled={busy} onClick={() => void initializeWallet()}>
             {t("wallet.createWallet")}
           </Button>
         ) : (

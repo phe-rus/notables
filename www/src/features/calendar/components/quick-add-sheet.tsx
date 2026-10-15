@@ -1,5 +1,5 @@
 import type { Day } from "@notables/core";
-import { Button, CloseIcon, IconButton, Sheet, SparkleIcon, toast } from "@ultrapeach/ui";
+import { Button, CloseIcon, IconButton, Sheet, SparkleIcon, toast } from "@phe-rus/hino";
 import { useState } from "react";
 import { t } from "../../../i18n/i18n";
 import { describeDay, formatClock } from "../lib/describe-alert";
@@ -76,7 +76,7 @@ function QuickAddForm({
           aria-label={t("calendar.quickAdd")}
           className="min-w-0 grow bg-transparent text-[18px] font-semibold outline-none placeholder:text-label-tertiary"
         />
-        <IconButton label={t("common.close")} onClick={onClose}>
+        <IconButton size="icon-sm" variant="ghost" label={t("common.close")} onClick={onClose}>
           <CloseIcon size={18} />
         </IconButton>
       </div>
@@ -96,7 +96,7 @@ function QuickAddForm({
           </span>
         </div>
       )}
-      <Button variant="primary" type="submit" disabled={!preview?.title}>
+      <Button variant="default" type="submit" disabled={!preview?.title}>
         {t("common.add")}
       </Button>
     </form>

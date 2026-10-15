@@ -1,4 +1,3 @@
-import { useNavigate } from "@tanstack/react-router";
 import {
   Button,
   CanvasIcon,
@@ -9,7 +8,8 @@ import {
   PlusIcon,
   spring,
   toast,
-} from "@ultrapeach/ui";
+} from "@phe-rus/hino";
+import { useNavigate } from "@tanstack/react-router";
 import { AnimatePresence, motion } from "motion/react";
 import { useCallback, useRef, useState } from "react";
 import { t } from "../../../../i18n/i18n";
@@ -323,7 +323,7 @@ export function BookContents({ book, chapters }: { book: BookEntry; chapters: Li
       <div className="flex flex-wrap gap-2 pt-1">
         {drawn && (
           <Button
-            variant="primary"
+            variant="default"
             disabled={starting}
             onClick={() => void openNew(queueDrawing, true)}
           >
@@ -332,14 +332,14 @@ export function BookContents({ book, chapters }: { book: BookEntry; chapters: Li
           </Button>
         )}
         {hasAction(mediaKind, "newChapter") && (
-          <Button variant="primary" disabled={starting} onClick={() => void openNew(() => {})}>
+          <Button variant="default" disabled={starting} onClick={() => void openNew(() => {})}>
             <PlusIcon size={16} strokeWidth={2.2} />
             {t("books.newEntry", { name: unitName(structure.entry) })}
           </Button>
         )}
         {hasAction(mediaKind, "recordChapter") && (
           <Button
-            variant="primary"
+            variant="default"
             disabled={starting}
             onClick={() => void openNew(queueRecording)}
           >

@@ -1,5 +1,5 @@
 import { addDaysTo, type Day } from "@notables/core";
-import { cn, haptic } from "@ultrapeach/ui";
+import { cn, haptic } from "@phe-rus/hino";
 import { motion } from "motion/react";
 import { useRef } from "react";
 import { locale } from "../../../i18n/i18n";

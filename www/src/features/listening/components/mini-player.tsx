@@ -1,5 +1,5 @@
+import { CloseIcon, cn, IconButton, PauseIcon, PlayIcon, spring } from "@phe-rus/hino";
 import { Link } from "@tanstack/react-router";
-import { CloseIcon, cn, IconButton, PauseIcon, PlayIcon, spring } from "@ultrapeach/ui";
 import { AnimatePresence, motion } from "motion/react";
 import { t } from "../../../i18n/i18n";
 import { BookCover } from "../../books/components/book-cover";
@@ -52,12 +52,19 @@ export function MiniPlayer({ className }: { className?: string }) {
             </span>
           </Link>
           <IconButton
+            size="icon-sm"
+            variant="ghost"
             label={playback.playing ? t("listening.pause") : t("listening.play")}
             onClick={playback.toggle}
           >
             {playback.playing ? <PauseIcon size={20} /> : <PlayIcon size={20} />}
           </IconButton>
-          <IconButton label={t("listening.stopListening")} onClick={closeAudiobook}>
+          <IconButton
+            size="icon-sm"
+            variant="ghost"
+            label={t("listening.stopListening")}
+            onClick={closeAudiobook}
+          >
             <CloseIcon size={17} />
           </IconButton>
           <span

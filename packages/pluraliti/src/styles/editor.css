@@ -1,6 +1,6 @@
 /*
  * Notables editor styles. Uses the design tokens' CSS variables, so it works
- * anywhere @ultrapeach/tokens/theme.css is loaded.
+ * anywhere @phe-rus/hino/theme.css is loaded.
  */
 
 /* In the components layer: above the base reset, below utilities, so a class can still adjust it. */

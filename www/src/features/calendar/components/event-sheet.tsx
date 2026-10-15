@@ -1,4 +1,4 @@
-import { Sheet } from "@ultrapeach/ui";
+import { Sheet } from "@phe-rus/hino";
 import { t } from "../../../i18n/i18n";
 import { EventForm, type EventTarget } from "./event-form";
 

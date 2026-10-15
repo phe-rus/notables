@@ -1,4 +1,4 @@
-import { Button, haptic, PlusIcon } from "@ultrapeach/ui";
+import { Button, haptic, PlusIcon } from "@phe-rus/hino";
 import { motion } from "motion/react";
 import { t } from "../../../i18n/i18n";
 import { arrange, moveCardToFront, useCardOrder } from "../store/card-order";

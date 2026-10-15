@@ -1,5 +1,4 @@
 import { useMediaSource } from "@notables/pluraliti";
-import { Link } from "@tanstack/react-router";
 import {
   ChevronRightIcon,
   CloseIcon,
@@ -13,7 +12,8 @@ import {
   SkipForwardIcon,
   SleepIcon,
   spring,
-} from "@ultrapeach/ui";
+} from "@phe-rus/hino";
+import { Link } from "@tanstack/react-router";
 import { AnimatePresence, motion } from "motion/react";
 import { type CSSProperties, useEffect, useState } from "react";
 import { t } from "../../../../i18n/i18n";

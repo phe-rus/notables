@@ -1,4 +1,4 @@
-import { LabeledContent, Section } from "@ultrapeach/ui";
+import { LabeledContent, Section } from "@phe-rus/hino";
 import { t } from "../../../../i18n/i18n";
 import { setAuthorName, useAuthorName } from "../../../../platform/author-preferences";
 

@@ -1,7 +1,7 @@
 @import "tailwindcss";
-@import "@ultrapeach/tokens/theme.css";
-@import "@ultrapeach/ui/utilities.css";
-@import "@ultrapeach/ui/base.css";
+@import "@phe-rus/hino/theme.css";
+@import "@phe-rus/hino/utilities.css";
+@import "@phe-rus/hino/base.css";
 @import "@notables/pluraliti/editor.css";
 @import "./book.css";
 @import "@fontsource-variable/newsreader";
@@ -9,7 +9,7 @@
 @import "@fontsource-variable/caveat";
 @import "@fontsource/patrick-hand";
 
-@source "../../../packages/ultrapeach/ui/src";
+@source "../../node_modules/@phe-rus/hino/src";
 @source "../../../packages/pluraliti/src";
 
 @theme static {

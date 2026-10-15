@@ -6,7 +6,7 @@ import {
   HeartIcon,
   LocationIcon,
   WarningIcon,
-} from "@ultrapeach/ui";
+} from "@phe-rus/hino";
 import type { ReactNode } from "react";
 import { t } from "../../../i18n/i18n";
 

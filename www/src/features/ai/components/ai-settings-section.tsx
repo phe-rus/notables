@@ -1,4 +1,4 @@
-import { cn, LabeledContent, Section, SegmentedControl, Toggle, toast } from "@ultrapeach/ui";
+import { cn, LabeledContent, Section, SegmentedControl, Toggle, toast } from "@phe-rus/hino";
 import { useCallback, useEffect, useState } from "react";
 import { PickerInput } from "../../../components/form/form-fields";
 import { t } from "../../../i18n/i18n";

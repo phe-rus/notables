@@ -1,4 +1,4 @@
-import { cn } from "@ultrapeach/ui";
+import { cn } from "@phe-rus/hino";
 import { useRef } from "react";
 
 /**

@@ -1,4 +1,4 @@
-import { cn, HeadphonesIcon, IconButton, toast } from "@ultrapeach/ui";
+import { cn, HeadphonesIcon, IconButton, toast } from "@phe-rus/hino";
 import { AnimatePresence } from "motion/react";
 import { type RefObject, useEffect, useRef } from "react";
 import { createPortal } from "react-dom";
@@ -66,8 +66,9 @@ export function ReadAloudButton({
   return (
     <>
       <IconButton
+        size="icon-sm"
         label={narration.state ? t("notes.stopReading") : t("notes.readAloud")}
-        tone={narration.state ? "accent" : "default"}
+        variant={narration.state ? "link" : "ghost"}
         className={cn(narration.state && "bg-accent/15", className)}
         onClick={() => (narration.state ? narration.close() : start())}
       >

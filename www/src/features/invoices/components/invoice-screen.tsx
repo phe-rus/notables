@@ -1,5 +1,4 @@
 import { computeTotals, formatMoney, type InvoiceDocument, type InvoiceKind } from "@notables/core";
-import { Link, useNavigate } from "@tanstack/react-router";
 import {
   Button,
   ChevronLeftIcon,
@@ -15,7 +14,8 @@ import {
   TrashIcon,
   toast,
   useDismiss,
-} from "@ultrapeach/ui";
+} from "@phe-rus/hino";
+import { Link, useNavigate } from "@tanstack/react-router";
 import { useCallback, useId, useRef, useState } from "react";
 import { createPortal } from "react-dom";
 import { Field, FormSection, TextArea, TextInput } from "../../../components/form/form-fields";
@@ -159,17 +159,22 @@ export function InvoiceScreen({ invoice }: { invoice: InvoiceDocument }) {
         </div>
         <div className="ml-auto flex items-center gap-1.5">
           <StyleButton invoice={invoice} onChange={(style) => set({ style })} />
-          <IconButton label="Delete" onClick={remove}>
+          <IconButton size="icon-sm" variant="ghost" label="Delete" onClick={remove}>
             <TrashIcon size={19} />
           </IconButton>
-          <IconButton label="Full-screen preview" onClick={() => setFullscreen(true)}>
+          <IconButton
+            size="icon-sm"
+            variant="ghost"
+            label="Full-screen preview"
+            onClick={() => setFullscreen(true)}
+          >
             <ExpandIcon size={19} />
           </IconButton>
-          <IconButton label="Print" onClick={print}>
+          <IconButton size="icon-sm" variant="ghost" label="Print" onClick={print}>
             <PrintIcon size={19} />
           </IconButton>
           <Button
-            variant="primary"
+            variant="default"
             onClick={downloadPdf}
             disabled={exporting || !link}
             aria-label="Download PDF"

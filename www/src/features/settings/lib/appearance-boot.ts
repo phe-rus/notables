@@ -1,4 +1,4 @@
-import { defaultAccent } from "@ultrapeach/tokens";
+import { defaultAccent } from "@phe-rus/hino/tokens";
 import { textSizes } from "../model/preferences";
 import { PREFERENCES_KEY } from "../store/preferences-store";
 

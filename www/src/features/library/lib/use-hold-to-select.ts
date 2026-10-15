@@ -1,4 +1,4 @@
-import { type ContextMenuItem, haptic, openContextMenu } from "@ultrapeach/ui";
+import { type ContextMenuItem, haptic, openContextMenu } from "@phe-rus/hino";
 import { type RefObject, useEffect, useRef } from "react";
 
 const HOLD_MS = 450;

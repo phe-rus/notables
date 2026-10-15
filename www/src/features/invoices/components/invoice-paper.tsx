@@ -9,7 +9,7 @@ import {
   lineAmount,
 } from "@notables/core";
 import { useMediaSource } from "@notables/pluraliti";
-import { cn } from "@ultrapeach/ui";
+import { cn } from "@phe-rus/hino";
 import { type CSSProperties, type ReactNode, useMemo } from "react";
 import { HiddenMark } from "../hidden-mark/hidden-mark";
 import { SealCode } from "./seal-code";

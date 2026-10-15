@@ -1,5 +1,5 @@
 import type { TranscriptSegment } from "@notables/core";
-import { cn, confirmDialog, PauseIcon, PlayIcon, spring } from "@ultrapeach/ui";
+import { cn, confirmDialog, PauseIcon, PlayIcon, spring } from "@phe-rus/hino";
 import { AnimatePresence, motion } from "motion/react";
 import { useEffect, useRef, useState, useSyncExternalStore } from "react";
 import { createPortal } from "react-dom";

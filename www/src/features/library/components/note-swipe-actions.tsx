@@ -1,4 +1,4 @@
-import { LinkIcon, MoreIcon, PinIcon, TrashIcon } from "@ultrapeach/ui";
+import { LinkIcon, MoreIcon, PinIcon, TrashIcon } from "@phe-rus/hino";
 import type { ReactNode } from "react";
 import { t } from "../../../i18n/i18n";
 import { copyAppLink, togglePinned } from "../../notes/actions/note-menu";

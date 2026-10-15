@@ -1,4 +1,3 @@
-import { useNavigate } from "@tanstack/react-router";
 import {
   BookIcon,
   Button,
@@ -10,7 +9,8 @@ import {
   Sheet,
   spring,
   toast,
-} from "@ultrapeach/ui";
+} from "@phe-rus/hino";
+import { useNavigate } from "@tanstack/react-router";
 import { motion } from "motion/react";
 import { type DragEvent, type ReactNode, useRef, useState } from "react";
 import { locale, t } from "../../../i18n/i18n";
@@ -168,7 +168,7 @@ function ImportFlow({ onClose }: { onClose: () => void }) {
       <header className="flex items-center justify-between px-5 pt-5 pb-3">
         <h2 className="text-title3 font-bold tracking-tight">{t("imports.title")}</h2>
         {stage.name !== "importing" && (
-          <IconButton label={t("common.close")} onClick={onClose}>
+          <IconButton size="icon-sm" variant="ghost" label={t("common.close")} onClick={onClose}>
             <CloseIcon size={18} />
           </IconButton>
         )}
@@ -201,7 +201,7 @@ function ImportFlow({ onClose }: { onClose: () => void }) {
               {t("imports.dropBody")}
             </p>
             <div className="mt-1 flex flex-wrap justify-center gap-2">
-              <Button variant="primary" onClick={() => filesInput.current?.click()}>
+              <Button variant="default" onClick={() => filesInput.current?.click()}>
                 {t("imports.chooseFiles")}
               </Button>
               <Button variant="secondary" onClick={() => folderInput.current?.click()}>
@@ -283,7 +283,7 @@ function ImportFlow({ onClose }: { onClose: () => void }) {
             <Button variant="secondary" onClick={() => setStage({ name: "pick" })}>
               {t("common.back")}
             </Button>
-            <Button variant="primary" disabled={stage.plan.series.length === 0} onClick={start}>
+            <Button variant="default" disabled={stage.plan.series.length === 0} onClick={start}>
               {t("imports.import")}
             </Button>
           </footer>

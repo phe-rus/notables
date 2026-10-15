@@ -1,5 +1,5 @@
 import type { Reaction } from "@notables/core";
-import { cn, HeartIcon, riseMotion, StarIcon, ThumbsUpIcon } from "@ultrapeach/ui";
+import { cn, HeartIcon, riseMotion, StarIcon, ThumbsUpIcon } from "@phe-rus/hino";
 import { motion } from "motion/react";
 import type { PublicationStats } from "../../../server/publications/publications.service";
 

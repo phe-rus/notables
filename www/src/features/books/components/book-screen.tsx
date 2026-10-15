@@ -1,5 +1,5 @@
+import { ChevronLeftIcon, IconButton, TrashIcon } from "@phe-rus/hino";
 import { Link, useNavigate } from "@tanstack/react-router";
-import { ChevronLeftIcon, IconButton, TrashIcon } from "@ultrapeach/ui";
 import { type ReactNode, useEffect, useMemo } from "react";
 import { t } from "../../../i18n/i18n";
 import { type LibraryEntry, useLibrary } from "../../library/store/library-store";
@@ -54,7 +54,7 @@ function BookEditor({ book, actions }: { book: BookEntry; actions?: ReactNode })
           <span className="max-sm:sr-only">{t("nav.books")}</span>
         </Link>
         <div className="flex items-center gap-1.5 sm:gap-2">
-          <IconButton label={t("books.deleteBook")} onClick={remove}>
+          <IconButton size="icon-sm" variant="ghost" label={t("books.deleteBook")} onClick={remove}>
             <TrashIcon size={19} />
           </IconButton>
           {actions}

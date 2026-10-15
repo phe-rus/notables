@@ -1,6 +1,6 @@
 import { DocumentView } from "@notables/pluraliti";
+import { Chip } from "@phe-rus/hino";
 import { Link } from "@tanstack/react-router";
-import { Chip } from "@ultrapeach/ui";
 import { useMemo, useRef } from "react";
 import { AppMark } from "../../../components/brand/app-mark";
 import { stripLeadingTitle } from "../../../lib/documents/strip-leading-title";

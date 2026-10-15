@@ -1,6 +1,6 @@
 import { useMediaSource } from "@notables/pluraliti";
+import { ChevronLeftIcon, ChevronRightIcon, CloseIcon, cn } from "@phe-rus/hino";
 import { Link } from "@tanstack/react-router";
-import { ChevronLeftIcon, ChevronRightIcon, CloseIcon, cn } from "@ultrapeach/ui";
 import { AnimatePresence, motion, type PanInfo } from "motion/react";
 import {
   type CSSProperties,

@@ -8,7 +8,7 @@ import {
   spring,
   TrashIcon,
   useContextMenu,
-} from "@ultrapeach/ui";
+} from "@phe-rus/hino";
 import { AnimatePresence, motion } from "motion/react";
 import { useMemo } from "react";
 import { CollapsedSidebarControls } from "../../../components/window/collapsed-sidebar-controls";
@@ -100,7 +100,13 @@ export function RecentlyDeletedScreen({ onOpenSidebar }: { onOpenSidebar: () => 
         {collapsed && <CollapsedSidebarControls />}
         <div data-tauri-drag-region className="flex items-center justify-between gap-3">
           <div className="flex items-center gap-1">
-            <IconButton label={t("nav.showLibrary")} className="lg:hidden" onClick={onOpenSidebar}>
+            <IconButton
+              size="icon-sm"
+              variant="ghost"
+              label={t("nav.showLibrary")}
+              className="lg:hidden"
+              onClick={onOpenSidebar}
+            >
               <SidebarIcon size={20} />
             </IconButton>
             <h1 className="text-title2 font-bold tracking-tight">{t("nav.recentlyDeleted")}</h1>
@@ -217,7 +223,12 @@ function BinRow({ item }: { item: Item }) {
       <Button variant="secondary" onClick={restore}>
         {t("trash.restore")}
       </Button>
-      <IconButton label={t("trash.eraseNow")} onClick={() => void erase()}>
+      <IconButton
+        size="icon-sm"
+        variant="ghost"
+        label={t("trash.eraseNow")}
+        onClick={() => void erase()}
+      >
         <TrashIcon size={18} />
       </IconButton>
     </div>

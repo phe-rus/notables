@@ -6,7 +6,6 @@ import {
   NotesEditorContent,
 } from "@notables/pluraliti";
 import type { SyncStatus } from "@notables/sync";
-import { Link, useNavigate } from "@tanstack/react-router";
 import {
   Button,
   ChevronLeftIcon,
@@ -20,7 +19,8 @@ import {
   ShareIcon,
   StatusIndicator,
   TrashIcon,
-} from "@ultrapeach/ui";
+} from "@phe-rus/hino";
+import { Link, useNavigate } from "@tanstack/react-router";
 import { motion } from "motion/react";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { t } from "../../../i18n/i18n";
@@ -214,14 +214,17 @@ function NoteEditorScreen({ entry, viewId }: { entry: LibraryEntry; viewId?: str
               <ReadAloudButton root={articleRef} title={entry.title} />
               <AiAssist />
               <IconButton
+                size="icon-sm"
                 label={entry.pinned ? t("notes.unpin") : t("notes.pin")}
-                tone={entry.pinned ? "accent" : "default"}
+                variant={entry.pinned ? "link" : "ghost"}
                 className="@max-[520px]/note:hidden"
                 onClick={() => getLibrary().update(entry.id, { pinned: !entry.pinned })}
               >
                 <PinIcon size={19} />
               </IconButton>
               <IconButton
+                size="icon-sm"
+                variant="ghost"
                 label={t("notes.font")}
                 className="@max-[520px]/note:hidden"
                 onClick={(event) => {
@@ -233,6 +236,8 @@ function NoteEditorScreen({ entry, viewId }: { entry: LibraryEntry; viewId?: str
                 </span>
               </IconButton>
               <IconButton
+                size="icon-sm"
+                variant="ghost"
                 label={t("notes.deleteNote")}
                 className="@max-[520px]/note:hidden"
                 onClick={remove}
@@ -240,8 +245,9 @@ function NoteEditorScreen({ entry, viewId }: { entry: LibraryEntry; viewId?: str
                 <TrashIcon size={19} />
               </IconButton>
               <IconButton
+                size="icon-sm"
                 label={t("sharing.share")}
-                tone={shareSession ? "accent" : "default"}
+                variant={shareSession ? "link" : "ghost"}
                 className="@min-[600px]/note:hidden"
                 onClick={() => setSharing(true)}
               >
@@ -260,6 +266,8 @@ function NoteEditorScreen({ entry, viewId }: { entry: LibraryEntry; viewId?: str
               </Button>
               <PublishControl entry={entry} doc={provider.doc} />
               <IconButton
+                size="icon-sm"
+                variant="ghost"
                 label={t("notes.more")}
                 className="@min-[520px]/note:hidden"
                 onClick={(event) => {

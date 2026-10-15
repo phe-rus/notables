@@ -1,7 +1,7 @@
 import { TOGGLE_LINK_COMMAND } from "@lexical/link";
 import { useLexicalComposerContext } from "@lexical/react/LexicalComposerContext";
 import { mergeRegister } from "@lexical/utils";
-import { cn, LinkIcon, spring } from "@ultrapeach/ui";
+import { cn, LinkIcon, spring } from "@phe-rus/hino";
 import {
   $getSelection,
   $isRangeSelection,

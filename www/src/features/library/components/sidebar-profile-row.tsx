@@ -1,5 +1,5 @@
+import { cn, SettingsIcon } from "@phe-rus/hino";
 import { Link } from "@tanstack/react-router";
-import { cn, SettingsIcon } from "@ultrapeach/ui";
 import { t } from "../../../i18n/i18n";
 import { useAuthorName } from "../../../platform/author-preferences";
 

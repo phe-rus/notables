@@ -1,4 +1,3 @@
-import { type LinkProps, useNavigate } from "@tanstack/react-router";
 import {
   BookIcon,
   CalendarIcon,
@@ -17,7 +16,8 @@ import {
   spring,
   TrashIcon,
   WalletIcon,
-} from "@ultrapeach/ui";
+} from "@phe-rus/hino";
+import { type LinkProps, useNavigate } from "@tanstack/react-router";
 import { AnimatePresence, motion } from "motion/react";
 import { type ReactNode, useEffect, useState } from "react";
 import { t } from "../../../i18n/i18n";

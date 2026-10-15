@@ -9,7 +9,7 @@ import {
   PhotoIcon,
   Popover,
   useDismiss,
-} from "@ultrapeach/ui";
+} from "@phe-rus/hino";
 import { useCallback, useId, useRef, useState } from "react";
 import { type BlockType, blockLabels, setBlockType } from "../blocks/block-types";
 import { useSelectionState } from "../hooks/use-selection-state";
@@ -130,6 +130,8 @@ export function BlockToolbar({
         </Popover>
       </div>
       <IconButton
+        size="icon-sm"
+        variant="ghost"
         label="Checklist"
         aria-pressed={state.block === "check"}
         className={cn(state.block === "check" && "bg-fill")}
@@ -137,7 +139,12 @@ export function BlockToolbar({
       >
         <ChecklistIcon size={19} />
       </IconButton>
-      <IconButton label="Insert photo" onClick={() => fileRef.current?.click()}>
+      <IconButton
+        size="icon-sm"
+        variant="ghost"
+        label="Insert photo"
+        onClick={() => fileRef.current?.click()}
+      >
         <PhotoIcon size={19} />
       </IconButton>
       <input
@@ -151,15 +158,28 @@ export function BlockToolbar({
           if (file) void insertPhoto(file);
         }}
       />
-      <IconButton label="Record audio" onClick={onRecord} disabled={!onRecord}>
+      <IconButton
+        size="icon-sm"
+        variant="ghost"
+        label="Record audio"
+        onClick={onRecord}
+        disabled={!onRecord}
+      >
         <MicIcon size={19} />
       </IconButton>
       {studio && (
-        <IconButton label="Draw a page" onClick={() => void drawPage()}>
+        <IconButton
+          size="icon-sm"
+          variant="ghost"
+          label="Draw a page"
+          onClick={() => void drawPage()}
+        >
           <CanvasIcon size={19} />
         </IconButton>
       )}
       <IconButton
+        size="icon-sm"
+        variant="ghost"
         label="Write by hand"
         onClick={onDraw ?? (() => editor.dispatchCommand(INSERT_INK_COMMAND, undefined))}
       >

@@ -1,12 +1,5 @@
+import { ChaptersIcon, CloseIcon, cn, HeadphonesIcon, HighlighterIcon, toast } from "@phe-rus/hino";
 import { Link } from "@tanstack/react-router";
-import {
-  ChaptersIcon,
-  CloseIcon,
-  cn,
-  HeadphonesIcon,
-  HighlighterIcon,
-  toast,
-} from "@ultrapeach/ui";
 import { AnimatePresence, motion } from "motion/react";
 import {
   type CSSProperties,

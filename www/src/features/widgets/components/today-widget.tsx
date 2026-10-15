@@ -1,4 +1,4 @@
-import { cn, PinIcon } from "@ultrapeach/ui";
+import { cn, PinIcon } from "@phe-rus/hino";
 import { useEffect, useMemo, useState } from "react";
 import { AppMark } from "../../../components/brand/app-mark";
 import { locale, t } from "../../../i18n/i18n";

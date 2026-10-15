@@ -1,4 +1,4 @@
-import { CheckIcon, cn, ScanCodeIcon, WarningIcon } from "@ultrapeach/ui";
+import { CheckIcon, cn, ScanCodeIcon, WarningIcon } from "@phe-rus/hino";
 import { useCallback, useEffect, useState } from "react";
 import { readHiddenMark } from "../hidden-mark/reveal-hidden-mark";
 import { type FrameReader, imageCanvas, QrScanner } from "./qr-scanner";

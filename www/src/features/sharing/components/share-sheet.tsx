@@ -9,7 +9,7 @@ import {
   ShareIcon,
   Sheet,
   toast,
-} from "@ultrapeach/ui";
+} from "@phe-rus/hino";
 import { useEffect, useState } from "react";
 import { t } from "../../../i18n/i18n";
 import { useAuthorName } from "../../../platform/author-preferences";
@@ -110,7 +110,7 @@ function ShareContent({ entry, onClose }: { entry: LibraryEntry; onClose: () => 
             {t("sharing.explainer")}
           </p>
         </div>
-        <IconButton label={t("common.close")} onClick={onClose}>
+        <IconButton size="icon-sm" variant="ghost" label={t("common.close")} onClick={onClose}>
           <CloseIcon size={18} />
         </IconButton>
       </header>
@@ -132,7 +132,7 @@ function ShareContent({ entry, onClose }: { entry: LibraryEntry; onClose: () => 
               maxLength={60}
               className="min-w-0 grow rounded-xl control-field px-3.5 py-2.5 text-subheadline text-label placeholder:text-label-tertiary"
             />
-            <Button variant="primary" type="submit" disabled={busy || !name.trim()}>
+            <Button variant="default" type="submit" disabled={busy || !name.trim()}>
               <ShareIcon size={16} />
               {t("sharing.invite")}
             </Button>
@@ -179,6 +179,8 @@ function ShareContent({ entry, onClose }: { entry: LibraryEntry; onClose: () => 
                       <>
                         {!member.joinedAt && (
                           <IconButton
+                            size="icon-sm"
+                            variant="ghost"
                             label={t("sharing.copyLink")}
                             onClick={() => {
                               const link = linkFor(entry, inviteId);
@@ -189,6 +191,8 @@ function ShareContent({ entry, onClose }: { entry: LibraryEntry; onClose: () => 
                           </IconButton>
                         )}
                         <IconButton
+                          size="icon-sm"
+                          variant="ghost"
                           label={t("sharing.remove", { name: member.name })}
                           onClick={() => removePerson(entry.id, inviteId)}
                         >

@@ -1,5 +1,5 @@
+import { ChevronLeftIcon, IconButton, SidebarIcon, useMediaQuery } from "@phe-rus/hino";
 import { useNavigate } from "@tanstack/react-router";
-import { ChevronLeftIcon, IconButton, SidebarIcon, useMediaQuery } from "@ultrapeach/ui";
 import { CollapsedSidebarControls } from "../../../components/window/collapsed-sidebar-controls";
 import { t } from "../../../i18n/i18n";
 import { usePreferences } from "../store/preferences-store";
@@ -34,11 +34,22 @@ export function SettingsScreen({
         {sidebar.collapsed && <CollapsedSidebarControls />}
         <div data-tauri-drag-region className="flex items-center gap-1">
           {!wide && open ? (
-            <IconButton label={t("common.back")} onClick={() => void navigate({ to: "/settings" })}>
+            <IconButton
+              size="icon-sm"
+              variant="ghost"
+              label={t("common.back")}
+              onClick={() => void navigate({ to: "/settings" })}
+            >
               <ChevronLeftIcon size={20} className="rtl:-scale-x-100" />
             </IconButton>
           ) : (
-            <IconButton label={t("nav.showLibrary")} className="lg:hidden" onClick={onOpenSidebar}>
+            <IconButton
+              size="icon-sm"
+              variant="ghost"
+              label={t("nav.showLibrary")}
+              className="lg:hidden"
+              onClick={onOpenSidebar}
+            >
               <SidebarIcon size={20} />
             </IconButton>
           )}

@@ -1,6 +1,6 @@
 import { extractSeal, hiddenMarkFor, type SealCheck, verifySeal } from "@notables/core";
+import { PhotoIcon, ScanCodeIcon, spring } from "@phe-rus/hino";
 import { Link } from "@tanstack/react-router";
-import { PhotoIcon, ScanCodeIcon, spring } from "@ultrapeach/ui";
 import { AnimatePresence, motion } from "motion/react";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { AppMark } from "../../../components/brand/app-mark";

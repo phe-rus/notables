@@ -8,7 +8,7 @@ import {
   openMenu,
   PlusIcon,
   SidebarIcon,
-} from "@ultrapeach/ui";
+} from "@phe-rus/hino";
 import { useEffect } from "react";
 import { setDrawerOpen } from "../../../components/layout/drawer-store";
 import { CollapsedSidebarControls } from "../../../components/window/collapsed-sidebar-controls";
@@ -58,11 +58,18 @@ export function WalletScreen() {
         {sidebar.collapsed && <CollapsedSidebarControls />}
         <div className="flex items-center gap-2">
           {onCard ? (
-            <IconButton label={t("common.back")} onClick={() => showWallet("home")}>
+            <IconButton
+              size="icon-sm"
+              variant="ghost"
+              label={t("common.back")}
+              onClick={() => showWallet("home")}
+            >
               <ChevronLeftIcon size={20} className="rtl:-scale-x-100" />
             </IconButton>
           ) : (
             <IconButton
+              size="icon-sm"
+              variant="ghost"
               label={t("nav.showLibrary")}
               className="lg:hidden"
               onClick={() => setDrawerOpen(true)}
@@ -75,6 +82,8 @@ export function WalletScreen() {
           </h1>
           {accessible && state.status?.protected && !onCard && (
             <IconButton
+              size="icon-sm"
+              variant="ghost"
               label={t("wallet.lock")}
               onClick={() => {
                 suspendWallet();
@@ -86,6 +95,8 @@ export function WalletScreen() {
           )}
           {accessible && state.view === "home" && (
             <IconButton
+              size="icon-sm"
+              variant="ghost"
               label={t("wallet.addCard")}
               disabled={state.busy}
               onClick={() => showWallet("add")}
@@ -96,6 +107,8 @@ export function WalletScreen() {
           )}
           {accessible && onCard && (
             <IconButton
+              size="icon-sm"
+              variant="ghost"
               label={t("notes.more")}
               disabled={state.busy}
               onClick={(event) =>

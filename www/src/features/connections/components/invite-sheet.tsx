@@ -1,4 +1,4 @@
-import { Button, CloseIcon, IconButton, ShareIcon, Sheet, toast } from "@ultrapeach/ui";
+import { Button, CloseIcon, IconButton, ShareIcon, Sheet, toast } from "@phe-rus/hino";
 import { useState } from "react";
 import { Field, PickerInput, TextInput } from "../../../components/form/form-fields";
 import { t } from "../../../i18n/i18n";
@@ -63,7 +63,7 @@ function InviteForm({ onClose }: { onClose: () => void }) {
             {t("sharing.explainer")}
           </p>
         </div>
-        <IconButton label={t("common.close")} onClick={onClose}>
+        <IconButton size="icon-sm" variant="ghost" label={t("common.close")} onClick={onClose}>
           <CloseIcon size={18} />
         </IconButton>
       </header>
@@ -98,7 +98,7 @@ function InviteForm({ onClose }: { onClose: () => void }) {
               onChange={(event) => setName(event.target.value)}
             />
           </Field>
-          <Button variant="primary" type="submit" disabled={busy || !name.trim() || !entry}>
+          <Button variant="default" type="submit" disabled={busy || !name.trim() || !entry}>
             <ShareIcon size={16} />
             {t("connections.inviteSend")}
           </Button>

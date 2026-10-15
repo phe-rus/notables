@@ -1,4 +1,4 @@
-import { Button, cn, toast } from "@ultrapeach/ui";
+import { Button, cn, toast } from "@phe-rus/hino";
 import { useEffect, useRef, useState } from "react";
 import { t } from "../../../i18n/i18n";
 import { canTranscribeRecordings, transcribeRecording } from "../lib/transcribe-recording";

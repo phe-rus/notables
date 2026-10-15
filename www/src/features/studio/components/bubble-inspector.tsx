@@ -1,4 +1,4 @@
-import { Button, cn } from "@ultrapeach/ui";
+import { Button, cn } from "@phe-rus/hino";
 import { useEffect, useRef } from "react";
 import { fontFamilies, fontLabels } from "../lib/scene-geometry";
 import type { BubbleFont, BubbleItem, BubbleStyle } from "../model/page-scene";

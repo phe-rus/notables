@@ -1,5 +1,5 @@
+import { ChevronRightIcon, type ContextMenuItem, cn, spring, useContextMenu } from "@phe-rus/hino";
 import { Link, type LinkProps } from "@tanstack/react-router";
-import { ChevronRightIcon, type ContextMenuItem, cn, spring, useContextMenu } from "@ultrapeach/ui";
 import { motion } from "motion/react";
 import type { ReactNode } from "react";
 

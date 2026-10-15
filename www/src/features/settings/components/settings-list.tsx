@@ -1,5 +1,5 @@
+import { ChevronRightIcon, cn } from "@phe-rus/hino";
 import { Link } from "@tanstack/react-router";
-import { ChevronRightIcon, cn } from "@ultrapeach/ui";
 import { useEffect, useState } from "react";
 import { t } from "../../../i18n/i18n";
 import { useAuthorName } from "../../../platform/author-preferences";

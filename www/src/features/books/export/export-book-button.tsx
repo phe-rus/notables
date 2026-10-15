@@ -1,4 +1,4 @@
-import { Button, DownloadIcon, openMenu, toast } from "@ultrapeach/ui";
+import { Button, DownloadIcon, openMenu, toast } from "@phe-rus/hino";
 import { useState } from "react";
 import { t } from "../../../i18n/i18n";
 import type { BookEntry } from "../store/book-store";

@@ -1,5 +1,5 @@
 import type { NoteKind } from "@notables/core";
-import { cn, PlusIcon, SearchField } from "@ultrapeach/ui";
+import { cn, PlusIcon, SearchField } from "@phe-rus/hino";
 import { useDeferredValue, useState } from "react";
 import { t } from "../../../../i18n/i18n";
 import { noteKindPlural } from "../../../library/model/note-kind-labels";

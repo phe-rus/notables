@@ -6,7 +6,7 @@ import {
   Section,
   SegmentedControl,
   toast,
-} from "@ultrapeach/ui";
+} from "@phe-rus/hino";
 import { AnimatePresence, motion } from "motion/react";
 import { useState } from "react";
 import { t } from "../../../i18n/i18n";
@@ -59,7 +59,7 @@ export function CardDetail({ card }: { card: WalletCard }) {
             { value: "back", label: t("wallet.back") },
           ]}
         />
-        <Button variant="primary" onClick={() => showWallet("present")}>
+        <Button variant="default" onClick={() => showWallet("present")}>
           {t("wallet.present")}
         </Button>
       </div>
@@ -76,6 +76,8 @@ export function CardDetail({ card }: { card: WalletCard }) {
                 </span>
                 {field.value && (
                   <IconButton
+                    size="icon-sm"
+                    variant="ghost"
                     label={t("wallet.copyValue", { label: field.label })}
                     onClick={() => void copy(field.value)}
                   >

@@ -10,7 +10,7 @@ import {
   type Repeat,
   repeatLabels,
 } from "@notables/core";
-import { Button, CloseIcon, IconButton, openMenu, Toggle, toast } from "@ultrapeach/ui";
+import { Button, CloseIcon, IconButton, openMenu, Toggle, toast } from "@phe-rus/hino";
 import { useState } from "react";
 import { Field, PickerInput, TextArea, TextInput } from "../../../components/form/form-fields";
 import { locale, t } from "../../../i18n/i18n";
@@ -137,7 +137,7 @@ export function EventForm({
             }))}
           />
         </div>
-        <IconButton label={t("common.close")} onClick={onClose}>
+        <IconButton size="icon-sm" variant="ghost" label={t("common.close")} onClick={onClose}>
           <CloseIcon size={18} />
         </IconButton>
       </header>
@@ -348,7 +348,7 @@ export function EventForm({
         <Button variant="secondary" onClick={onClose}>
           {t("common.cancel")}
         </Button>
-        <Button variant="primary" type="submit" form={formId}>
+        <Button variant="default" type="submit" form={formId}>
           {target.isNew ? t("common.add") : t("common.save")}
         </Button>
       </footer>

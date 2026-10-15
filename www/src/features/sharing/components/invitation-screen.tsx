@@ -1,5 +1,5 @@
+import { Button, ShareIcon } from "@phe-rus/hino";
 import { useNavigate } from "@tanstack/react-router";
-import { Button, ShareIcon } from "@ultrapeach/ui";
 import { useEffect, useMemo, useState } from "react";
 import { AppMark } from "../../../components/brand/app-mark";
 import { t } from "../../../i18n/i18n";
@@ -45,7 +45,7 @@ export function InvitationScreen({ shareId }: { shareId: string }) {
               {t("sharing.acceptBody")}
             </p>
           </div>
-          <Button variant="primary" size="md" disabled={!ready} onClick={accept}>
+          <Button variant="default" size="default" disabled={!ready} onClick={accept}>
             <ShareIcon size={17} />
             {t("sharing.accept")}
           </Button>

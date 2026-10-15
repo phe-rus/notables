@@ -1,4 +1,4 @@
-import { Button } from "@ultrapeach/ui";
+import { Button } from "@phe-rus/hino";
 import { useEffect, useRef, useState } from "react";
 import { t } from "../../../i18n/i18n";
 import { captureCardFrame, openCardCamera } from "../lib/card-image";
@@ -152,7 +152,7 @@ export function CardCapture() {
               {t("wallet.alignCard")}
             </p>
           </div>
-          <Button variant="primary" onClick={takePhoto}>
+          <Button variant="default" onClick={takePhoto}>
             {t("wallet.takePhoto")}
           </Button>
           <Button
@@ -167,7 +167,7 @@ export function CardCapture() {
         </>
       ) : (
         <>
-          <Button variant="primary" onClick={() => void openCamera()}>
+          <Button variant="default" onClick={() => void openCamera()}>
             {t("wallet.scanCard")}
           </Button>
           {nfc && <Button onClick={() => void scanWalletNfc()}>{t("wallet.readNfc")}</Button>}

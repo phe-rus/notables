@@ -7,7 +7,7 @@ import {
   LAST_YEAR,
   occurrencesTouching,
 } from "@notables/core";
-import { cn } from "@ultrapeach/ui";
+import { cn } from "@phe-rus/hino";
 import { useLayoutEffect, useMemo, useRef, useState } from "react";
 import { locale, t } from "../../../i18n/i18n";
 import { formatClock } from "../lib/describe-alert";

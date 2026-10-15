@@ -1,4 +1,4 @@
-import { defaultAccent } from "@ultrapeach/tokens";
+import { defaultAccent } from "@phe-rus/hino/tokens";
 import { useEffect } from "react";
 import { androidBridge } from "../../../platform/android-bridge";
 import { devicePlatform } from "../../../platform/device-platform";

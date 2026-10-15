@@ -1,4 +1,4 @@
-import { CheckIcon, cn, spring, TrashIcon, toast } from "@ultrapeach/ui";
+import { CheckIcon, cn, spring, TrashIcon, toast } from "@phe-rus/hino";
 import { AnimatePresence, motion } from "motion/react";
 import { type RefObject, useEffect, useState } from "react";
 import { highlightAt, quoteFromRange } from "../lib/selection-quote";

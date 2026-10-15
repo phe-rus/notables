@@ -1,4 +1,4 @@
-import { CloseIcon, IconButton, Sheet } from "@ultrapeach/ui";
+import { CloseIcon, IconButton, Sheet } from "@phe-rus/hino";
 import { useState } from "react";
 import { t } from "../../../i18n/i18n";
 import { setSeriesFranchise, startFranchise } from "../actions/franchise";
@@ -79,7 +79,7 @@ function FranchiseContent({ task, onClose }: { task: FranchiseTask; onClose: () 
             </p>
           )}
         </div>
-        <IconButton label={t("common.close")} onClick={onClose}>
+        <IconButton size="icon-sm" variant="ghost" label={t("common.close")} onClick={onClose}>
           <CloseIcon size={18} />
         </IconButton>
       </header>

@@ -1,5 +1,5 @@
+import { LabeledContent, Section, Toggle } from "@phe-rus/hino";
 import { Link } from "@tanstack/react-router";
-import { LabeledContent, Section, Toggle } from "@ultrapeach/ui";
 import { t } from "../../../../i18n/i18n";
 
 /**

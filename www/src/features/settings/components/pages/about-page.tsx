@@ -1,4 +1,4 @@
-import { LabeledContent, Section } from "@ultrapeach/ui";
+import { LabeledContent, Section } from "@phe-rus/hino";
 import { type ReactNode, useEffect, useState } from "react";
 import { AppMark } from "../../../../components/brand/app-mark";
 import { t } from "../../../../i18n/i18n";

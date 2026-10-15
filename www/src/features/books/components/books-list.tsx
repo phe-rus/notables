@@ -1,4 +1,3 @@
-import { Link, useNavigate } from "@tanstack/react-router";
 import {
   BookIcon,
   Button,
@@ -14,7 +13,8 @@ import {
   spring,
   TrashIcon,
   useContextMenu,
-} from "@ultrapeach/ui";
+} from "@phe-rus/hino";
+import { Link, useNavigate } from "@tanstack/react-router";
 import { AnimatePresence, motion } from "motion/react";
 import { type MouseEvent, useEffect, useMemo, useRef, useState } from "react";
 import { CollapsedSidebarControls } from "../../../components/window/collapsed-sidebar-controls";
@@ -145,7 +145,13 @@ function BooksListContent({ activeId, onOpenSidebar, className }: BooksListProps
         {collapsed && <CollapsedSidebarControls />}
         <div data-tauri-drag-region className="flex items-center justify-between">
           <div className="flex items-center gap-1">
-            <IconButton label={t("nav.showLibrary")} className="lg:hidden" onClick={onOpenSidebar}>
+            <IconButton
+              size="icon-sm"
+              variant="ghost"
+              label={t("nav.showLibrary")}
+              className="lg:hidden"
+              onClick={onOpenSidebar}
+            >
               <SidebarIcon size={20} />
             </IconButton>
             <h1 className="text-title2 font-bold tracking-tight">
@@ -171,10 +177,20 @@ function BooksListContent({ activeId, onOpenSidebar, className }: BooksListProps
             )}
             {!selecting && (
               <>
-                <IconButton label={t("imports.open")} onClick={() => setImporting(true)}>
+                <IconButton
+                  size="icon-sm"
+                  variant="ghost"
+                  label={t("imports.open")}
+                  onClick={() => setImporting(true)}
+                >
                   <DownloadIcon size={20} />
                 </IconButton>
-                <IconButton label={t("books.newMenu")} tone="accent" onClick={chooseNewBook}>
+                <IconButton
+                  size="icon-sm"
+                  label={t("books.newMenu")}
+                  variant="link"
+                  onClick={chooseNewBook}
+                >
                   <BookIcon size={20} />
                 </IconButton>
               </>
@@ -268,7 +284,7 @@ function BooksListContent({ activeId, onOpenSidebar, className }: BooksListProps
               {allSelected ? t("books.deselectAll") : t("books.selectAll")}
             </Button>
             <Button
-              variant="primary"
+              variant="default"
               disabled={selectedCount === 0}
               onClick={deleteSelected}
               className="bg-danger text-white"

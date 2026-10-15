@@ -1,5 +1,5 @@
+import { ChevronLeftIcon, ChevronRightIcon, cn, SidebarIcon } from "@phe-rus/hino";
 import { useRouter } from "@tanstack/react-router";
-import { ChevronLeftIcon, ChevronRightIcon, cn, SidebarIcon } from "@ultrapeach/ui";
 import { AppMark } from "../../../components/brand/app-mark";
 import { ToolbarButton } from "../../../components/layout/toolbar-button";
 import { WindowControls } from "../../../components/window/window-controls";

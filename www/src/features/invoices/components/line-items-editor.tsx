@@ -1,5 +1,5 @@
 import { formatMoney, type LineItem, lineAmount } from "@notables/core";
-import { CloseIcon, PlusIcon, spring } from "@ultrapeach/ui";
+import { CloseIcon, PlusIcon, spring } from "@phe-rus/hino";
 import { AnimatePresence, motion } from "motion/react";
 import { useState } from "react";
 import { TextInput } from "../../../components/form/form-fields";

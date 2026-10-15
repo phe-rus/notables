@@ -1,14 +1,6 @@
 import { useWritingBridge } from "@notables/pluraliti";
+import { Button, CloseIcon, IconButton, openMenu, SparkleIcon, spring, toast } from "@phe-rus/hino";
 import { Link } from "@tanstack/react-router";
-import {
-  Button,
-  CloseIcon,
-  IconButton,
-  openMenu,
-  SparkleIcon,
-  spring,
-  toast,
-} from "@ultrapeach/ui";
 import { AnimatePresence, motion } from "motion/react";
 import { useRef, useState } from "react";
 import { createPortal } from "react-dom";
@@ -134,7 +126,7 @@ export function AiAssist() {
                 </span>
                 <span className="grow text-subheadline font-semibold">{run.action.label}</span>
                 <span className="text-caption text-label-tertiary">{provider.label}</span>
-                <IconButton label="Close" onClick={close}>
+                <IconButton size="icon-sm" variant="ghost" label="Close" onClick={close}>
                   <CloseIcon size={17} />
                 </IconButton>
               </header>
@@ -173,7 +165,7 @@ export function AiAssist() {
                     >
                       Copy
                     </Button>
-                    <Button variant="primary" onClick={apply}>
+                    <Button variant="default" onClick={apply}>
                       {run.action.apply === "replace" && !run.usedSelection
                         ? "Add below"
                         : run.action.applyLabel}

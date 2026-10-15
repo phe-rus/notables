@@ -1,4 +1,4 @@
-import { PauseIcon, PlayIcon } from "@ultrapeach/ui";
+import { PauseIcon, PlayIcon } from "@phe-rus/hino";
 import { type ReactNode, useCallback, useEffect, useRef, useState } from "react";
 import { useMediaSource } from "../../media/media-source";
 

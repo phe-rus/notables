@@ -1,11 +1,11 @@
-import { Link, type LinkProps } from "@tanstack/react-router";
 import {
   InvoiceIcon,
   NoteIcon,
   SettingsIcon,
   TabBar as UltraPeachTabBar,
   WalletIcon,
-} from "@ultrapeach/ui";
+} from "@phe-rus/hino";
+import { Link, type LinkProps } from "@tanstack/react-router";
 import type { ReactNode } from "react";
 import { openSearch } from "../../features/search/store/search-palette";
 import { t } from "../../i18n/i18n";

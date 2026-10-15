@@ -6,7 +6,7 @@ import {
   type Occurrence,
   occurrencesTouching,
 } from "@notables/core";
-import { CheckIcon, cn } from "@ultrapeach/ui";
+import { CheckIcon, cn } from "@phe-rus/hino";
 import {
   type PointerEvent as ReactPointerEvent,
   useEffect,

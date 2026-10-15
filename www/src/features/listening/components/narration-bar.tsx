@@ -8,7 +8,7 @@ import {
   PlayIcon,
   PreviousTrackIcon,
   spring,
-} from "@ultrapeach/ui";
+} from "@phe-rus/hino";
 import { motion } from "motion/react";
 import { t } from "../../../i18n/i18n";
 import {
@@ -69,6 +69,8 @@ export function NarrationBar({
       className={cn("glass-menu flex items-center gap-1 rounded-full px-2 py-1.5", className)}
     >
       <IconButton
+        size="icon-sm"
+        variant="ghost"
         label={t("listening.previousSentence")}
         disabled={state.index <= 0}
         onClick={() => onSeek(state.index - 1)}
@@ -76,13 +78,16 @@ export function NarrationBar({
         <PreviousTrackIcon size={18} />
       </IconButton>
       <IconButton
+        size="icon-sm"
         label={state.playing ? t("listening.pause") : t("notes.readAloud")}
-        tone="accent"
+        variant="link"
         onClick={onToggle}
       >
         {state.playing ? <PauseIcon size={20} /> : <PlayIcon size={20} />}
       </IconButton>
       <IconButton
+        size="icon-sm"
+        variant="ghost"
         label={t("listening.nextSentence")}
         disabled={state.index + 1 >= state.total}
         onClick={() => onSeek(state.index + 1)}
@@ -110,7 +115,7 @@ export function NarrationBar({
           {state.error}
         </span>
       )}
-      <IconButton label={t("notes.stopReading")} onClick={onClose}>
+      <IconButton size="icon-sm" variant="ghost" label={t("notes.stopReading")} onClick={onClose}>
         <CloseIcon size={16} />
       </IconButton>
     </motion.div>

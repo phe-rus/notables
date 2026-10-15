@@ -24,7 +24,7 @@
     "@lexical/utils": "catalog:",
     "@lexical/yjs": "catalog:",
     "@notables/core": "workspace:*",
-    "@ultrapeach/ui": "workspace:*",
+    "@phe-rus/hino": "0.1.3",
     "lexical": "catalog:",
     "motion": "catalog:",
     "perfect-freehand": "catalog:",

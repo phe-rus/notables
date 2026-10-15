@@ -1,4 +1,4 @@
-import { cn, IconButton, LayoutIcon, Popover, useDismiss } from "@ultrapeach/ui";
+import { cn, IconButton, LayoutIcon, Popover, useDismiss } from "@phe-rus/hino";
 import { useRef, useState } from "react";
 import {
   layoutPanels,
@@ -27,6 +27,8 @@ export function PageMenu({
   return (
     <div ref={root} className="relative">
       <IconButton
+        size="icon-sm"
+        variant="ghost"
         label="Page and panels"
         aria-expanded={open}
         onClick={() => setOpen((value) => !value)}

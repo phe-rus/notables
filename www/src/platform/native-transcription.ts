@@ -1,7 +1,7 @@
 import { localMediaId } from "@notables/core";
 import type { TranscriptionService } from "@notables/pluraliti";
+import { confirmDialog, toast } from "@phe-rus/hino";
 import { Channel, invoke } from "@tauri-apps/api/core";
-import { confirmDialog, toast } from "@ultrapeach/ui";
 import { decodeForSpeech } from "../features/recording/lib/decode-audio";
 import { isTauri } from "./runtime";
 import { loadMedia } from "./storage/media-store";

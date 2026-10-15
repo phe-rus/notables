@@ -1,4 +1,3 @@
-import { Link } from "@tanstack/react-router";
 import {
   AddPersonIcon,
   Button,
@@ -14,7 +13,8 @@ import {
   SidebarIcon,
   spring,
   toast,
-} from "@ultrapeach/ui";
+} from "@phe-rus/hino";
+import { Link } from "@tanstack/react-router";
 import { AnimatePresence, motion } from "motion/react";
 import { useDeferredValue, useState } from "react";
 import { CollapsedSidebarControls } from "../../../components/window/collapsed-sidebar-controls";
@@ -53,7 +53,13 @@ export function ConnectionsScreen({ onOpenSidebar }: { onOpenSidebar: () => void
         {collapsed && <CollapsedSidebarControls />}
         <div data-tauri-drag-region className="flex items-center justify-between gap-2">
           <div className="flex min-w-0 items-center gap-1">
-            <IconButton label={t("nav.showLibrary")} className="lg:hidden" onClick={onOpenSidebar}>
+            <IconButton
+              size="icon-sm"
+              variant="ghost"
+              label={t("nav.showLibrary")}
+              className="lg:hidden"
+              onClick={onOpenSidebar}
+            >
               <SidebarIcon size={20} />
             </IconButton>
             <h1 className="truncate text-title2 font-bold tracking-tight">
@@ -61,15 +67,16 @@ export function ConnectionsScreen({ onOpenSidebar }: { onOpenSidebar: () => void
             </h1>
           </div>
           <IconButton
+            size="icon-sm"
             label={t("connections.invite")}
-            tone="accent"
+            variant="link"
             className="@min-[480px]/people:hidden"
             onClick={() => setInviting(true)}
           >
             <AddPersonIcon size={20} />
           </IconButton>
           <Button
-            variant="primary"
+            variant="default"
             className="@max-[480px]/people:hidden"
             onClick={() => setInviting(true)}
           >
@@ -320,6 +327,8 @@ function SharedNoteRow({
       </Link>
       {hasActions && (
         <IconButton
+          size="icon-sm"
+          variant="ghost"
           label={t("notes.more")}
           onClick={(event) => {
             openMenu(event.currentTarget, actions(), { edge: "trailing" });
@@ -344,7 +353,7 @@ function EmptyState({ onInvite }: { onInvite: () => void }) {
       <p className="max-w-[380px] text-subheadline leading-snug text-label-secondary">
         {t("connections.emptyBody")}
       </p>
-      <Button variant="primary" className="mt-2" onClick={onInvite}>
+      <Button variant="default" className="mt-2" onClick={onInvite}>
         <AddPersonIcon size={16} />
         {t("connections.invite")}
       </Button>

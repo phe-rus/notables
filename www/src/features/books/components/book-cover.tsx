@@ -1,5 +1,5 @@
 import { useMediaSource } from "@notables/pluraliti";
-import { cn } from "@ultrapeach/ui";
+import { cn } from "@phe-rus/hino";
 
 /**
  * A book cover with a bound spine edge: the book's own cover image when it

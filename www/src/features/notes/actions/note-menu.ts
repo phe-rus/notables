@@ -1,6 +1,6 @@
 import { NoteKind } from "@notables/core";
+import { type ContextMenuItem, openFollowUpMenu, toast } from "@phe-rus/hino";
 import type { useNavigate } from "@tanstack/react-router";
-import { type ContextMenuItem, openFollowUpMenu, toast } from "@ultrapeach/ui";
 import { t } from "../../../i18n/i18n";
 import { appLinkFor } from "../../../platform/app-links";
 import { publicUrl } from "../../../platform/public-url";

@@ -1,4 +1,4 @@
-import { cn } from "@ultrapeach/ui";
+import { cn } from "@phe-rus/hino";
 import type { ReactNode } from "react";
 import { BookCover } from "../components/book-cover";
 import type { BookEntry } from "../store/book-store";

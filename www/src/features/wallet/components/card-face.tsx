@@ -1,5 +1,5 @@
-import { type AccentId, accents } from "@ultrapeach/tokens";
-import { cn } from "@ultrapeach/ui";
+import { cn } from "@phe-rus/hino";
+import { type AccentId, accents } from "@phe-rus/hino/tokens";
 import type { ReactNode } from "react";
 import { t } from "../../../i18n/i18n";
 import { cardFaceFields, ltrFieldKeys } from "../model/card-layout";

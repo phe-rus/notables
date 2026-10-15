@@ -1,4 +1,4 @@
-import { SidebarIcon } from "@ultrapeach/ui";
+import { SidebarIcon } from "@phe-rus/hino";
 import { toggleSidebarCollapsed } from "../../features/settings/store/preferences-store";
 import { windowChrome } from "../../platform/window-chrome";
 import { ToolbarButton } from "../layout/toolbar-button";

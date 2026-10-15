@@ -1,5 +1,5 @@
+import { CheckIcon, Chip, cn, haptic, openContextMenu, PinIcon, spring } from "@phe-rus/hino";
 import { Link } from "@tanstack/react-router";
-import { CheckIcon, Chip, cn, haptic, openContextMenu, PinIcon, spring } from "@ultrapeach/ui";
 import { animate, motion, useMotionValue, useTransform } from "motion/react";
 import { type MouseEvent, type PointerEvent, useEffect, useRef } from "react";
 import { t } from "../../../i18n/i18n";

@@ -6,7 +6,7 @@ import {
   PinIcon,
   spring,
   TrashIcon,
-} from "@ultrapeach/ui";
+} from "@phe-rus/hino";
 import { motion } from "motion/react";
 import { t } from "../../../i18n/i18n";
 import { noteKindItems, togglePinned } from "../../notes/actions/note-menu";
@@ -40,7 +40,8 @@ export function NotesSelectionBar({
       </Button>
       <div className="flex items-center gap-1">
         <IconButton
-          size="md"
+          variant="ghost"
+          size="icon"
           label={allPinned ? t("notes.unpin") : t("notes.pin")}
           disabled={none}
           onClick={() => togglePinned(chosen)}
@@ -48,7 +49,8 @@ export function NotesSelectionBar({
           <PinIcon size={19} />
         </IconButton>
         <IconButton
-          size="md"
+          variant="ghost"
+          size="icon"
           label={t("notes.kind")}
           disabled={none}
           onClick={(event) => openMenu(event.currentTarget, noteKindItems(chosen), { above: true })}
@@ -56,7 +58,8 @@ export function NotesSelectionBar({
           <FolderIcon size={19} />
         </IconButton>
         <IconButton
-          size="md"
+          variant="ghost"
+          size="icon"
           label={t("common.delete")}
           disabled={none}
           className="text-danger"

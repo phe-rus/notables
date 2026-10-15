@@ -15,9 +15,10 @@ audiobooks, invoices and plans. One codebase ships everywhere:
   widgets.
 - `packages/notable-core` (models, invoicing, calendar recurrence), `packages/pluraliti`
   (custom Lexical editor), `packages/sync` (Yjs persistence, peer-to-peer
-  mesh), and UltraPeach, our design language, in `packages/ultrapeach/`:
-  `ui` (components, Hugeicons) and `tokens` (design tokens; `theme.css`
-  is generated, run `bun run generate` there). Blush pink is the default.
+  mesh), and Hino (`@phe-rus/hino`), the Pherus design system, which
+  replaced UltraPeach on 15 October (source in `~/pherus/hino`, rules in
+  the `hino` skill): components, Hugeicons and design tokens
+  (`@phe-rus/hino/tokens`, `theme.css`). Blush pink is the default.
 - The app package in `www/` is named `notes`; the repo root is `notables`.
 - Decisions live in `docs/adr/`; read ADR-0003, 0005 and 0006 before
   touching sync, identity or sharing.
@@ -175,7 +176,7 @@ Shipped and tested in the browser (Playwright) unless noted:
   (MainActivity), solid top bars (`data-os="android"`), system haptics and
   the Today home-screen widget with Add to Home Screen (`AndroidBridge.kt`,
   `www/src/platform/android-bridge.ts`). Haptics everywhere go through
-  `haptic()` in packages/ultrapeach/ui; menus and popovers keep to `screenEdges()`.
+  `haptic()` from @phe-rus/hino; menus and popovers keep to `screenEdges()`.
   Calendar on phones: week strip, back titles, self-scrolling months.
   Open: read aloud has no voice (the WebView has no speechSynthesis
   voices; needs Android TextToSpeech through the bridge); the
@@ -184,7 +185,7 @@ Shipped and tested in the browser (Playwright) unless noted:
   needs an x86_64 build, which `ort` blocks. Debug the live WebView with
   `adb forward tcp:9333 localabstract:webview_devtools_remote_<pid>`.
 
-- UltraPeach design language (`packages/ultrapeach`, rules in its AGENTS.md):
+- Design language, now Hino (`@phe-rus/hino`; was `packages/ultrapeach`):
   Blush default accent (controls use rose `#d16988`), Dynamic Type text
   styles, radius scale, scoped `data-theme`, platform variants, clear glass
   on Apple, solid floating bars on Android (glass there looked out of place),
@@ -249,7 +250,7 @@ Shipped and tested in the browser (Playwright) unless noted:
   (`lib/use-hold-to-select.ts`, which stops scrolling once the hold lands
   and scrolls near the edges); the selection bar pins, changes kind or
   deletes. The note menu is seven rows; Font and Kind open in its place
-  (`openFollowUpMenu` in UltraPeach). No drag to reorder (the owner
+  (`openFollowUpMenu` in Hino). No drag to reorder (the owner
   doesn't want it) and no Lock action until the Lock ships. Tested with
   real touch events in Chromium at phone size, not yet on a phone.
 - Languages: seven, with Simplified Chinese (`zh`).
@@ -328,7 +329,7 @@ accepted with all answers; `/develop` starts at its step 1 once the
 Android, Hino and fresh start items ahead of it are done.
 
 The long plan, stage by stage, is in [docs/STAGES.md](docs/STAGES.md).
-Resume from its first unfinished stage (now Stage 1, UltraPeach).
+Resume from its first unfinished stage.
 
 
 - Android: the startup notification check, export to content:// locations, an x86_64 build for ChromeOS.
@@ -351,7 +352,7 @@ General skills live in your home folder, not here.
 
 ## Context files
 
-- [packages/ultrapeach/AGENTS.md](packages/ultrapeach/AGENTS.md): the UltraPeach design language: tokens, text styles, materials, platform variants and the component catalog. Read before touching any UI.
+- `.agentic/skills/hino/SKILL.md`: Hino's rules and every component's import (from https://hino.pherus.org/skills/hino/SKILL.md). Read before touching any UI; fix gaps upstream in `~/pherus/hino`.
 - [www/src/features/wallet/AGENTS.md](www/src/features/wallet/AGENTS.md): wallet requirements, rejected prototype, physical Android evidence and resume checkpoint. Read before continuing wallet work.
 
 <!-- BEGIN:turborepo-agent-rules -->

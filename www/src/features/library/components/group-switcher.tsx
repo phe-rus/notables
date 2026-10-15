@@ -1,5 +1,5 @@
+import { cn, spring } from "@phe-rus/hino";
 import { Link } from "@tanstack/react-router";
-import { cn, spring } from "@ultrapeach/ui";
 import { motion } from "motion/react";
 import { type GroupId, type ViewId, viewGroups } from "../model/library-views";
 

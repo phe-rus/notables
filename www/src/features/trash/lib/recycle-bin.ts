@@ -1,5 +1,5 @@
 import { createId } from "@notables/core";
-import { toast } from "@ultrapeach/ui";
+import { toast } from "@phe-rus/hino";
 import { locale, t } from "../../../i18n/i18n";
 import { eraseBook, ownChapters } from "../../books/actions/erase-book";
 import { syncBookFormat } from "../../books/actions/sync-book-format";

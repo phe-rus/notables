@@ -1,4 +1,4 @@
-import { toast } from "@ultrapeach/ui";
+import { toast } from "@phe-rus/hino";
 import { t } from "../../../i18n/i18n";
 
 /** Hands a link over the system share sheet where there is one, or copies it. */

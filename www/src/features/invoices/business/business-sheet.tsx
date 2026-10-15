@@ -1,4 +1,4 @@
-import { Button, CloseIcon, IconButton, Picker, Sheet, toast } from "@ultrapeach/ui";
+import { Button, CloseIcon, IconButton, Picker, Sheet, toast } from "@phe-rus/hino";
 import { useState } from "react";
 import { Field, FormSection, TextArea, TextInput } from "../../../components/form/form-fields";
 import { PartyFields } from "../components/party-fields";
@@ -47,7 +47,7 @@ function BusinessForm({ onClose }: { onClose: () => void }) {
             as they are.
           </p>
         </div>
-        <IconButton label="Close" onClick={onClose}>
+        <IconButton size="icon-sm" variant="ghost" label="Close" onClick={onClose}>
           <CloseIcon size={18} />
         </IconButton>
       </header>
@@ -127,7 +127,7 @@ function BusinessForm({ onClose }: { onClose: () => void }) {
         <Button variant="secondary" onClick={onClose}>
           Cancel
         </Button>
-        <Button variant="primary" onClick={save} disabled={!profile.issuer.name.trim()}>
+        <Button variant="default" onClick={save} disabled={!profile.issuer.name.trim()}>
           Save
         </Button>
       </footer>

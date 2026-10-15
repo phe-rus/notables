@@ -1,5 +1,3 @@
-import { useNavigate } from "@tanstack/react-router";
-import { accents } from "@ultrapeach/tokens";
 import {
   BellIcon,
   BookIcon,
@@ -13,7 +11,9 @@ import {
   SegmentedControl,
   SwatchPicker,
   spring,
-} from "@ultrapeach/ui";
+} from "@phe-rus/hino";
+import { accents } from "@phe-rus/hino/tokens";
+import { useNavigate } from "@tanstack/react-router";
 import { AnimatePresence, motion } from "motion/react";
 import { type ReactNode, useEffect, useState } from "react";
 import { AppMark } from "../../../components/brand/app-mark";
@@ -174,11 +174,11 @@ export function SetupFlow() {
           {t("common.back")}
         </Button>
         {step === "done" ? (
-          <Button variant="primary" size="md" onClick={finish}>
+          <Button variant="default" size="default" onClick={finish}>
             {t("setup.startWriting")}
           </Button>
         ) : (
-          <Button variant="primary" size="md" disabled={!canContinue} onClick={() => go(1)}>
+          <Button variant="default" size="default" disabled={!canContinue} onClick={() => go(1)}>
             {step === "intro"
               ? t("setup.getStarted")
               : step === "ai"

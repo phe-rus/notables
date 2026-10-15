@@ -1,6 +1,6 @@
 import { useLexicalComposerContext } from "@lexical/react/LexicalComposerContext";
 import { useLexicalEditable } from "@lexical/react/useLexicalEditable";
-import { DrawIcon } from "@ultrapeach/ui";
+import { DrawIcon } from "@phe-rus/hino";
 import { $getNodeByKey, type NodeKey } from "lexical";
 import { useDrawingStudio } from "../../media/drawing-studio";
 import { $isImageNode } from "./image-node";

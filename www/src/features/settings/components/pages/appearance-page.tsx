@@ -1,5 +1,5 @@
-import { accents } from "@ultrapeach/tokens";
-import { LabeledContent, Section, SegmentedControl, SwatchPicker } from "@ultrapeach/ui";
+import { LabeledContent, Section, SegmentedControl, SwatchPicker } from "@phe-rus/hino";
+import { accents } from "@phe-rus/hino/tokens";
 import { PickerInput } from "../../../../components/form/form-fields";
 import {
   type LanguageChoice,

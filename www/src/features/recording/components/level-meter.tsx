@@ -1,4 +1,4 @@
-import { cn } from "@ultrapeach/ui";
+import { cn } from "@phe-rus/hino";
 
 /** Live input levels as a centred bar waveform; recent bars are highlighted. */
 export function LevelMeter({

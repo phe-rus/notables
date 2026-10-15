@@ -1,4 +1,5 @@
 import { MediaResolverProvider } from "@notables/pluraliti";
+import { ContextMenuHost, DialogHost, Toaster, TooltipHost } from "@phe-rus/hino";
 import {
   createRootRoute,
   HeadContent,
@@ -6,7 +7,6 @@ import {
   Scripts,
   useRouterState,
 } from "@tanstack/react-router";
-import { ContextMenuHost, DialogHost, Toaster, TooltipHost } from "@ultrapeach/ui";
 import { MotionConfig } from "motion/react";
 import { Fragment, type ReactNode, useEffect } from "react";
 import { AppLinkListener } from "../components/app-links/app-link-listener";

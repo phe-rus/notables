@@ -1,5 +1,5 @@
 import { formatMoney, invoiceKindLabels, type SealCheck } from "@notables/core";
-import { CheckIcon, CloseIcon, cn, spring, WarningIcon } from "@ultrapeach/ui";
+import { CheckIcon, CloseIcon, cn, spring, WarningIcon } from "@phe-rus/hino";
 import { motion } from "motion/react";
 import { useState } from "react";
 import { knownIssuer, namesakes, rememberIssuer } from "./trusted-issuers";

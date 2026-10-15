@@ -1,5 +1,5 @@
 import type { InvoiceDocument } from "@notables/core";
-import { Button, CloseIcon, DownloadIcon, IconButton, PrintIcon, spring } from "@ultrapeach/ui";
+import { Button, CloseIcon, DownloadIcon, IconButton, PrintIcon, spring } from "@phe-rus/hino";
 import { AnimatePresence, motion } from "motion/react";
 import { useEffect, useLayoutEffect, useRef, useState } from "react";
 import { createPortal } from "react-dom";
@@ -52,6 +52,8 @@ export function PaperFullscreen({
         >
           <header className="flex shrink-0 items-center gap-2 px-4 pt-[max(12px,env(safe-area-inset-top))] pb-3 text-white">
             <IconButton
+              size="icon-sm"
+              variant="ghost"
               label="Close preview"
               onClick={onClose}
               className="text-white hover:bg-white/15"
@@ -64,7 +66,7 @@ export function PaperFullscreen({
                 <PrintIcon size={16} />
                 <span className="max-sm:hidden">Print</span>
               </Button>
-              <Button variant="primary" onClick={onDownload} disabled={downloading || !verifyLink}>
+              <Button variant="default" onClick={onDownload} disabled={downloading || !verifyLink}>
                 <DownloadIcon size={16} />
                 <span className="max-sm:hidden">{downloading ? "Preparing…" : "Download PDF"}</span>
               </Button>

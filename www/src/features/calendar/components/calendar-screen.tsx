@@ -10,7 +10,6 @@ import {
   occurrencesTouching,
   weekday,
 } from "@notables/core";
-import { useNavigate } from "@tanstack/react-router";
 import {
   ChevronLeftIcon,
   ChevronRightIcon,
@@ -25,7 +24,8 @@ import {
   Toggle,
   useDismiss,
   useMediaQuery,
-} from "@ultrapeach/ui";
+} from "@phe-rus/hino";
+import { useNavigate } from "@tanstack/react-router";
 import { motion } from "motion/react";
 import { useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState } from "react";
 import { Field, PickerInput } from "../../../components/form/form-fields";
@@ -231,7 +231,13 @@ export function CalendarScreen({
         {collapsed && <CollapsedSidebarControls />}
         <div data-tauri-drag-region className="flex items-center justify-between gap-2">
           <div className="flex min-w-0 items-center gap-1">
-            <IconButton label={t("nav.showLibrary")} className="lg:hidden" onClick={onOpenSidebar}>
+            <IconButton
+              size="icon-sm"
+              variant="ghost"
+              label={t("nav.showLibrary")}
+              className="lg:hidden"
+              onClick={onOpenSidebar}
+            >
               <SidebarIcon size={20} />
             </IconButton>
             <ZoomTitle
@@ -267,6 +273,8 @@ export function CalendarScreen({
             {view !== "years" && (
               <>
                 <IconButton
+                  size="icon-sm"
+                  variant="ghost"
                   label={t("calendar.previous")}
                   className="max-sm:hidden"
                   onClick={() => shift(-1)}
@@ -274,6 +282,8 @@ export function CalendarScreen({
                   <ChevronLeftIcon size={18} className="rtl:-scale-x-100" />
                 </IconButton>
                 <IconButton
+                  size="icon-sm"
+                  variant="ghost"
                   label={t("calendar.next")}
                   className="max-sm:hidden"
                   onClick={() => shift(1)}
@@ -284,8 +294,9 @@ export function CalendarScreen({
             )}
             <HolidayButton />
             <IconButton
+              size="icon-sm"
               label={t("calendar.newEvent")}
-              tone="accent"
+              variant="link"
               onClick={(event) => {
                 openMenu(
                   event.currentTarget,
@@ -534,8 +545,9 @@ function HolidayButton() {
   return (
     <div ref={root} className="relative">
       <IconButton
+        size="icon-sm"
         label={t("calendar.holidays")}
-        tone={settings.country ? "accent" : "default"}
+        variant={settings.country ? "link" : "ghost"}
         aria-expanded={open}
         onClick={() => setOpen((value) => !value)}
       >

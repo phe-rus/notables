@@ -1,4 +1,4 @@
-import { cn, Picker } from "@ultrapeach/ui";
+import { cn, Picker } from "@phe-rus/hino";
 import type { ComponentProps, InputHTMLAttributes, ReactNode, TextareaHTMLAttributes } from "react";
 import { t } from "../../i18n/i18n";
 

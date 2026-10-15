@@ -1,4 +1,4 @@
-import { LabeledContent, Section } from "@ultrapeach/ui";
+import { LabeledContent, Section } from "@phe-rus/hino";
 import { useEffect, useState } from "react";
 import { PickerInput } from "../../../components/form/form-fields";
 import { t } from "../../../i18n/i18n";
