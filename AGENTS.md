@@ -83,6 +83,16 @@ Gotchas learned the hard way:
   can't reach. Debug builds allow plain HTTP for this
   (`gen/android/app/src/debug/res/xml`); release allows it only to the
   app's own media server on 127.0.0.1.
+- In live mode, don't `git stash` (touching `www/wrangler.jsonc` restarts
+  the dev server and can leave the app on its splash); lint the changed
+  folders with `bunx biome check www/src packages www/test` instead. Rust
+  changes need live mode restarted. Clear `www/node_modules/.vite` after a
+  dependency moves, and restart, or the server keeps old package paths.
+- Test on the phone through WebView DevTools (`adb forward tcp:9333
+  localabstract:webview_devtools_remote_<pid>`) with real touches from
+  `adb shell input` (`motionevent DOWN/MOVE/UP` for holds); destructive
+  features get a dry run on the device first (the media sweep's caught a
+  bug that would have deleted book covers).
 - Dev server: `cd www && bun run dev` (port 3000). Desktop app:
   `bun run tauri dev`. On Linux a leftover `notables` process makes new
   launches exit silently (single instance); `pkill -f target/debug/notables`.
@@ -99,8 +109,17 @@ Gotchas learned the hard way:
   `listening/lib/natural-voice.ts`); long books paginate one chapter at a
   time (`books/reader/use-book-pages.tsx`; 883 pages opened in 0.55 s, was
   a 9.2 s freeze); iOS-style scrubbers; read aloud skips a contents list.
-  Open: the PDF importer flattens each page into one paragraph, so its
-  contents lists and chapters aren't recognised (next).
+  PDF import finds real paragraphs and chapters (`read-pdf.ts`).
+- Also 15 Oct: Hino replaced UltraPeach (`@phe-rus/hino` 0.1.5 on npm,
+  published from `~/pherus/hino` by its `publish.yml` workflow); dates and
+  times use Hino's compact pickers. Notes open for reading on touch
+  screens (`ReadModePlugin`), and the caret stays above the keyboard
+  (`KeepCaretVisiblePlugin`). Hold and slide selects on Android.
+  Handwriting has Done. Photos are media files (`resolvePhoto`), shared
+  notes send their media (`packages/sync/src/peer/media-exchange.ts`), and
+  a daily sweep deletes media unused for a week
+  (`features/trash/lib/media-sweep.ts`). TestFlight 0.1.8 (`ios-v0.1.8`)
+  carries everything up to `870dddf`.
 
 - Ultrapeach Sheet, menu ownership and modal background hardening are complete for the current checkpoint. Read [the Sheet focus record](docs/reviews/2026-10-10-ultrapeach-sheet-focus.md) for browser evidence and remaining boundaries. The owner requested committing without releasing, then returning to Pherus UI adoption.
 
@@ -256,10 +275,9 @@ Shipped and tested in the browser (Playwright) unless noted:
 - Languages: seven, with Simplified Chinese (`zh`).
 - iOS release: CI stamps the tag's version into `tauri.conf.json` and the
   generated Info.plist before building (TestFlight builds had all stayed
-  at 0.1.0). `Info.ios.plist` declares `ITSAppUsesNonExemptEncryption`
-  true (the wallet's own ChaCha20-Poly1305); once App Store Connect gives
-  an `ITSEncryptionExportComplianceCode`, add it there too and builds stop
-  asking.
+  at 0.1.0). `Info.ios.plist` leaves `ITSAppUsesNonExemptEncryption` out: setting it
+  without an approved document's `ITSEncryptionExportComplianceCode` makes
+  uploads fail, so each build asks in TestFlight instead (see Releasing).
 - pherus.org privacy policy has a "Notables app" section 4 (en, zh, fr),
   live since 9 October; source `~/pherus/pherus/www/data/legal/privacy-policy.json`.
 
@@ -283,19 +301,26 @@ upload is newer than the last.
 Workflows (9 October): actions on Node 24 (checkout v7, setup-node v7,
 setup-java v6, upload-artifact v7), Linux jobs pinned to `ubuntu-24.04`
 (not `ubuntu-latest`, which moves to Ubuntu 26 from 19 October), Play
-upload with `tracks`. Never set `ITSAppUsesNonExemptEncryption` in
+upload with `tracks`. Each TestFlight build asks two questions: choose
+"Standard encryption algorithms instead of, or in addition to, ...
+Apple's operating system" (wallet ChaCha20-Poly1305, share keys, TLS),
+and France: "No" until the French declaration is filed. Never set
+`ITSAppUsesNonExemptEncryption` in
 `Info.ios.plist` without an approved encryption document's code: it makes
 TestFlight refuse the upload; each build asks in TestFlight instead.
 
 ## Next
 
-- Work through "Queued from the 15 October review" in docs/STAGES.md, in
-  order: Android smoothness and audio first (the TECNO is on Wi-Fi adb),
-  then Hino (`@phe-rus/hino`, skill in `.agentic/skills/hino`) replacing
-  UltraPeach (done 15 Oct). Dates use `DateField` (Hino's
-  `CompactDatePicker`, Hino 0.1.4) and times `TimeField` (Hino's
-  `CompactTimePicker`, 0.1.5); no native date or time inputs remain.
-  Desktop packaging waits.
+- Continue "Queued from the 15 October review" in docs/STAGES.md: next is
+  item 3 (Start fresh after onboarding), then 7 (slash commands, hashtags,
+  reminders from a line), then 8 onward. Then spec 0005 (linked devices),
+  optional PassID, the person's own cloud, AirDrop-like sharing, the
+  torrent-like network; desktop packaging (deb through apt, Windows) last.
+- Untested so far: shared-note media between two real devices; read mode
+  and the caret fix on an iPhone (TestFlight 0.1.8 has them).
+- Hino gaps go upstream in `~/pherus/hino`, then publish (bump the UI
+  version, add a CHANGELOG entry, push, `gh workflow run publish.yml -f
+  package=ui` there; npm can take a few minutes to serve it).
 
 Right after the store work (9 October):
 

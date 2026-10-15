@@ -103,20 +103,27 @@ PassID, the person's own cloud (Google Drive, iCloud), people and
 AirDrop-like sharing, the torrent-like network; desktop packaging (deb
 through apt, Windows) last. Notables follows Apple Notes closely.
 
-1. [ ] **Android smoothness and audio.** iOS feels smooth; Android lags
-   everywhere. Audio lags on both: audiobook playback, the read-aloud
-   voice, read-along highlighting drifting from the audio.
-2. [ ] **Hino** (`@phe-rus/hino`, source in `~/pherus/hino`) replaces
-   `packages/ultrapeach`; its DatePicker replaces the native date inputs.
+1. [x] **Android smoothness and audio** (15 Oct, `91f1982`): media streams
+   through the local media server, large saves in pieces, read aloud adapts
+   its steps per device, long books paginate per chapter, PDF import finds
+   paragraphs and chapters (`6c3c353`).
+2. [x] **Hino** (15 Oct, `2c7c53d`) replaced `packages/ultrapeach`; dates
+   and times use Hino's CompactDatePicker and CompactTimePicker
+   (`75bdbf6`, `3297795`); no native date or time input remains.
 3. [ ] **Start fresh**: a clear choice after onboarding that removes the
    welcome examples, also in Settings.
-4. [ ] **Keyboard awareness** on iOS and Android, and a **read mode** so
-   scrolling a note does not bring up the keyboard. Read mode done 15 Oct
-   (`ReadModePlugin` in packages/pluraliti, Done in the note's top bar).
-5. [ ] **Hold and slide to select** on Android, as on iOS.
-6. [ ] **Drawing and handwriting**: easy to leave; image placement kept
-   after a restart; deleting an image from the note side works, and
-   deleting a note deletes its images.
+4. [x] **Keyboard awareness and read mode** (15 Oct): notes open for
+   reading on touch screens (`5214157`); the caret stays above the
+   keyboard and tools (`1f341d3`). Checked on Android, not yet an iPhone.
+5. [x] **Hold and slide to select** on Android (15 Oct, `6b24cac`).
+   Optional later: iOS's two-finger drag, and sliding down the selection
+   circles in Select mode.
+6. [x] **Drawing and handwriting** (15 Oct): handwriting has Done and
+   fingers scroll after it (`d5e9343`); photos are media files, not
+   inlined, so they survive restarts (`543dcf6`); erasing a note deletes
+   all its media (`59e63a0`); a daily sweep deletes media unused for a
+   week (`4773b1e`); shared notes send their media (`870dddf`, not yet
+   tried between two real devices).
 7. [ ] **Slash commands** for blocks and options, **hashtags** for tags,
    and a way to turn a line into a reminder.
 8. [ ] **Attachments, as in Apple Notes**: scan text, scan documents, take
