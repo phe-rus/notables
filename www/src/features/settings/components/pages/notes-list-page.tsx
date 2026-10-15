@@ -1,6 +1,7 @@
 import { LabeledContent, Section, SegmentedControl, Toggle } from "@phe-rus/hino";
 import { PickerInput } from "../../../../components/form/form-fields";
 import { t } from "../../../../i18n/i18n";
+import { ExamplesSettingsSection } from "../../../onboarding/components/examples-settings-section";
 import {
   type ListPreferences,
   type PreviewLines,
@@ -140,6 +141,7 @@ export function NotesListPage() {
           />
         </LabeledContent>
       </Section>
+      <ExamplesSettingsSection />
     </>
   );
 }

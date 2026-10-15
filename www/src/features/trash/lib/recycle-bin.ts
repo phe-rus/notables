@@ -68,6 +68,24 @@ export function moveBooksToBin(books: BookEntry[]) {
   moveSeriesToBin([], books);
 }
 
+/**
+ * Moves notes and loose books to the bin together, without a toast, for
+ * callers that explain it themselves. Returns what brings them back.
+ */
+export function moveAllToBin(entries: LibraryEntry[], books: BookEntry[]): () => void {
+  const ids = entries.map((entry) => entry.id);
+  getLibrary().doc.transact(() => {
+    const now = Date.now();
+    setBooksTrashed(books, now);
+    setNotesTrashed(ids, now);
+  });
+  return () =>
+    getLibrary().doc.transact(() => {
+      setBooksTrashed(books, null);
+      setNotesTrashed(ids, null);
+    });
+}
+
 /** Live items of a series, the ones a series delete takes with it. */
 export const liveSeriesItems = (series: SeriesEntry) =>
   getBookStore()

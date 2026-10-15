@@ -637,8 +637,7 @@ export const en = {
       "Notables works fully without AI. If you like, bring your own key from Claude, Gemini or OpenRouter to summarize, improve and continue your writing.",
     allSet: "You’re all set",
     allSetName: "You’re all set, {name}",
-    allSetBody:
-      "Your library has a few examples to explore. Everything here can be changed in Settings.",
+    allSetBody: "Choose how your library begins. Everything here can be changed in Settings.",
     placeBrowser: "your browser’s site settings (the icon beside the address)",
     placeSystem: "your system settings",
   },
@@ -837,6 +836,24 @@ export const en = {
     exportCancelled: "Export cancelled",
     exportFailed: "The book couldn’t be exported",
     chapterCount: { one: "{count} chapter", other: "{count} chapters" },
+  },
+  examples: {
+    title: "Examples",
+    choice: "How to begin",
+    withExamples: "Start with examples",
+    withExamplesBody:
+      "A short guide, and an example of each kind: a journal, a book, a comic, an invoice and more.",
+    fresh: "Start fresh",
+    freshBody: "An empty library, ready for your own notes.",
+    remove: "Remove Examples",
+    add: "Add Examples",
+    footer:
+      "The guide and examples Notables begins with. Removing them moves them to Recently Deleted; anything you wrote stays.",
+    removeTitle: "Remove the examples?",
+    removeBody:
+      "The guide and the example notes, books, comics and invoices go to Recently Deleted. Anything you wrote yourself stays.",
+    removed: "Examples removed",
+    added: "Examples added",
   },
   trash: {
     moved: "Moved to Recently Deleted",

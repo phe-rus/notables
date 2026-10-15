@@ -646,7 +646,7 @@ export const sw: Messages = {
     allSet: "Uko tayari",
     allSetName: "Uko tayari, {name}",
     allSetBody:
-      "Maktaba yako ina mifano michache ya kuchunguza. Kila kitu hapa kinaweza kubadilishwa katika Mipangilio.",
+      "Chagua jinsi maktaba yako inavyoanza. Kila kitu hapa kinaweza kubadilishwa katika Mipangilio.",
     placeBrowser: "mipangilio ya tovuti kwenye kivinjari chako (alama iliyo kando ya anwani)",
     placeSystem: "mipangilio ya mfumo wako",
   },
@@ -761,8 +761,8 @@ export const sw: Messages = {
       delete: "Futa pamoja na yaliyomo…",
       deleteTitle: "Futa “{title}”?",
       deleteBody: {
-        one: "Kipengele {count} kitahamia Vilivyofutwa Hivi Karibuni.",
-        other: "Vipengele {count} vitahamia Vilivyofutwa Hivi Karibuni.",
+        one: "Kipengele {count} kitahamia Yaliyofutwa hivi karibuni.",
+        other: "Vipengele {count} vitahamia Yaliyofutwa hivi karibuni.",
       },
       moveTo: "Hamishia",
       outside: "Nje ya kundi lolote",
@@ -847,6 +847,24 @@ export const sw: Messages = {
     exportCancelled: "Uhamishaji umeghairiwa",
     exportFailed: "Kitabu hakikuweza kuhamishwa",
     chapterCount: { one: "Sura {count}", other: "Sura {count}" },
+  },
+  examples: {
+    title: "Mifano",
+    choice: "Jinsi ya kuanza",
+    withExamples: "Anza na mifano",
+    withExamplesBody:
+      "Mwongozo mfupi, na mfano wa kila aina: shajara, kitabu, katuni, ankara na zaidi.",
+    fresh: "Anza upya",
+    freshBody: "Maktaba tupu, tayari kwa maandishi yako mwenyewe.",
+    remove: "Ondoa Mifano",
+    add: "Ongeza Mifano",
+    footer:
+      "Mwongozo na mifano ambayo Notables huanza nayo. Kuiondoa huihamishia Yaliyofutwa hivi karibuni; ulichoandika wewe kinabaki.",
+    removeTitle: "Ondoa mifano?",
+    removeBody:
+      "Mwongozo na madokezo, vitabu, katuni na ankara za mfano huenda Yaliyofutwa hivi karibuni. Ulichoandika wewe mwenyewe kinabaki.",
+    removed: "Mifano imeondolewa",
+    added: "Mifano imeongezwa",
   },
   trash: {
     moved: "Imehamishiwa kwenye Vilivyofutwa Karibuni",

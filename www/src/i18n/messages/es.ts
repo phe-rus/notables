@@ -642,8 +642,7 @@ export const es: Messages = {
       "Notables funciona por completo sin IA. Si quieres, usa tu propia clave de Claude, Gemini u OpenRouter para resumir, mejorar y continuar lo que escribes.",
     allSet: "Todo listo",
     allSetName: "Todo listo, {name}",
-    allSetBody:
-      "Tu biblioteca tiene algunos ejemplos para explorar. Todo se puede cambiar en Ajustes.",
+    allSetBody: "Elige cómo empieza tu biblioteca. Todo se puede cambiar en Ajustes.",
     placeBrowser: "los ajustes del sitio en tu navegador (el icono junto a la dirección)",
     placeSystem: "los ajustes de tu sistema",
   },
@@ -844,6 +843,24 @@ export const es: Messages = {
     exportCancelled: "Exportación cancelada",
     exportFailed: "No se pudo exportar el libro",
     chapterCount: { one: "{count} capítulo", other: "{count} capítulos" },
+  },
+  examples: {
+    title: "Ejemplos",
+    choice: "Cómo empezar",
+    withExamples: "Empezar con ejemplos",
+    withExamplesBody:
+      "Una guía breve y un ejemplo de cada tipo: un diario, un libro, un cómic, una factura y más.",
+    fresh: "Empezar de cero",
+    freshBody: "Una biblioteca vacía, lista para tus propias notas.",
+    remove: "Quitar ejemplos",
+    add: "Añadir ejemplos",
+    footer:
+      "La guía y los ejemplos con los que empieza Notables. Al quitarlos pasan a Eliminado recientemente; lo que escribiste se queda.",
+    removeTitle: "¿Quitar los ejemplos?",
+    removeBody:
+      "La guía y las notas, libros, cómics y facturas de ejemplo pasan a Eliminado recientemente. Lo que escribiste tú se queda.",
+    removed: "Ejemplos quitados",
+    added: "Ejemplos añadidos",
   },
   trash: {
     moved: "Movido a Eliminado recientemente",

@@ -124,7 +124,8 @@ function AppShell() {
 
   // A first visit finds a short guide and a few examples instead of nothing.
   useEffect(() => {
-    if (libraryReady) void seedWelcomeLibrary();
+    // Not before setup, whose last step offers to start fresh instead.
+    if (libraryReady && !needsSetup()) void seedWelcomeLibrary();
   }, [libraryReady]);
 
   // Recently Deleted erases what's been there a week: on launch, then hourly.

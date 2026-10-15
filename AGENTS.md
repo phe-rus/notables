@@ -311,8 +311,10 @@ TestFlight refuse the upload; each build asks in TestFlight instead.
 
 ## Next
 
-- Continue "Queued from the 15 October review" in docs/STAGES.md: next is
-  item 3 (Start fresh after onboarding), then 7 (slash commands, hashtags,
+- Continue "Queued from the 15 October review" in docs/STAGES.md, and
+  fold in the owner's evening notes there (reading and listening, natural
+  voice only, image editing, the iOS keyboard bar, Hino gaps, Wallet,
+  Lock). Start fresh is done; next is 7 (slash commands, hashtags,
   reminders from a line), then 8 onward. Then spec 0005 (linked devices),
   optional PassID, the person's own cloud, AirDrop-like sharing, the
   torrent-like network; desktop packaging (deb through apt, Windows) last.

@@ -3,6 +3,7 @@ import { getBookStore } from "../../books/store/book-store";
 import { writeNote } from "../../library/lib/write-note";
 import { getLibrary } from "../../library/store/library-store";
 import { welcomeBook, welcomeNotes } from "../content/welcome-library";
+import { type Examples, recordExamples } from "./examples";
 import { seedWelcomeShelf } from "./seed-welcome-shelf";
 
 const WELCOMED = "notables:welcomed";
@@ -26,6 +27,12 @@ function markDone(key: string) {
   }
 }
 
+/** Starting fresh: the examples are never written on this device. */
+export function skipWelcomeExamples() {
+  markDone(WELCOMED);
+  markDone(SHELF);
+}
+
 let seeding: Promise<void> | undefined;
 
 /**
@@ -42,13 +49,19 @@ export function seedWelcomeLibrary(): Promise<void> {
   if (shelf) markDone(SHELF);
   if (!fresh && !shelf) return Promise.resolve();
   seeding ??= (async () => {
-    if (fresh) await seed();
-    if (shelf) await seedWelcomeShelf();
+    if (fresh) recordExamples(await seed());
+    if (shelf) recordExamples(await seedWelcomeShelf());
   })();
   return seeding;
 }
 
-async function seed() {
+/** Writes every example again, for people who started fresh and want them after all. */
+export async function seedExamplesAgain() {
+  recordExamples(await seed());
+  recordExamples(await seedWelcomeShelf());
+}
+
+async function seed(): Promise<Examples> {
   const now = Date.now();
   const ids = new Map<string, string>();
 
@@ -73,4 +86,5 @@ async function seed() {
     const noteId = ids.get(key);
     if (noteId) books.addChapter(book.id, noteId);
   }
+  return { notes: [...ids.values()], books: [book.id], invoices: [] };
 }

@@ -110,8 +110,10 @@ through apt, Windows) last. Notables follows Apple Notes closely.
 2. [x] **Hino** (15 Oct, `2c7c53d`) replaced `packages/ultrapeach`; dates
    and times use Hino's CompactDatePicker and CompactTimePicker
    (`75bdbf6`, `3297795`); no native date or time input remains.
-3. [ ] **Start fresh**: a clear choice after onboarding that removes the
-   welcome examples, also in Settings.
+3. [x] **Start fresh** (15 Oct): setup's last step offers Start with
+   examples or Start fresh (nothing is written); Settings > Notes list
+   removes the examples to Recently Deleted, with Undo, or adds them back
+   (`features/onboarding/lib/examples.ts`; older devices find them by title).
 4. [x] **Keyboard awareness and read mode** (15 Oct): notes open for
    reading on touch screens (`5214157`); the caret stays above the
    keyboard and tools (`1f341d3`). Checked on Android, not yet an iPhone.
@@ -135,6 +137,21 @@ through apt, Windows) last. Notables follows Apple Notes closely.
 11. [ ] **Folders** to organize notes.
 12. [ ] **Locking** with a passcode, Face ID, fingerprint or face unlock
     (the Lock, spec 0004).
+
+### Owner's notes, 15 October evening (to slot into the order above)
+
+- **Reading and listening**: highlighting in books is hard; going back a
+  little to hear a missed part is hard; the seek bar still isn't Apple-like.
+- **Natural voice only**: drop the device's own voices (too poor to use);
+  read aloud needs a downloaded voice pack, and a freshly downloaded pack
+  becomes the default voice on its own.
+- **Images in notes**: touch and hold to replace or edit; resize and crop.
+- **iOS keyboard**: the keyboard hides the bottom tools (Aa, checklist,
+  image, voice); the bar needs to ride above it, plus the additions in 8.
+- **Hino everywhere**: some components still follow the old look.
+- **Wallet** is unfinished; **Privacy & Security** and the Lock (12:
+  passcode, Face ID, fingerprint, face unlock, unlocking settings) are
+  not done at all.
 
 ## Stage 2: Smoothness and the Rust core
 

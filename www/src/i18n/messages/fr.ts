@@ -648,7 +648,7 @@ export const fr: Messages = {
     allSet: "Tout est prêt",
     allSetName: "Tout est prêt, {name}",
     allSetBody:
-      "Votre bibliothèque contient quelques exemples à découvrir. Tout peut être modifié dans Réglages.",
+      "Choisissez comment commence votre bibliothèque. Tout peut être modifié dans Réglages.",
     placeBrowser: "les réglages du site dans votre navigateur (l’icône à côté de l’adresse)",
     placeSystem: "les réglages de votre système",
   },
@@ -848,6 +848,24 @@ export const fr: Messages = {
     exportCancelled: "Export annulé",
     exportFailed: "Le livre n’a pas pu être exporté",
     chapterCount: { one: "{count} chapitre", other: "{count} chapitres" },
+  },
+  examples: {
+    title: "Exemples",
+    choice: "Pour commencer",
+    withExamples: "Commencer avec des exemples",
+    withExamplesBody:
+      "Un petit guide, et un exemple de chaque genre : un journal, un livre, une BD, une facture et plus encore.",
+    fresh: "Partir de zéro",
+    freshBody: "Une bibliothèque vide, prête pour vos propres notes.",
+    remove: "Supprimer les exemples",
+    add: "Ajouter les exemples",
+    footer:
+      "Le guide et les exemples avec lesquels Notables commence. Les supprimer les place dans Supprimés récemment ; ce que vous avez écrit reste.",
+    removeTitle: "Supprimer les exemples ?",
+    removeBody:
+      "Le guide et les notes, livres, BD et factures d’exemple vont dans Supprimés récemment. Ce que vous avez écrit vous-même reste.",
+    removed: "Exemples supprimés",
+    added: "Exemples ajoutés",
   },
   trash: {
     moved: "Placé dans Supprimés récemment",

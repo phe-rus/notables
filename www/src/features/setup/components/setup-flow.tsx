@@ -35,6 +35,7 @@ import {
   noteFontLabels,
   noteFonts,
 } from "../../library/model/note-fonts";
+import { skipWelcomeExamples } from "../../onboarding/lib/seed-welcome-library";
 import { AppearanceSync } from "../../settings/components/appearance-sync";
 import type { Preferences, ThemePreference } from "../../settings/model/preferences";
 import { updatePreferences, usePreferences } from "../../settings/store/preferences-store";
@@ -76,6 +77,7 @@ export function SetupFlow() {
   const [index, setIndex] = useState(savedStep);
   const [heading, setHeading] = useState<1 | -1>(1);
   const [agreed, setAgreed] = useState(false);
+  const [examples, setExamples] = useState(true);
   const step = steps[index] ?? "intro";
 
   useEffect(() => markAppReady(), []);
@@ -94,6 +96,7 @@ export function SetupFlow() {
     setIndex((value) => Math.min(steps.length - 1, Math.max(0, value + delta)));
   };
   const finish = () => {
+    if (!examples) skipWelcomeExamples();
     markSetupDone();
     try {
       sessionStorage.removeItem(STEP_KEY);
@@ -164,7 +167,7 @@ export function SetupFlow() {
             {step === "language" && <LanguageStep />}
             {step === "permissions" && <PermissionsStep />}
             {step === "ai" && <AiStep />}
-            {step === "done" && <DoneStep />}
+            {step === "done" && <DoneStep examples={examples} onExamples={setExamples} />}
           </motion.div>
         </AnimatePresence>
       </main>
@@ -560,7 +563,13 @@ function AiStep() {
   );
 }
 
-function DoneStep() {
+function DoneStep({
+  examples,
+  onExamples,
+}: {
+  examples: boolean;
+  onExamples: (value: boolean) => void;
+}) {
   const name = useAuthorName().trim();
   return (
     <div className="flex flex-col items-center gap-5 text-center">
@@ -579,6 +588,64 @@ function DoneStep() {
       >
         {t("setup.allSetBody")}
       </StepTitle>
+      <div
+        role="radiogroup"
+        aria-label={t("examples.choice")}
+        className="grid w-full gap-2.5 text-start sm:grid-cols-2"
+      >
+        <StartChoice
+          selected={examples}
+          onSelect={() => onExamples(true)}
+          title={t("examples.withExamples")}
+          body={t("examples.withExamplesBody")}
+        />
+        <StartChoice
+          selected={!examples}
+          onSelect={() => onExamples(false)}
+          title={t("examples.fresh")}
+          body={t("examples.freshBody")}
+        />
+      </div>
     </div>
+  );
+}
+
+function StartChoice({
+  selected,
+  onSelect,
+  title,
+  body,
+}: {
+  selected: boolean;
+  onSelect: () => void;
+  title: string;
+  body: string;
+}) {
+  return (
+    <label
+      className={cn(
+        "flex cursor-pointer items-start gap-3 rounded-4xl p-4 transition-colors has-[:focus-visible]:ring-2 has-[:focus-visible]:ring-accent/70",
+        selected
+          ? "bg-accent-soft shadow-[inset_0_0_0_1.5px_var(--color-accent)]"
+          : "bg-fill/60 hover:bg-fill",
+      )}
+    >
+      <input
+        type="radio"
+        name="setup-start"
+        className="sr-only"
+        checked={selected}
+        onChange={onSelect}
+      />
+      <span className="flex grow flex-col gap-0.5">
+        <span className="text-subheadline font-semibold">{title}</span>
+        <span className="text-footnote leading-snug text-label-secondary">{body}</span>
+      </span>
+      <CheckIcon
+        size={16}
+        strokeWidth={2.6}
+        className={cn("mt-0.5 shrink-0 text-accent-text", !selected && "invisible")}
+      />
+    </label>
   );
 }

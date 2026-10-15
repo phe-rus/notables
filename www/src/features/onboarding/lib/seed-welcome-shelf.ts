@@ -6,6 +6,7 @@ import { getInvoiceStore } from "../../invoices/store/invoice-store";
 import { writeNote } from "../../library/lib/write-note";
 import { comicPages, coverArt, mangaPages } from "../content/welcome-art";
 import { smallHours, welcomeArticle, welcomeInvoice } from "../content/welcome-shelf";
+import type { Examples } from "./examples";
 
 const HOUR = 3_600_000;
 
@@ -25,6 +26,7 @@ async function bookOf(
     chapterIds.push(note.id);
   }
   books.update(book.id, { ...details, chapterIds });
+  return book.id;
 }
 
 async function drawnChapters(kind: NoteKind, chapters: Array<{ title: string; pages: string[] }>) {
@@ -41,7 +43,7 @@ async function drawnChapters(kind: NoteKind, chapters: Array<{ title: string; pa
   return result;
 }
 
-function sampleInvoices() {
+function sampleInvoices(): string[] {
   const store = getInvoiceStore();
   const items = () => welcomeInvoice.items.map((item) => ({ ...item, id: createId() }));
   // Written straight to the store, so the sample issuer never becomes the
@@ -55,6 +57,7 @@ function sampleInvoices() {
     items: items(),
     notes: `Payment for ${invoice.number}. Thank you! This is an example receipt.`,
   });
+  return [invoice.id, receipt.id];
 }
 
 /**
@@ -62,14 +65,14 @@ function sampleInvoices() {
  * pieces, a manga read right to left, a colour comic, and an invoice with
  * its receipt. Everything can be edited or deleted like anything else.
  */
-export async function seedWelcomeShelf() {
-  await writeNote({
+export async function seedWelcomeShelf(): Promise<Examples> {
+  const article = await writeNote({
     kind: "article",
     updatedAt: Date.now() - 6 * HOUR,
     compose: (doc) => composeDocumentFromMarkdown(doc, welcomeArticle),
   });
 
-  await bookOf(
+  const smallHoursId = await bookOf(
     { title: smallHours.title, subtitle: smallHours.subtitle, author: smallHours.author },
     smallHours.chapters.map((markdown) => ({
       kind: "story" as const,
@@ -77,7 +80,7 @@ export async function seedWelcomeShelf() {
     })),
   );
 
-  await bookOf(
+  const tidewalker = await bookOf(
     {
       title: "Tidewalker",
       subtitle: "Volume 1",
@@ -91,7 +94,7 @@ export async function seedWelcomeShelf() {
     ]),
   );
 
-  await bookOf(
+  const pip = await bookOf(
     {
       title: "Pip & the Lamp",
       subtitle: "A short comic",
@@ -102,5 +105,9 @@ export async function seedWelcomeShelf() {
     await drawnChapters("comic", [{ title: "A New Spark", pages: comicPages() }]),
   );
 
-  sampleInvoices();
+  return {
+    notes: [article.id],
+    books: [smallHoursId, tidewalker, pip],
+    invoices: sampleInvoices(),
+  };
 }
