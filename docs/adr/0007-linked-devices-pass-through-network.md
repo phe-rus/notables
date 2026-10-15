@@ -92,7 +92,11 @@ empty shell that a phone approves by QR, like WhatsApp Web, and every note,
 photo and card is read and edited live from that phone over the transport
 ladder above; nothing is stored in the browser and it never holds the
 space's key. Browsers link only to phones, since computers have the desktop
-app. Android keeps serving through a foreground service with an ongoing
+app, and only on the same network: the domain serves the page and makes
+the introduction, then everything flows directly over the local network,
+never through Cloudflare. The web is lighter (no wallet or device
+features). Same network first is the default for every device; native
+apps also find each other locally with no internet (moved from Stage B). Android keeps serving through a foreground service with an ongoing
 notification; an iPhone serves while Notables is open and briefly after,
 and the browser can ask for a "tap to connect" notification. Details in
 spec 0005 (AC-22 to AC-26).
