@@ -7,7 +7,7 @@ pub mod commands;
 mod database;
 mod documents;
 mod error;
-mod media;
+pub mod media;
 #[cfg(any(target_os = "linux", target_os = "android"))]
 pub mod media_server;
 mod note_content;
@@ -49,6 +49,14 @@ impl Storage {
 
     pub fn set_meta(&self, key: &str, value: &str) -> Result<()> {
         database::set_meta(&*self.connection()?, key, value)
+    }
+
+    pub fn documents(&self) -> Result<Vec<String>> {
+        documents::list(&*self.connection()?)
+    }
+
+    pub fn media_entries(&self) -> Result<Vec<media::MediaEntry>> {
+        media::list(&*self.connection()?)
     }
 
     pub fn document_updates(&self, document: &str) -> Result<Vec<Vec<u8>>> {

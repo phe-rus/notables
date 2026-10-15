@@ -45,6 +45,10 @@ export const nativeMedia: MediaBackend = {
     await browserDataMigrated();
     return nativeStorage.playableUrl(id);
   },
+  async list() {
+    await browserDataMigrated();
+    return nativeStorage.mediaList();
+  },
 };
 
 export const nativeNoteContent: NoteContentBackend = {

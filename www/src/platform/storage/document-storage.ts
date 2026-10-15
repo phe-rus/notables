@@ -7,6 +7,7 @@ import {
 } from "@notables/sync";
 import { isTauri } from "../runtime";
 import { nativeUpdateLog } from "./backends/native/native-backends";
+import { nativeStorage } from "./backends/native/native-commands";
 
 let persistence: Persistence | undefined;
 
@@ -77,4 +78,12 @@ function flushWhenHidden(inner: Persistence): Persistence {
 export function getRemoteSync(): RemoteSync | null {
   const host = import.meta.env.VITE_SYNC_HOST as string | undefined;
   return host ? { host } : null;
+}
+
+/**
+ * Every stored document's name, where storage can list them (the native
+ * apps); null in browsers, whose documents are found through the library.
+ */
+export async function listDocuments(): Promise<string[] | null> {
+  return isTauri() ? nativeStorage.documentNames() : null;
 }

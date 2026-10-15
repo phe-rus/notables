@@ -2,7 +2,8 @@ import * as Y from "yjs";
 
 /**
  * Every distinct media id a document refers to as `${prefix}<id>`, in any
- * attribute or map value. Lexical keeps a decorator node (a photo, a
+ * attribute or map value, including plain data stored in a map (a book's
+ * cover). Lexical keeps a decorator node (a photo, a
  * drawing) as an element embedded in its parent's text, with its fields as
  * attributes (`__src`, `__scene`), so embeds are searched too.
  */
@@ -16,6 +17,11 @@ export function mediaReferences(doc: Y.Doc, prefix = "media:"): string[] {
       if (/^[\w-]{1,64}$/.test(id)) ids.add(id);
     } else if (value instanceof Y.AbstractType) {
       visit(value);
+    } else if (Array.isArray(value)) {
+      for (const each of value) take(each);
+    } else if (value && typeof value === "object" && !(value instanceof Uint8Array)) {
+      // Plain data kept in a map, such as a book with its cover.
+      for (const each of Object.values(value)) take(each);
     }
   };
 

@@ -88,6 +88,8 @@ pub fn run() {
             storage::commands::storage_media_save_part,
             storage::commands::storage_media_commit,
             storage::commands::storage_media_remove,
+            storage::commands::storage_media_list,
+            storage::commands::storage_document_list,
             storage::commands::storage_media_base,
             storage::commands::storage_meta_get,
             storage::commands::storage_meta_set,

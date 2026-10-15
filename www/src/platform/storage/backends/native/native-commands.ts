@@ -99,6 +99,13 @@ export const nativeStorage = {
     const base = await mediaBase;
     return base ? `${base}/${encodeURIComponent(id)}` : convertFileSrc(id, MEDIA_SCHEME);
   },
+  async mediaList(): Promise<Array<{ id: string; type: string }>> {
+    const entries = await invoke<Array<{ id: string; mimeType: string }>>("storage_media_list");
+    return entries.map((entry) => ({ id: entry.id, type: entry.mimeType }));
+  },
+  documentNames(): Promise<string[]> {
+    return invoke<string[]>("storage_document_list");
+  },
   removeMedia(id: string): Promise<void> {
     return invoke("storage_media_remove", { id });
   },

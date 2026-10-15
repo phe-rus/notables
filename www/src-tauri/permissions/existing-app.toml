@@ -16,6 +16,8 @@ commands.allow = [
   "storage_media_save_part",
   "storage_media_commit",
   "storage_media_remove",
+  "storage_media_list",
+  "storage_document_list",
   "storage_media_base",
   "storage_meta_get",
   "storage_meta_set",

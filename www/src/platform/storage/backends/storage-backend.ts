@@ -10,6 +10,8 @@ export interface MediaBackend {
   remove(id: string): Promise<void>;
   /** A URL the WebView can display or play, or null when the file is missing. */
   url(id: string): Promise<string | null>;
+  /** Every stored file and its type, without reading the files. */
+  list(): Promise<Array<{ id: string; type: string }>>;
 }
 
 /** The latest rendered document of each note, for books and previews. */

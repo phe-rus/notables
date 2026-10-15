@@ -6,6 +6,16 @@ use rusqlite::{Connection, params};
 use super::error::Result;
 
 /// All stored updates for a document, oldest first.
+/// Every document with stored updates.
+pub fn list(connection: &Connection) -> Result<Vec<String>> {
+    let mut statement = connection
+        .prepare_cached("SELECT DISTINCT document FROM document_updates ORDER BY document")?;
+    let names = statement
+        .query_map([], |row| row.get(0))?
+        .collect::<rusqlite::Result<Vec<String>>>()?;
+    Ok(names)
+}
+
 pub fn load(connection: &Connection, document: &str) -> Result<Vec<Vec<u8>>> {
     let mut statement = connection
         .prepare_cached("SELECT data FROM document_updates WHERE document = ?1 ORDER BY id")?;

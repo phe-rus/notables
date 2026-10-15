@@ -30,6 +30,7 @@ import { updatePreferences, usePreferences } from "../features/settings/store/pr
 import { needsSetup } from "../features/setup/lib/setup-state";
 import { ShareSessionsRunner } from "../features/sharing/components/share-sessions-runner";
 import { StudioHost } from "../features/studio/components/studio-host";
+import { sweepMedia } from "../features/trash/lib/media-sweep";
 import { eraseExpired } from "../features/trash/lib/recycle-bin";
 import { WidgetPublisher } from "../features/widgets/components/widget-publisher";
 import { isShortcut } from "../lib/keyboard/shortcuts";
@@ -129,8 +130,13 @@ function AppShell() {
   // Recently Deleted erases what's been there a week: on launch, then hourly.
   useEffect(() => {
     if (!libraryReady) return;
-    void eraseExpired();
-    const timer = window.setInterval(() => void eraseExpired(), 60 * 60 * 1000);
+    // Then media nothing uses any more; the sweep itself runs at most daily.
+    const tidy = () =>
+      void eraseExpired()
+        .then(() => sweepMedia())
+        .catch(() => {});
+    tidy();
+    const timer = window.setInterval(tidy, 60 * 60 * 1000);
     return () => window.clearInterval(timer);
   }, [libraryReady]);
 

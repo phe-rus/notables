@@ -78,4 +78,15 @@ describe("mediaReferences", () => {
     meta.set("link", "https://example.com/media:not-local");
     expect(mediaReferences(doc).sort()).toEqual(["cover-1", "drawing-1", "scene-1"]);
   });
+
+  it("finds media inside plain data kept in a map, as the library keeps books", () => {
+    const doc = new Y.Doc();
+    const books = doc.getMap("books");
+    books.set("book-1", {
+      title: "Small Hours",
+      cover: "media:cover-2",
+      chapters: [{ art: "media:page-1" }],
+    });
+    expect(mediaReferences(doc).sort()).toEqual(["cover-2", "page-1"]);
+  });
 });

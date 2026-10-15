@@ -68,6 +68,28 @@ pub fn commit(connection: &Connection, media_dir: &Path, id: &str, mime_type: &s
     Ok(())
 }
 
+/// A stored file's id and type.
+#[derive(Debug, PartialEq, serde::Serialize)]
+#[serde(rename_all = "camelCase")]
+pub struct MediaEntry {
+    pub id: String,
+    pub mime_type: String,
+}
+
+/// Every stored file, with its type.
+pub fn list(connection: &Connection) -> Result<Vec<MediaEntry>> {
+    let mut statement = connection.prepare_cached("SELECT id, mime_type FROM media ORDER BY id")?;
+    let entries = statement
+        .query_map([], |row| {
+            Ok(MediaEntry {
+                id: row.get(0)?,
+                mime_type: row.get(1)?,
+            })
+        })?
+        .collect::<rusqlite::Result<Vec<_>>>()?;
+    Ok(entries)
+}
+
 /// The stored file's path and type, if it exists.
 pub fn find(
     connection: &Connection,
@@ -125,6 +147,22 @@ mod tests {
         remove(&connection, &dir, "clip-1").unwrap();
         assert!(find(&connection, &dir, "clip-1").unwrap().is_none());
         remove(&connection, &dir, "clip-1").unwrap();
+        std::fs::remove_dir_all(dir).unwrap();
+    }
+
+    #[test]
+    fn lists_stored_files() {
+        let connection = open_in_memory().unwrap();
+        let dir = std::env::temp_dir().join(format!("notables-media-list-{}", now_ms()));
+        std::fs::create_dir_all(&dir).unwrap();
+        save(&connection, &dir, "b-2", "image/png", b"x").unwrap();
+        save(&connection, &dir, "a-1", "audio/mp4", b"y").unwrap();
+        let ids: Vec<_> = list(&connection)
+            .unwrap()
+            .into_iter()
+            .map(|entry| entry.id)
+            .collect();
+        assert_eq!(ids, vec!["a-1", "b-2"]);
         std::fs::remove_dir_all(dir).unwrap();
     }
 

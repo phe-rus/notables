@@ -37,6 +37,14 @@ export const browserMedia: MediaBackend & { ids(): Promise<string[]> } = {
     objectUrls.set(id, url);
     return url;
   },
+  /** Every stored file and its type; stored blobs are read lazily, so this reads no file. */
+  async list() {
+    const ids = await this.ids();
+    const entries = await Promise.all(
+      ids.map(async (id) => ({ id, type: (await this.load(id))?.type ?? "" })),
+    );
+    return entries;
+  },
   /** Every stored id, for moving files into native storage. */
   async ids() {
     const keys = await files.request("readonly", (s) => s.getAllKeys());

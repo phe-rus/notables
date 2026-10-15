@@ -30,6 +30,11 @@ export async function hasMedia(id: string): Promise<boolean> {
   return (await media().load(id)) !== null;
 }
 
+/** Every stored file and its type. */
+export function listMedia(): Promise<Array<{ id: string; type: string }>> {
+  return media().list();
+}
+
 export function loadMedia(id: string): Promise<Blob | null> {
   return media().load(id);
 }

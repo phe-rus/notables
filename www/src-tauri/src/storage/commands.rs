@@ -129,6 +129,18 @@ pub async fn storage_media_commit(app: AppHandle, id: String, mime_type: String)
     with_storage(app, move |storage| storage.commit_media(&id, &mime_type)).await
 }
 
+/// Every stored media file and its type, for finding files nothing refers to any more.
+#[tauri::command]
+pub async fn storage_media_list(app: AppHandle) -> Result<Vec<super::media::MediaEntry>> {
+    with_storage(app, |storage| storage.media_entries()).await
+}
+
+/// Every stored document's name.
+#[tauri::command]
+pub async fn storage_document_list(app: AppHandle) -> Result<Vec<String>> {
+    with_storage(app, |storage| storage.documents()).await
+}
+
 #[tauri::command]
 pub async fn storage_media_remove(app: AppHandle, id: String) -> Result<()> {
     with_storage(app, move |storage| storage.remove_media(&id)).await
