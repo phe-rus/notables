@@ -1,23 +1,24 @@
 import { localMediaId } from "@notables/core";
 
-interface SerializedNode {
-  src?: unknown;
-  children?: unknown;
-  root?: unknown;
-}
-
-/** Ids of every on-device media file (`media:<id>`) a serialized document uses. */
+/**
+ * Ids of every on-device media file (`media:<id>`) a serialized document
+ * uses, in any field: a photo's `src`, a drawing's `src` and its editable
+ * `scene`, a recording's `src`.
+ */
 export function collectLocalMedia(document: unknown): string[] {
   const ids = new Set<string>();
   const visit = (node: unknown) => {
     if (!node || typeof node !== "object") return;
-    const { src, children, root } = node as SerializedNode;
-    if (typeof src === "string") {
-      const id = localMediaId(src);
-      if (id) ids.add(id);
+    for (const [key, value] of Object.entries(node)) {
+      if (typeof value === "string") {
+        const id = localMediaId(value);
+        if (id) ids.add(id);
+      } else if (key === "children" && Array.isArray(value)) {
+        value.forEach(visit);
+      } else if (key === "root") {
+        visit(value);
+      }
     }
-    if (Array.isArray(children)) children.forEach(visit);
-    if (root) visit(root);
   };
   visit(document);
   return [...ids];
