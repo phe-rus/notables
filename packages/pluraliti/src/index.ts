@@ -32,6 +32,7 @@ export {
   useTranscriptionService,
 } from "./media/transcription-service";
 export * from "./nodes/node-registry";
+export { KeepCaretVisiblePlugin } from "./plugins/caret-visibility/keep-caret-visible-plugin";
 export type { DocumentChange } from "./plugins/document-change/document-change-plugin";
 export { markdownTransformers } from "./plugins/markdown/markdown-transformers";
 export {

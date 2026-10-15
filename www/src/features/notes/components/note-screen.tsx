@@ -2,6 +2,7 @@ import { noteDoc } from "@notables/core";
 import {
   BlockToolbar,
   type DocumentChange,
+  KeepCaretVisiblePlugin,
   NotesEditor,
   NotesEditorContent,
   ReadModePlugin,
@@ -99,6 +100,12 @@ function NoteEditorScreen({ entry, viewId }: { entry: LibraryEntry; viewId?: str
   const [editing, setEditing] = useState(() => !entry.title);
   const reading = touch && !editing;
   const startEditing = useCallback(() => setEditing(true), []);
+  // The floating formatting tools sit above the keyboard; typing stays above them.
+  const tools = useRef<HTMLElement>(null);
+  const toolsTop = useCallback(() => {
+    const rect = tools.current?.getBoundingClientRect();
+    return rect && rect.height > 0 ? rect.top : Number.POSITIVE_INFINITY;
+  }, []);
   const shareSession = useShareSession(entry.id);
   const startRecording = useCallback(() => setRecording(true), []);
 
@@ -154,6 +161,7 @@ function NoteEditorScreen({ entry, viewId }: { entry: LibraryEntry; viewId?: str
   return (
     <NotesEditor id={entry.id} provider={provider} bootstrap={entry.origin === getDeviceId()}>
       <ReadModePlugin reading={reading} onEdit={startEditing} />
+      <KeepCaretVisiblePlugin coveredFrom={toolsTop} />
       <div className="@container/note relative flex min-h-0 grow flex-col">
         <div
           className="relative flex min-h-0 grow flex-col overflow-y-auto"
@@ -326,6 +334,7 @@ function NoteEditorScreen({ entry, viewId }: { entry: LibraryEntry; viewId?: str
 
         {/* The formatting tools float at the bottom wherever the top bar has no room for them. */}
         <motion.footer
+          ref={tools}
           {...riseMotion}
           className="glass-menu absolute inset-x-3 bottom-[max(12px,env(safe-area-inset-bottom))] z-20 mx-auto flex max-w-[480px] rounded-full px-2 py-1 @min-[860px]/note:hidden"
         >
