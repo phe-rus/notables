@@ -95,6 +95,41 @@ update **Status** in `AGENTS.md`, and record lasting decisions in `docs/adr/`.
 7. [ ] The notes list on phones: Apple polish.
 8. [ ] Drawer: the first open after launch drops one long frame.
 
+## Queued from the 16 October review (in this order)
+
+From [the parity and compliance review](reviews/2026-10-16-parity-and-compliance.md).
+A comes first because it stands between `v0.2.0` and any public release;
+B is what makes Notables equal to Apple Notes; C runs alongside.
+
+A. Before a public release
+1. [ ] Check `v0.2.0` on both phones (TestFlight, Play internal), then
+   promote it to Play closed testing.
+2. [ ] Report on a published note's page, takedown on our side, and
+   stopping a device that publishes abuse from publishing again.
+3. [ ] AI consent: a screen before the first request naming the provider
+   and what is sent; review App Privacy and Play data safety for it.
+4. [ ] Settle user-generated content in the Apple age rating and
+   `listing.md`; add the two extra App Privacy data types there.
+5. [ ] Owner: Cloudflare Bot Fight Mode for pherus.org, so Google can
+   read the privacy policy; give Play the data deletion link (privacy
+   policy, section 4).
+6. [ ] Accessibility pass (VoiceOver, TalkBack, Dynamic Type) and the App
+   Store accessibility labels.
+
+B. Equal to Apple Notes
+1. [ ] Linked devices proven end to end, then a relay for devices that are
+   not online together.
+2. [ ] The Lock (spec 0004), before promoting the wallet.
+3. [ ] Share extension and Android share target ("Add to Notables"),
+   widgets on both phones, Shortcuts and Siri.
+4. [ ] Document scanning, tables, search inside images and handwriting.
+5. [ ] Speed on low-end Android; finish the translations.
+
+C. Alongside
+1. [ ] Owner's bugs: Enter after a heading on phones; the desktop window
+   can't be dragged and its corners aren't rounded.
+2. [ ] Real-device checks of everything AGENTS.md marks untested.
+
 ## Queued from the 15 October review (in this order)
 
 The owner's order: Android smoothness and audio, then Hino, then a fresh

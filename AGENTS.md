@@ -365,6 +365,12 @@ TestFlight refuse the upload; each build asks in TestFlight instead.
 
 ## Next
 
+- Start with "Queued from the 16 October review" in docs/STAGES.md (A before
+  any public release, then B for Apple Notes parity); the reasoning is in
+  [the parity and compliance review](docs/reviews/2026-10-16-parity-and-compliance.md).
+  pherus.org's privacy policy and terms cover Notables as of 16 Oct
+  (deletion, reporting, content rules, governing law Uganda); `v0.2.0` is in
+  TestFlight and Play internal testing.
 - Settings follow the person (AC-16, 16 Oct): one synced Yjs document,
   `settings` (`www/src/platform/settings/synced-settings.ts`), served to a
   linked browser like the library. In it: preferences (minus haptics and
