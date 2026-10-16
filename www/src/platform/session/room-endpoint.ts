@@ -1,3 +1,4 @@
+import { deployedSite } from "../public-url";
 import { isTauri } from "../runtime";
 
 /** The development server, which live mode reaches as localhost (`adb reverse` on a phone). */
@@ -10,11 +11,6 @@ const DEV_SERVER = "http://localhost:3000";
  * server directly. The web uses its own origin.
  */
 export function roomEndpoint(): string {
-  const configured = import.meta.env.VITE_PUBLIC_URL as string | undefined;
-  const origin = !isTauri()
-    ? location.origin
-    : import.meta.env.PROD && configured
-      ? configured
-      : DEV_SERVER;
+  const origin = !isTauri() ? location.origin : import.meta.env.PROD ? deployedSite() : DEV_SERVER;
   return `${origin.replace(/^http/, "ws")}/spaces/connect`;
 }

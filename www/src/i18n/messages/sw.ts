@@ -915,7 +915,7 @@ export const sw: Messages = {
     wordsMatch: "Yanalingana",
     wordsDiffer: "Hayalingani",
     wrongCode: "Msimbo huo haukufanya kazi. Uangalie kwenye kivinjari ujaribu tena.",
-    noBrowser: "Hakuna kivinjari kilichojibu. Hakikisha bado kinaonyesha msimbo huu.",
+    noBrowser: "Hakuna kilichojibu. Hakikisha skrini nyingine bado inaonyesha msimbo huu.",
     linked: "Kivinjari kimeunganishwa",
     webTitle: "Tumia Notables kwenye kompyuta hii",
     webStep1: "Fungua Notables kwenye simu yako.",

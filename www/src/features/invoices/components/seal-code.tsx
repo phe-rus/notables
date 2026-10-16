@@ -29,15 +29,18 @@ export function SealCode({
 
   return (
     <svg
-      viewBox={`-2 -2 ${modules + 4} ${modules + 4}`}
+      viewBox={`-4 -4 ${modules + 8} ${modules + 8}`}
       width={size}
       height={size}
       shapeRendering="crispEdges"
+      // Artwork, not an icon: the app's two-tone icon style would fade it.
+      data-brand=""
       className={className}
       role="img"
       aria-label="Verification code"
     >
-      <rect x="-2" y="-2" width={modules + 4} height={modules + 4} fill="#fff" />
+      {/* The standard four-module quiet zone, so cameras find the code. */}
+      <rect x="-4" y="-4" width={modules + 8} height={modules + 8} fill="#fff" />
       <path d={path} fill={ink} />
     </svg>
   );

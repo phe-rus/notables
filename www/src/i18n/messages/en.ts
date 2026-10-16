@@ -904,7 +904,7 @@ export const en = {
     wordsMatch: "They Match",
     wordsDiffer: "They Don't Match",
     wrongCode: "That code didn't work. Check it in the browser and try again.",
-    noBrowser: "No browser answered. Check that it still shows this code.",
+    noBrowser: "Nothing answered. Check that the other screen still shows this code.",
     linked: "Browser linked",
     webTitle: "Use Notables on this computer",
     webStep1: "Open Notables on your phone.",

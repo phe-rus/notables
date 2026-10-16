@@ -912,7 +912,7 @@ export const es: Messages = {
     wordsMatch: "Coinciden",
     wordsDiffer: "No coinciden",
     wrongCode: "Ese código no funcionó. Revísalo en el navegador e inténtalo de nuevo.",
-    noBrowser: "Ningún navegador respondió. Comprueba que siga mostrando este código.",
+    noBrowser: "Nada respondió. Comprueba que la otra pantalla siga mostrando este código.",
     linked: "Navegador vinculado",
     webTitle: "Usa Notables en este ordenador",
     webStep1: "Abre Notables en tu teléfono.",

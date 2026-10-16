@@ -919,7 +919,7 @@ export const fr: Messages = {
     wordsMatch: "Ils correspondent",
     wordsDiffer: "Ils ne correspondent pas",
     wrongCode: "Ce code n’a pas fonctionné. Vérifiez-le dans le navigateur et réessayez.",
-    noBrowser: "Aucun navigateur n’a répondu. Vérifiez qu’il affiche toujours ce code.",
+    noBrowser: "Rien n’a répondu. Vérifiez que l’autre écran affiche toujours ce code.",
     linked: "Navigateur lié",
     webTitle: "Utiliser Notables sur cet ordinateur",
     webStep1: "Ouvrez Notables sur votre téléphone.",

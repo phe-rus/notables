@@ -907,7 +907,7 @@ export const pt: Messages = {
     wordsMatch: "São iguais",
     wordsDiffer: "Não são iguais",
     wrongCode: "Esse código não funcionou. Confira no navegador e tente de novo.",
-    noBrowser: "Nenhum navegador respondeu. Verifique se ele ainda mostra este código.",
+    noBrowser: "Nada respondeu. Verifique se a outra tela ainda mostra este código.",
     linked: "Navegador vinculado",
     webTitle: "Use o Notables neste computador",
     webStep1: "Abra o Notables no seu telefone.",

@@ -1,3 +1,4 @@
+import { deployedSite } from "./public-url";
 import { isTauri } from "./runtime";
 
 const SERVER_FUNCTION_PATH = "/_serverFn";
@@ -5,11 +6,11 @@ const SERVER_FUNCTION_PATH = "/_serverFn";
 /**
  * In a packaged Tauri app the page is served from the app bundle, so server
  * function calls (publishing, reactions) are forwarded to the deployed
- * Worker at VITE_PUBLIC_URL. In development the Vite server answers them.
+ * Worker (`deployedSite`). In development the Vite server answers them.
  */
 export function installServerBridge(): void {
-  const server = import.meta.env.VITE_PUBLIC_URL as string | undefined;
-  if (!isTauri() || !import.meta.env.PROD || !server) return;
+  if (!isTauri() || !import.meta.env.PROD) return;
+  const server = deployedSite();
 
   const nativeFetch = window.fetch.bind(window);
   const bridgedFetch = (input: RequestInfo | URL, init?: RequestInit): Promise<Response> => {

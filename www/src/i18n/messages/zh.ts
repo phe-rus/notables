@@ -855,7 +855,7 @@ export const zh: Messages = {
     wordsMatch: "一样",
     wordsDiffer: "不一样",
     wrongCode: "这个代码无效。请在浏览器中核对后重试。",
-    noBrowser: "没有浏览器响应。请确认它仍显示这个代码。",
+    noBrowser: "没有响应。请确认另一块屏幕仍显示这个代码。",
     linked: "已关联浏览器",
     webTitle: "在这台电脑上使用 Notables",
     webStep1: "在手机上打开 Notables。",
