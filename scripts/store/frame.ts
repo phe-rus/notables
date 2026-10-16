@@ -1,7 +1,6 @@
 /**
- * Composes store images as HTML pages: warm ruled paper, a Newsreader
- * headline with a Caveat accent, and the app's own screenshot in a device
- * frame. Playwright renders each page at the store's exact pixel size.
+ * Composes store images as HTML pages: warm paper, a Newsreader headline
+ * with a Caveat accent, and the app's own screen as a floating card. Playwright renders each page at the store's exact pixel size.
  */
 import { join } from "node:path";
 
@@ -24,23 +23,40 @@ async function base(width: number, height: number, body: string, extraCss = ""):
   return `<!doctype html><html><head><meta charset="utf-8"><style>${fonts}
 *{box-sizing:border-box;margin:0}
 html,body{width:${width}px;height:${height}px;overflow:hidden}
-body{position:relative;background:#fbf6ee;font-family:"Newsreader",serif;color:#29221d;-webkit-font-smoothing:antialiased}
+body{position:relative;background:#fbf5ec;font-family:"Newsreader",serif;color:#26201b;-webkit-font-smoothing:antialiased}
 .paper{position:absolute;inset:0;background:
-  radial-gradient(120% 70% at 100% 0%,rgba(250,214,160,.55),transparent 60%),
-  radial-gradient(90% 60% at 0% 100%,rgba(240,200,190,.35),transparent 65%),
-  repeating-linear-gradient(to bottom,transparent 0 calc(var(--rule) - 1px),rgba(120,90,60,.09) calc(var(--rule) - 1px) var(--rule))}
-.device{position:absolute;background:#1d1a18;box-shadow:0 30px 60px -18px rgba(60,40,20,.45),0 8px 18px rgba(60,40,20,.18),inset 0 0 0 1.5px #3b3633}
-.screen{position:absolute;overflow:hidden;background:#fff}
-.screen img{display:block;width:100%;height:100%;object-fit:cover;object-position:top}
+  radial-gradient(60% 45% at 88% 8%,rgba(255,206,160,.75),transparent 70%),
+  radial-gradient(55% 40% at 6% 30%,rgba(246,196,204,.55),transparent 70%),
+  radial-gradient(70% 50% at 50% 105%,rgba(236,178,190,.55),transparent 70%),
+  linear-gradient(180deg,#fdf8f1,#f8eee4)}
+.paper::after{content:"";position:absolute;inset:0;opacity:.5;background:repeating-linear-gradient(to bottom,transparent 0 calc(var(--rule) - 1px),rgba(120,90,60,.06) calc(var(--rule) - 1px) var(--rule))}
+.card{position:absolute;overflow:hidden;background:#fff;display:flex;flex-direction:column;
+  box-shadow:0 0 0 1px rgba(70,45,25,.08),0 2px 6px rgba(70,45,25,.06),0 24px 60px -16px rgba(90,50,30,.32),0 60px 120px -40px rgba(190,90,110,.28)}
+.card img{display:block;width:100%;flex:none}
+.rim{position:absolute;pointer-events:none;border:1px solid rgba(255,255,255,.9);box-shadow:inset 0 0 0 1px rgba(255,255,255,.35)}
+.status{display:flex;align-items:center;justify-content:space-between;flex:none;font-family:"SF Pro Text","Roboto","Inter","Liberation Sans",Arial,sans-serif;font-weight:650;letter-spacing:-.01em}
+.status svg{height:.95em;fill:currentColor}
+.home{display:flex;align-items:center;justify-content:center;flex:none}
+.home i{display:block;border-radius:99px;background:currentColor;opacity:.9}
 ${extraCss}
 </style></head><body><div class="paper"></div>${body}</body></html>`;
 }
 
-/** 9:41, signal, Wi-Fi and battery, drawn in the strip's own colour. */
-const statusBar = () => `<span>9:41</span><span style="display:flex;gap:.35em;align-items:center">
-<svg viewBox="0 0 18 12"><rect x="0" y="8" width="3" height="4" rx="1"/><rect x="5" y="5.5" width="3" height="6.5" rx="1"/><rect x="10" y="3" width="3" height="9" rx="1"/><rect x="15" y="0" width="3" height="12" rx="1"/></svg>
-<svg viewBox="0 0 16 12"><path d="M8 11.5 5.6 9a3.4 3.4 0 0 1 4.8 0zM3.4 6.8a6.5 6.5 0 0 1 9.2 0l1.6-1.6a8.8 8.8 0 0 0-12.4 0zM.2 3.6a11 11 0 0 1 15.6 0L16 3.4"/></svg>
-<svg viewBox="0 0 26 12"><rect x=".5" y=".5" width="22" height="11" rx="3" fill="none" stroke="currentColor" opacity=".5"/><rect x="2" y="2" width="17" height="8" rx="1.8"/><rect x="23.5" y="4" width="1.8" height="4" rx=".8" opacity=".5"/></svg></span>`;
+/** Android 15: time on the left, Material icons and the battery level on the right. */
+const androidStatusBar =
+  () => `<span style="font-weight:500">9:41</span><span style="display:flex;gap:.35em;align-items:center;font-weight:500">
+<svg viewBox="0 0 16 13"><path d="M8 12.5 0 3.2A12.4 12.4 0 0 1 16 3.2z"/></svg>
+<svg viewBox="0 0 13 13"><path d="M13 0v13H0z"/></svg>
+<svg viewBox="0 0 8 13" style="height:1.05em"><rect x="2.5" y="0" width="3" height="1.5" rx=".5"/><rect x="0" y="1.2" width="8" height="11.8" rx="1.4"/></svg>
+<span style="font-size:.92em">100%</span></span>`;
+
+/** 9:41 (with the date on a tablet), signal, Wi-Fi and battery, in the strip's own colour. */
+const statusBar = (
+  tablet: boolean,
+) => `<span>${tablet ? '9:41&nbsp;&nbsp;<span style="font-weight:500">Fri 16 Oct</span>' : "9:41"}</span><span style="display:flex;gap:.4em;align-items:center">
+${tablet ? "" : `<svg viewBox="0 0 18 12"><rect x="0" y="8" width="3" height="4" rx="1"/><rect x="5" y="5.5" width="3" height="6.5" rx="1"/><rect x="10" y="3" width="3" height="9" rx="1"/><rect x="15" y="0" width="3" height="12" rx="1"/></svg>`}
+<svg viewBox="0 0 16 12"><path d="M8 11.6 5.7 9.2a3.3 3.3 0 0 1 4.6 0zM3.5 7a6.4 6.4 0 0 1 9 0l1.5-1.5a8.5 8.5 0 0 0-12 0zM.4 3.9a10.7 10.7 0 0 1 15.2 0L17 2.5A12.7 12.7 0 0 0-1 2.5z"/></svg>
+<svg viewBox="0 0 27 12"><rect x=".5" y=".5" width="23" height="11" rx="3.4" fill="none" stroke="currentColor" opacity=".4"/><rect x="2" y="2" width="20" height="8" rx="2"/><path d="M25 4v4a2 2 0 0 0 0-4z" opacity=".4"/></svg></span>`;
 
 export interface FrameSpec {
   /** Page size in CSS pixels; the store size divided by `scale`. */
@@ -52,84 +68,63 @@ export interface FrameSpec {
   /** The app's viewport, for the screen's aspect ratio. */
   viewport: { width: number; height: number };
   tablet?: boolean;
-  /** The hardware drawn around the screen. */
-  model?: "galaxy" | "iphone" | "ipad";
-  /** A magnified piece of the screen, in viewport pixels, shown floating over the frame. */
+  /** Android's status bar and gesture bar instead of Apple's. */
+  android?: boolean;
+  /** A magnified piece of the screen, in viewport pixels, shown floating over it. */
   callout?: { x: number; y: number; w: number; h: number };
 }
 
-/** One store screenshot: headline above, the app in a phone or tablet below. */
+/**
+ * One store screenshot, framed the way Apple frames its own: no hardware,
+ * just the screen as a rounded card with a status bar and home indicator,
+ * floating on warm paper under the headline.
+ */
 export async function framePage(spec: FrameSpec): Promise<string> {
-  const { width, height, viewport } = spec;
-  const top = height * (spec.tablet ? 0.17 : 0.175);
-  const model = spec.model ?? (spec.tablet ? "ipad" : "iphone");
-  // Galaxy S25: thin even bezels; iPhone a little wider; iPad wider still.
-  const bezel = width * (model === "galaxy" ? 0.014 : model === "iphone" ? 0.022 : 0.02);
-  const available = height - top - height * 0.025;
-  // A status bar above the app and a home indicator below it, as on the
-  // device, so the screen's rounded corners never cover the app.
-  const statusShare = spec.tablet ? 0.032 : 0.11;
-  const homeShare = spec.tablet ? 0.026 : 0.075;
+  const { width, height, viewport, tablet } = spec;
+  const top = height * (tablet ? 0.165 : 0.2);
+  const available = height - top - height * (tablet ? 0.04 : 0.05);
+  const statusShare = tablet ? 0.028 : 0.105;
+  const homeShare = tablet ? 0.022 : 0.06;
   const screenFor = (w: number) => w * (statusShare + homeShare + viewport.height / viewport.width);
-  let screenW = spec.tablet ? width * 0.84 : width * 0.8;
-  let screenH = screenFor(screenW);
-  if (screenH + bezel * 2 > available) {
-    screenW = ((available - bezel * 2) / screenH) * screenW;
-    screenH = screenFor(screenW);
-  }
+  let screenW = width * (tablet ? 0.86 : 0.8);
+  if (screenFor(screenW) > available) screenW *= available / screenFor(screenW);
+  const screenH = screenFor(screenW);
   const statusH = screenW * statusShare;
   const homeH = screenW * homeShare;
-  const deviceW = screenW + bezel * 2;
-  const deviceH = screenH + bezel * 2;
-  const deviceHFor = (share: number) => deviceH * share;
-  const left = (width - deviceW) / 2;
-  const radius = width * (model === "galaxy" ? 0.085 : model === "iphone" ? 0.115 : 0.045);
-  const camera =
-    model === "galaxy"
-      ? `<i class="camera" style="width:${statusH * 0.42}px;height:${statusH * 0.42}px;border-radius:50%"></i>`
-      : model === "iphone"
-        ? `<i class="camera" style="width:${screenW * 0.3}px;height:${statusH * 0.62}px;border-radius:${statusH}px"></i>`
-        : "";
-  const keys =
-    model === "galaxy"
-      ? `<i class="key" style="right:-${width * 0.012}px;top:${deviceHFor(0.2)}px;height:${width * 0.13}px"></i><i class="key" style="right:-${width * 0.012}px;top:${deviceHFor(0.36)}px;height:${width * 0.07}px"></i>`
-      : model === "iphone"
-        ? `<i class="key" style="left:-${width * 0.012}px;top:${deviceHFor(0.18)}px;height:${width * 0.09}px"></i><i class="key" style="left:-${width * 0.012}px;top:${deviceHFor(0.28)}px;height:${width * 0.09}px"></i><i class="key" style="right:-${width * 0.012}px;top:${deviceHFor(0.25)}px;height:${width * 0.14}px"></i>`
-        : "";
-  const headSize = spec.tablet ? width * 0.056 : width * 0.084;
-  const accentSize = headSize * 0.66;
+  const left = (width - screenW) / 2;
+  const radius = screenW * (tablet ? 0.03 : 0.1);
+  const headSize = tablet ? width * 0.058 : width * 0.088;
+  const accentSize = headSize * 0.64;
   const image = pngData(spec.screenshot);
 
   let callout = "";
   if (spec.callout) {
     const { x, y, w, h } = spec.callout;
     const scale = screenW / viewport.width;
-    const zoom = (deviceW * 1.02) / (w * scale);
+    const zoom = (screenW * 1.06) / (w * scale);
     const cw = w * scale * zoom;
     const ch = h * scale * zoom;
-    const cx = (width - cw) / 2;
-    const cy = top + bezel + statusH + screenH * 0.7;
-    callout = `<div class="callout" style="left:${cx}px;top:${cy}px;width:${cw}px;height:${ch}px;
+    callout = `<div class="callout" style="left:${(width - cw) / 2}px;top:${top + statusH + screenH * 0.66}px;width:${cw}px;height:${ch}px;
       background-image:url(${image});background-size:${viewport.width * scale * zoom}px ${viewport.height * scale * zoom}px;
       background-position:${-x * scale * zoom}px ${-y * scale * zoom}px"></div>`;
   }
 
   const body = `
-<header style="position:absolute;left:0;right:0;top:0;height:${top}px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:${headSize * 0.3}px;padding:0 ${width * 0.05}px ${headSize * 0.25}px;text-align:center">
-  <h1 style="font-size:${headSize}px;line-height:1.02;font-weight:640;letter-spacing:-.022em;white-space:nowrap">${spec.headline}</h1>
-  <p style="font-family:Caveat;font-weight:600;font-size:${accentSize}px;line-height:1;color:#d9772b;white-space:nowrap">${spec.accent}</p>
+<header style="position:absolute;left:0;right:0;top:0;height:${top}px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:${headSize * 0.32}px;padding:0 ${width * 0.05}px;text-align:center">
+  <h1 style="font-size:${headSize}px;line-height:1.02;font-weight:650;letter-spacing:-.025em;white-space:nowrap">${spec.headline}</h1>
+  <p style="font-family:Caveat;font-weight:600;font-size:${accentSize}px;line-height:1;color:#d0703a;white-space:nowrap">${spec.accent}</p>
 </header>
-<div class="device ${model}" style="left:${left}px;top:${top}px;width:${deviceW}px;height:${deviceH}px;border-radius:${radius}px">${keys}
-  <div class="screen" data-pending style="left:${bezel}px;top:${bezel}px;width:${screenW}px;height:${screenH}px;border-radius:${radius - bezel}px;display:flex;flex-direction:column">
-    <div class="status" style="height:${statusH}px;font-size:${statusH * (spec.tablet ? 0.62 : 0.34)}px;padding:0 ${screenW * (spec.tablet ? 0.03 : 0.09)}px">${statusBar()}${camera}</div>
-    <img src="${image}" style="height:auto;flex:none">
-    <div class="home" style="height:${homeH}px"><i style="width:${screenW * 0.34}px;height:${Math.max(2, homeH * 0.12)}px"></i></div>
-  </div>
-</div>${callout}
+<div class="card" data-pending style="left:${left}px;top:${top}px;width:${screenW}px;height:${screenH}px;border-radius:${radius}px">
+  <div class="status" style="height:${statusH}px;font-size:${statusH * (tablet ? 0.55 : 0.33)}px;padding:${tablet ? 0 : statusH * 0.12}px ${screenW * (tablet ? 0.025 : 0.085)}px 0">${spec.android ? androidStatusBar() : statusBar(Boolean(tablet))}</div>
+  <img src="${image}">
+  <div class="home" style="height:${homeH}px"><i style="width:${screenW * (tablet ? 0.22 : spec.android ? 0.28 : 0.36)}px;height:${Math.max(2, screenW * (spec.android ? 0.009 : 0.012))}px"></i></div>
+</div>
+<div class="rim" style="left:${left}px;top:${top}px;width:${screenW}px;height:${screenH}px;border-radius:${radius}px"></div>
+${callout}
 <script>
-  // The strips take the colour of the app's own top and bottom edges.
-  const screen = document.querySelector(".screen");
-  const shot = screen.querySelector("img");
+  // The bars take the colour of the app's own top and bottom edges.
+  const card = document.querySelector(".card");
+  const shot = card.querySelector("img");
   const paint = () => {
     const canvas = document.createElement("canvas");
     canvas.width = shot.naturalWidth;
@@ -139,11 +134,11 @@ export async function framePage(spec: FrameSpec): Promise<string> {
     const at = (y) => context.getImageData(Math.round(canvas.width / 2), y, 1, 1).data;
     const set = (element, [r, g, b]) => {
       element.style.background = "rgb(" + r + "," + g + "," + b + ")";
-      element.style.color = 0.299 * r + 0.587 * g + 0.114 * b > 140 ? "#1d1a18" : "#fff";
+      element.style.color = 0.299 * r + 0.587 * g + 0.114 * b > 140 ? "#111" : "#fff";
     };
-    set(screen.querySelector(".status"), at(2));
-    set(screen.querySelector(".home"), at(canvas.height - 2));
-    screen.removeAttribute("data-pending");
+    set(card.querySelector(".status"), at(2));
+    set(card.querySelector(".home"), at(canvas.height - 2));
+    card.removeAttribute("data-pending");
   };
   shot.complete ? paint() : shot.addEventListener("load", paint);
 </script>`;
@@ -151,45 +146,48 @@ export async function framePage(spec: FrameSpec): Promise<string> {
     width,
     height,
     body,
-    `.paper{--rule:${Math.round(height / 30)}px}
-.status{position:relative;display:flex;align-items:center;justify-content:space-between;font-family:system-ui,sans-serif;font-weight:600;flex:none}
-.status svg{height:1em;fill:currentColor}
-.camera{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);background:#0b0b0c;box-shadow:inset 0 0 0 1px #222}
-.key{position:absolute;width:${width * 0.008}px;border-radius:3px;background:linear-gradient(90deg,#8f949b,#d9dce0,#8f949b)}
-.galaxy{background:#0d0d0f;box-shadow:0 30px 60px -18px rgba(60,40,20,.45),0 0 0 ${width * 0.006}px #b9bdc3,0 0 0 ${width * 0.0075}px #7d8288,inset 0 0 0 1px #2a2a2e}
-.iphone{background:#121212;box-shadow:0 30px 60px -18px rgba(60,40,20,.45),0 0 0 ${width * 0.006}px #c8c3ba,0 0 0 ${width * 0.0075}px #8d877e}
-.home{display:flex;align-items:center;justify-content:center;flex:none}
-.home i{display:block;border-radius:99px;background:currentColor;opacity:.85}
+    `.paper::after{--rule:${Math.round(height / 32)}px}
 .callout{position:absolute;border-radius:${width * 0.035}px;background-color:#fff;background-repeat:no-repeat;
-  box-shadow:0 24px 50px -12px rgba(60,40,20,.45),0 0 0 1px rgba(60,40,20,.08)}`,
+  box-shadow:0 0 0 1px rgba(70,45,25,.08),0 30px 60px -14px rgba(90,50,30,.4)}`,
   );
 }
 
-/** Google Play's 1024 by 500 feature graphic: the mark, the name and three phones. */
+/**
+ * Google Play's 1024 by 500 feature graphic: the mark and name on the
+ * left, and a tilted wall of real screens running off the right edge.
+ */
 export async function featureGraphic(
   icon: Uint8Array,
   screens: Uint8Array[],
   viewport: { width: number; height: number },
 ): Promise<string> {
-  const phoneW = 190;
-  const bezel = 7;
-  const screenW = phoneW - bezel * 2;
-  const screenH = (screenW * viewport.height) / viewport.width;
-  const phones = screens
-    .map((shot, i) => {
-      const x = [560, 790, 675][i];
-      const y = [92, 110, 52][i];
-      const rotate = [-6, 6, 0][i];
-      return `<div class="device" style="left:${x}px;top:${y}px;width:${phoneW}px;height:${screenH + bezel * 2}px;border-radius:30px;transform:rotate(${rotate}deg);z-index:${i === 2 ? 2 : 1}">
-  <div class="screen" style="left:${bezel}px;top:${bezel}px;width:${screenW}px;height:${screenH}px;border-radius:23px"><img src="${pngData(shot)}"></div></div>`;
-    })
-    .join("");
+  const w = 200;
+  const h = (w * viewport.height) / viewport.width;
+  const column = (shots: Uint8Array[], offset: number) =>
+    `<div style="display:flex;flex-direction:column;gap:26px;transform:translateY(${offset}px)">${shots
+      .map(
+        (shot) =>
+          `<div class="card" style="position:relative;width:${w}px;height:${h}px;border-radius:24px"><img src="${pngData(shot)}"></div>`,
+      )
+      .join("")}</div>`;
+  const [a, b, c, d, e] = screens;
   const body = `
-<img src="${pngData(icon)}" style="position:absolute;left:70px;top:78px;width:84px;height:84px;border-radius:20px;box-shadow:0 10px 24px -8px rgba(60,40,20,.35)">
-<h1 style="position:absolute;left:66px;top:170px;font-size:104px;font-weight:640;letter-spacing:-.03em;line-height:1">Notables</h1>
-<p style="position:absolute;left:70px;top:290px;font-family:'Newsreader Italic';font-size:30px;color:#4a3f37">A calm place for everything you write.</p>
-<p style="position:absolute;left:70px;top:336px;font-family:Caveat;font-weight:600;font-size:34px;color:#d9772b">notes, journals, books, comics &amp; invoices</p>
-<p style="position:absolute;left:70px;top:404px;font-family:system-ui,sans-serif;font-size:16px;color:#6b5f55"><b style="color:#3b322c">Local first</b> &nbsp;·&nbsp; no account &nbsp;·&nbsp; works offline</p>
-${phones}`;
-  return base(1024, 500, body, ".paper{--rule:28px}");
+<div style="position:absolute;left:470px;top:-150px;display:flex;gap:26px;transform:perspective(1600px) rotateX(18deg) rotateY(-14deg) rotateZ(-16deg);transform-origin:left top">
+  ${column([a, b], 40)}${column([c, d], -120)}${column([e, a], -20)}
+</div>
+<div style="position:absolute;left:0;top:0;bottom:0;width:560px;background:linear-gradient(90deg,#fbf3ea 62%,rgba(251,243,234,0))"></div>
+<img src="${pngData(icon)}" style="position:absolute;left:64px;top:70px;width:76px;height:76px;border-radius:18px;box-shadow:0 12px 26px -8px rgba(90,50,30,.35)">
+<h1 style="position:absolute;left:60px;top:158px;font-size:96px;font-weight:650;letter-spacing:-.035em;line-height:1">Notables</h1>
+<p style="position:absolute;left:64px;top:270px;font-family:'Newsreader Italic';font-size:28px;color:#4a3f37">Anything notable, always with you.</p>
+<p style="position:absolute;left:64px;top:312px;font-family:Caveat;font-weight:600;font-size:31px;color:#d0703a">notes, books, comics, plans &amp; invoices</p>
+<div style="position:absolute;left:64px;top:382px;display:flex;gap:10px;font-family:'Liberation Sans',Arial,sans-serif;font-size:15px;font-weight:600;color:#5a4636">
+  <span class="pill">Local first</span><span class="pill">No account</span><span class="pill">Works offline</span>
+</div>`;
+  return base(
+    1024,
+    500,
+    body,
+    `.paper::after{--rule:26px}
+.pill{padding:8px 14px;border-radius:99px;background:rgba(255,255,255,.75);box-shadow:0 0 0 1px rgba(120,80,50,.12),0 6px 14px -8px rgba(90,50,30,.3)}`,
+  );
 }

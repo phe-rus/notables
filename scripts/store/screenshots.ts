@@ -35,14 +35,13 @@ interface Device {
   /** The composed image's size in CSS pixels; times `frameScale` gives the store's size. */
   frame: { width: number; height: number; scale: number };
   tablet?: boolean;
-  model: "galaxy" | "iphone" | "ipad";
 }
 
 const devices: Device[] = [
   {
     folder: "google-play",
-    model: "galaxy",
-    viewport: { width: 412, height: 892 },
+    // An iPhone 14 Pro or 15 sized screen on both phones.
+    viewport: { width: 393, height: 852 },
     scale: 3,
     userAgent:
       "Mozilla/5.0 (Linux; Android 14; Pixel 8) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/140.0.0.0 Mobile Safari/537.36",
@@ -50,8 +49,7 @@ const devices: Device[] = [
   },
   {
     folder: "app-store-iphone",
-    model: "iphone",
-    viewport: { width: 402, height: 874 },
+    viewport: { width: 393, height: 852 },
     scale: 3,
     userAgent:
       "Mozilla/5.0 (iPhone; CPU iPhone OS 18_0 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/18.0 Mobile/15E148 Safari/604.1",
@@ -59,7 +57,6 @@ const devices: Device[] = [
   },
   {
     folder: "app-store-ipad",
-    model: "ipad",
     viewport: { width: 1024, height: 1366 },
     scale: 2,
     userAgent:
@@ -325,7 +322,7 @@ async function main() {
         screenshot: png,
         viewport: device.viewport,
         tablet: device.tablet,
-        model: device.model,
+        android: device.folder === "google-play",
         callout,
       });
       await render(
@@ -344,7 +341,7 @@ async function main() {
         captured.find((item) => item.shot.name === name)?.png ?? new Uint8Array();
       const html = await featureGraphic(
         icon,
-        [pick("6-comic"), pick("4-calendar"), pick("2-note")],
+        [pick("1-notes"), pick("6-comic"), pick("2-note"), pick("4-calendar"), pick("3-reader")],
         device.viewport,
       );
       await render(
