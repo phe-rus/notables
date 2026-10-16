@@ -111,10 +111,17 @@ Gotchas learned the hard way:
   nothing. Open copies of a document share one stored copy
   (`createSharedPersistence`), so a phone's editor and its browser edit
   together. Checked end to end in Chromium (pairing, library, edits both
-  ways, reconnect, phone away banner, nothing in IndexedDB); not yet on the
-  TECNO with a real Wi-Fi path. The web hides the wallet, device settings,
-  read aloud and recording. Not deployed: the Worker needs `wrangler deploy`
-  for the room (Durable Object migration `v1`).
+  ways, reconnect, phone away banner, nothing in IndexedDB), then on the
+  TECNO over real Wi-Fi (16 Oct): the camera scanned the QR from the
+  Chromebook screen, words matched, edits both ways, reload reconnects,
+  force-stop shows the banner and relaunch resumes editing. The dev
+  server now behaves like production (the web asks to link a phone);
+  `VITE_STANDALONE_WEB=1` brings back the standalone web library.
+  Wireless adb works from the Linux container: scan 192.168.1.x for the
+  Wireless debugging port (mDNS doesn't cross ChromeOS's NAT) and
+  `adb connect`; this computer's key is already trusted. The web hides the wallet, device settings,
+  read aloud and recording. Deployed 16 Oct (room checked live with two
+  test peers).
 - Live mode note: `tauri android dev` starts Vite in native mode, without
   the Cloudflare plugin, so `/spaces/connect` doesn't exist there. Run
   `bun run dev` yourself and start live mode with
@@ -264,8 +271,8 @@ Shipped and tested in the browser (Playwright) unless noted:
   encryption, not available in France (until the French declaration is
   filed). The App Store page (texts, screenshots, category) is not filled
   in yet; everything is in `docs/store/listing.md`.
-  Store screenshots: regenerate with a Playwright script against `bun run
-  dev` (iPhone 430x932 at 3x, iPad 1024x1366 at 2x, Android 412x892 at 3x),
+  Store screenshots: regenerate with a Playwright script against
+  `VITE_STANDALONE_WEB=1 bun run dev` (without it the web asks to link a phone) (iPhone 430x932 at 3x, iPad 1024x1366 at 2x, Android 412x892 at 3x),
   composed with Newsreader headlines and Caveat accents on paper.
   Tagline: "Anything notable, always with you." Store metadata may not name
   other apps.
@@ -332,8 +339,7 @@ TestFlight refuse the upload; each build asks in TestFlight instead.
 
 ## Next
 
-- Browser sessions, next: test on the TECNO (unlocked) with ChromeOS
-  Chrome on the same Wi-Fi; photos and recordings from the phone (media on
+- Browser sessions, next: settings sync (AC-16, in progress); photos and recordings from the phone (media on
   demand over the link); the browser's AI help with the phone's key;
   read only while the phone is away (AC-26); "Saved on this device" and the
   sidebar's "On this device" should name the phone in a browser; a Hino
