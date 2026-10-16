@@ -66,7 +66,7 @@ export function LinkedDevicesPage() {
               </Button>
             </LabeledContent>
           ))}
-          <LabeledContent label={t("devices.linkBrowser")}>
+          <LabeledContent label={t("devices.linkBrowserWhere")}>
             <Button variant="secondary" onClick={() => setLinking(null)}>
               {t("devices.linkBrowser")}
             </Button>

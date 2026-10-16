@@ -6,6 +6,7 @@ import {
   NotesEditor,
   NotesEditorContent,
   ReadModePlugin,
+  useEditorCommands,
 } from "@notables/pluraliti";
 import type { SyncStatus } from "@notables/sync";
 import {
@@ -70,7 +71,19 @@ const TITLE_SCROLLED_PX = 72;
 export function NoteScreen({ noteId, viewId }: { noteId: string; viewId?: string }) {
   const entry = useEntry(noteId);
   const ready = useLibraryReady();
+  const navigate = useNavigate();
+  const trashed = Boolean(entry?.trashedAt);
+  const bookId = entry?.bookId;
 
+  // Deleted from anywhere (the list, a swipe, another window, a linked
+  // browser): the note leaves the screen with it.
+  useEffect(() => {
+    if (!trashed) return;
+    if (bookId) void navigate({ to: "/books/$bookId", params: { bookId }, replace: true });
+    else void navigate({ to: "/", search: (s) => s, replace: true });
+  }, [trashed, bookId, navigate]);
+
+  if (trashed) return null;
   if (!entry) {
     return ready ? <MissingNote /> : null;
   }
@@ -81,6 +94,18 @@ export function NoteScreen({ noteId, viewId }: { noteId: string; viewId?: string
 function SharedAwareEditor({ entry, viewId }: { entry: LibraryEntry; viewId?: string }) {
   const shared = useShareSession(entry.id) !== undefined;
   return <NoteEditorScreen key={`${entry.id}:${shared}`} entry={entry} viewId={viewId} />;
+}
+
+/** A new note takes the caret once its document has loaded, ready to type. */
+function FocusWhenLoaded({ loaded }: { loaded: boolean }) {
+  const { focus } = useEditorCommands();
+  const done = useRef(false);
+  useEffect(() => {
+    if (!loaded || done.current) return;
+    done.current = true;
+    focus();
+  }, [loaded, focus]);
+  return null;
 }
 
 function NoteEditorScreen({ entry, viewId }: { entry: LibraryEntry; viewId?: string }) {
@@ -101,7 +126,8 @@ function NoteEditorScreen({ entry, viewId }: { entry: LibraryEntry; viewId?: str
   // the keyboard; a tap on its text edits, and Done reads again. New notes
   // open ready to type.
   const touch = useMediaQuery("(pointer: coarse)");
-  const [editing, setEditing] = useState(() => !entry.title);
+  const [fresh] = useState(() => !entry.title);
+  const [editing, setEditing] = useState(fresh);
   const reading = touch && !editing;
   const startEditing = useCallback(() => setEditing(true), []);
   // Using the formatting tools means editing: a drawing or photo added
@@ -173,6 +199,7 @@ function NoteEditorScreen({ entry, viewId }: { entry: LibraryEntry; viewId?: str
   return (
     <NotesEditor id={entry.id} provider={provider} bootstrap={entry.origin === getDeviceId()}>
       <ReadModePlugin reading={reading} onEdit={startEditing} />
+      {fresh && <FocusWhenLoaded loaded={status !== "loading"} />}
       <KeepCaretVisiblePlugin coveredFrom={toolsTop} />
       <div className="@container/note relative flex min-h-0 grow flex-col">
         <div

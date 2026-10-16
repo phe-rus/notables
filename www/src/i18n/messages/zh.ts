@@ -823,6 +823,7 @@ export const zh: Messages = {
     openNow: "正在打开",
     lastActive: "上次使用：{when}",
     linkBrowser: "关联浏览器",
+    linkBrowserWhere: "在电脑上打开 notables.pherus.org",
     logOut: "退出登录",
     endTitle: "要退出 {name} 吗？",
     endBody: "浏览器会关闭你的笔记，重新关联之前无法再打开。",

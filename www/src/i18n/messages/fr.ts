@@ -882,6 +882,7 @@ export const fr: Messages = {
     openNow: "Ouvert",
     lastActive: "Actif {when}",
     linkBrowser: "Lier un navigateur",
+    linkBrowserWhere: "Ouvrez notables.pherus.org sur votre ordinateur",
     logOut: "Se déconnecter",
     endTitle: "Déconnecter {name} ?",
     endBody:

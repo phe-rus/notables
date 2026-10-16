@@ -881,6 +881,7 @@ export const sw: Messages = {
     openNow: "Kimefunguliwa sasa",
     lastActive: "Kilitumika {when}",
     linkBrowser: "Unganisha Kivinjari",
+    linkBrowserWhere: "Fungua notables.pherus.org kwenye kompyuta yako",
     logOut: "Toka",
     endTitle: "Toka kwenye {name}?",
     endBody: "Kivinjari kitafunga madokezo yako na hakitayafungua tena hadi ukiunganishe upya.",

@@ -872,6 +872,7 @@ export const pt: Messages = {
     openNow: "Aberto agora",
     lastActive: "Ativo {when}",
     linkBrowser: "Vincular um navegador",
+    linkBrowserWhere: "Abra notables.pherus.org no seu computador",
     logOut: "Sair",
     endTitle: "Sair de {name}?",
     endBody: "O navegador fecha suas notas e não poderá abri-las até ser vinculado de novo.",

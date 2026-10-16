@@ -870,6 +870,7 @@ export const en = {
     openNow: "Open now",
     lastActive: "Last active {when}",
     linkBrowser: "Link a Browser",
+    linkBrowserWhere: "Open notables.pherus.org on your computer",
     logOut: "Log Out",
     endTitle: "Log out of {name}?",
     endBody: "The browser closes your notes and can't open them again until you link it.",

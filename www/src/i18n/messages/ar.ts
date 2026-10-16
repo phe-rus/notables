@@ -947,6 +947,7 @@ export const ar: Messages = {
     openNow: "مفتوح الآن",
     lastActive: "آخر نشاط {when}",
     linkBrowser: "ربط متصفح",
+    linkBrowserWhere: "افتح notables.pherus.org على حاسوبك",
     logOut: "تسجيل الخروج",
     endTitle: "تسجيل خروج {name}؟",
     endBody: "سيغلق المتصفح ملاحظاتك ولن يتمكن من فتحها حتى تربطه من جديد.",
