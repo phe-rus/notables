@@ -110,9 +110,13 @@ A. Before a public release
    and what is sent; review App Privacy and Play data safety for it.
 4. [ ] Settle user-generated content in the Apple age rating and
    `listing.md`; add the two extra App Privacy data types there.
-5. [ ] Owner: Cloudflare Bot Fight Mode for pherus.org, so Google can
-   read the privacy policy; give Play the data deletion link (privacy
-   policy, section 4).
+5. [ ] Owner, in the dashboards (deferred, to do eventually):
+   - Cloudflare: turn off Bot Fight Mode for pherus.org (Security, Bots),
+     or add a rule letting crawlers reach `/legal/*`. The privacy page
+     answers Google's user agents with 200 from here, so the 403 Google
+     saw is most likely that setting blocking Google's real addresses.
+   - Play Console: give `https://pherus.org/legal/privacy-policy` as the
+     data deletion link (its section 4 explains deleting Notables data).
 6. [ ] Accessibility pass (VoiceOver, TalkBack, Dynamic Type) and the App
    Store accessibility labels.
 
