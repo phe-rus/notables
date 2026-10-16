@@ -709,6 +709,7 @@ export const ar: Messages = {
     notOnDevice: "هذا الكتاب غير موجود على هذا الجهاز",
     backToBooks: "العودة إلى الكتب",
     deleteBook: "حذف الكتاب",
+    more: "المزيد لـ {title}",
     bookTitle: "عنوان الكتاب",
     subtitle: "العنوان الفرعي",
     author: "المؤلف",
@@ -935,6 +936,10 @@ export const ar: Messages = {
     removeBody:
       "ينتقل الدليل والملاحظات والكتب والقصص المصورة والفواتير التجريبية إلى المحذوفة مؤخرًا. ويبقى كل ما كتبته بنفسك.",
     removed: "أُزيلت الأمثلة",
+    noticeTitle: "هذه أمثلة",
+    noticeBody: "أزلها كلها حين تكون مستعدًا للبدء من جديد.",
+    keep: "إبقاؤها",
+    removeAll: "إزالة الكل",
     added: "أُضيفت الأمثلة",
   },
   devices: {

@@ -661,6 +661,7 @@ export const pt: Messages = {
     notOnDevice: "Este livro não está neste dispositivo",
     backToBooks: "Voltar aos livros",
     deleteBook: "Apagar livro",
+    more: "Mais para {title}",
     bookTitle: "Título do livro",
     subtitle: "Subtítulo",
     author: "Autor",
@@ -860,6 +861,10 @@ export const pt: Messages = {
     removeBody:
       "O guia e as notas, livros, HQs e faturas de exemplo vão para Apagados recentemente. O que você mesmo escreveu fica.",
     removed: "Exemplos removidos",
+    noticeTitle: "Estes são exemplos",
+    noticeBody: "Remova todos quando quiser começar do zero.",
+    keep: "Manter",
+    removeAll: "Remover tudo",
     added: "Exemplos adicionados",
   },
   devices: {

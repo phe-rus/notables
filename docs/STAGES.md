@@ -121,8 +121,11 @@ A. Before a public release
    Store accessibility labels.
 
 B. Equal to Apple Notes
-1. [ ] Linked devices proven end to end, then a relay for devices that are
-   not online together.
+1. [ ] Linked devices proven end to end on the release builds (`v0.2.2`
+   fixed the room address), then media: photos, recordings, drawn pages
+   and covers don't travel yet. Spec 0005 sends media only over direct
+   links (AC-10, AC-21), so build the same-network direct link first; then
+   a relay for devices that are not online together.
 2. [ ] The Lock (spec 0004), before promoting the wallet.
 3. [ ] Share extension and Android share target ("Add to Notables"),
    widgets on both phones, Shortcuts and Siri.

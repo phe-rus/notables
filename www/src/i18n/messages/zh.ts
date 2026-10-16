@@ -639,6 +639,7 @@ export const zh: Messages = {
     notOnDevice: "这本书不在此设备上",
     backToBooks: "返回图书",
     deleteBook: "删除图书",
+    more: "{title} 的更多操作",
     bookTitle: "书名",
     subtitle: "副标题",
     author: "作者",
@@ -811,6 +812,10 @@ export const zh: Messages = {
     removeTitle: "移除示例？",
     removeBody: "指南以及示例笔记、书、漫画和发票会移到“最近删除”。你自己写的内容都会保留。",
     removed: "已移除示例",
+    noticeTitle: "这些是示例",
+    noticeBody: "准备好重新开始时，可以一次全部移除。",
+    keep: "保留",
+    removeAll: "全部移除",
     added: "已添加示例",
   },
   devices: {

@@ -6,6 +6,7 @@ import { CollapsedSidebarControls } from "../../../components/window/collapsed-s
 import { t } from "../../../i18n/i18n";
 import { BookShelf, useShelfBooks } from "../../books/components/book-shelf";
 import { noteMenu } from "../../notes/actions/note-menu";
+import { ExamplesNotice } from "../../onboarding/components/examples-notice";
 import { search } from "../../search/lib/rank";
 import { useSearchableNotes } from "../../search/lib/use-searchable-notes";
 import type { ListPreferences } from "../../settings/model/preferences";
@@ -227,6 +228,7 @@ export function NotesList({
           placeholder={t("notes.searchIn", { place: view.title.toLowerCase() })}
           onChange={(event) => setQuery(event.target.value)}
         />
+        {!selecting && <ExamplesNotice />}
       </header>
 
       <div

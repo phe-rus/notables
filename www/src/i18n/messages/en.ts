@@ -661,6 +661,7 @@ export const en = {
     notOnDevice: "This book isn’t on this device",
     backToBooks: "Back to books",
     deleteBook: "Delete book",
+    more: "More for {title}",
     bookTitle: "Book title",
     subtitle: "Subtitle",
     author: "Author",
@@ -858,6 +859,10 @@ export const en = {
     removeBody:
       "The guide and the example notes, books, comics and invoices go to Recently Deleted. Anything you wrote yourself stays.",
     removed: "Examples removed",
+    noticeTitle: "These are examples",
+    noticeBody: "Remove them all when you’re ready to start fresh.",
+    keep: "Keep them",
+    removeAll: "Remove all",
     added: "Examples added",
   },
   devices: {

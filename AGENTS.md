@@ -104,6 +104,18 @@ Gotchas learned the hard way:
 
 ## Status (October 2026)
 
+- Fixes from the owner's phones (16 Oct, `v0.2.1` and `v0.2.2`): release
+  builds never set `VITE_PUBLIC_URL`, so packaged apps looked for the device
+  rooms, server functions and share links on the phone itself and linking
+  two phones always timed out; `deployedSite()` in `platform/public-url.ts`
+  now defaults to notables.pherus.org. QR codes (`SealCode`) were faded by
+  Hino's two-tone icon style: they carry `data-brand` and a 4-module quiet
+  zone. Removing the examples is a notice at the top of Notes and Books
+  (`onboarding/components/examples-notice.tsx`), and every book row has a
+  "…" button with its menu, Delete included. Not yet checked on the phones.
+  Linked devices do not sync media yet (photos, recordings, drawn pages,
+  covers): the spec sends media only over direct links, which aren't built.
+
 - Stores and v0.2.0 (16 Oct): both store pages are filled in and saved as
   drafts, nothing submitted for review. App Store Connect: texts, App
   Information (subtitle, Productivity and Books), age rating 4+, App Privacy

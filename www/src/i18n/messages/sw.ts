@@ -671,6 +671,7 @@ export const sw: Messages = {
     notOnDevice: "Kitabu hiki hakipo kwenye kifaa hiki",
     backToBooks: "Rudi kwenye vitabu",
     deleteBook: "Futa kitabu",
+    more: "Zaidi kwa {title}",
     bookTitle: "Jina la kitabu",
     subtitle: "Kichwa kidogo",
     author: "Mwandishi",
@@ -869,6 +870,10 @@ export const sw: Messages = {
     removeBody:
       "Mwongozo na madokezo, vitabu, katuni na ankara za mfano huenda Yaliyofutwa hivi karibuni. Ulichoandika wewe mwenyewe kinabaki.",
     removed: "Mifano imeondolewa",
+    noticeTitle: "Hii ni mifano",
+    noticeBody: "Iondoe yote ukiwa tayari kuanza upya.",
+    keep: "Ibaki",
+    removeAll: "Ondoa yote",
     added: "Mifano imeongezwa",
   },
   devices: {

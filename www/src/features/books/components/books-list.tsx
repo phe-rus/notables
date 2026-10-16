@@ -2,10 +2,12 @@ import {
   BookIcon,
   Button,
   CheckIcon,
+  type ContextMenuItem,
   cn,
   confirmDialog,
   DownloadIcon,
   IconButton,
+  MoreIcon,
   openContextMenu,
   openMenu,
   SegmentedControl,
@@ -21,6 +23,7 @@ import { CollapsedSidebarControls } from "../../../components/window/collapsed-s
 import { t } from "../../../i18n/i18n";
 import { ImportSheet } from "../../imports/components/import-sheet";
 import { GroupSwitcher } from "../../library/components/group-switcher";
+import { ExamplesNotice } from "../../onboarding/components/examples-notice";
 import type { BooksShelf } from "../../settings/model/preferences";
 import { updatePreferences, usePreferences } from "../../settings/store/preferences-store";
 import { liveSeriesItems, moveBooksToBin, moveSeriesToBin } from "../../trash/lib/recycle-bin";
@@ -208,6 +211,7 @@ function BooksListContent({ activeId, onOpenSidebar, className }: BooksListProps
             label: shelfLabel(value),
           }))}
         />
+        {!selecting && <ExamplesNotice />}
       </header>
 
       <div className="flex grow flex-col gap-1 overflow-y-auto px-2.5 pt-2 pb-28 md:pb-8">
@@ -535,7 +539,7 @@ function BookRow({
   const remember = (event: { clientX: number; clientY: number }) => {
     menuPoint.current = { x: event.clientX, y: event.clientY };
   };
-  const menu = useContextMenu(() => [
+  const menuItems = (): ContextMenuItem[] => [
     {
       label: t("common.open"),
       onSelect: () => void navigate({ to: "/books/$bookId", params: { bookId: book.id } }),
@@ -573,7 +577,14 @@ function BookRow({
       destructive: true,
       onSelect: () => moveBooksToBin([book]),
     },
-  ]);
+  ];
+  const menu = useContextMenu(menuItems);
+  // The same menu from a visible button, so Delete never needs a hold or right click.
+  const openMore = (event: { currentTarget: HTMLElement }) => {
+    const box = event.currentTarget.getBoundingClientRect();
+    menuPoint.current = { x: box.left, y: box.bottom };
+    openContextMenu(box.left, box.bottom, menuItems());
+  };
   const body = (
     <>
       <BookCover title={book.title} author={book.author} image={book.cover} className="w-12" />
@@ -613,16 +624,27 @@ function BookRow({
     );
   }
   return (
-    <Link
-      to="/books/$bookId"
-      params={{ bookId: book.id }}
-      {...menu}
-      onPointerDownCapture={remember}
-      onContextMenuCapture={remember}
-      className={cn(rowClass, active ? "bg-accent-soft" : "hover:bg-fill/60")}
-    >
-      {body}
-    </Link>
+    <div className="relative flex items-center">
+      <Link
+        to="/books/$bookId"
+        params={{ bookId: book.id }}
+        {...menu}
+        onPointerDownCapture={remember}
+        onContextMenuCapture={remember}
+        className={cn(rowClass, "pe-12", active ? "bg-accent-soft" : "hover:bg-fill/60")}
+      >
+        {body}
+      </Link>
+      <IconButton
+        size="icon-sm"
+        variant="ghost"
+        label={t("books.more", { title: book.title || t("books.untitled") })}
+        className="absolute end-2 text-label-secondary"
+        onClick={openMore}
+      >
+        <MoreIcon size={18} />
+      </IconButton>
+    </div>
   );
 }
 

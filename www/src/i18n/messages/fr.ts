@@ -672,6 +672,7 @@ export const fr: Messages = {
     notOnDevice: "Ce livre n’est pas sur cet appareil",
     backToBooks: "Retour aux livres",
     deleteBook: "Supprimer le livre",
+    more: "Plus pour {title}",
     bookTitle: "Titre du livre",
     subtitle: "Sous-titre",
     author: "Auteur",
@@ -870,6 +871,10 @@ export const fr: Messages = {
     removeBody:
       "Le guide et les notes, livres, BD et factures d’exemple vont dans Supprimés récemment. Ce que vous avez écrit vous-même reste.",
     removed: "Exemples supprimés",
+    noticeTitle: "Ce sont des exemples",
+    noticeBody: "Supprimez-les tous quand vous voulez repartir de zéro.",
+    keep: "Les garder",
+    removeAll: "Tout supprimer",
     added: "Exemples ajoutés",
   },
   devices: {
