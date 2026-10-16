@@ -363,6 +363,24 @@ TestFlight refuse the upload; each build asks in TestFlight instead.
   sidebar's "On this device" should name the phone in a browser; a Hino
   devices icon (Linked Devices uses LinkIcon); deploy the Worker; then
   Android's foreground service and the iPhone ping (step 5).
+- Linked devices (spec 0005 steps 1 and 6, 16 Oct): space and ID on every
+  app, Link This Device / Add a Device, relay sync through the room. The
+  TECNO and the Linux app paired by code and showed each other online; the
+  content check (notes arriving both ways) is still owed: earlyoom on this
+  Chromebook kills bun, node and workerd when memory runs low, which ended
+  the run. Close Chrome tabs or the Android build first. Next: direct links
+  on the same network, mDNS (AC-27), nearby devices matched by the room (same
+  public address, like PairDrop), then tag v0.2.0 for Play closed testing and
+  TestFlight.
+- Play Console (16 Oct): every app content declaration is done (no ads,
+  13+, content rating Everyone, data safety: name, photos, recordings and
+  user content, optional, nothing shared) and the store listing is saved.
+  Owed: a closed testing release (v0.2.0), allowing Google's crawler on
+  pherus.org (the privacy link returned 403 to Google, likely Bot Fight
+  Mode), content rules and reporting for published notes before production,
+  a dedicated data deletion page. App Store Connect page next.
+- Owner, 16 Oct: the desktop window can't be dragged and its corners aren't
+  rounded the macOS way (the whole window, not the web view).
 - Owner, 16 Oct: on a phone, Enter at the end of a heading doesn't give a
   paragraph (or a subheading, then a paragraph); reproduce on the TECNO.
 - Owner, 16 Oct: show the account (space) ID on each device, so the person
