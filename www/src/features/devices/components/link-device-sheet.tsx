@@ -6,12 +6,12 @@ import {
   RoomSocket,
 } from "@notables/sync";
 import { Button, CloseIcon, IconButton, Sheet, toast } from "@phe-rus/hino";
-import { useEffect, useState } from "react";
+import { useEffect, useEffectEvent, useState } from "react";
 import { t } from "../../../i18n/i18n";
 import { roomEndpoint } from "../../../platform/session/room-endpoint";
 import { thisDeviceId } from "../../../platform/session/this-device";
 import { adoptSpace } from "../../../platform/space/space-identity";
-import { rejoinSpaceSync } from "../../../platform/space/space-sync";
+import { rejoinSpaceSync, stopSpaceSync } from "../../../platform/space/space-sync";
 import { SealCode } from "../../invoices/components/seal-code";
 import { eraseUntouchedExamples } from "../../onboarding/lib/examples";
 import { linkUrl } from "../lib/link-url";
@@ -20,7 +20,10 @@ import { PairingWords } from "./link-browser-screen";
 /** A code lasts this long before a new one replaces it (AC-3). */
 const CODE_LIFETIME = 5 * 60 * 1000;
 
-type Stage = { name: "waiting"; message?: string } | { name: "words"; words: string[] };
+type Stage =
+  | { name: "waiting"; message?: string }
+  | { name: "words"; words: string[] }
+  | { name: "saving" };
 
 /**
  * Links this device to the person's other devices (spec 0005, AC-3 to
@@ -39,6 +42,7 @@ export function LinkDeviceSheet({ open, onClose }: { open: boolean; onClose: () 
 function LinkDeviceContent({ onClose }: { onClose: () => void }) {
   const [code, setCode] = useState(newPairingCode);
   const [stage, setStage] = useState<Stage>({ name: "waiting" });
+  const close = useEffectEvent(onClose);
 
   useEffect(() => {
     const me = thisDeviceId();
@@ -56,25 +60,41 @@ function LinkDeviceContent({ onClose }: { onClose: () => void }) {
     pairing.on("rejected", () => renew(t("devices.webRejected")));
     pairing.on("exhausted", () => renew(t("devices.webNewCode")));
     pairing.on("approved", ({ phoneName, extra }) => {
-      if (typeof extra.root !== "string") return;
+      if (typeof extra.root !== "string" || !/^[a-f0-9]{64}$/i.test(extra.root)) {
+        pairing.complete(false);
+        renew(t("devices.joinFailed"));
+        return;
+      }
       const root = hexToBytes(extra.root);
-      // One set of examples per space: this device's untouched ones make way.
-      void eraseUntouchedExamples()
-        .then(() => adoptSpace(root))
-        .then(() => {
+      setStage({ name: "saving" });
+      // Save first: a refused key replacement must leave notes and examples intact.
+      void adoptSpace(root)
+        .then(async () => {
+          stopSpaceSync();
+          try {
+            await eraseUntouchedExamples();
+          } catch {
+            // Example cleanup can wait; the new space is already safely kept.
+          }
           rejoinSpaceSync();
+          pairing.complete(true);
           toast.success(t("devices.joined", { name: phoneName }));
-          onClose();
+          close();
         })
-        .catch(() => renew(t("devices.joinFailed")));
+        .catch(() => {
+          pairing.complete(false);
+          rejoinSpaceSync();
+          renew(t("devices.joinFailed"));
+        });
     });
     room.start();
     const expire = setTimeout(() => renew(t("devices.webNewCode")), CODE_LIFETIME);
     return () => {
       clearTimeout(expire);
-      room.stop();
+      // Leave time for the saved receipt to reach the approving device.
+      setTimeout(() => room.stop(), 500);
     };
-  }, [code, onClose]);
+  }, [code]);
 
   const shown = `${code.slice(0, 4)} ${code.slice(4)}`;
 
@@ -97,7 +117,7 @@ function LinkDeviceContent({ onClose }: { onClose: () => void }) {
         {stage.name === "waiting" && (
           <>
             <div className="rounded-3xl bg-white p-4 shadow-sm">
-              <SealCode value={linkUrl(code, thisDeviceId())} size={200} />
+              <SealCode value={linkUrl(code, thisDeviceId(), "device")} size={200} />
             </div>
             <p className="font-mono text-title2 font-semibold tracking-[0.2em]">
               <span aria-hidden="true">{shown}</span>
@@ -122,6 +142,11 @@ function LinkDeviceContent({ onClose }: { onClose: () => void }) {
               {t("common.cancel")}
             </Button>
           </>
+        )}
+        {stage.name === "saving" && (
+          <p role="status" className="text-callout">
+            {t("devices.finishing")}
+          </p>
         )}
       </div>
     </>

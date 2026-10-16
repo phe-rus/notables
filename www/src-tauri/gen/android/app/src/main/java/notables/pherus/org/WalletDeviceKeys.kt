@@ -36,18 +36,23 @@ object WalletDeviceKeys {
         if (store.containsAlias(alias)) store.deleteEntry(alias)
         return byteArrayOf()
       }
-      "write" -> {
+      "write", "replace" -> {
         require(input.size == 32)
-        check(!store.containsAlias(alias) && !file.baseFile.exists())
+        if (operation == "write") check(!store.containsAlias(alias) && !file.baseFile.exists())
         check(directory.isDirectory || directory.mkdirs())
-        val generator = KeyGenerator.getInstance(KeyProperties.KEY_ALGORITHM_AES, "AndroidKeyStore")
-        generator.init(KeyGenParameterSpec.Builder(alias, KeyProperties.PURPOSE_ENCRYPT or KeyProperties.PURPOSE_DECRYPT)
-          .setKeySize(256)
-          .setBlockModes(KeyProperties.BLOCK_MODE_GCM)
-          .setEncryptionPaddings(KeyProperties.ENCRYPTION_PADDING_NONE)
-          .setUserAuthenticationRequired(false)
-          .build())
-        val key = generator.generateKey()
+        // Reuse the wrapping key and atomically replace only the ciphertext.
+        // A failed replacement leaves the previous space readable.
+        val existing = store.containsAlias(alias)
+        val key = if (existing) store.getKey(alias, null) as SecretKey else {
+          val generator = KeyGenerator.getInstance(KeyProperties.KEY_ALGORITHM_AES, "AndroidKeyStore")
+          generator.init(KeyGenParameterSpec.Builder(alias, KeyProperties.PURPOSE_ENCRYPT or KeyProperties.PURPOSE_DECRYPT)
+            .setKeySize(256)
+            .setBlockModes(KeyProperties.BLOCK_MODE_GCM)
+            .setEncryptionPaddings(KeyProperties.ENCRYPTION_PADDING_NONE)
+            .setUserAuthenticationRequired(false)
+            .build())
+          generator.generateKey()
+        }
         val cipher = Cipher.getInstance("AES/GCM/NoPadding")
         cipher.init(Cipher.ENCRYPT_MODE, key)
         cipher.updateAAD(reference.toByteArray(Charsets.UTF_8))

@@ -868,6 +868,31 @@ export const pt: Messages = {
     added: "Exemplos adicionados",
   },
   devices: {
+    connectedTitle: "Dispositivos conectados",
+    disconnect: "Desconectar este dispositivo",
+    disconnectTitle: "Desconectar este dispositivo?",
+    disconnectBody:
+      "Este dispositivo mantém as notas e cria o seu próprio espaço. As alterações futuras deixam de sincronizar. Os navegadores vinculados a este dispositivo terminam a sessão.",
+    disconnectFailed:
+      "Não foi possível desconectar. A ligação atual não foi alterada. Tente novamente.",
+    noDevices: "Nenhum outro dispositivo está online.",
+    linkOnce:
+      "Vincule apenas uma vez a partir de qualquer dispositivo. As notas passam a sincronizar nos dois sentidos. Para mostrar um código aqui, escolha Vincular este dispositivo; no outro, Adicionar dispositivo.",
+    identityUnavailable:
+      "A identidade segura do dispositivo não está disponível. Reinicie o Notables e tente novamente com a aplicação aberta.",
+    deviceId: "ID do dispositivo",
+    idCopied: "ID copiado",
+    showId: "Mostrar",
+    hideId: "Ocultar",
+    copyId: "Copiar ID",
+    scanDeviceHint:
+      "No outro dispositivo, abra Definições › Dispositivos conectados › Vincular este dispositivo e leia o código.",
+    deviceCodeLabel: "Código mostrado no outro dispositivo",
+    finishing: "A concluir a ligação…",
+    peerJoinFailed:
+      "O outro dispositivo não conseguiu guardar a ligação. Mantenha ambas as aplicações abertas e tente novamente.",
+    finishTimeout:
+      "O outro dispositivo não confirmou a ligação. Verifique o ecrã antes de tentar novamente.",
     title: "Dispositivos vinculados",
     thisDevice: "Este dispositivo",
     spaceTitle: "O seu espaço",
@@ -885,7 +910,7 @@ export const pt: Messages = {
     joinTitle: "Ligar este dispositivo",
     joinWhere: "Junte-se aos seus outros dispositivos a partir daqui",
     joinHint:
-      "Num dispositivo que já usa, vá a Definições › Dispositivos ligados › Adicionar um dispositivo e leia este código.",
+      "Num dispositivo que já utiliza, abra Definições › Dispositivos conectados › Adicionar dispositivo e leia este código.",
     joinMerges: "As notas já neste dispositivo juntam-se às dos seus outros dispositivos.",
     joinWords: "Verifique que o outro dispositivo mostra estas palavras e aprove-o lá.",
     joined: "Ligado a {name}",

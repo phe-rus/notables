@@ -92,6 +92,11 @@ export function startSpaceSync(noteIds: NoteIds) {
     const frame = entry?.link.receive(body);
     if (entry && frame) entry.peer.receive(frame);
   });
+  current.on("close", () => {
+    for (const { peer } of peers.values()) peer.detach();
+    peers.clear();
+    changed();
+  });
   stopWatching = watchOpenDocuments({
     opened(name) {
       if (!name.startsWith("note:")) return;

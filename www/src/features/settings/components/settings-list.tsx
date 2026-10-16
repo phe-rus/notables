@@ -3,6 +3,8 @@ import { Link } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 import { t } from "../../../i18n/i18n";
 import { useAuthorName } from "../../../platform/author-preferences";
+import { useSpace } from "../../../platform/space/space-identity";
+import { useSpaceDevices } from "../../../platform/space/space-sync";
 import { type SettingsPageId, settingsGroups, settingsPages } from "./settings-catalog";
 
 const row =
@@ -15,6 +17,8 @@ const row =
  */
 export function SettingsList({ current }: { current: SettingsPageId | null }) {
   const name = useAuthorName();
+  const space = useSpace();
+  const devices = useSpaceDevices();
   // Which pages a device has (haptics, widgets) is known only once running.
   const [ready, setReady] = useState(false);
   useEffect(() => setReady(true), []);
@@ -41,6 +45,11 @@ export function SettingsList({ current }: { current: SettingsPageId | null }) {
             {name || t("nav.onThisDevice")}
           </span>
           <span className="truncate text-footnote text-label-secondary">{t("nav.noAccount")}</span>
+          {space && (
+            <span className="font-mono text-caption text-label-tertiary" dir="ltr">
+              {space.code.replace(/[A-Z0-9]/g, "*")}
+            </span>
+          )}
         </span>
         <ChevronRightIcon size={16} className="text-label-tertiary rtl:-scale-x-100" />
       </Link>
@@ -66,7 +75,14 @@ export function SettingsList({ current }: { current: SettingsPageId | null }) {
                   <span className="flex size-[30px] shrink-0 items-center justify-center rounded-full bg-accent text-on-accent">
                     {page.icon}
                   </span>
-                  <span className="grow truncate text-body text-label">{page.title}</span>
+                  <span className="flex min-w-0 grow flex-col">
+                    <span className="truncate text-body text-label">{page.title}</span>
+                    {id === "connected-devices" && devices.length > 0 && (
+                      <span className="truncate text-footnote text-label-secondary">
+                        {devices.map((device) => device.name).join(", ")}
+                      </span>
+                    )}
+                  </span>
                   <ChevronRightIcon size={16} className="text-label-tertiary rtl:-scale-x-100" />
                 </Link>
               );

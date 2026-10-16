@@ -18,11 +18,12 @@ import { CPace, type PairingKeys } from "./cpace";
 
 type Message =
   | { t: "hello" }
-  | { t: "start"; sid: string; share: string; kind?: WaitingKind }
+  | { t: "start"; sid: string; share: string; kind?: WaitingKind; receipt?: boolean }
   | { t: "share"; share: string; tag: string }
   | { t: "confirm"; tag: string }
   | { t: "wrong" }
   | { t: "approved"; info: string }
+  | { t: "complete"; info: string }
   | { t: "rejected" };
 
 export type Send = (to: string, body: string) => void;
@@ -72,6 +73,7 @@ export class BrowserPairing extends Emitter<BrowserEvents> {
   #attempts = 0;
   #pending = new Map<string, { cpace: CPace; sid: Uint8Array; keys?: PairingKeys }>();
   #done = false;
+  #receipt: { to: string; key: Uint8Array } | null = null;
 
   constructor(
     private readonly code: string,
@@ -91,7 +93,13 @@ export class BrowserPairing extends Emitter<BrowserEvents> {
         this.#pending.set(from, { cpace, sid });
         this.send(
           from,
-          encode({ t: "start", sid: toBase64(sid), share: toBase64(cpace.share), kind: this.kind }),
+          encode({
+            t: "start",
+            sid: toBase64(sid),
+            share: toBase64(cpace.share),
+            kind: this.kind,
+            receipt: this.kind === "device",
+          }),
         );
         break;
       }
@@ -122,6 +130,7 @@ export class BrowserPairing extends Emitter<BrowserEvents> {
         if (!info) return;
         const { name, ...extra } = JSON.parse(read.decode(info)) as { name: string };
         this.#done = true;
+        if (this.kind === "device") this.#receipt = { to: from, key: sessionKey };
         this.emit("approved", { phoneId: from, phoneName: name, sessionKey, extra });
         break;
       }
@@ -133,6 +142,20 @@ export class BrowserPairing extends Emitter<BrowserEvents> {
         break;
     }
   }
+
+  /** A native device acknowledges only after the received space is safely kept. */
+  complete(saved: boolean) {
+    const receipt = this.#receipt;
+    if (!receipt) return;
+    this.#receipt = null;
+    this.send(
+      receipt.to,
+      encode({
+        t: "complete",
+        info: toBase64(seal(receipt.key, text.encode(JSON.stringify({ saved })))),
+      }),
+    );
+  }
 }
 
 type PhoneEvents = {
@@ -140,6 +163,7 @@ type PhoneEvents = {
   /** The code did not match this browser. */
   wrong: () => void;
   approved: (browser: { browserId: string; sessionKey: Uint8Array }) => void;
+  failed: () => void;
 };
 
 /** The phone's side: knows the code, and approves once the person checks the words. */
@@ -147,6 +171,8 @@ export class PhonePairing extends Emitter<PhoneEvents> {
   #browser: string | null = null;
   #keys: PairingKeys | null = null;
   #kind: WaitingKind = "browser";
+  #receipt = false;
+  #awaiting = false;
 
   /** Whether a browser or a device is waiting; only a device may receive a space's secret. */
   get waitingKind(): WaitingKind {
@@ -176,6 +202,7 @@ export class PhonePairing extends Emitter<PhoneEvents> {
       if (this.#browser && this.#browser !== from) return;
       this.#browser = from;
       this.#kind = message.kind === "device" ? "device" : "browser";
+      this.#receipt = this.#kind === "device" && message.receipt === true;
       const cpace = new CPace(this.code, fromBase64(message.sid), "responder");
       const keys = cpace.finish(fromBase64(message.share));
       if (!keys) return;
@@ -190,6 +217,15 @@ export class PhonePairing extends Emitter<PhoneEvents> {
       else this.#fail();
     } else if (message.t === "wrong" && from === this.#browser) {
       this.#fail();
+    } else if (message.t === "complete" && from === this.#browser && this.#keys && this.#awaiting) {
+      const info = open(this.#keys.sessionKey(), fromBase64(message.info));
+      if (!info) return;
+      const result = JSON.parse(read.decode(info)) as { saved?: unknown };
+      if (typeof result.saved !== "boolean") return;
+      this.#awaiting = false;
+      if (result.saved)
+        this.emit("approved", { browserId: from, sessionKey: this.#keys.sessionKey() });
+      else this.emit("failed");
     }
   }
 
@@ -203,8 +239,9 @@ export class PhonePairing extends Emitter<PhoneEvents> {
     if (!browser || !keys) return;
     const sessionKey = keys.sessionKey();
     const info = seal(sessionKey, text.encode(JSON.stringify({ ...extra, name: this.name })));
+    this.#awaiting = this.#receipt;
     this.send(browser, encode({ t: "approved", info: toBase64(info) }));
-    this.emit("approved", { browserId: browser, sessionKey });
+    if (!this.#receipt) this.emit("approved", { browserId: browser, sessionKey });
   }
 
   reject() {

@@ -80,6 +80,13 @@ impl KeyStore for DeviceKeyStore {
         }
         Ok(())
     }
+    fn replace(&self, reference: &str, key: &DataKey) -> Result<()> {
+        Self::android_key("replace", reference, key.as_ref())?;
+        if *self.read(reference)? != **key {
+            return Err(WalletError::SecureStoreUnavailable);
+        }
+        Ok(())
+    }
     fn remove(&self, reference: &str) -> Result<()> {
         Self::android_key("remove", reference, &[])?;
         Ok(())

@@ -7,12 +7,12 @@ import {
   RoomSocket,
 } from "@notables/sync";
 import { Button, CloseIcon, IconButton, Sheet, toast } from "@phe-rus/hino";
-import { useEffect, useState } from "react";
+import { useEffect, useEffectEvent, useState } from "react";
 import { TextInput } from "../../../components/form/form-fields";
 import { t } from "../../../i18n/i18n";
 import { roomEndpoint } from "../../../platform/session/room-endpoint";
 import { thisDeviceId, thisDeviceName } from "../../../platform/session/this-device";
-import { spaceRoot } from "../../../platform/space/space-identity";
+import { spaceRoot, startSpace } from "../../../platform/space/space-identity";
 import { QrScanner } from "../../invoices/verify/qr-scanner";
 import { addBrowserSession } from "../lib/browser-sessions";
 import { readLinkUrl } from "../lib/link-url";
@@ -28,6 +28,7 @@ export interface LinkTarget {
 type Stage =
   | { name: "scan"; typing: boolean; error?: string }
   | { name: "connecting" }
+  | { name: "saving" }
   | { name: "words"; words: string[] };
 
 /**
@@ -42,15 +43,17 @@ export function LinkBrowserSheet({
   initial,
   onClose,
   title = t("devices.linkBrowser"),
+  kind = "browser",
 }: {
   open: boolean;
   initial: LinkTarget | null;
   onClose: () => void;
   title?: string;
+  kind?: "browser" | "device";
 }) {
   return (
     <Sheet open={open} onClose={onClose} label={title} className="max-w-[440px]">
-      {open && <LinkBrowserContent initial={initial} onClose={onClose} title={title} />}
+      {open && <LinkBrowserContent initial={initial} onClose={onClose} title={title} kind={kind} />}
     </Sheet>
   );
 }
@@ -59,10 +62,12 @@ function LinkBrowserContent({
   initial,
   onClose,
   title,
+  kind,
 }: {
   initial: LinkTarget | null;
   onClose: () => void;
   title: string;
+  kind: "browser" | "device";
 }) {
   const [target, setTarget] = useState<LinkTarget | null>(initial);
   const [stage, setStage] = useState<Stage>(
@@ -70,6 +75,7 @@ function LinkBrowserContent({
   );
   const [typed, setTyped] = useState("");
   const [pairing, setPairing] = useState<PhonePairing | null>(null);
+  const close = useEffectEvent(onClose);
 
   useEffect(() => {
     if (!target) return;
@@ -88,7 +94,11 @@ function LinkBrowserContent({
         addBrowserSession(browserId, sessionKey);
         toast.success(t("devices.linked"));
       }
-      onClose();
+      close();
+    });
+    flow.on("failed", () => {
+      setTarget(null);
+      setStage({ name: "scan", typing: true, error: t("devices.peerJoinFailed") });
     });
     setPairing(flow);
     room.start();
@@ -102,7 +112,16 @@ function LinkBrowserContent({
       clearTimeout(quiet);
       setTimeout(() => room.stop(), 500);
     };
-  }, [target, onClose]);
+  }, [target]);
+
+  useEffect(() => {
+    if (stage.name !== "saving") return;
+    const timeout = setTimeout(() => {
+      setTarget(null);
+      setStage({ name: "scan", typing: true, error: t("devices.finishTimeout") });
+    }, 20_000);
+    return () => clearTimeout(timeout);
+  }, [stage.name]);
 
   const begin = (next: LinkTarget) => {
     setStage({ name: "connecting" });
@@ -114,7 +133,7 @@ function LinkBrowserContent({
     if (link) begin(link);
   };
 
-  const approve = () => {
+  const approve = async () => {
     if (!pairing) return;
     if (pairing.waitingKind === "browser") {
       if (servesBrowsers()) pairing.approve();
@@ -126,8 +145,14 @@ function LinkBrowserContent({
       }
       return;
     }
+    await startSpace();
     const root = spaceRoot();
-    if (root) pairing.approve({ root: bytesToHex(root) });
+    if (!root) {
+      toast.error(t("devices.identityUnavailable"));
+      return;
+    }
+    setStage({ name: "saving" });
+    pairing.approve({ root: bytesToHex(root) });
   };
 
   const submitTyped = () => {
@@ -142,7 +167,7 @@ function LinkBrowserContent({
           <h2 className="text-title3 font-bold tracking-tight">{title}</h2>
           {stage.name === "scan" && (
             <p className="text-footnote leading-snug text-label-secondary">
-              {t("devices.scanHint")}
+              {t(kind === "device" ? "devices.scanDeviceHint" : "devices.scanHint")}
             </p>
           )}
         </div>
@@ -177,7 +202,7 @@ function LinkBrowserContent({
                 htmlFor="link-browser-code"
                 className="text-footnote font-medium text-label-secondary"
               >
-                {t("devices.codeLabel")}
+                {t(kind === "device" ? "devices.deviceCodeLabel" : "devices.codeLabel")}
               </label>
               <TextInput
                 id="link-browser-code"
@@ -202,9 +227,9 @@ function LinkBrowserContent({
             </Button>
           </form>
         )}
-        {stage.name === "connecting" && (
+        {(stage.name === "connecting" || stage.name === "saving") && (
           <p role="status" className="py-6 text-center text-callout text-label-secondary">
-            {t("devices.connecting")}
+            {t(stage.name === "saving" ? "devices.finishing" : "devices.connecting")}
           </p>
         )}
         {stage.name === "words" && (
@@ -216,7 +241,7 @@ function LinkBrowserContent({
             </p>
             <PairingWords words={stage.words} />
             <div className="flex w-full flex-col gap-2 pt-2">
-              <Button onClick={approve}>{t("devices.wordsMatch")}</Button>
+              <Button onClick={() => void approve()}>{t("devices.wordsMatch")}</Button>
               <Button
                 variant="ghost"
                 onClick={() => {

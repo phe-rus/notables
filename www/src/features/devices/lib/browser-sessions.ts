@@ -189,6 +189,10 @@ export function endBrowserSession(id: string) {
   save(records.filter((record) => record.id !== id));
 }
 
+export function endAllBrowserSessions() {
+  for (const id of [...records.map((record) => record.id)]) endBrowserSession(id);
+}
+
 const subscribe = (listener: () => void) => {
   listeners.add(listener);
   return () => {

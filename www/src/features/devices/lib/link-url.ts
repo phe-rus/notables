@@ -5,8 +5,8 @@ import { normalizeCode } from "@notables/sync";
  * Notables at Linked Devices, with the code and the waiting side's own seat,
  * so a scan reaches that one browser or device and no other.
  */
-export const linkUrl = (code: string, browserId: string) =>
-  `notables://link?c=${normalizeCode(code)}&b=${encodeURIComponent(browserId)}`;
+export const linkUrl = (code: string, browserId: string, kind: "browser" | "device" = "browser") =>
+  `notables://link?c=${normalizeCode(code)}&b=${encodeURIComponent(browserId)}&kind=${kind}`;
 
 /** The code and browser in a scanned link, or null for anything else. */
 export function readLinkUrl(text: string): { code: string; browserId: string | null } | null {

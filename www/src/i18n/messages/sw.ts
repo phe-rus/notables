@@ -877,6 +877,30 @@ export const sw: Messages = {
     added: "Mifano imeongezwa",
   },
   devices: {
+    connectedTitle: "Vifaa vilivyounganishwa",
+    disconnect: "Tenganisha kifaa hiki",
+    disconnectTitle: "Utenganishe kifaa hiki?",
+    disconnectBody:
+      "Kifaa hiki huhifadhi madokezo yake na kuanzisha nafasi yake. Mabadiliko yajayo hayatasawazishwa na vifaa vingine. Vivinjari vilivyounganishwa na kifaa hiki vitaondolewa.",
+    disconnectFailed: "Imeshindwa kutenganisha. Muunganisho wa sasa haujabadilika. Jaribu tena.",
+    noDevices: "Hakuna vifaa vingine vilivyo mtandaoni.",
+    linkOnce:
+      "Unganisha mara moja kutoka kifaa chochote. Madokezo yatasawazishwa pande zote mbili. Kuonyesha msimbo hapa, chagua Unganisha kifaa hiki; kwenye kingine, Ongeza kifaa.",
+    identityUnavailable:
+      "Utambulisho salama wa kifaa haupatikani. Anzisha Notables upya na ujaribu tena ukiwa umeifungua.",
+    deviceId: "Kitambulisho cha kifaa",
+    idCopied: "Kitambulisho kimenakiliwa",
+    showId: "Onyesha",
+    hideId: "Ficha",
+    copyId: "Nakili kitambulisho",
+    scanDeviceHint:
+      "Kwenye kifaa kingine, fungua Mipangilio › Vifaa vilivyounganishwa › Unganisha kifaa hiki, kisha uchanganue msimbo wake.",
+    deviceCodeLabel: "Msimbo unaoonyeshwa kwenye kifaa kingine",
+    finishing: "Inakamilisha muunganisho…",
+    peerJoinFailed:
+      "Kifaa kingine hakikuweza kuhifadhi muunganisho. Acha programu zote mbili wazi na ujaribu tena.",
+    finishTimeout:
+      "Kifaa kingine hakijathibitisha muunganisho. Angalia skrini yake kabla ya kujaribu tena.",
     title: "Vifaa Vilivyounganishwa",
     thisDevice: "Kifaa hiki",
     spaceTitle: "Nafasi yako",
@@ -893,7 +917,7 @@ export const sw: Messages = {
     joinTitle: "Unganisha kifaa hiki",
     joinWhere: "Jiunge na vifaa vyako vingine kutoka hapa",
     joinHint:
-      "Kwenye kifaa unachotumia tayari, nenda Mipangilio › Vifaa vilivyounganishwa › Ongeza kifaa na uchanganue msimbo huu.",
+      "Kwenye kifaa unachotumia tayari, fungua Mipangilio › Vifaa vilivyounganishwa › Ongeza kifaa na uchanganue msimbo huu.",
     joinMerges: "Madokezo yaliyo kwenye kifaa hiki yanajiunga na ya vifaa vyako vingine.",
     joinWords: "Hakikisha kifaa chako kingine kinaonyesha maneno haya, kisha ukikubali huko.",
     joined: "Imeunganishwa na {name}",

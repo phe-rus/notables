@@ -19,7 +19,9 @@ import { inBrowserSession } from "../../../platform/session/browser-session-stor
 import { AiSettingsSection } from "../../ai/components/ai-settings-section";
 import { ReminderSettingsSection } from "../../calendar/components/reminder-settings-section";
 import { BrowserSessionPage } from "../../devices/components/browser-session-page";
+import { ConnectedDevicesPage } from "../../devices/components/connected-devices-page";
 import { LinkedDevicesPage } from "../../devices/components/linked-devices-page";
+import { servesBrowsers } from "../../devices/lib/serves-browsers";
 import { ListeningSettingsSection } from "../../listening/components/listening-settings-section";
 import { ModelPacksSection } from "../../listening/components/model-packs-section";
 import { WidgetsSettingsSection } from "../../widgets/components/widgets-settings-section";
@@ -33,6 +35,7 @@ import { SidebarPage } from "./pages/sidebar-page";
 
 export const settingsPageIds = [
   "profile",
+  "connected-devices",
   "appearance",
   "notes",
   "sidebar",
@@ -68,6 +71,15 @@ const onDevice =
     !inBrowserSession() && check();
 
 export const settingsPages: Record<SettingsPageId, SettingsPage> = {
+  "connected-devices": page({
+    id: "connected-devices",
+    get title() {
+      return t("devices.connectedTitle");
+    },
+    icon: <LayoutIcon size={17} />,
+    content: () => <ConnectedDevicesPage />,
+    available: isTauri,
+  }),
   profile: page({
     id: "profile",
     get title() {
@@ -107,7 +119,7 @@ export const settingsPages: Record<SettingsPageId, SettingsPage> = {
     },
     icon: <LinkIcon size={17} />,
     content: () => (inBrowserSession() ? <BrowserSessionPage /> : <LinkedDevicesPage />),
-    available: () => isTauri() || inBrowserSession(),
+    available: () => servesBrowsers() || inBrowserSession(),
   }),
   privacy: page({
     id: "privacy",
@@ -180,6 +192,7 @@ export const settingsPages: Record<SettingsPageId, SettingsPage> = {
 
 /** The list's groups, as iOS Settings groups its rows. */
 export const settingsGroups: readonly (readonly SettingsPageId[])[] = [
+  ["connected-devices"],
   ["appearance", "notes", "sidebar"],
   ["devices", "privacy"],
   ["listening", "reminders", "haptics", "widgets", "ai"],

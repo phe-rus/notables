@@ -866,6 +866,30 @@ export const en = {
     added: "Examples added",
   },
   devices: {
+    connectedTitle: "Connected Devices",
+    disconnect: "Disconnect This Device",
+    disconnectTitle: "Disconnect this device?",
+    disconnectBody:
+      "This device keeps its notes and starts its own space. Future edits stop syncing with your other devices. Browsers linked to this device are logged out.",
+    disconnectFailed: "Could not disconnect. Your current connection is unchanged. Try again.",
+    noDevices: "No other devices are online.",
+    linkOnce:
+      "Link once from either device. Your notes then sync both ways. To show a code here, choose Link This Device; on the other device choose Add a Device.",
+    identityUnavailable:
+      "The secure device identity is unavailable. Keep Notables open and try again after restarting the app.",
+    deviceId: "Device ID",
+    idCopied: "ID copied",
+    showId: "Show",
+    hideId: "Hide",
+    copyId: "Copy ID",
+    scanDeviceHint:
+      "On your other device, open Settings › Connected Devices › Link This Device, then scan its code.",
+    deviceCodeLabel: "Code shown on your other device",
+    finishing: "Finishing the connection…",
+    peerJoinFailed:
+      "The other device could not save the connection. Keep both apps open and try again.",
+    finishTimeout:
+      "The other device has not confirmed the connection. Check its screen before trying again.",
     title: "Linked Devices",
     thisDevice: "This device",
     spaceTitle: "Your space",
@@ -882,7 +906,7 @@ export const en = {
     joinTitle: "Link This Device",
     joinWhere: "Join your other devices from here",
     joinHint:
-      "On a device you already use, go to Settings › Linked Devices › Add a Device and scan this code.",
+      "On a device you already use, go to Settings › Connected Devices › Add a Device and scan this code.",
     joinMerges: "Notes already on this device join your other devices' notes.",
     joinWords: "Check that your other device shows these words, then approve it there.",
     joined: "Linked to {name}",

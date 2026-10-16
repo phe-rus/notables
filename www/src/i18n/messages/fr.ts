@@ -878,6 +878,31 @@ export const fr: Messages = {
     added: "Exemples ajoutés",
   },
   devices: {
+    connectedTitle: "Appareils connectés",
+    disconnect: "Déconnecter cet appareil",
+    disconnectTitle: "Déconnecter cet appareil ?",
+    disconnectBody:
+      "Cet appareil conserve ses notes et crée son propre espace. Les prochaines modifications ne seront plus synchronisées. Les navigateurs liés à cet appareil seront déconnectés.",
+    disconnectFailed:
+      "Impossible de déconnecter cet appareil. La connexion actuelle est inchangée. Réessayez.",
+    noDevices: "Aucun autre appareil en ligne.",
+    linkOnce:
+      "Associez les appareils une seule fois depuis l’un ou l’autre. Les notes se synchronisent ensuite dans les deux sens. Pour afficher un code ici, choisissez Associer cet appareil ; sur l’autre, Ajouter un appareil.",
+    identityUnavailable:
+      "L’identité sécurisée de l’appareil est indisponible. Redémarrez Notables et réessayez en laissant l’application ouverte.",
+    deviceId: "Identifiant de l’appareil",
+    idCopied: "Identifiant copié",
+    showId: "Afficher",
+    hideId: "Masquer",
+    copyId: "Copier l’identifiant",
+    scanDeviceHint:
+      "Sur l’autre appareil, ouvrez Réglages › Appareils connectés › Associer cet appareil, puis scannez son code.",
+    deviceCodeLabel: "Code affiché sur l’autre appareil",
+    finishing: "Finalisation de la connexion…",
+    peerJoinFailed:
+      "L’autre appareil n’a pas pu enregistrer la connexion. Gardez les deux applications ouvertes et réessayez.",
+    finishTimeout:
+      "L’autre appareil n’a pas confirmé la connexion. Vérifiez son écran avant de réessayer.",
     title: "Appareils liés",
     thisDevice: "Cet appareil",
     spaceTitle: "Votre espace",
@@ -895,7 +920,7 @@ export const fr: Messages = {
     joinTitle: "Lier cet appareil",
     joinWhere: "Rejoindre vos autres appareils d'ici",
     joinHint:
-      "Sur un appareil que vous utilisez déjà, allez dans Réglages › Appareils liés › Ajouter un appareil et scannez ce code.",
+      "Sur un appareil déjà utilisé, ouvrez Réglages › Appareils connectés › Ajouter un appareil et scannez ce code.",
     joinMerges: "Les notes déjà sur cet appareil rejoignent celles de vos autres appareils.",
     joinWords: "Vérifiez que votre autre appareil affiche ces mots, puis approuvez-le là-bas.",
     joined: "Lié à {name}",

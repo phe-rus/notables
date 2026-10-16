@@ -873,6 +873,31 @@ export const es: Messages = {
     added: "Ejemplos añadidos",
   },
   devices: {
+    connectedTitle: "Dispositivos conectados",
+    disconnect: "Desconectar este dispositivo",
+    disconnectTitle: "¿Desconectar este dispositivo?",
+    disconnectBody:
+      "Este dispositivo conserva sus notas y crea su propio espacio. Los cambios futuros dejan de sincronizarse. Los navegadores vinculados a este dispositivo cierran sesión.",
+    disconnectFailed:
+      "No se pudo desconectar. La conexión actual no ha cambiado. Inténtalo de nuevo.",
+    noDevices: "No hay otros dispositivos en línea.",
+    linkOnce:
+      "Vincula una sola vez desde cualquiera de los dispositivos. Las notas se sincronizarán en ambas direcciones. Para mostrar un código aquí, elige Vincular este dispositivo; en el otro, Añadir un dispositivo.",
+    identityUnavailable:
+      "La identidad segura del dispositivo no está disponible. Reinicia Notables y vuelve a intentarlo con la aplicación abierta.",
+    deviceId: "ID del dispositivo",
+    idCopied: "ID copiado",
+    showId: "Mostrar",
+    hideId: "Ocultar",
+    copyId: "Copiar ID",
+    scanDeviceHint:
+      "En el otro dispositivo, abre Ajustes › Dispositivos conectados › Vincular este dispositivo y escanea su código.",
+    deviceCodeLabel: "Código mostrado en el otro dispositivo",
+    finishing: "Finalizando la conexión…",
+    peerJoinFailed:
+      "El otro dispositivo no pudo guardar la conexión. Mantén ambas aplicaciones abiertas e inténtalo de nuevo.",
+    finishTimeout:
+      "El otro dispositivo no ha confirmado la conexión. Revisa su pantalla antes de volver a intentarlo.",
     title: "Dispositivos vinculados",
     thisDevice: "Este dispositivo",
     spaceTitle: "Tu espacio",
@@ -890,7 +915,7 @@ export const es: Messages = {
     joinTitle: "Vincular este dispositivo",
     joinWhere: "Únete a tus otros dispositivos desde aquí",
     joinHint:
-      "En un dispositivo que ya usas, ve a Ajustes › Dispositivos vinculados › Añadir un dispositivo y escanea este código.",
+      "En un dispositivo que ya uses, abre Ajustes › Dispositivos conectados › Añadir un dispositivo y escanea este código.",
     joinMerges: "Las notas que ya hay en este dispositivo se unen a las de tus otros dispositivos.",
     joinWords: "Comprueba que tu otro dispositivo muestra estas palabras y apruébalo allí.",
     joined: "Vinculado a {name}",

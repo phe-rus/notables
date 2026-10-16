@@ -41,7 +41,7 @@ export function routeForAppLink(link: string): string | null {
       return `/verify${url.hash}`;
     // A browser's QR code: Link a Browser, with its code ready (spec 0005).
     case "link":
-      return `/settings/devices?link=${encodeURIComponent(link)}`;
+      return `/settings/${url.searchParams.get("kind") === "device" ? "connected-devices" : "devices"}?link=${encodeURIComponent(link)}`;
     case "settings":
     case "trash":
       return `/${place}`;

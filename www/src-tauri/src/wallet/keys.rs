@@ -7,6 +7,10 @@ use super::{
 pub trait KeyStore: Send + Sync {
     fn read(&self, reference: &str) -> Result<DataKey>;
     fn write(&self, reference: &str, key: &DataKey) -> Result<()>;
+    /// Replace a mutable credential without deleting its previous value first.
+    fn replace(&self, reference: &str, key: &DataKey) -> Result<()> {
+        self.write(reference, key)
+    }
     fn remove(&self, reference: &str) -> Result<()>;
 
     fn probe(&self) -> Result<()> {

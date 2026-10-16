@@ -24,6 +24,14 @@ describe("app links", () => {
 });
 
 describe("widget and sharing links", () => {
+  it("opens native pairing in Connected Devices and browser pairing in Linked Devices", () => {
+    const native = "notables://link?c=K7QM4TXA&b=android&kind=device";
+    const browser = "notables://link?c=K7QM4TXA&b=browser&kind=browser";
+    expect(routeForAppLink(native)).toBe(
+      `/settings/connected-devices?link=${encodeURIComponent(native)}`,
+    );
+    expect(routeForAppLink(browser)).toBe(`/settings/devices?link=${encodeURIComponent(browser)}`);
+  });
   it("opens a calendar day and keeps a share invitation's fragment", () => {
     expect(routeForAppLink("notables://calendar?day=2026-10-02")).toBe("/calendar?day=2026-10-02");
     expect(routeForAppLink("notables://calendar?day=nope")).toBe("/calendar");

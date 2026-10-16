@@ -104,6 +104,22 @@ Gotchas learned the hard way:
 
 ## Status (October 2026)
 
+- Device linking followup (17 Oct): the owner tested v0.2.2. Android could
+  approve the iPhone, but joining the iPhone's space failed after the four
+  words: Android's secure store only created keys and refused replacing the
+  existing space root. `KeyStore.replace` now uses the existing Android
+  wrapping key and an atomic ciphertext replacement; wallet key creation
+  stays exclusive. Native pairing waits for an encrypted saved receipt and
+  reports failures to the approving device. Pairing effects survive parent
+  renders. Connected Devices is directly below the profile, Linked Devices
+  is for browsers, IDs are masked under No account needed, and Disconnect
+  This Device starts a new space while keeping local notes and ending its
+  browser sessions. Checked through Wi-Fi adb on the TECNO debug app:
+  existing key replacement, joining and approving a protocol test peer,
+  failed-save feedback, settings order, masked/revealed IDs and cancelling
+  disconnect. The installed v0.2.2 release is preserved. A real iPhone check
+  on the next build remains owed.
+
 - Fixes from the owner's phones (16 Oct, `v0.2.1` and `v0.2.2`): release
   builds never set `VITE_PUBLIC_URL`, so packaged apps looked for the device
   rooms, server functions and share links on the phone itself and linking
@@ -376,6 +392,13 @@ and France: "No" until the French declaration is filed. Never set
 TestFlight refuse the upload; each build asks in TestFlight instead.
 
 ## Next
+
+- Owner's 17 October direction in docs/STAGES.md takes priority: finish
+  device verification, then the iOS keyboard toolbar and note title, then
+  folders and the revised writing Workspace. The full request is recorded
+  there, including list/gallery views, optional date groups, Circles in
+  Settings, Books in Artifacts, richer editing and scanning, spreadsheet
+  notes, image management, nearby media and the float32 transcription bug.
 
 - Start with "Queued from the 16 October review" in docs/STAGES.md (A before
   any public release, then B for Apple Notes parity); the reasoning is in

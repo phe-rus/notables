@@ -70,6 +70,63 @@ function room(browserCode: string, phoneCode: string) {
 }
 
 describe("pairing a browser with a phone", () => {
+  it("confirms a device only after it has saved the new space", () => {
+    let phone!: PhonePairing;
+    const waiting = new BrowserPairing(
+      "K7QM4TXA",
+      (to, body) => {
+        if (to === "phone") phone.receive("android", body);
+      },
+      "device",
+    );
+    phone = new PhonePairing(
+      "K7QM4TXA",
+      (to, body) => {
+        if (to === "android") waiting.receive("phone", body);
+      },
+      "iPhone",
+    );
+    let confirmed = false;
+    phone.on("approved", () => {
+      confirmed = true;
+    });
+    phone.begin("android", () => {});
+    phone.approve({ root: "ab".repeat(32) });
+    expect(confirmed).toBe(false);
+    waiting.complete(true);
+    expect(confirmed).toBe(true);
+  });
+
+  it("reports a failed device save to the approving phone", () => {
+    let phone!: PhonePairing;
+    const waiting = new BrowserPairing(
+      "K7QM4TXA",
+      (to, body) => {
+        if (to === "phone") phone.receive("android", body);
+      },
+      "device",
+    );
+    phone = new PhonePairing(
+      "K7QM4TXA",
+      (to, body) => {
+        if (to === "android") waiting.receive("phone", body);
+      },
+      "iPhone",
+    );
+    let failed = false;
+    let confirmed = false;
+    phone.on("failed", () => {
+      failed = true;
+    });
+    phone.on("approved", () => {
+      confirmed = true;
+    });
+    phone.begin("android", () => {});
+    phone.approve({ root: "ab".repeat(32) });
+    waiting.complete(false);
+    expect(failed).toBe(true);
+    expect(confirmed).toBe(false);
+  });
   it("shows the same words, then hands over the same session key", () => {
     const { browser, phone } = room("K7QM4TXA", "K7QM4TXA");
     const seen: string[][] = [];
