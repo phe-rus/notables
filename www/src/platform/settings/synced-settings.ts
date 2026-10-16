@@ -22,8 +22,12 @@ interface Registered {
   notify: () => void;
 }
 
-const doc = new Y.Doc();
-const values = doc.getMap<unknown>("values");
+/**
+ * Made on first use in a window, never at import: Yjs draws a random client
+ * id, and Workers refuse random values while a module loads (the server
+ * renders pages that import this through i18n).
+ */
+let values: Y.Map<unknown> | null = null;
 const registry = new Map<string, Registered>();
 let started = false;
 
@@ -52,11 +56,14 @@ function writeLocal(key: string, format: Format, value: unknown) {
 function start() {
   if (started || typeof window === "undefined") return;
   started = true;
-  values.observe((event) => {
+  const doc = new Y.Doc();
+  const map = doc.getMap<unknown>("values");
+  values = map;
+  map.observe((event) => {
     for (const key of event.keysChanged) {
       const setting = registry.get(key);
       if (!setting) continue;
-      if (keepsLocalCopy()) writeLocal(key, setting.format, values.get(key));
+      if (keepsLocalCopy()) writeLocal(key, setting.format, map.get(key));
       setting.notify();
     }
   });
@@ -65,8 +72,8 @@ function start() {
     const setting = event.key ? registry.get(event.key) : undefined;
     if (!event.key || !setting || !keepsLocalCopy()) return;
     const value = readLocal(event.key, setting.format);
-    if (value === undefined) values.delete(event.key);
-    else values.set(event.key, value);
+    if (value === undefined) map.delete(event.key);
+    else map.set(event.key, value);
   });
   void getPersistence()
     .bind("settings", doc)
@@ -75,9 +82,9 @@ function start() {
       // First run with the document: bring over what this device had.
       doc.transact(() => {
         for (const [key, { format }] of registry) {
-          if (values.has(key)) continue;
+          if (map.has(key)) continue;
           const local = readLocal(key, format);
-          if (local !== undefined) values.set(key, local);
+          if (local !== undefined) map.set(key, local);
         }
       });
     });
@@ -109,13 +116,13 @@ export function syncedSetting(key: string, format: Format = "json"): SyncedSetti
   const setting: SyncedSetting = {
     get() {
       start();
-      if (values.has(key)) return values.get(key);
+      if (values?.has(key)) return values.get(key);
       return keepsLocalCopy() ? readLocal(key, format) : undefined;
     },
     set(value) {
       start();
-      if (value === undefined || value === null) values.delete(key);
-      else values.set(key, value);
+      if (value === undefined || value === null) values?.delete(key);
+      else values?.set(key, value);
       // The observer mirrors and notifies; this covers a value that didn't change.
       if (keepsLocalCopy()) writeLocal(key, format, value);
       notify();

@@ -63,6 +63,11 @@ Gotchas learned the hard way:
 - Dependencies that are imported lazily must be listed in
   `www/vite.config.ts` `optimizeDeps.include`, or dev reloads the page
   and can load Yjs twice.
+- Workers refuse random values, timers and I/O while a module loads. Anything
+  the server imports (i18n and what it imports) must not do that at import:
+  `new Y.Doc()` draws a random id. A module like that took the whole site
+  down on 16 October; `bun run deploy` now runs `scripts/worker-smoke.ts`
+  (the built Worker, locally) first, and `bun run smoke` runs it alone.
 - Anything at the app root (`routes/__root.tsx`) is prerendered on the
   server for the native builds: browser-only stores (the library,
   IndexedDB) may only be touched after mount.
