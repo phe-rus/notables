@@ -6,12 +6,15 @@ import {
   RoomSocket,
   roomOf,
   SessionHost,
+  spaceCode,
+  spaceIdOf,
 } from "@notables/sync";
 import { useSyncExternalStore } from "react";
 import * as Y from "yjs";
 import { openSignal, sealSignal } from "../../../platform/session/phone-connection";
 import { roomEndpoint } from "../../../platform/session/room-endpoint";
 import { thisDeviceId } from "../../../platform/session/this-device";
+import { spaceRoot } from "../../../platform/space/space-identity";
 import { getPersistence } from "../../../platform/storage/document-storage";
 
 /** A browser this phone has approved (spec 0005, AC-22). Its key never leaves the phone otherwise. */
@@ -83,7 +86,11 @@ class ServedBrowser {
     this.#key = hexToBytes(record.key);
     this.#host = new SessionHost(this.#key, phoneDocs, (message) => {
       const hello = message as { type?: string; name?: string };
-      if (hello.type === "hello") touch(record.id, hello.name);
+      if (hello.type !== "hello") return;
+      touch(record.id, hello.name);
+      // The browser shows which space it is a window onto.
+      const space = spaceRoot();
+      if (space) this.#host.sendControl({ type: "space", code: spaceCode(spaceIdOf(space)) });
     });
     this.#room = new RoomSocket(roomEndpoint(), roomOf(this.#key), thisDeviceId());
     this.#room.on("message", ({ from, body }) => {

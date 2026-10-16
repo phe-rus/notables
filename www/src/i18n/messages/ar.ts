@@ -940,6 +940,11 @@ export const ar: Messages = {
   devices: {
     title: "الأجهزة المرتبطة",
     thisDevice: "هذا الجهاز",
+    spaceTitle: "مساحتك",
+    spaceId: "معرّف المساحة",
+    spaceFooter: "هو نفسه على كل أجهزتك، لتعرف أنها لك. لا يمكن لأحد الانضمام به.",
+    copySpaceId: "نسخ معرّف المساحة",
+    spaceIdCopied: "تم نسخ معرّف المساحة",
     browsers: "المتصفحات",
     browsersFooter:
       "يعرض المتصفح ملاحظاتك من هذا الهاتف ما دام الاثنان على شبكة Wi-Fi نفسها. ولا يُخزَّن فيه شيء.",

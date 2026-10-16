@@ -29,7 +29,12 @@ pub trait KeyStore: Send + Sync {
 
 pub struct DeviceKeyStore;
 
-#[cfg(any(target_os = "macos", target_os = "windows", target_os = "linux"))]
+#[cfg(any(
+    target_os = "macos",
+    target_os = "ios",
+    target_os = "windows",
+    target_os = "linux"
+))]
 impl DeviceKeyStore {
     fn entry(reference: &str) -> Result<keyring::Entry> {
         if reference.is_empty() || reference.len() > 256 {
@@ -40,7 +45,12 @@ impl DeviceKeyStore {
     }
 }
 
-#[cfg(any(target_os = "macos", target_os = "windows", target_os = "linux"))]
+#[cfg(any(
+    target_os = "macos",
+    target_os = "ios",
+    target_os = "windows",
+    target_os = "linux"
+))]
 impl KeyStore for DeviceKeyStore {
     fn read(&self, reference: &str) -> Result<DataKey> {
         let secret = zeroize::Zeroizing::new(
@@ -73,9 +83,10 @@ impl KeyStore for DeviceKeyStore {
     }
 }
 
-// iOS remains unavailable until a device only Keychain adapter is implemented.
+// Any other platform has no key store yet.
 #[cfg(not(any(
     target_os = "macos",
+    target_os = "ios",
     target_os = "windows",
     target_os = "linux",
     target_os = "android"

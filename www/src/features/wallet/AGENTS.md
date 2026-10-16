@@ -46,7 +46,9 @@ Native: `www/src-tauri/src/wallet`. Separate encrypted SQLite vault, authenticat
 records and header, revision checks, bounded retry receipts, quotas, encrypted
 audits, native monotonic idle expiry and local main window caller checks.
 Desktop adapters and an AndroidKeyStore AES GCM device key adapter exist. The
-Android probe passed on the physical phone. iOS has no key adapter. Fresh setup
+Android probe passed on the physical phone. iOS uses the Keychain through
+keyring's apple-native backend (device only, never iCloud; 16 October), not
+yet run on an iPhone. The space's root secret shares this store. Fresh setup
 and normal unlock expose no password flow. Legacy wrapper reading is retained
 for debug prototype migration only, whose command rejects release builds.
 

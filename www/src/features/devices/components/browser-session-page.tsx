@@ -3,6 +3,7 @@ import { t } from "../../../i18n/i18n";
 import { browserSession } from "../../../platform/session/browser-session-store";
 import { phoneConnection, usePhoneStatus } from "../../../platform/session/phone-connection";
 import { phoneStatusText } from "./phone-status-banner";
+import { SpaceIdSection } from "./space-id-section";
 
 /** Settings > Linked Devices in a browser: which phone it shows, and Log Out. */
 export function BrowserSessionPage() {
@@ -23,15 +24,18 @@ export function BrowserSessionPage() {
   };
 
   return (
-    <Section title={t("devices.linkedTo")} footer={t("devices.nothingStored")}>
-      <LabeledContent
-        label={session.phoneName}
-        description={status ? phoneStatusText(status) : undefined}
-      >
-        <Button variant="ghost" onClick={() => void logOut()}>
-          {t("devices.logOut")}
-        </Button>
-      </LabeledContent>
-    </Section>
+    <>
+      <SpaceIdSection />
+      <Section title={t("devices.linkedTo")} footer={t("devices.nothingStored")}>
+        <LabeledContent
+          label={session.phoneName}
+          description={status ? phoneStatusText(status) : undefined}
+        >
+          <Button variant="ghost" onClick={() => void logOut()}>
+            {t("devices.logOut")}
+          </Button>
+        </LabeledContent>
+      </Section>
+    </>
   );
 }

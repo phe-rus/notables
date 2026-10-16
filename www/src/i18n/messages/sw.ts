@@ -874,6 +874,12 @@ export const sw: Messages = {
   devices: {
     title: "Vifaa Vilivyounganishwa",
     thisDevice: "Kifaa hiki",
+    spaceTitle: "Nafasi yako",
+    spaceId: "Kitambulisho cha nafasi",
+    spaceFooter:
+      "Ni kile kile kwenye kila kifaa chako, ili ujue ni vyako. Hakuna anayeweza kujiunga nacho.",
+    copySpaceId: "Nakili kitambulisho cha nafasi",
+    spaceIdCopied: "Kitambulisho cha nafasi kimenakiliwa",
     browsers: "Vivinjari",
     browsersFooter:
       "Kivinjari kinaonyesha madokezo yako kutoka simu hii wakati vyote viko kwenye Wi-Fi moja. Hakuna kinachohifadhiwa ndani yake.",

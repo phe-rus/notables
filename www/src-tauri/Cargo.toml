@@ -59,6 +59,10 @@ strip = true
 # Linux: WebKitGTK refuses the microphone unless the app approves the request.
 [target.'cfg(any(target_os = "macos", windows, target_os = "linux"))'.dependencies]
 tauri-plugin-single-instance = { version = "2", features = ["deep-link"] }
+
+# The system key store: Keychain on Apple (device only, never iCloud), the
+# credential vault on Windows, the Secret Service on Linux. Android has its own.
+[target.'cfg(any(target_os = "macos", target_os = "ios", windows, target_os = "linux"))'.dependencies]
 keyring = { version = "=3.6.3", features = ["apple-native", "windows-native", "sync-secret-service", "crypto-rust"] }
 
 [target.'cfg(target_os = "linux")'.dependencies]

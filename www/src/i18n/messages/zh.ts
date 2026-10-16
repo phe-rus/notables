@@ -816,6 +816,11 @@ export const zh: Messages = {
   devices: {
     title: "已关联的设备",
     thisDevice: "本设备",
+    spaceTitle: "你的空间",
+    spaceId: "空间 ID",
+    spaceFooter: "在你的每台设备上都相同，方便你认出它们。任何人都无法凭它加入。",
+    copySpaceId: "复制空间 ID",
+    spaceIdCopied: "已复制空间 ID",
     browsers: "浏览器",
     browsersFooter:
       "手机和浏览器连在同一个 Wi-Fi 时，浏览器会显示这部手机上的笔记，浏览器里不保存任何内容。",

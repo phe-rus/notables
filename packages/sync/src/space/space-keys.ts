@@ -25,6 +25,31 @@ export function deriveKey(secret: Uint8Array, purpose: KeyPurpose, length = 32):
 export const spaceIdOf = (root: Uint8Array) => bytesToHex(deriveKey(root, "space-id", 16));
 export const roomOf = (secret: Uint8Array) => bytesToHex(deriveKey(secret, "room", 16));
 
+/** Crockford's base32: no I, L, O or U, so it reads aloud and types without mix-ups. */
+const CODE_ALPHABET = "0123456789ABCDEFGHJKMNPQRSTVWXYZ";
+
+/**
+ * The space ID as people see it, the same on every device of the space:
+ * twelve characters in three groups, e.g. "7F3K-9QXA-M2PD". It names the
+ * space; it never lets anyone in (linking still needs a trusted device).
+ */
+export function spaceCode(spaceId: string): string {
+  const bytes = hexToBytes(spaceId.slice(0, 16));
+  let bits = 0;
+  let value = 0;
+  let code = "";
+  for (const byte of bytes) {
+    value = (value << 8) | byte;
+    bits += 8;
+    while (bits >= 5 && code.length < 12) {
+      bits -= 5;
+      code += CODE_ALPHABET[(value >> bits) & 31];
+    }
+    value &= (1 << bits) - 1;
+  }
+  return `${code.slice(0, 4)}-${code.slice(4, 8)}-${code.slice(8, 12)}`;
+}
+
 /** Encrypts with XChaCha20-Poly1305: a random nonce, then the sealed bytes. */
 export function seal(key: Uint8Array, plain: Uint8Array): Uint8Array {
   const nonce = randomBytes(NONCE);

@@ -8,6 +8,7 @@ mod export;
 mod ipc_bytes;
 mod media_permissions;
 mod models;
+mod space;
 mod storage;
 mod system_settings;
 mod transcription;
@@ -64,6 +65,8 @@ pub fn run() {
             storage::protocol::handle,
         )
         .invoke_handler(tauri::generate_handler![
+            space::space_root_read,
+            space::space_root_write,
             wallet::commands::wallet_status,
             wallet::commands::wallet_initialize,
             wallet::commands::wallet_unlock,

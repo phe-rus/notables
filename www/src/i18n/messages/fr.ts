@@ -875,6 +875,12 @@ export const fr: Messages = {
   devices: {
     title: "Appareils liés",
     thisDevice: "Cet appareil",
+    spaceTitle: "Votre espace",
+    spaceId: "ID de l'espace",
+    spaceFooter:
+      "Le même sur chacun de vos appareils, pour les reconnaître. Personne ne peut le rejoindre avec.",
+    copySpaceId: "Copier l'ID de l'espace",
+    spaceIdCopied: "ID de l'espace copié",
     browsers: "Navigateurs",
     browsersFooter:
       "Un navigateur affiche les notes de ce téléphone tant que les deux sont sur le même Wi-Fi. Rien n’y est stocké.",

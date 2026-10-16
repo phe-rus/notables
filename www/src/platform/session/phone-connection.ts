@@ -10,6 +10,7 @@ import {
   toBase64,
 } from "@notables/sync";
 import { useSyncExternalStore } from "react";
+import { showPhoneSpace } from "../space/space-identity";
 import { type BrowserSession, browserSession, clearBrowserSession } from "./browser-session-store";
 import { roomEndpoint } from "./room-endpoint";
 import { thisDeviceName } from "./this-device";
@@ -57,7 +58,10 @@ class PhoneConnection {
   #retry: ReturnType<typeof setTimeout> | null = null;
 
   constructor(readonly session: BrowserSession) {
-    this.client = new SessionClient(session.key);
+    this.client = new SessionClient(session.key, (message) => {
+      const space = message as { type?: string; code?: string };
+      if (space.type === "space" && typeof space.code === "string") showPhoneSpace(space.code);
+    });
     this.#room = new RoomSocket(roomEndpoint(), roomOf(session.key), session.browserId);
     this.#room.on("presence", (online) => this.#onPresence(online));
     this.#room.on("message", ({ from, body }) => {

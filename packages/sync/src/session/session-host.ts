@@ -38,7 +38,31 @@ export class SessionHost {
     private readonly key: Uint8Array,
     private readonly source: DocSource,
     private readonly onControl: (message: unknown) => void = () => {},
+    /** A document caught up with the other side (its step 2 arrived). */
+    private readonly onSynced: (name: string) => void = () => {},
   ) {}
+
+  /** Opens a document from this side and asks the other for what it has. */
+  offer(name: string) {
+    this.#queue = this.#queue
+      .then(async () => {
+        if (this.#served.has(name)) return;
+        await this.#serve(name);
+        const ask = encoding.createEncoder();
+        syncProtocol.writeSyncStep1(ask, (this.#served.get(name) as Served).doc);
+        this.#send(FrameKind.sync, name, encoding.toUint8Array(ask));
+      })
+      .catch(() => {});
+  }
+
+  /** Stops keeping a document in step; the other side can ask again. */
+  release(name: string) {
+    this.#queue = this.#queue.then(() => this.#release(name)).catch(() => {});
+  }
+
+  get served(): string[] {
+    return [...this.#served.keys()];
+  }
 
   attach(link: FrameLink) {
     this.#link = link;
@@ -80,26 +104,33 @@ export class SessionHost {
       .catch(() => {});
   }
 
+  async #serve(name: string) {
+    const { doc, release } = await this.source.open(name);
+    const onUpdate = (update: Uint8Array, origin: unknown) => {
+      if (origin === this) return;
+      const encoder = encoding.createEncoder();
+      syncProtocol.writeUpdate(encoder, update);
+      this.#send(FrameKind.sync, name, encoding.toUint8Array(encoder));
+    };
+    doc.on("update", onUpdate);
+    this.#served.set(name, { doc, release, onUpdate });
+  }
+
   async #sync(name: string, body: Uint8Array) {
-    let served = this.#served.get(name);
-    const opened = !served;
-    if (!served) {
-      const { doc, release } = await this.source.open(name);
-      const onUpdate = (update: Uint8Array, origin: unknown) => {
-        if (origin === this) return;
-        const encoder = encoding.createEncoder();
-        syncProtocol.writeUpdate(encoder, update);
-        this.#send(FrameKind.sync, name, encoding.toUint8Array(encoder));
-      };
-      doc.on("update", onUpdate);
-      served = { doc, release, onUpdate };
-      this.#served.set(name, served);
-    }
+    const opened = !this.#served.has(name);
+    if (opened) await this.#serve(name);
+    const served = this.#served.get(name) as Served;
     const encoder = encoding.createEncoder();
-    syncProtocol.readSyncMessage(decoding.createDecoder(body), encoder, served.doc, this);
+    const kind = syncProtocol.readSyncMessage(
+      decoding.createDecoder(body),
+      encoder,
+      served.doc,
+      this,
+    );
     if (encoding.length(encoder) > 0)
       this.#send(FrameKind.sync, name, encoding.toUint8Array(encoder));
-    // Ask for what the browser has that the phone lacks: edits made while apart.
+    if (kind === syncProtocol.messageYjsSyncStep2) this.onSynced(name);
+    // Ask for what the other side has that this one lacks: edits made while apart.
     if (opened) {
       const ask = encoding.createEncoder();
       syncProtocol.writeSyncStep1(ask, served.doc);

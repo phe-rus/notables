@@ -41,6 +41,7 @@ import { createNativeTranscription } from "../platform/native-transcription";
 import { preventPageZoom } from "../platform/page-zoom";
 import { isTauri } from "../platform/runtime";
 import { inBrowserSession } from "../platform/session/browser-session-store";
+import { startSpace } from "../platform/space/space-identity";
 
 /**
  * The web is a window onto a phone, in development too. Store screenshots
@@ -134,7 +135,9 @@ function AppShell() {
   }, [navigate, browser]);
   // A phone serves the browsers it approved while it runs.
   useEffect(() => {
-    if (isTauri()) startBrowserSessions();
+    if (!isTauri()) return;
+    // The space first: the browsers it serves are told which one they show.
+    void startSpace().finally(startBrowserSessions);
   }, []);
   useEffect(() => {
     if (libraryReady) markAppReady();

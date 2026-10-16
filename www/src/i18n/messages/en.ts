@@ -863,6 +863,12 @@ export const en = {
   devices: {
     title: "Linked Devices",
     thisDevice: "This device",
+    spaceTitle: "Your space",
+    spaceId: "Space ID",
+    spaceFooter:
+      "The same on each of your devices, so you can tell they're yours. Nobody can join with it.",
+    copySpaceId: "Copy Space ID",
+    spaceIdCopied: "Space ID copied",
     browsers: "Browsers",
     browsersFooter:
       "A browser shows your notes from this phone while both are on the same Wi-Fi. Nothing is stored in it.",

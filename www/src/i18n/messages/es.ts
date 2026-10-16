@@ -870,6 +870,12 @@ export const es: Messages = {
   devices: {
     title: "Dispositivos vinculados",
     thisDevice: "Este dispositivo",
+    spaceTitle: "Tu espacio",
+    spaceId: "ID del espacio",
+    spaceFooter:
+      "El mismo en cada uno de tus dispositivos, para que sepas que son tuyos. Nadie puede unirse con él.",
+    copySpaceId: "Copiar ID del espacio",
+    spaceIdCopied: "ID del espacio copiado",
     browsers: "Navegadores",
     browsersFooter:
       "Un navegador muestra tus notas de este teléfono mientras ambos estén en la misma Wi-Fi. No se guarda nada en él.",

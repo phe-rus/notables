@@ -46,6 +46,8 @@ export interface PairedPhone {
   phoneId: string;
   phoneName: string;
   sessionKey: Uint8Array;
+  /** Whatever else the approving device sent, sealed: a space's secret when linking a device. */
+  extra: Record<string, unknown>;
 }
 
 /** The most wrong codes a browser accepts before it needs a new one. */
@@ -111,9 +113,9 @@ export class BrowserPairing extends Emitter<BrowserEvents> {
         const sessionKey = keys.sessionKey();
         const info = open(sessionKey, fromBase64(message.info));
         if (!info) return;
-        const { name } = JSON.parse(read.decode(info)) as { name: string };
+        const { name, ...extra } = JSON.parse(read.decode(info)) as { name: string };
         this.#done = true;
-        this.emit("approved", { phoneId: from, phoneName: name, sessionKey });
+        this.emit("approved", { phoneId: from, phoneName: name, sessionKey, extra });
         break;
       }
       case "rejected":
@@ -177,13 +179,16 @@ export class PhonePairing extends Emitter<PhoneEvents> {
     }
   }
 
-  /** The person saw the same words on both screens. */
-  approve() {
+  /**
+   * The person saw the same words on both screens. `extra` travels sealed
+   * with the pairing key: a space's secret when linking one of their devices.
+   */
+  approve(extra: Record<string, unknown> = {}) {
     const browser = this.#browser;
     const keys = this.#keys;
     if (!browser || !keys) return;
     const sessionKey = keys.sessionKey();
-    const info = seal(sessionKey, text.encode(JSON.stringify({ name: this.name })));
+    const info = seal(sessionKey, text.encode(JSON.stringify({ ...extra, name: this.name })));
     this.send(browser, encode({ t: "approved", info: toBase64(info) }));
     this.emit("approved", { browserId: browser, sessionKey });
   }

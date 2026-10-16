@@ -6,12 +6,22 @@ import {
   open,
   roomOf,
   seal,
+  spaceCode,
   spaceIdOf,
   toBase64,
 } from "../../src/space/space-keys";
 
 describe("space keys", () => {
   const root = new Uint8Array(32).fill(7);
+
+  it("shows a space id as twelve readable characters in three groups", () => {
+    expect(spaceCode("00000000000000000000000000000000")).toBe("0000-0000-0000");
+    expect(spaceCode("ffffffffffffffffffffffffffffffff")).toBe("ZZZZ-ZZZZ-ZZZZ");
+    expect(spaceCode(spaceIdOf(root))).toMatch(
+      /^[0-9A-HJKMNP-TV-Z]{4}(-[0-9A-HJKMNP-TV-Z]{4}){2}$/,
+    );
+    expect(spaceCode(spaceIdOf(root))).not.toBe(spaceCode(spaceIdOf(newSecret())));
+  });
 
   it("derives the same names from the same secret, and different ones per purpose", () => {
     expect(spaceIdOf(root)).toBe(spaceIdOf(new Uint8Array(32).fill(7)));

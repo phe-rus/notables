@@ -94,6 +94,17 @@ describe("pairing a browser with a phone", () => {
     );
   });
 
+  it("hands over sealed extra data, such as a space's secret, with the approval", () => {
+    const { browser, phone } = room("K7QM4TXA", "K7QM4TXA");
+    const received: Record<string, unknown>[] = [];
+    browser.on("approved", (result) => {
+      received.push(result.extra);
+    });
+    phone.begin("browser", () => {});
+    phone.approve({ root: "ab".repeat(32), name: "ignored" });
+    expect(received).toEqual([{ root: "ab".repeat(32) }]);
+  });
+
   it("counts wrong codes and gives up after a few", () => {
     const { browser, phone } = room("K7QM4TXA", "K7QM4TXB");
     const left: number[] = [];

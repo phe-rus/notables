@@ -12,6 +12,7 @@ import {
 } from "../lib/browser-sessions";
 import { readLinkUrl } from "../lib/link-url";
 import { LinkBrowserSheet, type LinkTarget } from "./link-browser-sheet";
+import { SpaceIdSection } from "./space-id-section";
 
 /** Only phones serve browsers (spec 0005, AC-23); computers use the desktop app. */
 const servesBrowsers = () => {
@@ -46,6 +47,7 @@ export function LinkedDevicesPage() {
 
   return (
     <>
+      <SpaceIdSection />
       <Section title={t("devices.thisDevice")}>
         <LabeledContent label={thisDeviceName()}>{null}</LabeledContent>
       </Section>
