@@ -20,6 +20,8 @@ const ROOT = join(import.meta.dir, "..", "..");
 const APP = "http://localhost:3000";
 const args = process.argv.slice(2);
 /** `--only=google-play` (or another folder name) makes one set. */
+/** `--compose-only` redraws the frames from the screens captured last time. */
+const composeOnly = args.includes("--compose-only");
 const only = args.find((arg) => arg.startsWith("--only="))?.slice(7);
 const OUT = args.find((arg) => !arg.startsWith("--")) ?? join(ROOT, ".store-screenshots");
 /** A Friday morning, so the calendar's day is full and the clock reads 9:41. */
@@ -33,11 +35,13 @@ interface Device {
   /** The composed image's size in CSS pixels; times `frameScale` gives the store's size. */
   frame: { width: number; height: number; scale: number };
   tablet?: boolean;
+  model: "galaxy" | "iphone" | "ipad";
 }
 
 const devices: Device[] = [
   {
     folder: "google-play",
+    model: "galaxy",
     viewport: { width: 412, height: 892 },
     scale: 3,
     userAgent:
@@ -46,6 +50,7 @@ const devices: Device[] = [
   },
   {
     folder: "app-store-iphone",
+    model: "iphone",
     viewport: { width: 402, height: 874 },
     scale: 3,
     userAgent:
@@ -54,6 +59,7 @@ const devices: Device[] = [
   },
   {
     folder: "app-store-ipad",
+    model: "ipad",
     viewport: { width: 1024, height: 1366 },
     scale: 2,
     userAgent:
@@ -252,6 +258,20 @@ async function capture(device: Device, input: Omit<SeedInput, "urls">, urls: See
   return results;
 }
 
+/** The screens and callouts the last full run saved in `raw/`. */
+async function previousCapture(folder: string) {
+  const callouts = await Bun.file(join(folder, "raw", "callouts.json"))
+    .json()
+    .catch(() => ({}));
+  return Promise.all(
+    shots.map(async (shot) => ({
+      shot,
+      png: new Uint8Array(await Bun.file(join(folder, "raw", `${shot.name}.png`)).arrayBuffer()),
+      callout: callouts[shot.name],
+    })),
+  );
+}
+
 async function render(
   html: string,
   size: { width: number; height: number; scale: number },
@@ -264,6 +284,7 @@ async function render(
   });
   await page.setContent(html, { waitUntil: "load" });
   await page.evaluate(() => document.fonts.ready);
+  await page.waitForFunction(() => !document.querySelector("[data-pending]"));
   await page.screenshot({
     path,
     type: path.endsWith(".jpg") ? "jpeg" : "png",
@@ -276,7 +297,7 @@ async function main() {
   const up = await fetch(APP)
     .then((response) => response.ok)
     .catch(() => false);
-  if (!up) {
+  if (!up && !composeOnly) {
     console.error("Start the app first: cd www && VITE_STANDALONE_WEB=1 bun run dev");
     process.exit(1);
   }
@@ -287,7 +308,13 @@ async function main() {
     console.log(device.folder);
     const folder = join(OUT, device.folder);
     await mkdir(join(folder, "raw"), { recursive: true });
-    const captured = await capture(device, input, urls);
+    const captured = composeOnly
+      ? await previousCapture(folder)
+      : await capture(device, input, urls);
+    await Bun.write(
+      join(folder, "raw", "callouts.json"),
+      JSON.stringify(Object.fromEntries(captured.map((item) => [item.shot.name, item.callout]))),
+    );
     for (const { shot, png, callout } of captured) {
       await Bun.write(join(folder, "raw", `${shot.name}.png`), png);
       const html = await framePage({
@@ -298,6 +325,7 @@ async function main() {
         screenshot: png,
         viewport: device.viewport,
         tablet: device.tablet,
+        model: device.model,
         callout,
       });
       await render(
