@@ -6,7 +6,7 @@
  * lets the welcome write its examples, adds the store content
  * (`seed.ts`), captures six screens and composes them with headlines
  * (`frame.ts`). Writes Google Play (1080x1920 and the feature graphic),
- * iPhone 6.3-inch (1206x2622) and iPad 13-inch landscape (2732x2048) sets, by
+ * iPhone 6.1-inch (1179x2556) and iPad landscape (2732x2048) and Play tablet (2560x1440) sets, by
  * default into `.store-screenshots/`.
  */
 import { mkdir } from "node:fs/promises";
@@ -37,31 +37,46 @@ interface Device {
   tablet?: boolean;
 }
 
+/** A 6.1-inch phone screen, kept a little short so the app reads large. */
+const PHONE = { width: 390, height: 760 };
+/** An iPad Pro 11-inch (2360 by 1640) screen, in landscape. */
+const TABLET = { width: 1180, height: 820 };
+
 const devices: Device[] = [
   {
     folder: "google-play",
-    // An iPhone 14 Pro or 15 sized screen on both phones.
-    viewport: { width: 393, height: 852 },
+    viewport: PHONE,
     scale: 3,
     userAgent:
-      "Mozilla/5.0 (Linux; Android 14; Pixel 8) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/140.0.0.0 Mobile Safari/537.36",
+      "Mozilla/5.0 (Linux; Android 16; SM-S931B) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/140.0.0.0 Mobile Safari/537.36",
     frame: { width: 360, height: 640, scale: 3 },
   },
   {
+    folder: "google-play-tablet",
+    viewport: TABLET,
+    scale: 2,
+    userAgent:
+      "Mozilla/5.0 (Linux; Android 16; SM-X920) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/140.0.0.0 Safari/537.36",
+    // 2560 by 1440, 16:9, for both of Play's tablet slots.
+    frame: { width: 1280, height: 720, scale: 2 },
+    tablet: true,
+  },
+  {
     folder: "app-store-iphone",
-    viewport: { width: 393, height: 852 },
+    viewport: PHONE,
     scale: 3,
     userAgent:
       "Mozilla/5.0 (iPhone; CPU iPhone OS 18_0 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/18.0 Mobile/15E148 Safari/604.1",
-    frame: { width: 402, height: 874, scale: 3 },
+    // 1179 by 2556, the 6.1-inch size.
+    frame: { width: 393, height: 852, scale: 3 },
   },
   {
     folder: "app-store-ipad",
-    // Landscape, like Apple's own iPad screenshots: sidebar, list and note side by side.
-    viewport: { width: 1366, height: 1024 },
+    viewport: TABLET,
     scale: 2,
     userAgent:
       "Mozilla/5.0 (iPad; CPU OS 18_0 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/18.0 Mobile/15E148 Safari/604.1",
+    // 2732 by 2048, the size App Store Connect asks for every iPad.
     frame: { width: 1366, height: 1024, scale: 2 },
     tablet: true,
   },
@@ -323,7 +338,7 @@ async function main() {
         screenshot: png,
         viewport: device.viewport,
         tablet: device.tablet,
-        android: device.folder === "google-play",
+        android: device.folder.startsWith("google-play"),
         callout,
       });
       await render(
@@ -342,7 +357,7 @@ async function main() {
         captured.find((item) => item.shot.name === name)?.png ?? new Uint8Array();
       const html = await featureGraphic(
         icon,
-        [pick("1-notes"), pick("6-comic"), pick("2-note"), pick("4-calendar"), pick("3-reader")],
+        [pick("6-comic"), pick("2-note"), pick("4-calendar")],
         device.viewport,
       );
       await render(

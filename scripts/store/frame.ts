@@ -23,40 +23,47 @@ async function base(width: number, height: number, body: string, extraCss = ""):
   return `<!doctype html><html><head><meta charset="utf-8"><style>${fonts}
 *{box-sizing:border-box;margin:0}
 html,body{width:${width}px;height:${height}px;overflow:hidden}
-body{position:relative;background:#fbf5ec;font-family:"Newsreader",serif;color:#26201b;-webkit-font-smoothing:antialiased}
+body{position:relative;background:#fbf1f3;font-family:"Newsreader",serif;color:#1d1b18;-webkit-font-smoothing:antialiased}
+/* Hino's Blush: the accent's soft tints, lit from above like Apple's own store art. */
 .paper{position:absolute;inset:0;background:
-  radial-gradient(60% 45% at 88% 8%,rgba(255,206,160,.75),transparent 70%),
-  radial-gradient(55% 40% at 6% 30%,rgba(246,196,204,.55),transparent 70%),
-  radial-gradient(70% 50% at 50% 105%,rgba(236,178,190,.55),transparent 70%),
-  linear-gradient(180deg,#fdf8f1,#f8eee4)}
-.paper::after{content:"";position:absolute;inset:0;opacity:.5;background:repeating-linear-gradient(to bottom,transparent 0 calc(var(--rule) - 1px),rgba(120,90,60,.06) calc(var(--rule) - 1px) var(--rule))}
+  radial-gradient(90% 55% at 50% -8%,#ffffff 0%,rgba(255,255,255,0) 72%),
+  radial-gradient(70% 45% at 100% 100%,rgba(209,105,136,.16),transparent 70%),
+  radial-gradient(60% 40% at 0% 70%,rgba(239,179,187,.22),transparent 70%),
+  linear-gradient(180deg,#fdf6f7 0%,#f8e6e9 100%)}
 .card{position:absolute;overflow:hidden;background:#fff;display:flex;flex-direction:column;
-  box-shadow:0 0 0 1px rgba(70,45,25,.08),0 2px 6px rgba(70,45,25,.06),0 24px 60px -16px rgba(90,50,30,.32),0 60px 120px -40px rgba(190,90,110,.28)}
+  box-shadow:0 0 0 1px rgba(80,30,45,.07),0 2px 6px rgba(80,30,45,.05),0 28px 60px -18px rgba(120,40,65,.28),0 70px 120px -50px rgba(209,105,136,.35)}
 .card img{display:block;width:100%;flex:none}
-.rim{position:absolute;pointer-events:none;border:1px solid rgba(255,255,255,.9);box-shadow:inset 0 0 0 1px rgba(255,255,255,.35)}
-.status{display:flex;align-items:center;justify-content:space-between;flex:none;font-family:"SF Pro Text","Roboto","Inter","Liberation Sans",Arial,sans-serif;font-weight:650;letter-spacing:-.01em}
-.status svg{height:.95em;fill:currentColor}
+.rim{position:absolute;pointer-events:none;border:1px solid rgba(255,255,255,.95)}
+.status{display:grid;grid-template-columns:1fr auto 1fr;align-items:center;flex:none;font-family:"SF Pro Text","Roboto","Inter","Liberation Sans",Arial,sans-serif;letter-spacing:-.01em}
+.status .time{font-weight:650;justify-self:center}
+.status .icons{display:flex;gap:.32em;align-items:center;justify-self:center}
+.status.android .time{font-weight:500;justify-self:start}
+.status.android .icons{justify-self:end;gap:.3em}
+.status svg{height:.82em;fill:currentColor;display:block}
+.island{display:block;background:#050505;border-radius:99px}
 .home{display:flex;align-items:center;justify-content:center;flex:none}
 .home i{display:block;border-radius:99px;background:currentColor;opacity:.9}
 ${extraCss}
 </style></head><body><div class="paper"></div>${body}</body></html>`;
 }
 
-/** Android 15: time on the left, Material icons and the battery level on the right. */
-const androidStatusBar =
-  () => `<span style="font-weight:500">9:41</span><span style="display:flex;gap:.35em;align-items:center;font-weight:500">
-<svg viewBox="0 0 16 13"><path d="M8 12.5 0 3.2A12.4 12.4 0 0 1 16 3.2z"/></svg>
-<svg viewBox="0 0 13 13"><path d="M13 0v13H0z"/></svg>
-<svg viewBox="0 0 8 13" style="height:1.05em"><rect x="2.5" y="0" width="3" height="1.5" rx=".5"/><rect x="0" y="1.2" width="8" height="11.8" rx="1.4"/></svg>
-<span style="font-size:.92em">100%</span></span>`;
+/** Android 16: time on the left, a punch-hole camera, Material icons and the battery level. */
+const androidStatusBar = (
+  camera: string,
+) => `<span class="time">9:41</span>${camera}<span class="icons">
+<svg viewBox="0 0 16 12"><path d="M8 11.8.2 3.6a11.6 11.6 0 0 1 15.6 0z"/></svg>
+<svg viewBox="0 0 12 12"><path d="M12 0v12H0z"/></svg>
+<svg viewBox="0 0 7 12" style="height:.95em"><rect x="2" y="0" width="3" height="1.4" rx=".4"/><rect x="0" y="1.1" width="7" height="10.9" rx="1.3"/></svg>
+<span style="font-size:.9em;font-weight:500">100%</span></span>`;
 
-/** 9:41 (with the date on a tablet), signal, Wi-Fi and battery, in the strip's own colour. */
-const statusBar = (
-  tablet: boolean,
-) => `<span>${tablet ? '9:41&nbsp;&nbsp;<span style="font-weight:500">Fri 16 Oct</span>' : "9:41"}</span><span style="display:flex;gap:.4em;align-items:center">
-${tablet ? "" : `<svg viewBox="0 0 18 12"><rect x="0" y="8" width="3" height="4" rx="1"/><rect x="5" y="5.5" width="3" height="6.5" rx="1"/><rect x="10" y="3" width="3" height="9" rx="1"/><rect x="15" y="0" width="3" height="12" rx="1"/></svg>`}
-<svg viewBox="0 0 16 12"><path d="M8 11.6 5.7 9.2a3.3 3.3 0 0 1 4.6 0zM3.5 7a6.4 6.4 0 0 1 9 0l1.5-1.5a8.5 8.5 0 0 0-12 0zM.4 3.9a10.7 10.7 0 0 1 15.2 0L17 2.5A12.7 12.7 0 0 0-1 2.5z"/></svg>
-<svg viewBox="0 0 27 12"><rect x=".5" y=".5" width="23" height="11" rx="3.4" fill="none" stroke="currentColor" opacity=".4"/><rect x="2" y="2" width="20" height="8" rx="2"/><path d="M25 4v4a2 2 0 0 0 0-4z" opacity=".4"/></svg></span>`;
+/** iOS: time, the Dynamic Island, then signal, Wi-Fi and battery, drawn the way Apple draws them. */
+const iosStatusBar = (
+  camera: string,
+  date: boolean,
+) => `<span class="time">9:41${date ? '&nbsp;&nbsp;<span style="font-weight:500">Fri 16 Oct</span>' : ""}</span>${camera}<span class="icons">
+${date ? "" : `<svg viewBox="0 0 17 11"><rect x="0" y="7.4" width="3" height="3.6" rx=".9"/><rect x="4.6" y="5.4" width="3" height="5.6" rx=".9"/><rect x="9.2" y="3" width="3" height="8" rx=".9"/><rect x="13.8" y=".4" width="3" height="10.6" rx=".9"/></svg>`}
+<svg viewBox="0 0 16 11.5"><path d="M8 11.2 10.2 8.9a3.2 3.2 0 0 0-4.4 0z"/><path d="M3.8 6.6a6 6 0 0 1 8.4 0M1.2 3.9a9.7 9.7 0 0 1 13.6 0" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round"/></svg>
+<svg viewBox="0 0 27 13" style="height:.9em"><rect x=".6" y=".6" width="23.4" height="11.8" rx="3.6" fill="none" stroke="currentColor" stroke-opacity=".38" stroke-width="1.1"/><rect x="2.3" y="2.3" width="20" height="8.4" rx="2.1"/><path d="M25.3 4.5v4c.8-.3 1.4-1.1 1.4-2s-.6-1.7-1.4-2z" fill-opacity=".4"/></svg></span>`;
 
 export interface FrameSpec {
   /** Page size in CSS pixels; the store size divided by `scale`. */
@@ -95,7 +102,7 @@ export async function framePage(spec: FrameSpec): Promise<string> {
   const statusH = screenW * statusShare;
   const homeH = screenW * homeShare;
   const left = (width - screenW) / 2;
-  const radius = screenW * (tablet ? 0.03 : 0.1);
+  const radius = screenW * (tablet ? 0.022 : 0.075);
   const headSize = landscape ? height * 0.068 : tablet ? width * 0.058 : width * 0.088;
   const accentSize = headSize * 0.64;
   const image = pngData(spec.screenshot);
@@ -115,10 +122,10 @@ export async function framePage(spec: FrameSpec): Promise<string> {
   const body = `
 <header style="position:absolute;left:0;right:0;top:0;height:${top}px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:${headSize * 0.32}px;padding:0 ${width * 0.05}px;text-align:center">
   <h1 style="font-size:${headSize}px;line-height:1.02;font-weight:650;letter-spacing:-.025em;white-space:nowrap">${headline}</h1>
-  <p style="font-family:Caveat;font-weight:600;font-size:${accentSize}px;line-height:1;color:#d0703a;white-space:nowrap">${spec.accent}</p>
+  <p style="font-family:Caveat;font-weight:600;font-size:${accentSize}px;line-height:1;color:#a23f51;white-space:nowrap">${spec.accent}</p>
 </header>
 <div class="card" data-pending style="left:${left}px;top:${top}px;width:${screenW}px;height:${screenH}px;border-radius:${radius}px">
-  <div class="status" style="height:${statusH}px;font-size:${statusH * (tablet ? 0.55 : 0.33)}px;padding:${tablet ? 0 : statusH * 0.12}px ${screenW * (tablet ? 0.025 : 0.085)}px 0">${spec.android ? androidStatusBar() : statusBar(Boolean(tablet))}</div>
+  <div class="status${spec.android ? " android" : ""}" style="height:${statusH}px;font-size:${statusH * (tablet ? 0.55 : 0.34)}px;padding:${tablet ? 0 : statusH * 0.08}px ${screenW * (tablet ? 0.025 : spec.android ? 0.07 : 0.06)}px 0">${spec.android ? androidStatusBar(tablet ? "<i></i>" : `<i class="island" style="width:${statusH * 0.36}px;height:${statusH * 0.36}px"></i>`) : iosStatusBar(tablet ? "<i></i>" : `<i class="island" style="width:${screenW * 0.31}px;height:${statusH * 0.6}px"></i>`, Boolean(tablet))}</div>
   <img src="${image}">
   <div class="home" style="height:${homeH}px"><i style="width:${screenW * (tablet ? 0.22 : spec.android ? 0.28 : 0.36)}px;height:${Math.max(2, screenW * (tablet ? 0.0045 : spec.android ? 0.009 : 0.012))}px"></i></div>
 </div>
@@ -149,48 +156,57 @@ ${callout}
     width,
     height,
     body,
-    `.paper::after{--rule:${Math.round(height / 32)}px}
-.callout{position:absolute;border-radius:${width * 0.035}px;background-color:#fff;background-repeat:no-repeat;
+    `.callout{position:absolute;border-radius:${width * 0.035}px;background-color:#fff;background-repeat:no-repeat;
   box-shadow:0 0 0 1px rgba(70,45,25,.08),0 30px 60px -14px rgba(90,50,30,.4)}`,
   );
 }
 
+/** Inter, the nearest open face to Apple's SF Pro, for the feature graphic. */
+async function interFace(): Promise<string> {
+  const file = join(
+    import.meta.dir,
+    "..",
+    "..",
+    "node_modules",
+    "@fontsource-variable",
+    "inter",
+    "files",
+    "inter-latin-opsz-normal.woff2",
+  );
+  const data = Buffer.from(await Bun.file(file).arrayBuffer()).toString("base64");
+  return `@font-face{font-family:"Inter";src:url(data:font/woff2;base64,${data}) format("woff2");font-weight:100 900}`;
+}
+
 /**
- * Google Play's 1024 by 500 feature graphic: the mark and name on the
- * left, and a tilted wall of real screens running off the right edge.
+ * Google Play's 1024 by 500 feature graphic, the way Apple would set it:
+ * the mark and name in a bold sans on the left, glass pills, and three real
+ * screens standing on the right, the front one bleeding off the bottom.
  */
 export async function featureGraphic(
   icon: Uint8Array,
   screens: Uint8Array[],
   viewport: { width: number; height: number },
 ): Promise<string> {
-  const w = 200;
-  const h = (w * viewport.height) / viewport.width;
-  const column = (shots: Uint8Array[], offset: number) =>
-    `<div style="display:flex;flex-direction:column;gap:26px;transform:translateY(${offset}px)">${shots
-      .map(
-        (shot) =>
-          `<div class="card" style="position:relative;width:${w}px;height:${h}px;border-radius:24px"><img src="${pngData(shot)}"></div>`,
-      )
-      .join("")}</div>`;
-  const [a, b, c, d, e] = screens;
+  const card = (shot: Uint8Array, x: number, y: number, w: number, z: number, dim = 1) =>
+    `<div class="card" style="left:${x}px;top:${y}px;width:${w}px;height:${(w * viewport.height) / viewport.width}px;border-radius:${w * 0.09}px;z-index:${z};filter:brightness(${dim})"><img src="${pngData(shot)}"></div>`;
+  const [left, front, right] = screens;
+  const check = `<svg viewBox="0 0 16 16"><circle cx="8" cy="8" r="8" fill="#d16988"/><path d="M4.6 8.3 7 10.6l4.4-5" fill="none" stroke="#fff" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>`;
+  const pill = (text: string) => `<span class="pill">${check}${text}</span>`;
   const body = `
-<div style="position:absolute;left:470px;top:-150px;display:flex;gap:26px;transform:perspective(1600px) rotateX(18deg) rotateY(-14deg) rotateZ(-16deg);transform-origin:left top">
-  ${column([a, b], 40)}${column([c, d], -120)}${column([e, a], -20)}
-</div>
-<div style="position:absolute;left:0;top:0;bottom:0;width:560px;background:linear-gradient(90deg,#fbf3ea 62%,rgba(251,243,234,0))"></div>
-<img src="${pngData(icon)}" style="position:absolute;left:64px;top:70px;width:76px;height:76px;border-radius:18px;box-shadow:0 12px 26px -8px rgba(90,50,30,.35)">
-<h1 style="position:absolute;left:60px;top:158px;font-size:96px;font-weight:650;letter-spacing:-.035em;line-height:1">Notables</h1>
-<p style="position:absolute;left:64px;top:270px;font-family:'Newsreader Italic';font-size:28px;color:#4a3f37">Anything notable, always with you.</p>
-<p style="position:absolute;left:64px;top:312px;font-family:Caveat;font-weight:600;font-size:31px;color:#d0703a">notes, books, comics, plans &amp; invoices</p>
-<div style="position:absolute;left:64px;top:382px;display:flex;gap:10px;font-family:'Liberation Sans',Arial,sans-serif;font-size:15px;font-weight:600;color:#5a4636">
-  <span class="pill">Local first</span><span class="pill">No account</span><span class="pill">Works offline</span>
-</div>`;
+${card(left, 590, 96, 196, 1, 0.98)}${card(right, 808, 96, 196, 1, 0.98)}${card(front, 676, 44, 236, 2)}
+<img src="${pngData(icon)}" style="position:absolute;left:64px;top:84px;width:72px;height:72px;border-radius:17px;box-shadow:0 10px 24px -8px rgba(120,40,65,.35)">
+<h1 class="sans" style="position:absolute;left:60px;top:170px;font-size:92px;font-weight:750;letter-spacing:-.045em;line-height:1">Notables</h1>
+<p class="sans" style="position:absolute;left:64px;top:262px;font-size:25px;font-weight:500;letter-spacing:-.015em;color:#5b5550;width:500px;line-height:1.3">Anything notable, always with you.</p>
+<div class="sans" style="position:absolute;left:64px;top:322px;display:flex;gap:8px;white-space:nowrap">${pill("Local first")}${pill("Account not required")}${pill("Works offline")}</div>`;
   return base(
     1024,
     500,
     body,
-    `.paper::after{--rule:26px}
-.pill{padding:8px 14px;border-radius:99px;background:rgba(255,255,255,.75);box-shadow:0 0 0 1px rgba(120,80,50,.12),0 6px 14px -8px rgba(90,50,30,.3)}`,
+    `${await interFace()}
+.sans{font-family:"Inter","SF Pro Display",system-ui,sans-serif;font-optical-sizing:auto}
+.pill{display:inline-flex;align-items:center;gap:7px;padding:8px 13px 8px 9px;border-radius:99px;font-size:14px;font-weight:600;letter-spacing:-.01em;color:#2a2522;
+  background:rgba(255,255,255,.62);backdrop-filter:blur(14px) saturate(1.4);
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.9),0 0 0 1px rgba(120,40,65,.09),0 8px 20px -10px rgba(120,40,65,.35)}
+.pill svg{width:16px;height:16px}`,
   );
 }
