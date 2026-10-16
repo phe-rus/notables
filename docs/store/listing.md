@@ -101,9 +101,67 @@ No account, no ads, no analytics. Your notes live on your device and work
 offline. AI help is off by default and uses your own key only if you turn
 it on.
 
-In English, French, Spanish, Portuguese, Swahili and Arabic.
+In English, French, Spanish, Portuguese, Swahili, Arabic and Chinese.
 
 Notables is open source: github.com/phe-rus/notables
+
+## Questionnaires
+
+What leaves the device, which every answer below rests on: a note the
+person publishes (stored by Notables until they unpublish it), and the
+short introductions that connect their own devices and the people they
+share with (passed through, never stored). Everything else stays on the
+device. No account, ads, analytics or crash reporting. AI requests go
+straight from the device to the provider the person chose, with their own
+key, only when they ask.
+
+### Google Play: Data safety
+
+- Collects or shares user data: **Yes** (published notes only).
+- Encrypted in transit: **Yes**. Way to request deletion: **Yes**
+  (unpublish in the app, or email support@pherus.org).
+- Data types: **App activity > Other user-generated content**: collected,
+  not shared, optional, processed not ephemerally, purpose **App
+  functionality**. Nothing else.
+- Photos, audio, files and camera stay on the device: not collected.
+- Account creation: **No account**.
+
+### Google Play: Content rating (IARC)
+
+- Category: **Utility, Productivity, Communication or Other**.
+- Violence, sex, language, drugs, gambling: **No** to all.
+- Users can interact or exchange content: **Yes** (shared notes and public
+  pages). Shares location: **No**. Digital purchases: **No**.
+- Expected result: Everyone / PEGI 3, with "Users Interact".
+
+### Google Play: Target audience and content
+
+- Target age groups: **13-15, 16-17, 18 and over** (not under 13, so the
+  Families policy does not apply). Appeals to children: **No**.
+- Ads: **No**. News app: **No**. Government app: **No**. Financial
+  features: **None** (the wallet only stores copies of cards).
+- Health: **No**. COVID-19 tracing: **No**.
+
+### App Store: App Privacy
+
+- Data collected: **User Content > Other User Content** (published notes),
+  **not linked** to the person, **not used for tracking**, purpose **App
+  Functionality**. Nothing else is collected.
+
+### App Store: Age rating
+
+- Every content question: **None**. Unrestricted web access: **No**.
+- User-generated content: **Yes**. Messaging or chat: **No**. Gambling,
+  contests, loot boxes: **No**. Parental controls, age assurance: **No**.
+- Expected result: 4+ or 9+ by Apple's calculation; accept what it gives.
+
+### App Store: Other fields
+
+- Category: Productivity, secondary Books. Price: free, all territories
+  (France blocked until the encryption declaration is filed).
+- Sign-in required for review: **No**. Review notes: "No account. Every
+  feature works offline; open Settings for AI (off by default)."
+- Contact for review: support@pherus.org, +256772769734.
 
 ## Release notes template
 
