@@ -42,6 +42,12 @@ import { preventPageZoom } from "../platform/page-zoom";
 import { isTauri } from "../platform/runtime";
 import { inBrowserSession } from "../platform/session/browser-session-store";
 
+/**
+ * The web is a window onto a phone, in development too. Store screenshots
+ * and UI work can opt into a standalone library with VITE_STANDALONE_WEB=1.
+ */
+const standaloneWeb = import.meta.env.DEV && import.meta.env.VITE_STANDALONE_WEB === "1";
+
 /** iOS sheet motion: quick to start, long gentle settle. */
 const drawerEase = [0.32, 0.72, 0, 1] as const;
 export const Route = createFileRoute("/_app")({
@@ -123,7 +129,7 @@ function AppShell() {
   const browser = inBrowserSession();
   useEffect(() => {
     if (browser) return;
-    if (!isTauri() && import.meta.env.PROD) void navigate({ to: "/link", replace: true });
+    if (!isTauri() && !standaloneWeb) void navigate({ to: "/link", replace: true });
     else if (needsSetup()) void navigate({ to: "/welcome", replace: true });
   }, [navigate, browser]);
   // A phone serves the browsers it approved while it runs.
