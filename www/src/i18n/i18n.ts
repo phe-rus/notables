@@ -1,4 +1,5 @@
 import { useSyncExternalStore } from "react";
+import { syncedSetting } from "../platform/settings/synced-settings";
 import { isLanguageId, type LanguageId, languages } from "./languages";
 import { ar } from "./messages/ar";
 import { en, type Messages } from "./messages/en";
@@ -30,13 +31,12 @@ type Paths<T, Prefix extends string = ""> = {
 
 export type MessageKey = Paths<Messages>;
 
+/** The chosen language follows the person; "system" is stored as no choice. */
+const stored = syncedSetting(LANGUAGE_KEY, "text");
+
 function readChoice(): LanguageChoice {
-  try {
-    const stored = localStorage.getItem(LANGUAGE_KEY);
-    return isLanguageId(stored) ? stored : "system";
-  } catch {
-    return "system";
-  }
+  const value = stored.get();
+  return typeof value === "string" && isLanguageId(value) ? value : "system";
 }
 
 function systemLanguage(): LanguageId {
@@ -51,6 +51,17 @@ function systemLanguage(): LanguageId {
 
 let choice: LanguageChoice = typeof localStorage === "undefined" ? "system" : readChoice();
 const listeners = new Set<() => void>();
+
+// Chosen on another device, or on the phone this browser shows.
+if (typeof window !== "undefined") {
+  stored.subscribe(() => {
+    const next = readChoice();
+    if (next === choice) return;
+    choice = next;
+    applyDocumentLanguage();
+    for (const listener of listeners) listener();
+  });
+}
 
 export function languageChoice(): LanguageChoice {
   return choice;
@@ -71,12 +82,7 @@ export function locale(): string | undefined {
 
 export function setLanguageChoice(next: LanguageChoice) {
   choice = next;
-  try {
-    if (next === "system") localStorage.removeItem(LANGUAGE_KEY);
-    else localStorage.setItem(LANGUAGE_KEY, next);
-  } catch {
-    // Applies for this session.
-  }
+  stored.set(next === "system" ? null : next);
   applyDocumentLanguage();
   for (const listener of listeners) listener();
 }

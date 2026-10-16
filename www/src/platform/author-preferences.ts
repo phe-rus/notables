@@ -1,33 +1,18 @@
 import { useSyncExternalStore } from "react";
+import { syncedSetting } from "./settings/synced-settings";
 
-const AUTHOR_NAME = "notables:author-name";
-const listeners = new Set<() => void>();
+/** The person's name, on every device and on publications, until profiles exist. */
+const name = syncedSetting("notables:author-name", "text");
 
-/** The name shown on publications from this device, until profiles exist. */
 export function getAuthorName(): string {
-  try {
-    return localStorage.getItem(AUTHOR_NAME) ?? "";
-  } catch {
-    return "";
-  }
+  const value = name.get();
+  return typeof value === "string" ? value : "";
 }
 
-export function setAuthorName(name: string): void {
-  try {
-    localStorage.setItem(AUTHOR_NAME, name);
-  } catch {
-    // Storage unavailable (private mode): the name is simply not remembered.
-  }
-  for (const listener of listeners) listener();
+export function setAuthorName(next: string): void {
+  name.set(next);
 }
 
 export function useAuthorName(): string {
-  return useSyncExternalStore(
-    (listener) => {
-      listeners.add(listener);
-      return () => listeners.delete(listener);
-    },
-    getAuthorName,
-    () => "",
-  );
+  return useSyncExternalStore(name.subscribe, getAuthorName, () => "");
 }

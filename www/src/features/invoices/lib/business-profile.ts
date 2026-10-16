@@ -1,5 +1,6 @@
 import { emptyParty } from "@notables/core";
 import { useSyncExternalStore } from "react";
+import { syncedSetting } from "../../../platform/settings/synced-settings";
 import { fallbackDefaults, getIssuerDefaults, type IssuerDefaults } from "./issuer-profile";
 
 /**
@@ -16,43 +17,36 @@ export interface BusinessProfile extends IssuerDefaults {
   dueDays: number;
 }
 
-const STORAGE_KEY = "notables:business-profile";
-const listeners = new Set<() => void>();
-let cached: BusinessProfile | null | undefined;
+const stored = syncedSetting("notables:business-profile");
+let cached: BusinessProfile | null = null;
+let cachedFrom: unknown;
 
-function read(): BusinessProfile | null {
-  try {
-    const stored = JSON.parse(
-      localStorage.getItem(STORAGE_KEY) ?? "null",
-    ) as Partial<BusinessProfile> | null;
-    if (!stored) return null;
-    return {
-      ...fallbackDefaults,
-      invoiceNotes: "Thank you for your business.",
-      receiptNotes: "Paid in full. Thank you!",
-      dueDays: 14,
-      ...stored,
-      issuer: { ...emptyParty(), ...stored.issuer },
-      style: { ...fallbackDefaults.style, ...stored.style },
-    };
-  } catch {
-    return null;
-  }
+function read(raw: unknown): BusinessProfile | null {
+  const saved = raw as Partial<BusinessProfile> | undefined;
+  if (!saved) return null;
+  return {
+    ...fallbackDefaults,
+    invoiceNotes: "Thank you for your business.",
+    receiptNotes: "Paid in full. Thank you!",
+    dueDays: 14,
+    ...saved,
+    issuer: { ...emptyParty(), ...saved.issuer },
+    style: { ...fallbackDefaults.style, ...saved.style },
+  };
 }
 
 export function getBusinessProfile(): BusinessProfile | null {
-  if (cached === undefined) cached = typeof localStorage === "undefined" ? null : read();
+  if (typeof window === "undefined") return null;
+  const raw = stored.get();
+  if (raw !== cachedFrom) {
+    cachedFrom = raw;
+    cached = read(raw);
+  }
   return cached;
 }
 
 export function saveBusinessProfile(profile: BusinessProfile) {
-  cached = profile;
-  try {
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(profile));
-  } catch {
-    // Kept for this session only.
-  }
-  for (const listener of listeners) listener();
+  stored.set(profile);
 }
 
 /** A profile to start editing from: the saved one, or what documents use today. */
@@ -68,12 +62,5 @@ export function draftBusinessProfile(): BusinessProfile {
 }
 
 export function useBusinessProfile(): BusinessProfile | null {
-  return useSyncExternalStore(
-    (listener) => {
-      listeners.add(listener);
-      return () => listeners.delete(listener);
-    },
-    getBusinessProfile,
-    () => null,
-  );
+  return useSyncExternalStore(stored.subscribe, getBusinessProfile, () => null);
 }

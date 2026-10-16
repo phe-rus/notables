@@ -2,6 +2,7 @@ import type { Day } from "@notables/core";
 import type HolidaysClass from "date-holidays";
 import { useEffect, useState, useSyncExternalStore } from "react";
 import { currentLanguage } from "../../../i18n/i18n";
+import { syncedSetting } from "../../../platform/settings/synced-settings";
 
 /** A public holiday or observance on one day, named in the app's language. */
 export interface Holiday {
@@ -11,7 +12,7 @@ export interface Holiday {
   closed: boolean;
 }
 
-const KEY = "notables:holidays";
+const stored = syncedSetting("notables:holidays");
 
 export interface HolidaySettings {
   /** ISO country code, or null to show none. */
@@ -30,40 +31,24 @@ function regionOfDevice(): string | null {
   }
 }
 
-const listeners = new Set<() => void>();
 let settings: HolidaySettings | undefined;
+let settingsFrom: unknown;
 
 function readSettings(): HolidaySettings {
-  if (settings) return settings;
-  try {
-    const stored = JSON.parse(localStorage.getItem(KEY) ?? "null") as HolidaySettings | null;
-    settings = stored ?? { country: regionOfDevice(), observances: false };
-  } catch {
-    settings = { country: null, observances: false };
-  }
+  const raw = stored.get() as HolidaySettings | undefined;
+  if (settings && raw === settingsFrom) return settings;
+  settingsFrom = raw;
+  settings = raw ?? { country: regionOfDevice(), observances: false };
   return settings;
 }
 
 export function setHolidaySettings(change: Partial<HolidaySettings>) {
-  settings = { ...readSettings(), ...change };
-  try {
-    localStorage.setItem(KEY, JSON.stringify(settings));
-  } catch {
-    // Kept for this session.
-  }
-  for (const listener of listeners) listener();
+  stored.set({ ...readSettings(), ...change });
 }
 
-/** Which country's holidays this device shows; kept on the device. */
+/** Which country's holidays the calendar shows; follows the person to their other devices. */
 export function useHolidaySettings(): HolidaySettings {
-  return useSyncExternalStore(
-    (listener) => {
-      listeners.add(listener);
-      return () => listeners.delete(listener);
-    },
-    readSettings,
-    () => SERVER_SETTINGS,
-  );
+  return useSyncExternalStore(stored.subscribe, readSettings, () => SERVER_SETTINGS);
 }
 
 const SERVER_SETTINGS: HolidaySettings = { country: null, observances: false };

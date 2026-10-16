@@ -1,4 +1,5 @@
 import { useSyncExternalStore } from "react";
+import { inBrowserSession } from "../../../platform/session/browser-session-store";
 
 const KEY = "notables:recents";
 
@@ -13,10 +14,15 @@ let cached: Opened | undefined;
 /**
  * When each note was last opened on this device. Kept on the device, not
  * in the library document: opening a note shouldn't sync to every other
- * device, and each device has its own recent work.
+ * device, and each device has its own recent work. A linked browser keeps
+ * its recents in memory only (AC-22).
  */
 function read(): Opened {
   if (cached) return cached;
+  if (inBrowserSession()) {
+    cached = {};
+    return cached;
+  }
   try {
     const parsed = JSON.parse(localStorage.getItem(KEY) ?? "{}") as unknown;
     cached = parsed && typeof parsed === "object" ? (parsed as Opened) : {};
@@ -28,10 +34,12 @@ function read(): Opened {
 
 function write(next: Opened) {
   cached = next;
-  try {
-    localStorage.setItem(KEY, JSON.stringify(next));
-  } catch {
-    // Kept for this session.
+  if (!inBrowserSession()) {
+    try {
+      localStorage.setItem(KEY, JSON.stringify(next));
+    } catch {
+      // Kept for this session.
+    }
   }
   for (const listener of listeners) listener();
 }

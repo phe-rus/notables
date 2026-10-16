@@ -339,12 +339,29 @@ TestFlight refuse the upload; each build asks in TestFlight instead.
 
 ## Next
 
-- Browser sessions, next: settings sync (AC-16, in progress); photos and recordings from the phone (media on
+- Settings follow the person (AC-16, 16 Oct): one synced Yjs document,
+  `settings` (`www/src/platform/settings/synced-settings.ts`), served to a
+  linked browser like the library. In it: preferences (minus haptics and
+  sidebar width and folding, kept per device under
+  `notables:device-preferences`), the person's name, language, listening,
+  holidays, business profile, invoice defaults, known issuers. Apps mirror
+  each value to localStorage (pre-paint, fast reads) and moved their old
+  values in on first run; a linked browser keeps none. Checked live on the
+  TECNO both ways. Testing tip: in dev, import a module through the URL the
+  app loaded (with its `?t=` stamp), or you get a second copy of the store.
+  Still per device: reminder alerts, recents (memory only in a browser),
+  reading and listening positions (the player saves every 4 s; sync them
+  throttled, on pause and chapter change).
+- Browser sessions, next: photos and recordings from the phone (media on
   demand over the link); the browser's AI help with the phone's key;
   read only while the phone is away (AC-26); "Saved on this device" and the
   sidebar's "On this device" should name the phone in a browser; a Hino
   devices icon (Linked Devices uses LinkIcon); deploy the Worker; then
   Android's foreground service and the iPhone ping (step 5).
+- Owner, 16 Oct: on a phone, Enter at the end of a heading doesn't give a
+  paragraph (or a subheading, then a paragraph); reproduce on the TECNO.
+- Owner, 16 Oct: show the account (space) ID on each device, so the person
+  recognises themselves on their other devices (spec 0005 step 1).
 - Continue "Queued from the 15 October review" in docs/STAGES.md, and
   fold in the owner's evening notes there (reading and listening, natural
   voice only, image editing, the iOS keyboard bar, Hino gaps, Wallet,

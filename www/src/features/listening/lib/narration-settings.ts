@@ -1,5 +1,6 @@
 import { useSyncExternalStore } from "react";
 import { t } from "../../../i18n/i18n";
+import { syncedSetting } from "../../../platform/settings/synced-settings";
 
 /** The voice and pace for reading aloud, remembered on this device. */
 export interface NarrationSettings {
@@ -24,44 +25,26 @@ export function rateName(rate: number, steps: readonly number[] = NARRATION_RATE
   return name ? t(`listening.rates.${name}`) : `${rate}×`;
 }
 
-const KEY = "notables:narration";
+const stored = syncedSetting("notables:narration");
 const defaults: NarrationSettings = { voiceId: null, rate: 1, downloadOnMobileData: false };
-const listeners = new Set<() => void>();
 let cached: NarrationSettings | undefined;
+let cachedFrom: unknown;
 
 export function getNarrationSettings(): NarrationSettings {
-  if (cached) return cached;
-  try {
-    const saved: NarrationSettings = {
-      ...defaults,
-      ...JSON.parse(localStorage.getItem(KEY) ?? "{}"),
-    };
-    // The device's own voices were dropped; a choice of one falls back to the best.
-    const known = /^(device-neural|gemini):/.test(saved.voiceId ?? "");
-    cached = known ? saved : { ...saved, voiceId: null };
-  } catch {
-    cached = defaults;
-  }
-  return cached ?? defaults;
+  const raw = stored.get();
+  if (cached && raw === cachedFrom) return cached;
+  cachedFrom = raw;
+  const saved: NarrationSettings = { ...defaults, ...(raw as Partial<NarrationSettings>) };
+  // The device's own voices were dropped; a choice of one falls back to the best.
+  const known = /^(device-neural|gemini):/.test(saved.voiceId ?? "");
+  cached = known ? saved : { ...saved, voiceId: null };
+  return cached;
 }
 
 export function setNarrationSettings(change: Partial<NarrationSettings>) {
-  cached = { ...getNarrationSettings(), ...change };
-  try {
-    localStorage.setItem(KEY, JSON.stringify(cached));
-  } catch {
-    // Kept for this session.
-  }
-  for (const listener of listeners) listener();
+  stored.set({ ...getNarrationSettings(), ...change });
 }
 
 export function useNarrationSettings(): NarrationSettings {
-  return useSyncExternalStore(
-    (listener) => {
-      listeners.add(listener);
-      return () => listeners.delete(listener);
-    },
-    getNarrationSettings,
-    () => defaults,
-  );
+  return useSyncExternalStore(stored.subscribe, getNarrationSettings, () => defaults);
 }
