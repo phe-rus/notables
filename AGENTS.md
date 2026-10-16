@@ -104,6 +104,22 @@ Gotchas learned the hard way:
 
 ## Status (October 2026)
 
+- Stores and v0.2.0 (16 Oct): both store pages are filled in and saved as
+  drafts, nothing submitted for review. App Store Connect: texts, App
+  Information (subtitle, Productivity and Books), age rating 4+, App Privacy
+  (photos or videos, audio, other user content; App Functionality, not
+  linked, no tracking), free in 174 regions (not France), App Review contact,
+  6 iPhone 6.1-inch (1179x2556) and 6 iPad (2732x2048, landscape) shots.
+  Google Play: feature graphic, 6 phone shots, 6 tablet shots in both the
+  7-inch and 10-inch slots. Screenshots come from `bun run store:screenshots`
+  (`scripts/store/`, see Releasing). The welcome comic "Pip & the Lamp" is
+  now one full colour page with a cover and embedded lettering
+  (`onboarding/content/welcome-comic.ts`). The web was deployed and
+  `v0.2.0` tagged (Play internal track and TestFlight, no public release).
+  `listing.md` still names one App Privacy data type (Apple has three) and
+  says user-generated content "Yes" where the Apple age rating says no:
+  settle one.
+
 - Browser sessions, spec 0005 steps 2 and 3 (16 Oct): the web is a window
   onto a phone, like WhatsApp Web. `notables.pherus.org/link` shows a QR
   code and code; the phone's Settings › Linked Devices › Link a Browser
@@ -276,9 +292,14 @@ Shipped and tested in the browser (Playwright) unless noted:
   encryption, not available in France (until the French declaration is
   filed). The App Store page (texts, screenshots, category) is not filled
   in yet; everything is in `docs/store/listing.md`.
-  Store screenshots: regenerate with a Playwright script against
-  `VITE_STANDALONE_WEB=1 bun run dev` (without it the web asks to link a phone) (iPhone 430x932 at 3x, iPad 1024x1366 at 2x, Android 412x892 at 3x),
-  composed with Newsreader headlines and Caveat accents on paper.
+  Store screenshots: start `VITE_STANDALONE_WEB=1 bun run dev` in `www/`,
+  then `bun run store:screenshots` (`--only=<set>`, `--compose-only` to
+  redraw frames from the last capture). The owner's look, settled 16 Oct:
+  no device frame (Apple Notes style), the screen as a rounded card with a
+  real status bar (Dynamic Island on iPhone, punch-hole and Material icons
+  on Android), Hino Blush background, Newsreader headline with a Caveat line
+  in Hino rose; phones a 6.1-inch screen (390x760), tablets an iPad Pro
+  11-inch screen in landscape (1180x820); the feature graphic in Inter.
   Tagline: "Anything notable, always with you." Store metadata may not name
   other apps.
 - Brand (9 October): the mark is warm paper with a quiet dog-ear, the ink N
@@ -375,10 +396,11 @@ TestFlight refuse the upload; each build asks in TestFlight instead.
 - Play Console (16 Oct): every app content declaration is done (no ads,
   13+, content rating Everyone, data safety: name, photos, recordings and
   user content, optional, nothing shared) and the store listing is saved.
-  Owed: a closed testing release (v0.2.0), allowing Google's crawler on
-  pherus.org (the privacy link returned 403 to Google, likely Bot Fight
-  Mode), content rules and reporting for published notes before production,
-  a dedicated data deletion page. App Store Connect page next.
+  Owed: check v0.2.0 on both phones and promote it to closed testing,
+  allowing Google's crawler on pherus.org (the privacy link returned 403 to
+  Google, likely Bot Fight Mode), content rules and reporting for published
+  notes before production, a dedicated data deletion page. Apple: choose
+  the build and add it for review when ready.
 - Owner, 16 Oct: the desktop window can't be dragged and its corners aren't
   rounded the macOS way (the whole window, not the web view).
 - Owner, 16 Oct: on a phone, Enter at the end of a heading doesn't give a
