@@ -42,6 +42,7 @@ import { preventPageZoom } from "../platform/page-zoom";
 import { isTauri } from "../platform/runtime";
 import { inBrowserSession } from "../platform/session/browser-session-store";
 import { startSpace } from "../platform/space/space-identity";
+import { startSpaceSync } from "../platform/space/space-sync";
 
 /**
  * The web is a window onto a phone, in development too. Store screenshots
@@ -137,7 +138,15 @@ function AppShell() {
   useEffect(() => {
     if (!isTauri()) return;
     // The space first: the browsers it serves are told which one they show.
-    void startSpace().finally(startBrowserSessions);
+    void startSpace().finally(() => {
+      startBrowserSessions();
+      // Linked devices keep a full copy each, in step while they're online.
+      startSpaceSync(async () => {
+        const library = getLibrary();
+        await library.loaded;
+        return [...library.entries.keys()];
+      });
+    });
   }, []);
   useEffect(() => {
     if (libraryReady) markAppReady();

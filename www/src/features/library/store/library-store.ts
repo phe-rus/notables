@@ -41,9 +41,12 @@ class Library {
   #snapshot: LibraryEntry[] = [];
   #listeners = new Set<() => void>();
 
+  /** Resolves once the stored library has loaded. */
+  readonly loaded: Promise<void>;
+
   constructor() {
     this.entries.observe(() => this.#refresh());
-    void getPersistence()
+    this.loaded = getPersistence()
       .bind("library", this.doc)
       .then(() => {
         this.ready = true;

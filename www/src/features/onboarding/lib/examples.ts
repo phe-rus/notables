@@ -5,6 +5,7 @@ import { t } from "../../../i18n/i18n";
 import { type BookEntry, getBookStore, useBooks } from "../../books/store/book-store";
 import { getInvoiceStore, useInvoices } from "../../invoices/store/invoice-store";
 import { getLibrary, type LibraryEntry, useLibrary } from "../../library/store/library-store";
+import { deleteNote } from "../../notes/actions/delete-note";
 import { moveAllToBin } from "../../trash/lib/recycle-bin";
 import { RETENTION_DAYS } from "../../trash/lib/retention";
 import { welcomeBook, welcomeNotes } from "../content/welcome-library";
@@ -116,4 +117,38 @@ export function removeExamples() {
       },
     },
   });
+}
+
+/** Written by the welcome and never changed since (opening a note doesn't count). */
+const untouched = (item: { createdAt: number; updatedAt: number }) =>
+  item.updatedAt - item.createdAt < 60_000;
+
+/**
+ * Before this device joins another device's space: its own examples, as the
+ * welcome wrote them, are erased, so the space keeps one set instead of two.
+ * Anything edited stays and joins like the person's own notes.
+ */
+export async function eraseUntouchedExamples(): Promise<void> {
+  const library = getLibrary();
+  const books = getBookStore();
+  const found = findExamples(
+    library.getSnapshot(),
+    books.getSnapshot(),
+    getInvoiceStore().getSnapshot(),
+  );
+  const notes = new Map(library.getSnapshot().map((entry) => [entry.id, entry]));
+  for (const book of found.books) {
+    const chapters = book.chapterIds.map((id) => notes.get(id));
+    if (!untouched(book) || !chapters.every((chapter) => !chapter || untouched(chapter))) continue;
+    for (const id of book.chapterIds) await deleteNote(id);
+    books.remove(book.id);
+  }
+  for (const note of found.notes) if (untouched(note)) await deleteNote(note.id);
+  const invoices = getInvoiceStore();
+  for (const invoice of found.invoices) invoices.remove(invoice.id);
+  try {
+    localStorage.removeItem(EXAMPLES);
+  } catch {
+    // Nothing recorded to forget.
+  }
 }

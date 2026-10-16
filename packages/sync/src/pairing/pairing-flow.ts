@@ -7,7 +7,7 @@ import { CPace, type PairingKeys } from "./cpace";
  * Pairing a browser with a phone, in the room the code points to:
  *
  *   phone   → hello                       (to the browser, or to everyone for a typed code)
- *   browser → start   { sid, share }      (its half of the exchange)
+ *   browser → start   { sid, share, kind } (its half, and whether it is a browser or a device)
  *   phone   → share   { share, tag }      (its half, and proof it used the same code)
  *   browser → confirm { tag } | wrong     (its proof; both now show four words)
  *   phone   → approved { sealed name } | rejected   (after the person checks the words)
@@ -18,7 +18,7 @@ import { CPace, type PairingKeys } from "./cpace";
 
 type Message =
   | { t: "hello" }
-  | { t: "start"; sid: string; share: string }
+  | { t: "start"; sid: string; share: string; kind?: WaitingKind }
   | { t: "share"; share: string; tag: string }
   | { t: "confirm"; tag: string }
   | { t: "wrong" }
@@ -26,6 +26,9 @@ type Message =
   | { t: "rejected" };
 
 export type Send = (to: string, body: string) => void;
+
+/** What is waiting to be linked: a browser (a window onto a phone) or a device of the space. */
+export type WaitingKind = "browser" | "device";
 
 const encode = (message: Message) => JSON.stringify(message);
 
@@ -73,6 +76,7 @@ export class BrowserPairing extends Emitter<BrowserEvents> {
   constructor(
     private readonly code: string,
     private readonly send: Send,
+    private readonly kind: WaitingKind = "browser",
   ) {
     super();
   }
@@ -85,7 +89,10 @@ export class BrowserPairing extends Emitter<BrowserEvents> {
         const sid = randomBytes(16);
         const cpace = new CPace(this.code, sid, "initiator");
         this.#pending.set(from, { cpace, sid });
-        this.send(from, encode({ t: "start", sid: toBase64(sid), share: toBase64(cpace.share) }));
+        this.send(
+          from,
+          encode({ t: "start", sid: toBase64(sid), share: toBase64(cpace.share), kind: this.kind }),
+        );
         break;
       }
       case "share": {
@@ -139,6 +146,12 @@ type PhoneEvents = {
 export class PhonePairing extends Emitter<PhoneEvents> {
   #browser: string | null = null;
   #keys: PairingKeys | null = null;
+  #kind: WaitingKind = "browser";
+
+  /** Whether a browser or a device is waiting; only a device may receive a space's secret. */
+  get waitingKind(): WaitingKind {
+    return this.#kind;
+  }
 
   constructor(
     private readonly code: string,
@@ -162,6 +175,7 @@ export class PhonePairing extends Emitter<PhoneEvents> {
       // One browser at a time: the first to answer is the one being paired.
       if (this.#browser && this.#browser !== from) return;
       this.#browser = from;
+      this.#kind = message.kind === "device" ? "device" : "browser";
       const cpace = new CPace(this.code, fromBase64(message.sid), "responder");
       const keys = cpace.finish(fromBase64(message.share));
       if (!keys) return;

@@ -6,6 +6,7 @@ import {
   type PersistenceBinding,
   type RemoteSync,
 } from "@notables/sync";
+import * as Y from "yjs";
 import { isTauri } from "../runtime";
 import { phoneConnection } from "../session/phone-connection";
 import { createSessionPersistence } from "../session/session-persistence";
@@ -24,8 +25,8 @@ export function getPersistence(): Persistence {
     const phone = phoneConnection();
     if (isTauri()) {
       // Shared, so a browser this phone serves and its own editor can hold one note together.
-      persistence = flushWhenHidden(
-        createSharedPersistence(createUpdateLogPersistence(nativeUpdateLog)),
+      persistence = watchOpened(
+        flushWhenHidden(createSharedPersistence(createUpdateLogPersistence(nativeUpdateLog))),
       );
     } else if (phone) {
       persistence = createSessionPersistence(phone.client);
@@ -35,6 +36,67 @@ export function getPersistence(): Persistence {
     }
   }
   return persistence;
+}
+
+export interface OpenWatcher {
+  /** A screen (or a browser this phone serves) opened a document. */
+  opened(name: string): void;
+  /** The last one holding it let go. */
+  closed(name: string): void;
+}
+
+const watchers = new Set<OpenWatcher>();
+const openCounts = new Map<string, number>();
+/** Copies the sync engine opens: they don't count as someone looking at the document. */
+const quiet = new WeakSet<Y.Doc>();
+
+/** Learns which documents are open on this device, so linked devices keep them live. */
+export function watchOpenDocuments(watcher: OpenWatcher): () => void {
+  watchers.add(watcher);
+  for (const name of openCounts.keys()) watcher.opened(name);
+  return () => watchers.delete(watcher);
+}
+
+/** Opens a document for syncing, without it counting as open on this device. */
+export async function openQuietly(name: string): Promise<{ doc: Y.Doc; release(): void }> {
+  const doc = new Y.Doc();
+  quiet.add(doc);
+  const binding = await getPersistence().bind(name, doc);
+  return {
+    doc,
+    release() {
+      binding.destroy();
+      doc.destroy();
+    },
+  };
+}
+
+function watchOpened(inner: Persistence): Persistence {
+  return {
+    async bind(name, doc) {
+      const binding = await inner.bind(name, doc);
+      if (quiet.has(doc)) return binding;
+      const count = (openCounts.get(name) ?? 0) + 1;
+      openCounts.set(name, count);
+      if (count === 1) for (const watcher of watchers) watcher.opened(name);
+      let released = false;
+      return {
+        destroy() {
+          binding.destroy();
+          if (released) return;
+          released = true;
+          const left = (openCounts.get(name) ?? 1) - 1;
+          if (left > 0) openCounts.set(name, left);
+          else {
+            openCounts.delete(name);
+            for (const watcher of watchers) watcher.closed(name);
+          }
+        },
+        flush: binding.flush,
+      };
+    },
+    remove: (name) => inner.remove(name),
+  };
 }
 
 /**

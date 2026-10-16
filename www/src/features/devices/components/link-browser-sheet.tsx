@@ -1,4 +1,5 @@
 import {
+  bytesToHex,
   isPairingCode,
   normalizeCode,
   PhonePairing,
@@ -11,9 +12,11 @@ import { TextInput } from "../../../components/form/form-fields";
 import { t } from "../../../i18n/i18n";
 import { roomEndpoint } from "../../../platform/session/room-endpoint";
 import { thisDeviceId, thisDeviceName } from "../../../platform/session/this-device";
+import { spaceRoot } from "../../../platform/space/space-identity";
 import { QrScanner } from "../../invoices/verify/qr-scanner";
 import { addBrowserSession } from "../lib/browser-sessions";
 import { readLinkUrl } from "../lib/link-url";
+import { servesBrowsers } from "../lib/serves-browsers";
 import { PairingWords } from "./link-browser-screen";
 
 export interface LinkTarget {
@@ -28,21 +31,26 @@ type Stage =
   | { name: "words"; words: string[] };
 
 /**
- * Approves a browser from the phone (spec 0005, AC-3, AC-4): scan its QR
- * code or type its code, check the four words match, and approve.
+ * Approves a browser or another device of the space from this one (spec
+ * 0005, AC-3, AC-4): scan its QR code or type its code, check the four words
+ * match, and approve. A device receives the space's secret, sealed with the
+ * pairing key; a browser receives only a session of its own, and only from
+ * a phone (AC-23).
  */
 export function LinkBrowserSheet({
   open,
   initial,
   onClose,
+  title = t("devices.linkBrowser"),
 }: {
   open: boolean;
   initial: LinkTarget | null;
   onClose: () => void;
+  title?: string;
 }) {
   return (
-    <Sheet open={open} onClose={onClose} label={t("devices.linkBrowser")} className="max-w-[440px]">
-      {open && <LinkBrowserContent initial={initial} onClose={onClose} />}
+    <Sheet open={open} onClose={onClose} label={title} className="max-w-[440px]">
+      {open && <LinkBrowserContent initial={initial} onClose={onClose} title={title} />}
     </Sheet>
   );
 }
@@ -50,9 +58,11 @@ export function LinkBrowserSheet({
 function LinkBrowserContent({
   initial,
   onClose,
+  title,
 }: {
   initial: LinkTarget | null;
   onClose: () => void;
+  title: string;
 }) {
   const [target, setTarget] = useState<LinkTarget | null>(initial);
   const [stage, setStage] = useState<Stage>(
@@ -73,8 +83,11 @@ function LinkBrowserContent({
       setStage({ name: "scan", typing: true, error: t("devices.wrongCode") });
     });
     flow.on("approved", ({ browserId, sessionKey }) => {
-      addBrowserSession(browserId, sessionKey);
-      toast.success(t("devices.linked"));
+      if (flow.waitingKind === "device") toast.success(t("devices.deviceLinked"));
+      else {
+        addBrowserSession(browserId, sessionKey);
+        toast.success(t("devices.linked"));
+      }
       onClose();
     });
     setPairing(flow);
@@ -101,6 +114,22 @@ function LinkBrowserContent({
     if (link) begin(link);
   };
 
+  const approve = () => {
+    if (!pairing) return;
+    if (pairing.waitingKind === "browser") {
+      if (servesBrowsers()) pairing.approve();
+      else {
+        // Browsers link to phones only; a computer uses the desktop app.
+        pairing.reject();
+        setTarget(null);
+        setStage({ name: "scan", typing: true, error: t("devices.browsersOnPhones") });
+      }
+      return;
+    }
+    const root = spaceRoot();
+    if (root) pairing.approve({ root: bytesToHex(root) });
+  };
+
   const submitTyped = () => {
     if (!isPairingCode(typed)) return;
     begin({ code: normalizeCode(typed), browserId: null });
@@ -110,7 +139,7 @@ function LinkBrowserContent({
     <>
       <header className="flex items-start justify-between gap-3 px-6 pt-6 pb-2">
         <div className="flex min-w-0 flex-col gap-1">
-          <h2 className="text-title3 font-bold tracking-tight">{t("devices.linkBrowser")}</h2>
+          <h2 className="text-title3 font-bold tracking-tight">{title}</h2>
           {stage.name === "scan" && (
             <p className="text-footnote leading-snug text-label-secondary">
               {t("devices.scanHint")}
@@ -180,10 +209,14 @@ function LinkBrowserContent({
         )}
         {stage.name === "words" && (
           <div className="flex flex-col items-center gap-4 text-center">
-            <p className="text-callout">{t("devices.checkWords")}</p>
+            <p className="text-callout">
+              {pairing?.waitingKind === "device"
+                ? t("devices.checkWordsDevice")
+                : t("devices.checkWords")}
+            </p>
             <PairingWords words={stage.words} />
             <div className="flex w-full flex-col gap-2 pt-2">
-              <Button onClick={() => pairing?.approve()}>{t("devices.wordsMatch")}</Button>
+              <Button onClick={approve}>{t("devices.wordsMatch")}</Button>
               <Button
                 variant="ghost"
                 onClick={() => {

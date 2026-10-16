@@ -1,4 +1,6 @@
 export { Awareness } from "y-protocols/awareness";
+export * from "./engine/relay-link";
+export * from "./engine/space-peer";
 export * from "./pairing/cpace";
 export * from "./pairing/pairing-flow";
 export type { PeerMedia } from "./peer/media-exchange";

@@ -105,6 +105,25 @@ describe("pairing a browser with a phone", () => {
     expect(received).toEqual([{ root: "ab".repeat(32) }]);
   });
 
+  it("tells the approving side whether a browser or a device is waiting", () => {
+    const { phone } = room("K7QM4TXA", "K7QM4TXA");
+    phone.begin("browser", () => {});
+    expect(phone.waitingKind).toBe("browser");
+    let device!: PhonePairing;
+    const waiting = new BrowserPairing(
+      "K7QM4TXA",
+      (to, body) => to === "phone" && device.receive("laptop", body),
+      "device",
+    );
+    device = new PhonePairing(
+      "K7QM4TXA",
+      (to, body) => to === "laptop" && waiting.receive("phone", body),
+      "TECNO",
+    );
+    device.begin("laptop", () => {});
+    expect(device.waitingKind).toBe("device");
+  });
+
   it("counts wrong codes and gives up after a few", () => {
     const { browser, phone } = room("K7QM4TXA", "K7QM4TXB");
     const left: number[] = [];
