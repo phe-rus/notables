@@ -1,5 +1,5 @@
 /**
- * Pages for the example manga and comic, drawn as SVG so they're crisp at
+ * Pages for the example manga, drawn as SVG so they're crisp at
  * any size and weigh almost nothing. Each page is panels of simple scenes
  * with speech bubbles.
  */
@@ -249,128 +249,17 @@ export function mangaPages(chapter: 1 | 2): string[] {
   ];
 }
 
-/* Comic: flat colour, left to right */
-
-const colour: Palette = {
-  paper: "#fff8ec",
-  ink: "#2b2118",
-  font: "'Comic Neue', 'Trebuchet MS', sans-serif",
-};
-
-const sky = (w: number, h: number, top: string, bottom: string) => {
-  const id = nextId("sky");
-  return `<defs><linearGradient id="${id}" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="${top}"/><stop offset="1" stop-color="${bottom}"/></linearGradient></defs><rect width="${w}" height="${h}" fill="url(#${id})"/>`;
-};
-
-const hill = (w: number, h: number, colourFill: string) =>
-  `<path d="M0 ${h * 0.75} Q${w * 0.3} ${h * 0.55} ${w * 0.6} ${h * 0.72} T${w} ${h * 0.68} V${h} H0Z" fill="${colourFill}"/>`;
-
-const pip = (x: number, y: number, s: number, wave = false) =>
-  `<g transform="translate(${x} ${y}) scale(${s})"><ellipse cx="0" cy="0" rx="46" ry="40" fill="#f2a541" stroke="#2b2118" stroke-width="4"/><circle cx="-14" cy="-8" r="6" fill="#2b2118"/><circle cx="14" cy="-8" r="6" fill="#2b2118"/><path d="M-12 12 Q0 22 12 12" fill="none" stroke="#2b2118" stroke-width="4" stroke-linecap="round"/><path d="M-30 -30 L-38 -60 L-14 -38Z M30 -30 L38 -60 L14 -38Z" fill="#f2a541" stroke="#2b2118" stroke-width="4" stroke-linejoin="round"/>${wave ? `<path d="M44 0 Q70 -30 60 -54" fill="none" stroke="#2b2118" stroke-width="6" stroke-linecap="round"/>` : ""}</g>`;
-
-const lamp = (x: number, y: number, s: number, lit: boolean) =>
-  `<g transform="translate(${x} ${y}) scale(${s})">${lit ? `<circle cx="0" cy="-40" r="70" fill="#ffd166" opacity="0.45"/>` : ""}<rect x="-26" y="-70" width="52" height="60" rx="10" fill="${lit ? "#ffd166" : "#d9d2c3"}" stroke="#2b2118" stroke-width="4"/><path d="M-34 -70 L0 -100 L34 -70Z" fill="#c8553d" stroke="#2b2118" stroke-width="4" stroke-linejoin="round"/><rect x="-6" y="-10" width="12" height="60" fill="#2b2118"/></g>`;
-
-export function comicPages(): string[] {
-  const [a, b] = row(M, 480, [1, 1]) as [Omit<Panel, "scene">, Omit<Panel, "scene">];
-  const [c] = row(M + 502, tall - 502, [1]) as [Omit<Panel, "scene">];
-  const first = page(
-    [
-      {
-        ...a,
-        scene: (w, h) =>
-          sky(w, h, "#9ad1d4", "#e8f4f2") +
-          hill(w, h, "#7cb518") +
-          pip(w * 0.5, h * 0.66, 1.2, true),
-        bubbles: [{ x: a.w / 2, y: 66, lines: ["Morning,", "everyone!"], tail: [a.w / 2, 200] }],
-      },
-      {
-        ...b,
-        scene: (w, h) =>
-          sky(w, h, "#9ad1d4", "#e8f4f2") +
-          hill(w, h, "#5c9d18") +
-          lamp(w * 0.5, h * 0.7, 1.4, false),
-        bubbles: [{ x: b.w / 2, y: 66, lines: ["The village lamp", "went out."] }],
-      },
-      {
-        ...c,
-        scene: (w, h) =>
-          sky(w, h, "#3d5a80", "#98c1d9") +
-          hill(w, h, "#2f4858") +
-          lamp(w * 0.72, h * 0.78, 1.6, false) +
-          pip(w * 0.28, h * 0.8, 1.4),
-        bubbles: [
-          {
-            x: c.w * 0.3,
-            y: 80,
-            lines: ["I'll find a new spark", "before dark. Promise."],
-            tail: [c.w * 0.28, c.h * 0.62],
-          },
-        ],
-      },
-    ],
-    colour,
-    1,
-  );
-  const [d] = row(M, 520, [1]) as [Omit<Panel, "scene">];
-  const [e, f] = row(M + 542, tall - 542, [1, 1]) as [Omit<Panel, "scene">, Omit<Panel, "scene">];
-  const second = page(
-    [
-      {
-        ...d,
-        scene: (w, h) =>
-          sky(w, h, "#22223b", "#4a4e69") +
-          Array.from(
-            { length: 30 },
-            (_, index) =>
-              `<circle cx="${(index * 131) % w}" cy="${(index * 71) % (h * 0.6)}" r="${1 + (index % 3)}" fill="#fff"/>`,
-          ).join("") +
-          hill(w, h, "#1b1b2f") +
-          `<circle cx="${w * 0.7}" cy="${h * 0.62}" r="10" fill="#ffd166"/><circle cx="${w * 0.7}" cy="${h * 0.62}" r="26" fill="#ffd166" opacity="0.3"/>` +
-          pip(w * 0.3, h * 0.82, 1.1),
-        bubbles: [{ x: d.w * 0.3, y: 74, lines: ["A firefly!"], tail: [d.w * 0.3, d.h * 0.66] }],
-      },
-      {
-        ...e,
-        scene: (w, h) =>
-          sky(w, h, "#22223b", "#4a4e69") +
-          pip(w * 0.5, h * 0.62, 1.2) +
-          `<circle cx="${w * 0.5}" cy="${h * 0.28}" r="10" fill="#ffd166"/>`,
-        bubbles: [{ x: e.w / 2, y: e.h - 70, lines: ["Would you", "light our lamp?"] }],
-      },
-      {
-        ...f,
-        scene: (w, h) =>
-          sky(w, h, "#22223b", "#4a4e69") +
-          hill(w, h, "#1b1b2f") +
-          lamp(w * 0.5, h * 0.8, 1.5, true),
-        bubbles: [{ x: f.w / 2, y: 66, lines: ["Just for tonight."] }],
-      },
-    ],
-    colour,
-    2,
-  );
-  return [first, second];
-}
-
-/** A simple painted cover, used before the first page. */
-export function coverArt(title: string, subtitle: string, palette: "ink" | "colour"): string {
-  const dark = palette === "ink";
-  const background = dark ? "#141414" : "#f2a541";
-  const fg = dark ? "#fbfaf6" : "#2b2118";
+/** The manga's painted cover: the lighthouse under the moon. */
+export function coverArt(title: string, subtitle: string): string {
   return `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ${W} ${H}" width="${W}" height="${H}">
-<rect width="${W}" height="${H}" fill="${background}"/>
-${
-  dark
-    ? `<g opacity="0.9">${moon(560, 300, 120)}</g><g transform="translate(0 260)">${lighthouse(
-        260,
-        900,
-        1.6,
-      )
-        .replace(/#fbfaf6/g, "#141414")
-        .replace(/#141414"/g, '#fbfaf6"')}</g>`
-    : `${hill(W, H, "#7cb518")}${pip(W / 2, 760, 3.2, true)}`
-}
-<text x="60" y="140" font-family="'Trebuchet MS', sans-serif" font-size="92" font-weight="800" fill="${fg}">${escapeText(title)}</text>
-<text x="64" y="200" font-family="'Trebuchet MS', sans-serif" font-size="34" fill="${fg}" opacity="0.8">${escapeText(subtitle)}</text></svg>`;
+<rect width="${W}" height="${H}" fill="#141414"/>
+<g opacity="0.9">${moon(560, 300, 120)}</g><g transform="translate(0 260)">${lighthouse(
+    260,
+    900,
+    1.6,
+  )
+    .replace(/#fbfaf6/g, "#141414")
+    .replace(/#141414"/g, '#fbfaf6"')}</g>
+<text x="60" y="140" font-family="'Trebuchet MS', sans-serif" font-size="92" font-weight="800" fill="#fbfaf6">${escapeText(title)}</text>
+<text x="64" y="200" font-family="'Trebuchet MS', sans-serif" font-size="34" fill="#fbfaf6" opacity="0.8">${escapeText(subtitle)}</text></svg>`;
 }

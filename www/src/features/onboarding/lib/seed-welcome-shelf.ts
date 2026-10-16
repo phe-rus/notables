@@ -1,14 +1,32 @@
+import lettering from "@fontsource/patrick-hand/files/patrick-hand-latin-400-normal.woff2?url";
 import { createId, type NoteKind } from "@notables/core";
 import { composeDocumentFromHtml, composeDocumentFromMarkdown } from "@notables/pluraliti";
 import { saveMedia } from "../../../platform/storage/media-store";
 import { type BookEntry, getBookStore } from "../../books/store/book-store";
 import { getInvoiceStore } from "../../invoices/store/invoice-store";
 import { writeNote } from "../../library/lib/write-note";
-import { comicPages, coverArt, mangaPages } from "../content/welcome-art";
+import { coverArt, mangaPages } from "../content/welcome-art";
+import { pipComicCover, pipComicPage } from "../content/welcome-comic";
 import { smallHours, welcomeArticle, welcomeInvoice } from "../content/welcome-shelf";
 import type { Examples } from "./examples";
 
 const HOUR = 3_600_000;
+
+/** The comic's lettering, as a data URL its pages can carry. */
+async function letteringFont(): Promise<string | undefined> {
+  try {
+    const blob = await (await fetch(lettering)).blob();
+    return await new Promise<string>((resolve, reject) => {
+      const reader = new FileReader();
+      reader.onload = () => resolve(reader.result as string);
+      reader.onerror = () => reject(reader.error);
+      reader.readAsDataURL(blob);
+    });
+  } catch {
+    // Pages fall back to the system's hand-lettered fonts.
+    return undefined;
+  }
+}
 
 const saveSvg = async (svg: string) =>
   `media:${await saveMedia(new Blob([svg], { type: "image/svg+xml" }))}`;
@@ -86,7 +104,7 @@ export async function seedWelcomeShelf(): Promise<Examples> {
       subtitle: "Volume 1",
       author: "Notables",
       kind: "manga",
-      cover: await saveSvg(coverArt("Tidewalker", "Volume 1", "ink")),
+      cover: await saveSvg(coverArt("Tidewalker", "Volume 1")),
     },
     await drawnChapters("manga", [
       { title: "The Lamp", pages: mangaPages(1) },
@@ -94,15 +112,16 @@ export async function seedWelcomeShelf(): Promise<Examples> {
     ]),
   );
 
+  const font = await letteringFont();
   const pip = await bookOf(
     {
       title: "Pip & the Lamp",
       subtitle: "A short comic",
       author: "Notables",
       kind: "comic",
-      cover: await saveSvg(coverArt("Pip & the Lamp", "A short comic", "colour")),
+      cover: await saveSvg(pipComicCover(font)),
     },
-    await drawnChapters("comic", [{ title: "A New Spark", pages: comicPages() }]),
+    await drawnChapters("comic", [{ title: "A New Spark", pages: [pipComicPage(font)] }]),
   );
 
   return {

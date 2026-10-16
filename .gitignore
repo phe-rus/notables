@@ -8,6 +8,9 @@ dist/
 .turbo/
 *.tsbuildinfo
 
+# Store screenshots (bun run store:screenshots)
+.store-screenshots/
+
 # Cloudflare
 .wrangler/
 .dev.vars*
