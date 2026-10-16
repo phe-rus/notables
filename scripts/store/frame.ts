@@ -81,7 +81,10 @@ export interface FrameSpec {
  */
 export async function framePage(spec: FrameSpec): Promise<string> {
   const { width, height, viewport, tablet } = spec;
-  const top = height * (tablet ? 0.165 : 0.2);
+  // Landscape tablets put the headline on one line.
+  const landscape = width > height;
+  const headline = landscape ? spec.headline.replace(/<br>/g, " ") : spec.headline;
+  const top = height * (landscape ? 0.21 : tablet ? 0.165 : 0.2);
   const available = height - top - height * (tablet ? 0.04 : 0.05);
   const statusShare = tablet ? 0.028 : 0.105;
   const homeShare = tablet ? 0.022 : 0.06;
@@ -93,7 +96,7 @@ export async function framePage(spec: FrameSpec): Promise<string> {
   const homeH = screenW * homeShare;
   const left = (width - screenW) / 2;
   const radius = screenW * (tablet ? 0.03 : 0.1);
-  const headSize = tablet ? width * 0.058 : width * 0.088;
+  const headSize = landscape ? height * 0.068 : tablet ? width * 0.058 : width * 0.088;
   const accentSize = headSize * 0.64;
   const image = pngData(spec.screenshot);
 
@@ -111,13 +114,13 @@ export async function framePage(spec: FrameSpec): Promise<string> {
 
   const body = `
 <header style="position:absolute;left:0;right:0;top:0;height:${top}px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:${headSize * 0.32}px;padding:0 ${width * 0.05}px;text-align:center">
-  <h1 style="font-size:${headSize}px;line-height:1.02;font-weight:650;letter-spacing:-.025em;white-space:nowrap">${spec.headline}</h1>
+  <h1 style="font-size:${headSize}px;line-height:1.02;font-weight:650;letter-spacing:-.025em;white-space:nowrap">${headline}</h1>
   <p style="font-family:Caveat;font-weight:600;font-size:${accentSize}px;line-height:1;color:#d0703a;white-space:nowrap">${spec.accent}</p>
 </header>
 <div class="card" data-pending style="left:${left}px;top:${top}px;width:${screenW}px;height:${screenH}px;border-radius:${radius}px">
   <div class="status" style="height:${statusH}px;font-size:${statusH * (tablet ? 0.55 : 0.33)}px;padding:${tablet ? 0 : statusH * 0.12}px ${screenW * (tablet ? 0.025 : 0.085)}px 0">${spec.android ? androidStatusBar() : statusBar(Boolean(tablet))}</div>
   <img src="${image}">
-  <div class="home" style="height:${homeH}px"><i style="width:${screenW * (tablet ? 0.22 : spec.android ? 0.28 : 0.36)}px;height:${Math.max(2, screenW * (spec.android ? 0.009 : 0.012))}px"></i></div>
+  <div class="home" style="height:${homeH}px"><i style="width:${screenW * (tablet ? 0.22 : spec.android ? 0.28 : 0.36)}px;height:${Math.max(2, screenW * (tablet ? 0.0045 : spec.android ? 0.009 : 0.012))}px"></i></div>
 </div>
 <div class="rim" style="left:${left}px;top:${top}px;width:${screenW}px;height:${screenH}px;border-radius:${radius}px"></div>
 ${callout}

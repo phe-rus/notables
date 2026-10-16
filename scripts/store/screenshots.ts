@@ -6,7 +6,7 @@
  * lets the welcome write its examples, adds the store content
  * (`seed.ts`), captures six screens and composes them with headlines
  * (`frame.ts`). Writes Google Play (1080x1920 and the feature graphic),
- * iPhone 6.3-inch (1206x2622) and iPad 13-inch (2048x2732) sets, by
+ * iPhone 6.3-inch (1206x2622) and iPad 13-inch landscape (2732x2048) sets, by
  * default into `.store-screenshots/`.
  */
 import { mkdir } from "node:fs/promises";
@@ -57,11 +57,12 @@ const devices: Device[] = [
   },
   {
     folder: "app-store-ipad",
-    viewport: { width: 1024, height: 1366 },
+    // Landscape, like Apple's own iPad screenshots: sidebar, list and note side by side.
+    viewport: { width: 1366, height: 1024 },
     scale: 2,
     userAgent:
       "Mozilla/5.0 (iPad; CPU OS 18_0 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/18.0 Mobile/15E148 Safari/604.1",
-    frame: { width: 1024, height: 1366, scale: 2 },
+    frame: { width: 1366, height: 1024, scale: 2 },
     tablet: true,
   },
 ];
@@ -130,10 +131,10 @@ const shots: Shot[] = [
     accent: "a signed seal and a QR check",
     open: async (page, ids) => {
       await visit(page, `/invoices/${ids["INV-0001"]}`);
-      await page
-        .locator("button", { hasText: /^\s*Edit\s*$/ })
-        .first()
-        .click();
+      // Narrow screens switch between the form and the preview; wide ones show both.
+      const picker = page.locator("button", { hasText: /^\s*Edit\s*$/ }).first();
+      if (!(await picker.isVisible())) return;
+      await picker.click();
       await page.waitForTimeout(500);
       await page.getByText("Preview", { exact: true }).last().click();
       await page.waitForTimeout(1200);
