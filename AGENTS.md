@@ -109,6 +109,14 @@ Gotchas learned the hard way:
 
 ## Status (October 2026)
 
+- Folders and iOS linking (18 Oct): deleting a folder now sends its notes to
+  Recently Deleted (`library/lib/delete-folder.ts`); `Library.removeFolder`
+  only removes the folder. iOS: with store v0.2.4 on Android, the iPhone
+  approves and both say linked, but the devices never list each other and
+  nothing syncs. Pairing works, so the iPhone reaches the room; the fault is
+  after pairing (space room, hello or frames). Being traced live from the
+  Chromebook's Notables Dev with a WebSocket recorder while the iPhone links.
+
 - Android crash fix (18 Oct): Notables Dev on the TECNO died with
   OutOfMemoryError allocating 28.8 MB in `Rust.handleRequest`. Media loads
   (`nativeMedia.load`, used by device sync and browser sessions) fetched whole
