@@ -6,7 +6,7 @@
 
 <p align="center">
   <b>Anything notable, always with you.</b><br>
-  Notes, journals, stories, books, comics, audiobooks, invoices and plans,<br>
+  Notes, journals, spreadsheets, books, comics, audiobooks, finances and plans,<br>
   kept on your own devices and shared only when you choose.
 </p>
 
@@ -37,16 +37,17 @@ note, a journal, a story that grows into a book, a comic you're drawing, an
 audiobook you're listening to, an invoice a client can verify. It opens
 straight away, works without a connection and never asks you to sign up.
 
-One codebase runs on the web, macOS, Windows, Linux, Android and iOS, and on
-each it follows the system's own fonts, haptics, keyboard, dark mode and
-text size.
+One codebase runs on Android, iPhone and iPad, ChromeOS and Android tablets,
+macOS, Windows, Linux and the web, and on each it follows the system's own
+fonts, haptics, keyboard, dark mode and text size.
 
 ## 📥 Get Notables
 
 | Where | Status |
 |---|---|
-| **Web** | [notables.pherus.org](https://notables.pherus.org) |
+| **Web** | [notables.pherus.org](https://notables.pherus.org), linked to your phone like a messaging app's web version |
 | **Android** | Testing on Google Play (invite only for now) |
+| **ChromeOS and tablets** | The Android app, with desktop windows, free resizing and keyboard editing |
 | **iPhone and iPad** | Testing on TestFlight (invite only for now) |
 | **macOS, Windows, Linux** | Build from source ([DEVELOPERS.md](DEVELOPERS.md)); installers to follow |
 
@@ -57,52 +58,68 @@ text size.
     <td width="50%" valign="top">
       <h3>📝 Write anything</h3>
       An editor made for words: headings, lists, checklists, highlights,
-      photos and audio, Markdown shortcuts and a choice of fonts. Swipe a
-      note to pin or delete it, or hold and slide to select several.
+      photos, attachments, tags and a table of contents, with Markdown
+      shortcuts and a choice of fonts. Keep notes in colored folders, as a
+      list or a gallery, grouped by date if you like.
     </td>
     <td width="50%" valign="top">
+      <h3>📊 Spreadsheets</h3>
+      Notes that are sheets: formulas like <code>=SUM(B2:B10)</code>,
+      currencies, columns and rows you resize by dragging, arrow-key
+      movement and CSV export.
+    </td>
+  </tr>
+  <tr>
+    <td valign="top">
       <h3>✍️ Write and draw by hand</h3>
       Handwriting pages with pen pressure and palm rejection, and a studio
       for comic, manga and picture-book pages where every stroke stays
       editable.
     </td>
-  </tr>
-  <tr>
     <td valign="top">
       <h3>📚 Make and read books</h3>
       Gather notes into books with parts and chapters and read them with
       real page turns. Import EPUB, PDF, CBZ and audio; comics and manga get
       readers of their own.
     </td>
+  </tr>
+  <tr>
     <td valign="top">
       <h3>🎧 Listen and read along</h3>
       Audiobooks with a mini player, read-along that follows each word, and
       any note read aloud in a natural voice that runs on your device.
     </td>
-  </tr>
-  <tr>
     <td valign="top">
       <h3>🎙️ Record and transcribe</h3>
       Speak, and Whisper writes it down on your device. Recordings stay
       beside the words they became.
     </td>
+  </tr>
+  <tr>
     <td valign="top">
       <h3>🗓️ Plan your days</h3>
       Plans, reminders, birthdays, deadlines and trips in day, week, month
       and year views, with your country's public holidays and "Type it" to
       add a plan from a sentence.
     </td>
+    <td valign="top">
+      <h3>🧾 Finances</h3>
+      Invoices, receipts and quotes with a signed seal and a QR code anyone
+      can scan to check them, and a ledger of what came in and went out:
+      scan a receipt, paste a mobile money message, export to CSV.
+    </td>
   </tr>
   <tr>
-    <td valign="top">
-      <h3>🧾 Invoices you can prove</h3>
-      Invoices, receipts and quotes with your business profile, each with a
-      signed seal and a QR code anyone can scan to check it's genuine.
-    </td>
     <td valign="top">
       <h3>💳 A private wallet</h3>
       Copies of your bank cards, IDs, passport and SIM details, scanned with
       the camera and encrypted on your device. They never leave it.
+    </td>
+    <td valign="top">
+      <h3>🔗 Your devices, together</h3>
+      Link your phone, tablet, Chromebook and computer by scanning a code
+      and checking four words. No account; everything syncs encrypted, and
+      you can disconnect a lost device from any other.
     </td>
   </tr>
   <tr>
@@ -129,6 +146,10 @@ to left) and Simplified Chinese.
   on your device and appears only on what you publish.
 - **On your device first.** Notes live in a database on your device, media
   as ordinary files, and it all works offline.
+- **Encrypted between your devices.** Linked devices share a secret only
+  they hold. Cloudflare passes sealed messages between them and stores
+  nothing; a browser keeps nothing once it closes. Disconnecting a device
+  moves the rest to a new key it never sees.
 - **AI only if you ask.** Off by default; turn it on with your own Claude,
   Gemini or OpenRouter key and it talks to that provider alone.
 - **Speech stays local.** Transcription and natural voices run on your
@@ -136,14 +157,13 @@ to left) and Simplified Chinese.
 
 ## 🧭 Where it's going
 
-Notables is young (version 0.1). The next big piece is **your devices,
-together**: link a phone, a laptop and the web by scanning a code, no
-account, and pick up wherever you left off. Devices on the same network talk
-directly; otherwise Cloudflare only passes encrypted data through and keeps
-nothing. After that come friends by a shareable ID, writing together, and
-opt-in public sharing helped along by the people who read it. The plan is
-in [ADR-0007](docs/adr/0007-linked-devices-pass-through-network.md), still
-being discussed, and the [roadmap](docs/ROADMAP.md) has the rest.
+Notables is young (version 0.2). Linking your own devices is here; next come
+photos and recordings over those links, an app lock, backups you keep
+anywhere, friends by a shareable ID, writing together, and opt-in public
+sharing helped along by the people who read it. The plan is in
+[ADR-0007](docs/adr/0007-linked-devices-pass-through-network.md) and
+[spec 0005](docs/specs/www/0005-linked-devices/index.md), and the
+[roadmap](docs/ROADMAP.md) has the rest.
 
 ## 🗂️ Inside the repository
 
@@ -151,10 +171,10 @@ being discussed, and the [roadmap](docs/ROADMAP.md) has the rest.
 |---|---|
 | [`www/`](www) | The app: TanStack Start and React on Cloudflare Workers, and the frontend of every native build |
 | [`www/src-tauri/`](www/src-tauri) | The Tauri 2 shell for iOS, Android, macOS, Windows and Linux: SQLite storage, media, on-device Whisper and voices, the encrypted wallet |
-| [`packages/ultrapeach/`](packages/ultrapeach) | **UltraPeach**, our design language: tokens, text styles, materials, platform variants and components |
 | [`packages/pluraliti/`](packages/pluraliti) | **Pluraliti**, the rich text editor built on Lexical and Yjs |
-| [`packages/sync/`](packages/sync) | Yjs persistence and the peer-to-peer mesh |
+| [`packages/sync/`](packages/sync) | Yjs persistence, device linking (CPace pairing), space keys and rotation, and sync between devices and browsers |
 | [`packages/notable-core/`](packages/notable-core) | Shared models: notes, invoicing, calendar recurrence |
+| [Hino](https://hino.pherus.org) (`@phe-rus/hino`) | The Pherus design system: controls, icons, tokens and themes, Blush by default |
 | [`docs/`](docs) | [Architecture](docs/ARCHITECTURE.md), [decisions](docs/adr), [specs](docs/specs/www) and the [stage plan](docs/STAGES.md) |
 
 ## 🛠️ Build it yourself
