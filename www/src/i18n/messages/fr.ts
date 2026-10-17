@@ -1007,6 +1007,8 @@ export const fr: Messages = {
     formula: "Formule ou valeur",
     addRows: "Ajouter 10 lignes",
     addColumn: "Ajouter une colonne",
+    resizeColumn: "Redimensionner la colonne {name}",
+    resizeRow: "Redimensionner la ligne {name}",
     numberFormat: "Format des nombres",
     number: "Nombre",
     exportCsv: "Exporter en CSV",
@@ -1055,12 +1057,15 @@ export const fr: Messages = {
     externalFailed: "Impossible d’ouvrir le lien dans une autre application.",
 
     connectedTitle: "Appareils connectés",
-    disconnect: "Déconnecter cet appareil",
-    disconnectTitle: "Déconnecter cet appareil ?",
+    disconnect: "Déconnecter",
+    disconnectTitle: "Déconnecter {name} ?",
     disconnectBody:
-      "Cet appareil conserve ses notes et crée son propre espace. Les prochaines modifications ne seront plus synchronisées. Les navigateurs liés à cet appareil seront déconnectés.",
-    disconnectFailed:
-      "Impossible de déconnecter cet appareil. La connexion actuelle est inchangée. Réessayez.",
+      "{name} garde ce qu'il a déjà mais ne reçoit plus rien. Vos autres appareils passent à une nouvelle clé à leur prochaine connexion.",
+    disconnectFailed: "Impossible de déconnecter. Rien n'a changé. Réessayez.",
+    disconnectRelink: "{names} n'a jamais partagé de clé et devra être lié à nouveau.",
+    removedTitle: "Cet appareil a été déconnecté",
+    removedBody:
+      "Un autre de vos appareils a déconnecté celui-ci. Vos notes restent ici, mais ne se synchronisent plus avec vos autres appareils.",
     noDevices: "Aucun autre appareil en ligne.",
     linkOnce:
       "Associez les appareils une seule fois depuis l’un ou l’autre. Les notes se synchronisent ensuite dans les deux sens. Pour afficher un code ici, choisissez Associer cet appareil ; sur l’autre, Ajouter un appareil.",

@@ -41,6 +41,7 @@ export function NarrateChapterButton({ book }: { book: BookEntry }) {
   return (
     <>
       <Button
+        size="sm"
         variant="secondary"
         onClick={() => setRecording(true)}
         data-tooltip="Narrate a new chapter"

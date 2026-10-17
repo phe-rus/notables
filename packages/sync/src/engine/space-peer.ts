@@ -11,6 +11,13 @@ export interface SpaceDocs extends DocSource {
   notes(): Promise<string[]>;
 }
 
+/** How a device introduces itself to the others of its space. */
+export interface DeviceHello {
+  name: string;
+  platform: string;
+  key?: string;
+}
+
 /** The documents that go first, so lists and settings appear before any note. */
 const FIRST = ["library", "settings"] as const;
 
@@ -18,7 +25,7 @@ const FIRST = ["library", "settings"] as const;
 const IDLE_RELEASE = 15_000;
 
 type Control =
-  | { type: "hello"; name: string; platform: string }
+  | { type: "hello"; name: string; platform: string; key?: string }
   | { type: "digest"; docs: Record<string, string> };
 
 /**
@@ -39,8 +46,8 @@ export class SpacePeer {
   constructor(
     key: Uint8Array,
     docs: SpaceDocs,
-    private readonly hello: { name: string; platform: string },
-    private readonly onHello: (info: { name: string; platform: string }) => void = () => {},
+    private readonly hello: DeviceHello,
+    private readonly onHello: (info: DeviceHello) => void = () => {},
   ) {
     this.#docs = docs;
     this.#host = new SessionHost(
@@ -96,7 +103,15 @@ export class SpacePeer {
 
   async #onControl(message: Control) {
     if (message.type === "hello") {
-      this.onHello({ name: message.name, platform: message.platform });
+      this.onHello({
+        name: message.name,
+        platform: message.platform,
+        // A device's X25519 public key, for receiving a rotated secret (AC-12).
+        key:
+          typeof message.key === "string" && /^[0-9a-f]{64}$/.test(message.key)
+            ? message.key
+            : undefined,
+      });
     } else if (message.type === "digest") {
       const mine = await this.#digest();
       for (const [name, hash] of Object.entries(message.docs)) {

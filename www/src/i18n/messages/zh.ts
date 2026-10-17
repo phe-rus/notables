@@ -946,6 +946,8 @@ export const zh: Messages = {
     formula: "公式或数值",
     addRows: "添加10行",
     addColumn: "添加列",
+    resizeColumn: "调整第 {name} 列的宽度",
+    resizeRow: "调整第 {name} 行的高度",
     numberFormat: "数字格式",
     number: "数字",
     exportCsv: "导出CSV",
@@ -990,11 +992,14 @@ export const zh: Messages = {
     externalFailed: "无法在其他应用中打开链接。",
 
     connectedTitle: "已连接的设备",
-    disconnect: "断开此设备",
-    disconnectTitle: "要断开此设备吗？",
+    disconnect: "断开",
+    disconnectTitle: "要断开 {name} 吗？",
     disconnectBody:
-      "此设备会保留笔记并建立自己的空间。之后的更改将停止与其他设备同步。与此设备关联的浏览器将退出登录。",
-    disconnectFailed: "无法断开连接。当前连接未改变，请重试。",
+      "{name} 会保留已有内容，但不会再收到任何新内容。你的其他设备下次连接时会换用新密钥。",
+    disconnectFailed: "无法断开连接。没有任何更改，请重试。",
+    disconnectRelink: "{names} 从未共享密钥，需要重新关联。",
+    removedTitle: "此设备已被断开",
+    removedBody: "你的另一台设备断开了此设备。笔记仍保留在这里，但不再与其他设备同步。",
     noDevices: "没有其他设备在线。",
     linkOnce:
       "只需从任一设备关联一次，笔记即可双向同步。要在此显示代码，请选择“关联此设备”；在另一台设备上选择“添加设备”。",

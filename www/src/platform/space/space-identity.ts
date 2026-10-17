@@ -1,4 +1,11 @@
-import { bytesToHex, hexToBytes, newSecret, spaceCode, spaceIdOf } from "@notables/sync";
+import {
+  bytesToHex,
+  devicePublicKey,
+  hexToBytes,
+  newSecret,
+  spaceCode,
+  spaceIdOf,
+} from "@notables/sync";
 import { invoke } from "@tauri-apps/api/core";
 import { useSyncExternalStore } from "react";
 import { isTauri } from "../runtime";
@@ -23,6 +30,7 @@ export interface Space {
 const KNOWN_KEY = "notables:space-id";
 
 let root: Uint8Array | null = null;
+let device: { secret: Uint8Array; publicKey: string } | null = null;
 let space: Space | null = null;
 let starting: Promise<Space | null> | null = null;
 const listeners = new Set<() => void>();
@@ -56,6 +64,11 @@ async function keepRoot(secret: Uint8Array) {
 export function startSpace(): Promise<Space | null> {
   if (!isTauri()) return Promise.resolve(null);
   starting ??= (async () => {
+    const own = await invoke<string>("space_device_secret").catch(() => null);
+    if (own) {
+      const secret = hexToBytes(own);
+      device = { secret, publicKey: devicePublicKey(secret) };
+    }
     const existing = await readRoot();
     if (existing) {
       set(existing);
@@ -78,6 +91,14 @@ export function startSpace(): Promise<Space | null> {
 /** The root secret, for the keys linking and sync derive from it. */
 export function spaceRoot(): Uint8Array | null {
   return root;
+}
+
+/**
+ * This device's own key pair (spec 0005, AC-12): others seal a rotated root
+ * secret for its public key. Null without a key store.
+ */
+export function deviceKey(): { secret: Uint8Array; publicKey: string } | null {
+  return device;
 }
 
 /** Joins another space when this device is linked to it: its secret replaces ours. */

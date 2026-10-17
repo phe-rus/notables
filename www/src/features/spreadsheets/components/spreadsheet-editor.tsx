@@ -9,12 +9,23 @@ import { previewContent } from "../../library/lib/note-preview";
 import { getLibrary, type LibraryEntry } from "../../library/store/library-store";
 import { calculateCell, columnName } from "../lib/formulas";
 
+const COLUMN = { size: 112, min: 48, max: 480 };
+const ROW = { size: 40, min: 28, max: 240 };
+
+/** A column or row being resized, shown live and saved when let go. */
+interface Resize {
+  kind: "width" | "height";
+  index: number;
+  size: number;
+}
+
 /** Each cell is its own Yjs key, so devices editing different cells merge independently. */
 export function SpreadsheetEditor({ doc, entry }: { doc: Y.Doc; entry: LibraryEntry }) {
   const cells = useMemo(() => doc.getMap<string>("spreadsheet:cells"), [doc]);
   const settings = useMemo(() => doc.getMap<number | string>("spreadsheet:settings"), [doc]);
   const [revision, setRevision] = useState(0);
   const [selected, setSelected] = useState("A1");
+  const [resize, setResize] = useState<Resize | null>(null);
   useEffect(() => {
     const changed = () => setRevision((value) => value + 1);
     cells.observe(changed);
@@ -32,6 +43,45 @@ export function SpreadsheetEditor({ doc, entry }: { doc: Y.Doc; entry: LibraryEn
   const rows = Math.max(10, Math.min(500, Number(settings.get("rows")) || 30));
   const columns = Math.max(4, Math.min(52, Number(settings.get("columns")) || 8));
   const currency = String(settings.get("currency") ?? "");
+  // Sizes live in the synced settings, so a column keeps its width on every device.
+  const sizeOf = (kind: Resize["kind"], index: number) => {
+    if (resize?.kind === kind && resize.index === index) return resize.size;
+    const limits = kind === "width" ? COLUMN : ROW;
+    const stored = Number(settings.get(`${kind}:${index}`));
+    return stored ? Math.min(limits.max, Math.max(limits.min, stored)) : limits.size;
+  };
+  const startResize = (kind: Resize["kind"], index: number, event: React.PointerEvent) => {
+    event.preventDefault();
+    const limits = kind === "width" ? COLUMN : ROW;
+    const origin = kind === "width" ? event.clientX : event.clientY;
+    const start = sizeOf(kind, index);
+    // Right to left, a column grows as the pointer moves left.
+    const direction =
+      kind === "width" && getComputedStyle(event.currentTarget).direction === "rtl" ? -1 : 1;
+    let size = start;
+    const move = (moved: PointerEvent) => {
+      const delta = ((kind === "width" ? moved.clientX : moved.clientY) - origin) * direction;
+      size = Math.round(Math.min(limits.max, Math.max(limits.min, start + delta)));
+      setResize({ kind, index, size });
+    };
+    const end = () => {
+      window.removeEventListener("pointermove", move);
+      window.removeEventListener("pointerup", end);
+      window.removeEventListener("pointercancel", end);
+      if (size !== start) settings.set(`${kind}:${index}`, size);
+      setResize(null);
+    };
+    window.addEventListener("pointermove", move);
+    window.addEventListener("pointerup", end);
+    window.addEventListener("pointercancel", end);
+  };
+  const resetSize = (kind: Resize["kind"], index: number) => settings.delete(`${kind}:${index}`);
+  const focusCell = (column: number, row: number) => {
+    if (column < 0 || row < 0 || column >= columns || row >= rows) return;
+    document.getElementById(`cell-${entry.id}-${columnName(column)}${row + 1}`)?.focus();
+  };
+  const selectedColumn = selected.replace(/\d+$/, "");
+  const selectedRow = Number(selected.match(/\d+$/)?.[0]) - 1;
   const formatter = useMemo(() => {
     try {
       return new Intl.NumberFormat(
@@ -128,6 +178,7 @@ export function SpreadsheetEditor({ doc, entry }: { doc: Y.Doc; entry: LibraryEn
     const value = calculateCell(key, values);
     return typeof value === "number" ? formatter.format(value) : value;
   };
+  const numeric = (key: string) => typeof calculateCell(key, values) === "number";
   const exportCsv = async () => {
     const encode = (value: string) => `"${value.replaceAll('"', '""')}"`;
     const content = Array.from({ length: rows }, (_, row) =>
@@ -210,25 +261,55 @@ export function SpreadsheetEditor({ doc, entry }: { doc: Y.Doc; entry: LibraryEn
         />
       </div>
       <div className="max-h-[calc(100dvh-220px)] overflow-auto overscroll-contain">
-        <table className="w-max border-collapse text-callout">
+        <table className="w-max table-fixed border-collapse text-callout">
+          <colgroup>
+            <col style={{ width: 40 }} />
+            {Array.from({ length: columns }, (_, column) => (
+              <col key={column} style={{ width: sizeOf("width", column) }} />
+            ))}
+          </colgroup>
           <thead>
             <tr>
-              <th className="sticky start-0 top-0 z-20 w-10 bg-sidebar" />
+              <th className="sticky start-0 top-0 z-20 bg-sidebar" />
               {Array.from({ length: columns }, (_, column) => (
                 <th
                   key={column}
-                  className="sticky top-0 z-10 min-w-28 border border-separator bg-sidebar py-2 font-medium text-label-secondary"
+                  className={`sticky top-0 z-10 border border-separator py-2 font-medium ${
+                    selectedColumn === columnName(column)
+                      ? "bg-accent-tint text-accent-text"
+                      : "bg-sidebar text-label-secondary"
+                  }`}
                 >
                   {columnName(column)}
+                  <ResizeHandle
+                    kind="width"
+                    label={t("spreadsheet.resizeColumn", { name: columnName(column) })}
+                    active={resize?.kind === "width" && resize.index === column}
+                    onPointerDown={(event) => startResize("width", column, event)}
+                    onReset={() => resetSize("width", column)}
+                  />
                 </th>
               ))}
             </tr>
           </thead>
           <tbody>
             {Array.from({ length: rows }, (_, row) => (
-              <tr key={row}>
-                <th className="sticky start-0 z-10 border border-separator bg-sidebar px-2 font-mono text-caption font-normal text-label-secondary">
+              <tr key={row} style={{ height: sizeOf("height", row) }}>
+                <th
+                  className={`sticky start-0 z-10 border border-separator px-2 font-mono text-caption font-normal ${
+                    selectedRow === row
+                      ? "bg-accent-tint text-accent-text"
+                      : "bg-sidebar text-label-secondary"
+                  }`}
+                >
                   {row + 1}
+                  <ResizeHandle
+                    kind="height"
+                    label={t("spreadsheet.resizeRow", { name: String(row + 1) })}
+                    active={resize?.kind === "height" && resize.index === row}
+                    onPointerDown={(event) => startResize("height", row, event)}
+                    onReset={() => resetSize("height", row)}
+                  />
                 </th>
                 {Array.from({ length: columns }, (_, column) => {
                   const key = `${columnName(column)}${row + 1}`;
@@ -238,19 +319,33 @@ export function SpreadsheetEditor({ doc, entry }: { doc: Y.Doc; entry: LibraryEn
                         address={key}
                         raw={values[key] ?? ""}
                         display={display(key)}
-                        className={`h-10 w-28 bg-transparent px-2 outline-none focus:bg-accent-tint ${selected === key ? "ring-2 ring-inset ring-accent" : ""}`}
+                        className={`block size-full bg-transparent px-2 outline-none focus:bg-accent-tint focus:text-start ${
+                          numeric(key) ? "text-end tabular-nums" : ""
+                        } ${selected === key ? "ring-2 ring-inset ring-accent" : ""}`}
                         onFocus={() => {
                           setSelected(key);
                         }}
                         onChange={(value) => write(key, value)}
                         onKeyDown={(event) => {
-                          if (event.key === "Enter") {
-                            event.preventDefault();
-                            const next = document.getElementById(
-                              `cell-${entry.id}-${columnName(column)}${Math.min(rows, row + 2)}`,
-                            );
-                            next?.focus();
-                          }
+                          const input = event.currentTarget;
+                          const atStart = input.selectionStart === 0 && input.selectionEnd === 0;
+                          const atEnd = input.selectionStart === input.value.length;
+                          const rtl = getComputedStyle(input).direction === "rtl";
+                          const step: [number, number] | null =
+                            event.key === "Enter"
+                              ? [0, event.shiftKey ? -1 : 1]
+                              : event.key === "ArrowDown"
+                                ? [0, 1]
+                                : event.key === "ArrowUp"
+                                  ? [0, -1]
+                                  : event.key === "ArrowRight" && (rtl ? atStart : atEnd)
+                                    ? [rtl ? -1 : 1, 0]
+                                    : event.key === "ArrowLeft" && (rtl ? atEnd : atStart)
+                                      ? [rtl ? 1 : -1, 0]
+                                      : null;
+                          if (!step) return;
+                          event.preventDefault();
+                          focusCell(column + step[0], row + step[1]);
                         }}
                         id={`cell-${entry.id}-${key}`}
                       />
@@ -272,6 +367,37 @@ export function SpreadsheetEditor({ doc, entry }: { doc: Y.Doc; entry: LibraryEn
         {t("spreadsheet.addRows")}
       </button>
     </section>
+  );
+}
+
+/** The edge of a column or row header: drag to resize, double-click to reset. */
+function ResizeHandle({
+  kind,
+  label,
+  active,
+  onPointerDown,
+  onReset,
+}: {
+  kind: Resize["kind"];
+  label: string;
+  active: boolean;
+  onPointerDown: (event: React.PointerEvent) => void;
+  onReset: () => void;
+}) {
+  return (
+    <hr
+      aria-label={label}
+      aria-orientation={kind === "width" ? "vertical" : "horizontal"}
+      onPointerDown={onPointerDown}
+      onDoubleClick={onReset}
+      className={`absolute z-10 m-0 touch-none border-0 select-none after:absolute after:bg-accent after:opacity-0 hover:after:opacity-100 ${
+        active ? "after:opacity-100" : ""
+      } ${
+        kind === "width"
+          ? "inset-y-0 -end-1.5 w-3 cursor-col-resize after:inset-y-0 after:start-1/2 after:w-0.5 after:-translate-x-1/2"
+          : "inset-x-0 -bottom-1.5 h-3 cursor-row-resize after:inset-x-0 after:top-1/2 after:h-0.5 after:-translate-y-1/2"
+      }`}
+    />
   );
 }
 

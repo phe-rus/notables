@@ -20,3 +20,4 @@ export * from "./session/session-client";
 export * from "./session/session-frames";
 export * from "./session/session-host";
 export * from "./space/space-keys";
+export * from "./space/space-rotation";

@@ -198,6 +198,7 @@ export function InvoiceScreen({ invoice }: { invoice: InvoiceDocument }) {
             <PrintIcon size={19} />
           </IconButton>
           <Button
+            size="sm"
             variant="default"
             onClick={downloadPdf}
             disabled={exporting || !link}
@@ -429,6 +430,7 @@ function StyleButton({
   return (
     <div ref={root} className="relative">
       <Button
+        size="sm"
         variant="secondary"
         aria-expanded={open}
         aria-controls={panelId}

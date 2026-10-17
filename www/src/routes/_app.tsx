@@ -46,6 +46,7 @@ import { preventPageZoom } from "../platform/page-zoom";
 import { isTauri } from "../platform/runtime";
 import { inBrowserSession } from "../platform/session/browser-session-store";
 import { startSpace } from "../platform/space/space-identity";
+import { startSpaceRemoval } from "../platform/space/space-removal";
 import { startSpaceSync } from "../platform/space/space-sync";
 
 /** iOS sheet motion: quick to start, long gentle settle. */
@@ -174,6 +175,8 @@ function WorkspaceShell() {
     // The space first: the browsers it serves are told which one they show.
     void startSpace().finally(() => {
       startBrowserSessions();
+      // Removal first, so the sync below already skips removed devices.
+      startSpaceRemoval();
       // Linked devices keep a full copy each, in step while they're online.
       startSpaceSync(async () => {
         const library = getLibrary();

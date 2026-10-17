@@ -1,4 +1,4 @@
 [[permission]]
 identifier = "space-access"
 description = "Allows the local main window to read and keep the space's root secret in the system key store."
-commands.allow = ["space_root_read", "space_root_write"]
+commands.allow = ["space_root_read", "space_root_write", "space_device_secret"]

@@ -5,6 +5,8 @@
 use crate::wallet::keys::{DeviceKeyStore, KeyStore};
 
 const REFERENCE: &str = "space-root";
+/// This device's own X25519 secret, for receiving a rotated root (AC-12).
+const DEVICE_REFERENCE: &str = "space-device";
 
 /// Why the secret couldn't be read or kept; the frontend decides what to do.
 #[derive(Debug, serde::Serialize)]
@@ -60,6 +62,25 @@ pub async fn space_root_write(secret: String) -> Result<(), SpaceError> {
         .map_err(|_| SpaceError::Unavailable)?
 }
 
+/// This device's own secret, made the first time. It never leaves the device
+/// and survives joining or leaving a space; only its public key is shared.
+fn device_secret(keys: &dyn KeyStore) -> Result<String, SpaceError> {
+    if let Ok(key) = keys.read(DEVICE_REFERENCE) {
+        return Ok(encode(key.as_ref()));
+    }
+    let key = crate::wallet::crypto::random_key().map_err(|_| SpaceError::Unavailable)?;
+    keys.write(DEVICE_REFERENCE, &key)
+        .map_err(|_| SpaceError::Unavailable)?;
+    Ok(encode(key.as_ref()))
+}
+
+#[tauri::command]
+pub async fn space_device_secret() -> Result<String, SpaceError> {
+    tauri::async_runtime::spawn_blocking(|| device_secret(&DeviceKeyStore))
+        .await
+        .map_err(|_| SpaceError::Unavailable)?
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;
@@ -106,6 +127,14 @@ mod tests {
             encode(keys.read(REFERENCE).unwrap().as_ref()),
             "22".repeat(32)
         );
+    }
+
+    #[test]
+    fn the_device_secret_is_made_once_and_kept() {
+        let keys = CreateOnlyStore(Mutex::new(None));
+        let first = device_secret(&keys).unwrap();
+        assert_eq!(first.len(), 64);
+        assert_eq!(device_secret(&keys).unwrap(), first);
     }
 
     #[test]

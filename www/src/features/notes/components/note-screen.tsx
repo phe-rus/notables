@@ -441,6 +441,7 @@ function NoteEditorScreen({
                 <ShareIcon size={19} />
               </IconButton>
               <Button
+                size="sm"
                 variant="secondary"
                 className="@max-[600px]/note:hidden"
                 onClick={onShare}

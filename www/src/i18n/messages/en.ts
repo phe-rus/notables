@@ -995,6 +995,8 @@ export const en = {
     formula: "Formula or value",
     addRows: "Add 10 Rows",
     addColumn: "Add Column",
+    resizeColumn: "Resize column {name}",
+    resizeRow: "Resize row {name}",
     numberFormat: "Number Format",
     number: "Number",
     exportCsv: "Export CSV",
@@ -1041,11 +1043,15 @@ export const en = {
     externalFailed: "Could not open the link in another app.",
 
     connectedTitle: "Connected Devices",
-    disconnect: "Disconnect This Device",
-    disconnectTitle: "Disconnect this device?",
+    disconnect: "Disconnect",
+    disconnectTitle: "Disconnect {name}?",
     disconnectBody:
-      "This device keeps its notes and starts its own space. Future edits stop syncing with your other devices. Browsers linked to this device are logged out.",
-    disconnectFailed: "Could not disconnect. Your current connection is unchanged. Try again.",
+      "{name} keeps what it already has but gets nothing new. Your other devices move to a new key the next time they connect.",
+    disconnectFailed: "Could not disconnect. Nothing changed. Try again.",
+    disconnectRelink: "{names} never shared a key and will need to be linked again.",
+    removedTitle: "This device was disconnected",
+    removedBody:
+      "Another of your devices disconnected this one. Your notes stay here, but they no longer sync with your other devices.",
     noDevices: "No other devices are online.",
     linkOnce:
       "Link once from either device. Your notes then sync both ways. To show a code here, choose Link This Device; on the other device choose Add a Device.",

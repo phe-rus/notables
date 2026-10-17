@@ -9,16 +9,22 @@ import {
   QrCodeGlyph,
   Section,
 } from "@phe-rus/hino";
+import { Button } from "@phe-rus/hino/button";
 import { Link } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 import { t } from "../../../i18n/i18n";
 import { ago } from "../../../lib/time/relative-time";
 import { thisDeviceName } from "../../../platform/session/this-device";
 import { useSpace } from "../../../platform/space/space-identity";
-import { useSpaceDevices } from "../../../platform/space/space-sync";
+import {
+  devicesWithoutKey,
+  dismissRemovedNotice,
+  removeDevice,
+  useRemovedNotice,
+} from "../../../platform/space/space-removal";
+import { type SpaceDevice, useSpaceDevices } from "../../../platform/space/space-sync";
 import { SettingsToolbarAction } from "../../settings/components/settings-toolbar";
 import { useBrowserSessions, useLiveBrowsers } from "../lib/browser-sessions";
-import { disconnectThisDevice } from "../lib/disconnect-device";
 import { readLinkUrl } from "../lib/link-url";
 import { LinkBrowserSheet, type LinkTarget } from "./link-browser-sheet";
 import { LinkDeviceSheet } from "./link-device-sheet";
@@ -27,6 +33,7 @@ import { LinkDeviceSheet } from "./link-device-sheet";
 export function ConnectedDevicesPage() {
   const space = useSpace();
   const devices = useSpaceDevices();
+  const removed = useRemovedNotice();
   const sessions = useBrowserSessions();
   const liveBrowsers = useLiveBrowsers();
   const [adding, setAdding] = useState(false);
@@ -43,11 +50,16 @@ export function ConnectedDevicesPage() {
     }
   }, []);
 
-  const disconnect = async () => {
+  // Disconnects another device: it keeps what it has, the rest move to a new key (AC-12).
+  const disconnect = async (device: SpaceDevice) => {
+    const missing = devicesWithoutKey(device.id);
+    const body = t("devices.disconnectBody", { name: device.name });
     if (
       !(await confirmDialog({
-        title: t("devices.disconnectTitle"),
-        message: t("devices.disconnectBody"),
+        title: t("devices.disconnectTitle", { name: device.name }),
+        message: missing.length
+          ? `${body} ${t("devices.disconnectRelink", { names: missing.join(", ") })}`
+          : body,
         confirmLabel: t("devices.disconnect"),
         destructive: true,
       }))
@@ -56,7 +68,7 @@ export function ConnectedDevicesPage() {
     setBusy(true);
     setError(false);
     try {
-      await disconnectThisDevice();
+      await removeDevice(device.id);
     } catch {
       setError(true);
     } finally {
@@ -93,6 +105,20 @@ export function ConnectedDevicesPage() {
           <PlusIcon size={16} />
         </IconButton>
       </SettingsToolbarAction>
+      {removed && (
+        <div
+          role="status"
+          className="flex items-start gap-3 rounded-2xl bg-danger/8 px-4 py-3 text-footnote"
+        >
+          <span className="grow">
+            <span className="block font-semibold text-danger">{t("devices.removedTitle")}</span>
+            <span className="text-label-secondary">{t("devices.removedBody")}</span>
+          </span>
+          <Button size="sm" variant="ghost" onClick={dismissRemovedNotice}>
+            {t("common.done")}
+          </Button>
+        </div>
+      )}
       <Section>
         <div className="flex min-h-14 items-center gap-3 px-4 py-2">
           <span className="flex size-8 shrink-0 items-center justify-center rounded-xl bg-accent-soft text-accent-text">
@@ -102,27 +128,6 @@ export function ConnectedDevicesPage() {
             <span className="block truncate text-subheadline font-medium">{thisDeviceName()}</span>
             <span className="text-caption text-label-secondary">{t("devices.currentDevice")}</span>
           </span>
-          <IconButton
-            variant="ghost"
-            size="icon-xs"
-            label={t("notes.more")}
-            disabled={busy || !space}
-            onClick={(event) =>
-              openMenu(
-                event.currentTarget,
-                [
-                  {
-                    label: t("devices.disconnect"),
-                    destructive: true,
-                    onSelect: () => void disconnect(),
-                  },
-                ],
-                { edge: "trailing" },
-              )
-            }
-          >
-            <MoreIcon size={17} />
-          </IconButton>
         </div>
         {devices.map((device) => (
           <div key={device.id} className="flex min-h-14 items-center gap-3 px-4 py-2">
@@ -147,6 +152,27 @@ export function ConnectedDevicesPage() {
                   : "size-2 shrink-0 rounded-full bg-fill"
               }
             />
+            <IconButton
+              variant="ghost"
+              size="icon-xs"
+              label={t("notes.more")}
+              disabled={busy || !space}
+              onClick={(event) =>
+                openMenu(
+                  event.currentTarget,
+                  [
+                    {
+                      label: t("devices.disconnect"),
+                      destructive: true,
+                      onSelect: () => void disconnect(device),
+                    },
+                  ],
+                  { edge: "trailing" },
+                )
+              }
+            >
+              <MoreIcon size={17} />
+            </IconButton>
           </div>
         ))}
         {devices.length === 0 && (

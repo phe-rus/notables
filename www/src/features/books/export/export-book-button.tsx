@@ -36,6 +36,7 @@ export function ExportBookButton({ book }: { book: BookEntry }) {
 
   return (
     <Button
+      size="sm"
       variant="secondary"
       disabled={exporting || book.chapterIds.length === 0}
       onClick={(event) => {

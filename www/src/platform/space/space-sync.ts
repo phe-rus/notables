@@ -16,7 +16,7 @@ import { roomEndpoint } from "../session/room-endpoint";
 import { thisDeviceId, thisDeviceName } from "../session/this-device";
 import { getPersistence, openQuietly, watchOpenDocuments } from "../storage/document-storage";
 import { mediaArrived, peerMedia } from "../storage/peer-media";
-import { spaceRoot } from "./space-identity";
+import { deviceKey, spaceRoot } from "./space-identity";
 
 /** Another device of the space, as this one sees it right now. */
 export interface SpaceDevice {
@@ -25,6 +25,24 @@ export interface SpaceDevice {
   platform: string;
   online: boolean;
   lastSeen: number;
+  /** Its X25519 public key, kept from the first hello (AC-12). */
+  key?: string;
+}
+
+/** Messages about removal that pass through the space's room (AC-12). */
+export interface RoomNotices {
+  message(from: string, body: string): void;
+  /** Devices now in this space's room. */
+  presence(online: string[]): void;
+}
+
+/** The seat a device keeps in a room it left, to hand on a rotated secret. */
+export const HANDOVER_SUFFIX = "-handover";
+
+let notices: RoomNotices | null = null;
+
+export function handleRoomNotices(handler: RoomNotices) {
+  notices = handler;
 }
 
 /** Every note id the library still knows; the app supplies it. */
@@ -48,8 +66,11 @@ let snapshot: SpaceDevice[] = [];
 let historyKey = "";
 const known = new Map<string, SpaceDevice>();
 
+export const knownDevicesKey = (spaceId: string) => `notables:known-devices:${spaceId}`;
+
 function remember(device: SpaceDevice) {
-  known.set(device.id, device);
+  // The first key seen stays: a later hello can't swap in another (trust on first use).
+  known.set(device.id, { ...device, key: known.get(device.id)?.key ?? device.key });
   try {
     localStorage.setItem(historyKey, JSON.stringify([...known.values()]));
   } catch {
@@ -58,7 +79,7 @@ function remember(device: SpaceDevice) {
 }
 
 function loadKnown(root: Uint8Array) {
-  historyKey = `notables:known-devices:${spaceIdOf(root)}`;
+  historyKey = knownDevicesKey(spaceIdOf(root));
   known.clear();
   try {
     const records: unknown = JSON.parse(localStorage.getItem(historyKey) ?? "[]");
@@ -69,7 +90,8 @@ function loadKnown(root: Uint8Array) {
           typeof record.id === "string" &&
           typeof record.name === "string" &&
           typeof record.platform === "string" &&
-          typeof record.lastSeen === "number"
+          typeof record.lastSeen === "number" &&
+          (record.key === undefined || typeof record.key === "string")
         )
           known.set(record.id, { ...record, online: false });
       }
@@ -108,12 +130,16 @@ export function startSpaceSync(noteIds: NoteIds) {
   const key = deriveKey(root, "frames");
   const me = thisDeviceId();
   const signalKey = deriveKey(root, "direct-signals");
-  const hello = { name: thisDeviceName(), platform: devicePlatform().os };
+  const hello = {
+    name: thisDeviceName(),
+    platform: devicePlatform().os,
+    key: deviceKey()?.publicKey,
+  };
   room = new RoomSocket(roomEndpoint(), roomOf(root), me);
   const current = room;
 
   const connect = (id: string) => {
-    if (peers.has(id)) return;
+    if (peers.has(id) || id.endsWith(HANDOVER_SUFFIX)) return;
     const link = new RelayLink((body) => current.send(id, body));
     const entry: Connected = {
       link,
@@ -123,6 +149,7 @@ export function startSpaceSync(noteIds: NoteIds) {
       peer: null as unknown as SpacePeer,
     };
     entry.peer = new SpacePeer(key, docs, hello, (info) => {
+      if (removedHere.has(id)) return;
       entry.device = { id, ...info, online: true, lastSeen: Date.now() };
       remember(entry.device);
       changed();
@@ -172,7 +199,8 @@ export function startSpaceSync(noteIds: NoteIds) {
   };
 
   current.on("presence", (online) => {
-    for (const id of online) if (id !== me) connect(id);
+    notices?.presence(online);
+    for (const id of online) if (id !== me && !removedHere.has(id)) connect(id);
     for (const [id, entry] of peers) {
       if (online.includes(id)) continue;
       peers.delete(id);
@@ -181,6 +209,11 @@ export function startSpaceSync(noteIds: NoteIds) {
     changed();
   });
   current.on("message", ({ from, body }) => {
+    if (body.startsWith("rotate:") || body.startsWith("removed:")) {
+      notices?.message(from, body);
+      return;
+    }
+    if (removedHere.has(from)) return;
     if (!peers.has(from)) connect(from);
     const entry = peers.get(from);
     if (entry && body.startsWith("local:")) {
@@ -240,6 +273,18 @@ export function stopSpaceSync() {
 export function rejoinSpaceSync() {
   stopSpaceSync();
   if (lastNoteIds) startSpaceSync(lastNoteIds);
+}
+
+/** Devices removed from this space, which it never syncs with again. */
+const removedHere = new Set<string>();
+
+export function markRemoved(ids: string[]) {
+  for (const id of ids) removedHere.add(id);
+}
+
+/** Every other device this one has met in its space, with the key each announced. */
+export function knownDevices(): SpaceDevice[] {
+  return snapshot;
 }
 
 /** The space's other devices that are online now. */

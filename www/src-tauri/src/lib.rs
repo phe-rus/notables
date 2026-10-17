@@ -68,6 +68,7 @@ pub fn run() {
         .invoke_handler(tauri::generate_handler![
             space::space_root_read,
             space::space_root_write,
+            space::space_device_secret,
             wallet::commands::wallet_status,
             wallet::commands::wallet_initialize,
             wallet::commands::wallet_unlock,

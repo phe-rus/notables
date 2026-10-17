@@ -1001,6 +1001,8 @@ export const es: Messages = {
     formula: "Fórmula o valor",
     addRows: "Añadir 10 filas",
     addColumn: "Añadir columna",
+    resizeColumn: "Cambiar el ancho de la columna {name}",
+    resizeRow: "Cambiar el alto de la fila {name}",
     numberFormat: "Formato numérico",
     number: "Número",
     exportCsv: "Exportar CSV",
@@ -1049,12 +1051,15 @@ export const es: Messages = {
     externalFailed: "No se pudo abrir el enlace en otra aplicación.",
 
     connectedTitle: "Dispositivos conectados",
-    disconnect: "Desconectar este dispositivo",
-    disconnectTitle: "¿Desconectar este dispositivo?",
+    disconnect: "Desconectar",
+    disconnectTitle: "¿Desconectar {name}?",
     disconnectBody:
-      "Este dispositivo conserva sus notas y crea su propio espacio. Los cambios futuros dejan de sincronizarse. Los navegadores vinculados a este dispositivo cierran sesión.",
-    disconnectFailed:
-      "No se pudo desconectar. La conexión actual no ha cambiado. Inténtalo de nuevo.",
+      "{name} conserva lo que ya tiene, pero no recibe nada nuevo. Tus otros dispositivos pasan a una clave nueva la próxima vez que se conecten.",
+    disconnectFailed: "No se pudo desconectar. Nada cambió. Inténtalo de nuevo.",
+    disconnectRelink: "{names} nunca compartió una clave y tendrá que vincularse de nuevo.",
+    removedTitle: "Este dispositivo se desconectó",
+    removedBody:
+      "Otro de tus dispositivos desconectó este. Tus notas siguen aquí, pero ya no se sincronizan con tus otros dispositivos.",
     noDevices: "No hay otros dispositivos en línea.",
     linkOnce:
       "Vincula una sola vez desde cualquiera de los dispositivos. Las notas se sincronizarán en ambas direcciones. Para mostrar un código aquí, elige Vincular este dispositivo; en el otro, Añadir un dispositivo.",

@@ -104,6 +104,20 @@ Gotchas learned the hard way:
 
 ## Status (October 2026)
 
+- Remote Disconnect, spec 0005 step 7 (17 Oct, v0.2.4): Disconnect is on the
+  OTHER device's row in Connected Devices, never on this device. Each app has
+  its own X25519 key (`space_device_secret`, key store) sent in its hello and
+  pinned on first sight. Disconnecting makes a new root secret sealed per
+  remaining device and bound to the remover's key
+  (`packages/sync/src/space/space-rotation.ts`); devices that moved keep a
+  `<id>-handover` seat in the old room for 30 days to hand it on and to tell the
+  removed device, which keeps its notes and starts its own space
+  (`www/src/platform/space/space-removal.ts`). Devices that never sent a key
+  must be linked again. Not yet run between two real devices.
+  Also: spreadsheet columns and rows resize (synced), arrow keys move between
+  cells, numbers align right; Share, Narrate, Export, Style and Download PDF
+  use Hino's small (36 px) button, and Read matches.
+
 - Workspace and web tabs (17 Oct, v0.2.3): the Workspace column is fluid,
   `clamp(28rem, 72cqi, 42rem)` of the Workspace pane (sidebar excluded):
   562 px on a portrait tablet, 624 px landscape, 672 px on desktop, full width
@@ -465,10 +479,9 @@ TestFlight refuse the upload; each build asks in TestFlight instead.
 
 ## Next
 
-- Priority from the owner, 17 Oct: from either linked app, Disconnect must target
-  the OTHER device's row, not leave the current device. This is not implemented.
-  Implement spec 0005 step 7 with proper removal/key rotation; do not present
-  hiding an entry or disconnecting this device as remote removal. Keep Linked
+- Remote Disconnect (built 17 Oct, v0.2.4): run it between two real devices
+  (the Chromebook app disconnecting the TECNO), then confirm the TECNO shows
+  "This device was disconnected" and the rest keep syncing. Keep Linked
   Browsers separate, with small Hino destructive Log Out buttons.
 - Workspace layout: keep the original vertical stack, folders then Personal.
   The owner rejected both the side column and guessed width adjustments. Its

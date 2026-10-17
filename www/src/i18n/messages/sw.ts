@@ -1005,6 +1005,8 @@ export const sw: Messages = {
     formula: "Fomula au thamani",
     addRows: "Ongeza safu 10",
     addColumn: "Ongeza safu wima",
+    resizeColumn: "Badilisha upana wa safu wima {name}",
+    resizeRow: "Badilisha urefu wa safu mlalo {name}",
     numberFormat: "Muundo wa nambari",
     number: "Nambari",
     exportCsv: "Hamisha CSV",
@@ -1051,11 +1053,15 @@ export const sw: Messages = {
     externalFailed: "Imeshindwa kufungua kiungo katika programu nyingine.",
 
     connectedTitle: "Vifaa vilivyounganishwa",
-    disconnect: "Tenganisha kifaa hiki",
-    disconnectTitle: "Utenganishe kifaa hiki?",
+    disconnect: "Tenganisha",
+    disconnectTitle: "Utenganishe {name}?",
     disconnectBody:
-      "Kifaa hiki huhifadhi madokezo yake na kuanzisha nafasi yake. Mabadiliko yajayo hayatasawazishwa na vifaa vingine. Vivinjari vilivyounganishwa na kifaa hiki vitaondolewa.",
-    disconnectFailed: "Imeshindwa kutenganisha. Muunganisho wa sasa haujabadilika. Jaribu tena.",
+      "{name} hubaki na ilicho nacho lakini haipokei kitu kipya. Vifaa vyako vingine vitahamia ufunguo mpya vitakapounganishwa tena.",
+    disconnectFailed: "Imeshindwa kutenganisha. Hakuna kilichobadilika. Jaribu tena.",
+    disconnectRelink: "{names} hakijawahi kushiriki ufunguo na kitahitaji kuunganishwa upya.",
+    removedTitle: "Kifaa hiki kimetenganishwa",
+    removedBody:
+      "Kifaa chako kingine kimekitenganisha hiki. Madokezo yako yanabaki hapa, lakini hayasawazishwi tena na vifaa vyako vingine.",
     noDevices: "Hakuna vifaa vingine vilivyo mtandaoni.",
     linkOnce:
       "Unganisha mara moja kutoka kifaa chochote. Madokezo yatasawazishwa pande zote mbili. Kuonyesha msimbo hapa, chagua Unganisha kifaa hiki; kwenye kingine, Ongeza kifaa.",
