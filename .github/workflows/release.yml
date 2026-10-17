@@ -77,12 +77,16 @@ jobs:
           "$ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager" "platforms;android-37.0" "build-tools;37.0.0" "ndk;${NDK_VERSION}"
       - uses: dtolnay/rust-toolchain@stable
         with:
-          targets: aarch64-linux-android
+          targets: aarch64-linux-android,x86_64-linux-android
       - uses: swatinem/rust-cache@v2
         with:
           workspaces: www/src-tauri -> target
           key: android-release
       - run: bun install --frozen-lockfile
+      # ort has no prebuilt ONNX Runtime for x86_64 Android (ChromeOS, tablets),
+      # so both ABIs link Microsoft's checksum-pinned build.
+      - name: ONNX Runtime for both ABIs
+        run: bun scripts/android/onnxruntime.ts arm64-v8a x86_64
       - name: Restore the upload key
         run: |
           echo "${{ secrets.ANDROID_KEYSTORE_BASE64 }}" | base64 --decode > "$RUNNER_TEMP/release.jks"
@@ -93,11 +97,12 @@ jobs:
           VITE_BUILD_NUMBER: ${{ needs.version.outputs.code }}
           ANDROID_KEYSTORE_PASSWORD: ${{ secrets.ANDROID_KEYSTORE_PASSWORD }}
           ANDROID_KEY_ALIAS: notables
-        # aarch64 only: ort has no prebuilt ONNX Runtime for other Android ABIs.
+        # Phones (arm64) and ChromeOS or tablets (x86_64), which crash under ARM translation.
         run: |
           export NDK_HOME="$ANDROID_HOME/ndk/$NDK_VERSION" ANDROID_NDK="$ANDROID_HOME/ndk/$NDK_VERSION"
           export BINDGEN_EXTRA_CLANG_ARGS_aarch64_linux_android="--sysroot=$NDK_HOME/toolchains/llvm/prebuilt/linux-x86_64/sysroot"
-          bun run tauri android build --aab --target aarch64 --config \
+          export BINDGEN_EXTRA_CLANG_ARGS_x86_64_linux_android="--sysroot=$NDK_HOME/toolchains/llvm/prebuilt/linux-x86_64/sysroot"
+          bun run tauri android build --aab --target aarch64 x86_64 --config \
             '{"version":"${{ needs.version.outputs.name }}","bundle":{"android":{"versionCode":${{ needs.version.outputs.code }}}}}'
       - name: Send to Google Play
         uses: r0adkll/upload-google-play@v1

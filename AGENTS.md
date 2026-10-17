@@ -79,7 +79,13 @@ Gotchas learned the hard way:
   from `www/`. Needs `ANDROID_HOME`, `NDK_HOME`, `JAVA_HOME`, plus
   `ANDROID_NDK` (CMake for whisper.cpp) and
   `BINDGEN_EXTRA_CLANG_ARGS_aarch64_linux_android=--sysroot=$NDK_HOME/toolchains/llvm/prebuilt/linux-x86_64/sysroot`.
-  aarch64 only: `ort` has no prebuilt ONNX Runtime for x86_64 Android.
+  `ort` has no prebuilt ONNX Runtime for x86_64 Android, and the ARM build
+  crashes in ChromeOS's `libhoudini` translator, so since v0.2.5 every Play
+  bundle carries arm64 and x86_64, both linking Microsoft's pinned AAR:
+  `bun scripts/android/onnxruntime.ts` extracts each ABI and prints the env
+  (`ORT_LIB_PATH`, `ORT_PREFER_DYNAMIC_LINK`, `NOTABLES_ORT_ANDROID`), and
+  `src-tauri/build.rs` points each target's linker at its own copy. A plain
+  local aarch64 build without that env still links ort's static prebuilt.
   On Android, binary IPC bodies arrive as JSON arrays (`src/ipc_bytes.rs`).
   Every `media://` and IPC response on Android passes through
   `RustWebViewClient.shouldInterceptRequest`, which copies the whole body into
@@ -108,6 +114,14 @@ Gotchas learned the hard way:
   launches exit silently (single instance); `pkill -f target/debug/notables`.
 
 ## Status (October 2026)
+
+- v0.2.5 (18 Oct): the Play Store app crashed at launch on the Chromebook
+  (arm64-v8a under libhoudini); the release now builds arm64 and x86_64 with
+  Microsoft's ONNX Runtime for both. Check the natural voice on the TECNO,
+  since phones moved from ort's static ONNX Runtime to the shared one. The web
+  sends a never-linked browser from / to /link before the app boots
+  (`platform/session/link-boot.ts`); the main chunk (about 1.3 MB, editor and
+  Yjs included) and the `@notables/sync` barrel on /link remain the load cost.
 
 - Folders and iOS linking (18 Oct): deleting a folder now sends its notes to
   Recently Deleted (`library/lib/delete-folder.ts`); `Library.removeFolder`

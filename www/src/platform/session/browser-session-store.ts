@@ -14,7 +14,8 @@ export interface BrowserSession {
   pairedAt: number;
 }
 
-const KEY = "notables:browser-session";
+export const BROWSER_SESSION_KEY = "notables:browser-session";
+const KEY = BROWSER_SESSION_KEY;
 
 interface Saved {
   phoneId: string;

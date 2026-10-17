@@ -17,6 +17,7 @@ import { useLanguage } from "../i18n/i18n";
 import { languages } from "../i18n/languages";
 import { startExternalLinks } from "../platform/external-links";
 import { canOpenLibrary } from "../platform/library-access";
+import { linkBootScript } from "../platform/session/link-boot";
 import { resolveMediaUrl } from "../platform/storage/media-store";
 import { startWindowFrame } from "../platform/window-frame";
 import styles from "../styles/app.css?url";
@@ -69,6 +70,7 @@ function RootDocument({ children }: { children: ReactNode }) {
       <head>
         {/* Saved theme, accent and text size before the first paint: no flash of the wrong look. */}
         <script dangerouslySetInnerHTML={{ __html: appearanceBootScript }} />
+        {linkBootScript && <script dangerouslySetInnerHTML={{ __html: linkBootScript }} />}
         <HeadContent />
       </head>
       <body>
