@@ -45,6 +45,7 @@ import { PendingNarration } from "../../books/narration/components/pending-narra
 import { useBook } from "../../books/store/book-store";
 import { formatFull } from "../../library/lib/date-format";
 import { notePreview } from "../../library/lib/note-preview";
+import { rememberNoteTransition } from "../../library/lib/note-transition";
 import { summarize } from "../../library/model/library-views";
 import {
   getLibrary,
@@ -296,7 +297,11 @@ function NoteEditorScreen({
       <ReadModePlugin reading={reading} onEdit={startEditing} />
       {fresh && !spreadsheet && <FocusWhenLoaded loaded={status !== "loading"} />}
       <KeepCaretVisiblePlugin coveredFrom={toolsTop} />
-      <div ref={pane} className="@container/note relative flex min-h-0 grow flex-col">
+      <div
+        ref={pane}
+        data-note-transition=""
+        className="@container/note relative flex min-h-0 grow flex-col"
+      >
         <div
           className="relative flex min-h-0 grow flex-col overflow-y-auto"
           onScroll={(event) => setTitleInBar(event.currentTarget.scrollTop > TITLE_SCROLLED_PX)}
@@ -315,6 +320,8 @@ function NoteEditorScreen({
             ) : (
               <Link
                 to="/"
+                viewTransition={{ types: ["note-close"] }}
+                onClick={() => rememberNoteTransition(entry.id)}
                 search={{ view: folder ? `folder:${folder.id}` : undefined }}
                 className="flex min-h-11 shrink-0 items-center gap-0.5 px-1 text-body text-accent-text no-underline md:hidden"
               >
@@ -455,14 +462,14 @@ function NoteEditorScreen({
                 />
               )}
               <IconButton
-                size="icon-sm"
+                size="icon-xs"
                 variant="default"
                 label={t("notes.more")}
                 onClick={(event) => {
                   openMenu(event.currentTarget, moreItems(), { edge: "trailing" });
                 }}
               >
-                <MoreIcon size={20} />
+                <MoreIcon size={18} />
               </IconButton>
             </div>
           </header>

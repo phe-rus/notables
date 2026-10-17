@@ -1,12 +1,13 @@
-import { CheckIcon, Chip, cn, haptic, openContextMenu, PinIcon, spring } from "@phe-rus/hino";
+import { CheckIcon, cn, FolderIcon, haptic, openContextMenu, PinIcon, spring } from "@phe-rus/hino";
 import { Link } from "@tanstack/react-router";
 import { animate, motion, useMotionValue, useTransform } from "motion/react";
 import { type MouseEvent, type PointerEvent, useEffect, useRef } from "react";
 import { t } from "../../../i18n/i18n";
 import type { ListPreferences } from "../../settings/model/preferences";
 import { formatUpdated } from "../lib/date-format";
+import { isTransitionNote, prepareNoteTransition } from "../lib/note-transition";
 import { noteKindLabels } from "../model/note-kind-labels";
-import type { LibraryEntry } from "../store/library-store";
+import { type LibraryEntry, useFolders } from "../store/library-store";
 import { NotePagePreview } from "./note-page-preview";
 import { moreButton, type SwipeButton, swipeButton } from "./note-swipe-actions";
 import { NoteThumbnail } from "./note-thumbnail";
@@ -60,7 +61,10 @@ export function NoteRow({
   onTap: () => boolean;
 }) {
   const kind = entry.kind === "note" || !options.kindTags ? null : noteKindLabels[entry.kind];
-  const compact = options.density === "compact";
+  const gallery = options.layout === "gallery";
+  const folders = useFolders();
+  const folderName = folders.find((folder) => folder.id === entry.folderId)?.name;
+  const compact = options.density === "compact" && !gallery;
   const date = options.showDates ? formatUpdated(entry.updatedAt) : null;
 
   // Swipe right shows the right-swipe action on the left edge; swipe left
@@ -107,7 +111,7 @@ export function NoteRow({
   };
 
   const onPointerDown = (event: PointerEvent) => {
-    if (event.pointerType === "mouse" || selecting) return;
+    if (event.pointerType === "mouse" || selecting || gallery) return;
     drag.current = {
       x: event.clientX,
       y: event.clientY,
@@ -172,14 +176,19 @@ export function NoteRow({
     if (suppressTap.current || onTap()) {
       suppressTap.current = false;
       event.preventDefault();
+      return;
     }
+    prepareNoteTransition(entry.id, event.currentTarget as HTMLElement);
   };
 
   return (
     <div
       ref={row}
       data-note-id={entry.id}
-      className="relative isolate overflow-hidden rounded-2xl border border-separator/60 bg-paper select-none"
+      className={cn(
+        "relative isolate overflow-hidden select-none",
+        gallery ? "rounded-xl" : "bg-paper",
+      )}
     >
       <motion.div
         aria-hidden={swiped !== "right"}
@@ -201,7 +210,7 @@ export function NoteRow({
       </motion.div>
       <motion.div
         style={{ x }}
-        className="relative bg-paper touch-pan-y"
+        className={cn("relative touch-pan-y", !gallery && "bg-paper")}
         onPointerDown={onPointerDown}
         onPointerMove={onPointerMove}
         onPointerUp={onPointerUp}
@@ -211,6 +220,8 @@ export function NoteRow({
           to="/notes/$noteId"
           params={{ noteId: entry.id }}
           search={(s) => s}
+          viewTransition={{ types: ["note-open"] }}
+          data-note-transition={isTransitionNote(entry.id) ? "" : undefined}
           draggable={false}
           onClick={onClick}
           onContextMenu={(event) => {
@@ -219,10 +230,9 @@ export function NoteRow({
           }}
           aria-selected={selecting ? selected : undefined}
           className={cn(
-            "group relative isolate flex items-start rounded-xl px-3 no-underline transition-colors duration-fast [-webkit-touch-callout:none]",
-            options.layout === "gallery" &&
-              "min-h-36 flex-wrap border border-separator/60 bg-paper",
-            compact ? "py-2" : "py-3",
+            "group relative isolate flex items-start no-underline transition-colors duration-fast [-webkit-touch-callout:none]",
+            gallery ? "rounded-xl pb-1" : "px-5",
+            !gallery && (compact ? "py-2.5" : "py-3.5"),
             !active && !selected && "hover:bg-fill/60",
           )}
         >
@@ -248,11 +258,23 @@ export function NoteRow({
               {selected && <CheckIcon size={13} strokeWidth={2.6} />}
             </span>
           </motion.span>
-          <div className={cn("flex min-w-0 grow flex-col", compact ? "gap-px" : "gap-[3px]")}>
+          <div
+            className={cn(
+              "flex min-w-0 grow flex-col",
+              gallery ? "items-center gap-0.5 text-center" : compact ? "gap-px" : "gap-0.5",
+            )}
+          >
             {options.layout === "gallery" && <NotePagePreview entry={entry} />}
-            <span className="flex items-center gap-1.5 text-subheadline font-semibold text-label">
+            <span
+              className={cn(
+                "flex min-w-0 max-w-full items-center gap-1 text-label",
+                gallery ? "text-footnote font-medium leading-tight" : "text-body font-semibold",
+              )}
+            >
               {pinMark && <PinIcon size={13} className="text-accent-text" />}
-              <span className="truncate">{entry.title || t("notes.newNote")}</span>
+              <span className={gallery ? "line-clamp-2 break-words" : "truncate"}>
+                {entry.title || t("notes.newNote")}
+              </span>
               {compact && date && (
                 <span className="ms-auto shrink-0 text-caption font-normal text-label-tertiary">
                   {date}
@@ -265,31 +287,31 @@ export function NoteRow({
             {options.layout !== "gallery" && (options.previewLines > 0 || snippet) && (
               <span
                 className={cn(
-                  "text-footnote text-label-secondary",
+                  "text-subheadline text-label-secondary",
                   previewClamp[options.previewLines || 1],
                 )}
               >
-                {!compact && date && <b className="font-medium text-label">{date}</b>}
+                {!compact && date && <span>{date}</span>}
                 {!compact && date && "  "}
                 {snippet ?? (entry.excerpt || t("notes.noText"))}
               </span>
             )}
-            {!compact &&
-              (kind ||
-                entry.publicationId ||
-                entry.tags?.length ||
-                entry.format === "spreadsheet") && (
-                <span className="mt-[3px] flex flex-wrap gap-1.5">
-                  {entry.publicationId && <Chip tone="public">{t("notes.public")}</Chip>}
-                  {entry.format === "spreadsheet" && (
-                    <Chip tone="neutral">{t("spreadsheet.title")}</Chip>
-                  )}
-                  {entry.tags?.slice(0, 3).map((tag) => (
-                    <Chip key={tag} tone="neutral">
-                      #{tag}
-                    </Chip>
-                  ))}
-                  {kind && <Chip tone={active || selected ? "accent" : "neutral"}>{kind}</Chip>}
+            {folderName && (
+              <span className="flex max-w-full items-center gap-1 text-caption text-label-secondary">
+                <FolderIcon size={13} className="shrink-0" />
+                <span className="truncate">{folderName}</span>
+              </span>
+            )}
+            {!gallery &&
+              !compact &&
+              (entry.tags?.length || kind || entry.format === "spreadsheet") && (
+                <span className="truncate text-caption text-label-secondary">
+                  {[
+                    entry.format === "spreadsheet" ? t("spreadsheet.title") : kind,
+                    ...(entry.tags?.slice(0, 3).map((tag) => `#${tag}`) ?? []),
+                  ]
+                    .filter(Boolean)
+                    .join(" · ")}
                 </span>
               )}
           </div>

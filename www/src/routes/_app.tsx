@@ -8,7 +8,7 @@ import {
   useMatch,
   useNavigate,
 } from "@tanstack/react-router";
-import { AnimatePresence, motion } from "motion/react";
+import { AnimatePresence, motion, useReducedMotion } from "motion/react";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { setDrawerOpen, useDrawerOpen } from "../components/layout/drawer-store";
 import { ResizeHandle } from "../components/layout/resize-handle";
@@ -22,6 +22,7 @@ import { InvoicesList } from "../features/invoices/components/invoices-list";
 import { Sidebar, type SidebarLocation } from "../features/library/components/library-sidebar";
 import { NotesList } from "../features/library/components/notes-list";
 import { indexNoteMedia } from "../features/library/lib/index-note-media";
+import { isTransitionNote } from "../features/library/lib/note-transition";
 import { folderView, getView, groupOf } from "../features/library/model/library-views";
 import { getLibrary, useFolders, useLibraryReady } from "../features/library/store/library-store";
 import { MiniPlayer } from "../features/listening/components/mini-player";
@@ -101,6 +102,12 @@ function WorkspaceShell() {
   // On phones Settings is a top-level place, so it keeps the tab bar.
   const showTabBar = !(note || book || invoice);
   const isPhone = useMediaQuery("(max-width: 767px)");
+  const reducedMotion = useReducedMotion();
+  const sharedNoteTransition =
+    isPhone &&
+    isTransitionNote(noteId ?? "") &&
+    typeof document !== "undefined" &&
+    "startViewTransition" in document;
   const isDesktop = useMediaQuery("(min-width: 1024px)");
   const drawerOpen = useDrawerOpen();
   const transcription = useMemo(createNativeTranscription, []);
@@ -344,7 +351,13 @@ function WorkspaceShell() {
                               : "notes")
                 }
                 className="flex min-h-0 grow flex-col"
-                initial={isPhone ? { x: 56, opacity: 0.6 } : { y: 8, opacity: 0 }}
+                initial={
+                  reducedMotion || sharedNoteTransition
+                    ? false
+                    : isPhone
+                      ? { x: 48, opacity: 1 }
+                      : { y: 8, opacity: 0 }
+                }
                 animate={{ x: 0, y: 0, opacity: 1 }}
                 transition={spring.smooth}
               >

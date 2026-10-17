@@ -151,3 +151,40 @@ html[data-window-frame="rounded"] body::after {
     animation-duration: 2.4s;
   }
 }
+
+/* Match the tapped note to its page on phones, including the return to its folder. */
+@media (max-width: 767px) and (prefers-reduced-motion: no-preference) {
+  [data-note-transition] {
+    view-transition-name: notable-note;
+  }
+
+  ::view-transition-group(notable-note) {
+    animation-duration: 380ms;
+    animation-timing-function: cubic-bezier(0.22, 1, 0.36, 1);
+    overflow: clip;
+    border-radius: 14px;
+  }
+
+  ::view-transition-old(notable-note),
+  ::view-transition-new(notable-note) {
+    height: 100%;
+    object-fit: cover;
+    object-position: top;
+    mix-blend-mode: normal;
+    animation-duration: 260ms;
+    animation-timing-function: ease-out;
+  }
+
+  :root:active-view-transition-type(note-open)::view-transition-group(root),
+  :root:active-view-transition-type(note-close)::view-transition-group(root) {
+    animation-duration: 380ms;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  ::view-transition-group(*),
+  ::view-transition-old(*),
+  ::view-transition-new(*) {
+    animation-duration: 1ms;
+  }
+}

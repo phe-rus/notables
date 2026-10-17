@@ -257,7 +257,7 @@ export function NotesList({
             )}
             {!selecting && (
               <IconButton
-                size="icon-sm"
+                size="icon-xs"
                 variant="default"
                 label={t("notes.more")}
                 onClick={(event) =>
@@ -340,7 +340,7 @@ export function NotesList({
                   )
                 }
               >
-                <MoreIcon size={20} />
+                <MoreIcon size={18} />
               </IconButton>
             )}
           </div>
@@ -357,7 +357,7 @@ export function NotesList({
       <div
         ref={scroller}
         onScroll={() => swiped && setSwiped(null)}
-        className="flex grow flex-col overflow-y-auto px-2.5 pb-28 md:pb-8"
+        className="flex grow flex-col overflow-y-auto px-4 pb-28 md:pb-8"
       >
         <BookShelf
           books={shelfBooks}
@@ -371,52 +371,63 @@ export function NotesList({
             key={group.label ?? `group-${index}`}
             className={
               options.layout === "gallery"
-                ? "grid grid-cols-2 gap-2 pb-2"
-                : "flex flex-col gap-2 pb-4"
+                ? "grid grid-cols-3 gap-x-3 gap-y-4 pb-5"
+                : "flex flex-col pb-5"
             }
           >
             {group.label && (
-              <h2 className="col-span-full px-3 pt-3 pb-1 text-caption font-medium text-label-tertiary">
+              <h2 className="col-span-full px-1 pt-4 pb-3 text-title3 font-bold text-label">
                 {group.label}
               </h2>
             )}
-            <AnimatePresence initial={false}>
-              {group.items.map(({ entry, snippet }) => (
-                <motion.div
-                  key={entry.id}
-                  initial={false}
-                  animate={{ opacity: 1, scale: 1 }}
-                  exit={{ opacity: 0, scale: 0.97 }}
-                  transition={spring.smooth}
-                >
-                  <NoteRow
-                    entry={entry}
-                    snippet={snippet}
-                    active={entry.id === activeId}
-                    // Without the Pinned heading (searching, or pinned not on top), a pin marks them.
-                    pinMark={entry.pinned && (Boolean(deferredQuery) || !options.pinnedOnTop)}
-                    options={options}
-                    selecting={selecting}
-                    selected={selected.has(entry.id)}
-                    swiped={swiped?.id === entry.id ? swiped.side : null}
-                    onSwipe={(side) => setSwiped(side ? { id: entry.id, side } : null)}
-                    menu={() => menuFor(entry)}
-                    onTap={() => {
-                      if (selecting) {
-                        toggle(entry.id);
-                        return true;
-                      }
-                      // A tap while a row is open closes it, as on iOS.
-                      if (swiped) {
-                        setSwiped(null);
-                        return true;
-                      }
-                      return false;
-                    }}
-                  />
-                </motion.div>
-              ))}
-            </AnimatePresence>
+            <div
+              className={
+                options.layout === "gallery" ? "contents" : "overflow-hidden rounded-3xl bg-paper"
+              }
+            >
+              <AnimatePresence initial={false}>
+                {group.items.map(({ entry, snippet }) => (
+                  <motion.div
+                    key={entry.id}
+                    className={
+                      options.layout === "gallery"
+                        ? undefined
+                        : "[&:not(:last-child)]:after:ms-5 [&:not(:last-child)]:after:block [&:not(:last-child)]:after:h-px [&:not(:last-child)]:after:bg-separator/70"
+                    }
+                    initial={false}
+                    animate={{ opacity: 1, scale: 1 }}
+                    exit={{ opacity: 0, scale: 0.97 }}
+                    transition={spring.smooth}
+                  >
+                    <NoteRow
+                      entry={entry}
+                      snippet={snippet}
+                      active={entry.id === activeId}
+                      // Without the Pinned heading (searching, or pinned not on top), a pin marks them.
+                      pinMark={entry.pinned && (Boolean(deferredQuery) || !options.pinnedOnTop)}
+                      options={options}
+                      selecting={selecting}
+                      selected={selected.has(entry.id)}
+                      swiped={swiped?.id === entry.id ? swiped.side : null}
+                      onSwipe={(side) => setSwiped(side ? { id: entry.id, side } : null)}
+                      menu={() => menuFor(entry)}
+                      onTap={() => {
+                        if (selecting) {
+                          toggle(entry.id);
+                          return true;
+                        }
+                        // A tap while a row is open closes it, as on iOS.
+                        if (swiped) {
+                          setSwiped(null);
+                          return true;
+                        }
+                        return false;
+                      }}
+                    />
+                  </motion.div>
+                ))}
+              </AnimatePresence>
+            </div>
           </div>
         ))}
       </div>

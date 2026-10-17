@@ -17,9 +17,9 @@ export function NotePagePreview({ entry }: { entry: LibraryEntry }) {
   return (
     <div
       aria-hidden="true"
-      className="relative mb-2 aspect-square overflow-hidden rounded-lg border border-separator/60 bg-paper text-label"
+      className="relative mb-2 aspect-[4/3] w-full overflow-hidden rounded-lg border border-separator bg-paper text-left text-label"
     >
-      <div className="w-[133.333%] origin-top-left scale-75 p-4 text-footnote leading-snug">
+      <div className="w-[250%] origin-top-left scale-[0.4] p-5 text-footnote leading-snug">
         {blocks.map((block, index) => {
           const key = `${block.kind}-${index}`;
           if (block.kind === "image")

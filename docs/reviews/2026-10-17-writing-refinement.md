@@ -17,7 +17,18 @@ scanner and home-screen descriptions.
   a soft danger background and red label/icon in the home and sidebar. Trailing
   action menus now request trailing-edge alignment instead of flipping from
   the button’s leading edge.
-- Note lists have bounded, inset cards. Gallery renders a bounded opening page
+- After the owner rejected the initial nested card framing, lists now use one
+  rounded group per date section with inset row separators. Gallery follows
+  Apple’s iOS 26 reference: three columns, landscape page previews, centered
+  titles/dates and actual folder names below, without an outer card or chips.
+  More uses Hino’s 32 px `icon-xs` size and an 18 px icon. Opening a note
+  matches only the tapped card to the editor using the router’s native view
+  transition, and Back returns to that note. Reduce Motion disables the spatial
+  transition; unsupported browsers retain the incoming screen animation.
+  Browser evidence: open and return both resolved `ready` and `finished` with
+  one named surface and no duplicate-name errors. Reference:
+  https://support.apple.com/en-us/118442 (gallery and swipe-delete screenshots).
+  Gallery renders a bounded opening page
   from actual headings, paragraphs, checklists, tables and adjacent images,
   rather than using only a photo. Older notes are indexed without changing their
   edited dates. Folder names drive headings and the editor back label. More is
@@ -86,7 +97,11 @@ WebView opens Workspace from packaged resources, with four 48 px folder rows
 and no development-server requests. Real ADB taps opened Writings and More;
 gallery shows the actual content of both notes and More offers View as List.
 The separate compose button is absent. The web is deployed as Worker version
-`2259f151-2bf8-4271-8a4f-97dfab52197b`.
+`a60111dc-ab34-45f5-b23c-0e343864a14b`.
+The final card refinement was installed and checked with real ADB taps:
+three equal 101.33 px gallery columns, a 32 px More button, and open/return
+transitions both reporting `ready` then `finished`. Browser Reduce Motion
+verification reports no named spatial surface (`view-transition-name: none`).
 
 An intermediate package failed with `asset not found: index.html` because
 overlapping web and native builds replaced the shared frontend output. The
