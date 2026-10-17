@@ -17,23 +17,28 @@ export const ortCache = resolve(www, "src-tauri/target/android-ort");
 const version = "1.28.0";
 const digest = "f351a0638696f54b35184290dbc001d66daae17281ad0b548d2c70347d53b8a9";
 
-export async function prepareOnnxRuntime(abis: string[]) {
-  const archive = Bun.file(resolve(ortCache, `onnxruntime-${version}.aar`));
-  await mkdir(ortCache, { recursive: true });
-  if (!(await archive.exists())) {
-    const response = await fetch(
-      `https://repo.maven.apache.org/maven2/com/microsoft/onnxruntime/onnxruntime-android/${version}/onnxruntime-android-${version}.aar`,
-    );
+export async function readOnnxArchive(path: string, url: string): Promise<Uint8Array> {
+  if (!(await Bun.file(path).exists())) {
+    const response = await fetch(url);
     if (!response.ok) throw new Error(`ONNX Runtime download failed: ${response.status}`);
-    await Bun.write(archive, await response.arrayBuffer());
+    await Bun.write(path, await response.arrayBuffer());
   }
-  const hash = createHash("sha256")
-    .update(new Uint8Array(await archive.arrayBuffer()))
-    .digest("hex");
+  // A handle checked before download retains its missing file metadata in Bun.
+  return new Uint8Array(await Bun.file(path).arrayBuffer());
+}
+
+export async function prepareOnnxRuntime(abis: string[]) {
+  const archive = resolve(ortCache, `onnxruntime-${version}.aar`);
+  await mkdir(ortCache, { recursive: true });
+  const bytes = await readOnnxArchive(
+    archive,
+    `https://repo.maven.apache.org/maven2/com/microsoft/onnxruntime/onnxruntime-android/${version}/onnxruntime-android-${version}.aar`,
+  );
+  const hash = createHash("sha256").update(bytes).digest("hex");
   if (hash !== digest) throw new Error("ONNX Runtime archive checksum mismatch");
 
   for (const abi of abis) {
-    const extract = Bun.spawn(["unzip", "-p", archive.name ?? "", `jni/${abi}/libonnxruntime.so`], {
+    const extract = Bun.spawn(["unzip", "-p", archive, `jni/${abi}/libonnxruntime.so`], {
       stdout: "pipe",
       stderr: "inherit",
     });

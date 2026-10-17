@@ -115,6 +115,13 @@ Gotchas learned the hard way:
 
 ## Status (October 2026)
 
+- Android v0.2.5 build fix (18 Oct): the ONNX preparation step hashed an empty
+  buffer on a fresh runner. Bun.file retained missing file metadata after its
+  exists check, even after Bun.write downloaded the valid archive. The reader
+  now opens a fresh handle after writing. The pinned SHA-256 is unchanged.
+  A regression covers the first download and cache reuse; an isolated empty
+  cache run downloaded and extracted both ARM64 and x86_64 successfully.
+
 - v0.2.5 (18 Oct): the Play Store app crashed at launch on the Chromebook
   (arm64-v8a under libhoudini); the release now builds arm64 and x86_64 with
   Microsoft's ONNX Runtime for both. Check the natural voice on the TECNO,
@@ -513,6 +520,10 @@ and France: "No" until the French declaration is filed. Never set
 TestFlight refuse the upload; each build asks in TestFlight instead.
 
 ## Next
+
+- Confirm the Android v0.2.5 retry clears ONNX preparation and reaches Play
+  internal testing. The iOS v0.2.5 TestFlight build already succeeded. Keep
+  the Android voice check on the TECNO, since both ABIs now use shared ONNX.
 
 - Remote Disconnect (built 17 Oct, v0.2.4): run it between two real devices
   (the Chromebook app disconnecting the TECNO), then confirm the TECNO shows
