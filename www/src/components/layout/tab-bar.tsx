@@ -1,4 +1,5 @@
 import {
+  BookIcon,
   FolderIcon,
   InvoiceIcon,
   SettingsIcon,
@@ -11,7 +12,7 @@ import { openSearch } from "../../features/search/store/search-palette";
 import { t } from "../../i18n/i18n";
 import { inBrowserSession } from "../../platform/session/browser-session-store";
 
-export type TabId = "notes" | "wallet" | "invoices" | "settings";
+export type TabId = "notes" | "wallet" | "books" | "invoices" | "settings";
 
 interface AppTab {
   id: TabId;
@@ -38,6 +39,14 @@ const tabs: AppTab[] = [
     link: { to: "/wallet" },
   },
   {
+    id: "books",
+    get label() {
+      return t("nav.books");
+    },
+    icon: <BookIcon size={19} strokeWidth={1.8} />,
+    link: { to: "/books" },
+  },
+  {
     id: "invoices",
     get label() {
       return t("nav.invoices");
@@ -59,8 +68,8 @@ const tabs: AppTab[] = [
 export function TabBar({ active, className }: { active: TabId | null; className?: string }) {
   return (
     <UltraPeachTabBar
-      // The wallet never reaches a browser (spec 0005, AC-28).
-      tabs={inBrowserSession() ? tabs.filter((tab) => tab.id !== "wallet") : tabs}
+      // The wallet never reaches a browser (spec 0005, AC-28), so Books takes its place.
+      tabs={tabs.filter((tab) => tab.id !== (inBrowserSession() ? "wallet" : "books"))}
       active={active}
       label={t("nav.main")}
       search={{ label: t("common.search"), onPress: openSearch }}

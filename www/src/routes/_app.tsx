@@ -383,13 +383,17 @@ function WorkspaceShell() {
           active={
             inWallet
               ? "wallet"
-              : inCalendar || inBooks || location === "books"
-                ? null
-                : inInvoices
-                  ? "invoices"
-                  : inSettings
-                    ? "settings"
-                    : "notes"
+              : inBooks || location === "books"
+                ? browser
+                  ? "books"
+                  : null
+                : inCalendar
+                  ? null
+                  : inInvoices
+                    ? "invoices"
+                    : inSettings
+                      ? "settings"
+                      : "notes"
           }
         />
       )}

@@ -24,6 +24,7 @@ import { Link } from "@tanstack/react-router";
 import { useState } from "react";
 import { setDrawerOpen } from "../../../components/layout/drawer-store";
 import { t } from "../../../i18n/i18n";
+import { inBrowserSession } from "../../../platform/session/browser-session-store";
 import { folderView } from "../model/library-views";
 import {
   type Folder,
@@ -110,7 +111,7 @@ export function WorkspaceScreen() {
         </IconButton>
       </header>
       <div className="@container/workspace grow overflow-y-auto px-5 pb-32">
-        <div className="mx-auto flex max-w-md flex-col gap-5 @min-[1024px]/workspace:max-w-lg @min-[1280px]/workspace:max-w-xl">
+        <div className="mx-auto flex max-w-[clamp(28rem,72cqi,42rem)] flex-col gap-5">
           <div className="overflow-hidden rounded-3xl border border-separator/50 bg-paper">
             {folders.map((folder, index) => {
               const fallback =
@@ -157,14 +158,14 @@ export function WorkspaceScreen() {
               );
             })}
             {folders.length === 0 && (
-              <Button
-                variant="ghost"
-                className="m-4"
+              <button
+                type="button"
+                className="flex min-h-11 w-full items-center gap-2.5 px-3.5 text-subheadline text-accent-text active:bg-fill"
                 onClick={() => setEditing({ id: null, name: "" })}
               >
-                <PlusIcon size={19} />
+                <PlusIcon size={18} />
                 {t("workspace.newFolder")}
-              </Button>
+              </button>
             )}
           </div>
           <section className="flex flex-col gap-2">
@@ -180,17 +181,20 @@ export function WorkspaceScreen() {
                   { to: "/invoices", label: t("nav.invoices"), Icon: InvoiceIcon },
                   { to: "/connections", label: t("workspace.circles"), Icon: PeopleIcon },
                 ] as const
-              ).map(({ to, label, Icon }) => (
-                <Link
-                  key={to}
-                  to={to}
-                  search={{}}
-                  className="flex min-h-11 items-center gap-2.5 border-b border-separator/50 px-3.5 text-subheadline text-label no-underline last:border-b-0 active:bg-fill"
-                >
-                  <Icon size={18} className="text-accent-text" />
-                  <span className="grow">{label}</span>
-                </Link>
-              ))}
+              )
+                // The wallet never reaches a browser (spec 0005, AC-28).
+                .filter(({ to }) => to !== "/wallet" || !inBrowserSession())
+                .map(({ to, label, Icon }) => (
+                  <Link
+                    key={to}
+                    to={to}
+                    search={{}}
+                    className="flex min-h-11 items-center gap-2.5 border-b border-separator/50 px-3.5 text-subheadline text-label no-underline last:border-b-0 active:bg-fill"
+                  >
+                    <Icon size={18} className="text-accent-text" />
+                    <span className="grow">{label}</span>
+                  </Link>
+                ))}
             </div>
             <Link
               to="/trash"

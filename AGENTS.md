@@ -104,6 +104,15 @@ Gotchas learned the hard way:
 
 ## Status (October 2026)
 
+- Workspace and web tabs (17 Oct, v0.2.3): the Workspace column is fluid,
+  `clamp(28rem, 72cqi, 42rem)` of the Workspace pane (sidebar excluded):
+  562 px on a portrait tablet, 624 px landscape, 672 px on desktop, full width
+  on phones. The empty New Folder card is one row. A linked browser's tab bar
+  is Workspace, Books, Finances, Settings (Books replaces Wallet) and Personal
+  hides Wallet. In development, `VITE_PUBLIC_URL=https://notables.pherus.org
+  bun run dev` puts the local web in the deployed room, so it links to an
+  installed phone app with real data.
+
 - 17 Oct device checkpoint: masked identifiers and compact device/browser rows
   are implemented. Known authenticated devices retain offline history. Native
   TECNO/ChromeOS sync was checked both ways with ChromeOS sync check. Debug

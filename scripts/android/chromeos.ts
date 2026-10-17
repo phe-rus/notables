@@ -19,7 +19,7 @@ if (!(await archive.exists())) {
 }
 if (
   createHash("sha256")
-    .update(await archive.arrayBuffer())
+    .update(new Uint8Array(await archive.arrayBuffer()))
     .digest("hex") !== digest
 )
   throw new Error("ONNX Runtime archive checksum mismatch");
