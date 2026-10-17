@@ -162,12 +162,9 @@ export class Library {
     );
   }
 
+  /** Removes the folder only; `deleteFolder` sends its notes to Recently Deleted first. */
   removeFolder(id: string) {
-    const destination = this.getFolders().find((folder) => folder.id !== id)?.id ?? null;
     this.doc.transact(() => {
-      for (const entry of this.entries.values()) {
-        if (entry.folderId === id) this.entries.set(entry.id, { ...entry, folderId: destination });
-      }
       this.removedFolders.set(id, true);
       this.folders.delete(id);
     });

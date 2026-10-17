@@ -1028,7 +1028,7 @@ export const fr: Messages = {
     renameFolder: "Renommer le dossier",
     deleteFolderTitle: "Supprimer « {name} » ?",
     deleteFolderBody:
-      "Vos notes seront déplacées dans un autre dossier. Si c’est le dernier, elles restent dans Écrits. Aucune note ne sera supprimée.",
+      "Ses notes vont dans Supprimés récemment, où vous pouvez les restaurer pendant 7 jours.",
     moveToFolder: "Déplacer vers un dossier",
     viewAsList: "Afficher en liste",
     viewAsGallery: "Afficher en galerie",

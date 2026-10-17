@@ -1090,8 +1090,7 @@ export const ar: Messages = {
     newFolder: "مجلد جديد",
     renameFolder: "إعادة تسمية المجلد",
     deleteFolderTitle: "حذف «{name}»؟",
-    deleteFolderBody:
-      "ستنتقل ملاحظاتك إلى مجلد آخر. إذا كان هذا آخر مجلد، فستبقى في الكتابات. لن يتم حذف أي ملاحظات.",
+    deleteFolderBody: "تنتقل ملاحظاته إلى المحذوفة مؤخرًا، حيث يمكنك استعادتها خلال 7 أيام.",
     moveToFolder: "نقل إلى مجلد",
     viewAsList: "عرض كقائمة",
     viewAsGallery: "عرض كمعرض",

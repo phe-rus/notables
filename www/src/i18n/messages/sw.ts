@@ -1025,7 +1025,7 @@ export const sw: Messages = {
     renameFolder: "Badili jina la folda",
     deleteFolderTitle: "Ufute “{name}”?",
     deleteFolderBody:
-      "Madokezo yatahamia folda nyingine. Ikiwa hii ndiyo ya mwisho, yatabaki katika Maandishi. Hakuna madokezo yatakayofutwa.",
+      "Madokezo yake yanahamia Yaliyofutwa hivi karibuni, ambapo unaweza kuyarejesha kwa siku 7.",
     moveToFolder: "Hamisha hadi folda",
     viewAsList: "Onyesha orodha",
     viewAsGallery: "Onyesha matunzio",

@@ -28,6 +28,7 @@ import { openSearch } from "../../search/store/search-palette";
 import { usePreferences } from "../../settings/store/preferences-store";
 import { binNotes, binSeriesAndBooks } from "../../trash/lib/bin-groups";
 import { formatAge } from "../lib/date-format";
+import { deleteFolder } from "../lib/delete-folder";
 import type { SidebarItemId } from "../model/sidebar-items";
 import {
   type Folder,
@@ -108,7 +109,7 @@ export function Sidebar({
       }))
     )
       return;
-    getLibrary().removeFolder(folder.id);
+    deleteFolder(folder);
     if (active === `folder:${folder.id}`) void navigate({ to: "/", search: {} });
   };
   const saveFolder = () => {

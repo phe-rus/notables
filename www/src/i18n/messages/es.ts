@@ -1022,7 +1022,7 @@ export const es: Messages = {
     renameFolder: "Renombrar carpeta",
     deleteFolderTitle: "¿Eliminar «{name}»?",
     deleteFolderBody:
-      "Las notas se moverán a otra carpeta. Si es la última, seguirán en Escritos. No se elimina ninguna nota.",
+      "Sus notas pasan a Eliminado recientemente, donde puedes restaurarlas durante 7 días.",
     moveToFolder: "Mover a carpeta",
     viewAsList: "Ver como lista",
     viewAsGallery: "Ver como galería",

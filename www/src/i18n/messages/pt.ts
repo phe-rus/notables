@@ -1018,7 +1018,7 @@ export const pt: Messages = {
     renameFolder: "Renomear pasta",
     deleteFolderTitle: "Eliminar “{name}”?",
     deleteFolderBody:
-      "As notas serão movidas para outra pasta. Se for a última, permanecem em Escritos. Nenhuma nota é eliminada.",
+      "As notas vão para Apagados recentemente, onde as pode restaurar durante 7 dias.",
     moveToFolder: "Mover para pasta",
     viewAsList: "Ver como lista",
     viewAsGallery: "Ver como galeria",

@@ -25,6 +25,7 @@ import { useState } from "react";
 import { setDrawerOpen } from "../../../components/layout/drawer-store";
 import { t } from "../../../i18n/i18n";
 import { inBrowserSession } from "../../../platform/session/browser-session-store";
+import { deleteFolder } from "../lib/delete-folder";
 import { folderView } from "../model/library-views";
 import {
   type Folder,
@@ -52,7 +53,7 @@ export function WorkspaceScreen() {
         destructive: true,
       })
     )
-      getLibrary().removeFolder(folder.id);
+      deleteFolder(folder);
   };
   const menu = (folder: Folder, index: number) => [
     {

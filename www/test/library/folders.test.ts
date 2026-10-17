@@ -4,18 +4,18 @@ import * as Y from "yjs";
 import { folderView } from "../../src/features/library/model/library-views";
 import { Library } from "../../src/features/library/store/library-store";
 
-test("default folder migration runs once and deleting folders preserves notes", async () => {
+test("default folder migration runs once and removing a folder leaves its notes for the bin", async () => {
   const persistence = createMemoryPersistence();
   const library = new Library(persistence);
   await library.loaded;
   expect(library.getFolders().map((folder) => folder.name)).toEqual(["Writings", "Notes", "Tasks"]);
-  const entry = library.create();
+  const entry = library.create("note", "default-writings");
   library.renameFolder("default-writings", "My writing");
   library.removeFolder("default-writings");
-  expect(library.get(entry.id)?.folderId).toBe("default-notes");
+  // The folder goes; its notes are deleteFolder's to send to Recently Deleted.
+  expect(library.get(entry.id)?.folderId).toBe("default-writings");
   library.removeFolder("default-notes");
   library.removeFolder("default-tasks");
-  expect(library.get(entry.id)?.folderId).toBeNull();
   const reopened = new Library(persistence);
   await reopened.loaded;
   expect(reopened.getFolders()).toEqual([]);

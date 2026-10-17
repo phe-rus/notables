@@ -1014,8 +1014,7 @@ export const en = {
     newFolder: "New Folder",
     renameFolder: "Rename Folder",
     deleteFolderTitle: "Delete “{name}”?",
-    deleteFolderBody:
-      "Your notes will move to another folder. If this is the last folder, they remain in Writings. No notes are deleted.",
+    deleteFolderBody: "Its notes move to Recently Deleted, where you can restore them for 7 days.",
     moveToFolder: "Move to Folder",
     viewAsList: "View as List",
     viewAsGallery: "View as Gallery",

@@ -965,8 +965,7 @@ export const zh: Messages = {
     newFolder: "新建文件夹",
     renameFolder: "重命名文件夹",
     deleteFolderTitle: "要删除“{name}”吗？",
-    deleteFolderBody:
-      "笔记将移到其他文件夹。如果这是最后一个文件夹，笔记会保留在“写作”中，不会删除任何笔记。",
+    deleteFolderBody: "其中的笔记会移到“最近删除”，7 天内可以恢复。",
     moveToFolder: "移到文件夹",
     viewAsList: "以列表显示",
     viewAsGallery: "以画廊显示",
