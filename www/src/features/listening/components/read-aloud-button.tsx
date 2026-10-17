@@ -16,10 +16,12 @@ export function ReadAloudButton({
   root,
   title,
   className,
+  triggerRef,
 }: {
   root: RefObject<HTMLElement | null>;
   title: string;
   className?: string;
+  triggerRef?: RefObject<HTMLButtonElement | null>;
 }) {
   const lang = document.documentElement.lang || navigator.language || "en";
   const narration = useNarration(lang, title || t("notes.newNote"));
@@ -66,6 +68,7 @@ export function ReadAloudButton({
   return (
     <>
       <IconButton
+        ref={triggerRef}
         size="icon-sm"
         label={narration.state ? t("notes.stopReading") : t("notes.readAloud")}
         variant={narration.state ? "link" : "ghost"}

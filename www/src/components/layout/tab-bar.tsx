@@ -1,6 +1,6 @@
 import {
+  FolderIcon,
   InvoiceIcon,
-  NoteIcon,
   SettingsIcon,
   TabBar as UltraPeachTabBar,
   WalletIcon,
@@ -24,10 +24,10 @@ const tabs: AppTab[] = [
   {
     id: "notes",
     get label() {
-      return t("nav.notes");
+      return t("nav.workspace");
     },
-    icon: <NoteIcon size={19} strokeWidth={1.8} />,
-    link: { to: "/" },
+    icon: <FolderIcon size={19} strokeWidth={1.8} />,
+    link: { to: "/", search: {} },
   },
   {
     id: "wallet",

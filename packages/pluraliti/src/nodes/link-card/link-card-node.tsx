@@ -18,6 +18,8 @@ export function LinkCard({ url, title, description, image }: LinkCardInput) {
   const href = sanitizeUrl(url);
   if (!href || !href.startsWith("https://")) return null;
   const cover = sanitizeUrl(image);
+  const host = new URL(href).hostname;
+  const hasTitle = title && title !== host;
   return (
     <a
       href={href}
@@ -35,13 +37,11 @@ export function LinkCard({ url, title, description, image }: LinkCardInput) {
         />
       )}
       <span className="flex min-w-0 flex-col gap-1 p-3">
-        <span className="line-clamp-2 text-callout font-semibold">
-          {title || new URL(href).hostname}
-        </span>
+        {hasTitle && <span className="line-clamp-2 text-callout font-semibold">{title}</span>}
         {description && (
           <span className="line-clamp-2 text-caption text-label-secondary">{description}</span>
         )}
-        <span className="truncate text-caption text-label-tertiary">{new URL(href).hostname}</span>
+        <span className="truncate text-caption text-label-tertiary">{host}</span>
       </span>
     </a>
   );

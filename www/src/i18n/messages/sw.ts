@@ -1,6 +1,23 @@
 import type { Messages } from "./en";
 
 export const sw: Messages = {
+  capture: {
+    takePhoto: "Piga picha",
+    previewFailed: "Imeshindikana kupakia hakikisho. Angalia muunganisho kisha ujaribu tena.",
+    cameraError: "Kamera haipatikani. Ruhusu kamera au leta picha.",
+    page: "Ukurasa {count}",
+    removePage: "Ondoa ukurasa",
+    addPage: "Ongeza ukurasa",
+    processing: "Inachakata…",
+    useScan: "Tumia skani",
+    alignPage: "Weka ukurasa ndani ya fremu",
+    starting: "Inawasha kamera…",
+    importImages: "Leta picha",
+    retryCamera: "Washa kamera tena",
+    scannedDocument: "Hati iliyochanganuliwa",
+    scanFailed: "Imeshindikana kusoma skani. Jaribu picha iliyo wazi zaidi.",
+    reviewText: "Kagua maandishi yaliyosomwa",
+  },
   lock: {
     title: "Kufuli",
     hint: "Kufuli hulinda Pochi, Hifadhi na madokezo unayofunga. Data zako za siri husimbwa fiche iwe kufuli imewashwa au la.",
@@ -17,6 +34,7 @@ export const sw: Messages = {
     off: "Imezimwa",
   },
   wallet: {
+    nfcUnavailable: "NFC haipatikani kwenye kifaa hiki.",
     phoneNumber: "Namba ya simu",
     iccid: "ICCID",
     puk: "PUK",
@@ -951,6 +969,10 @@ export const sw: Messages = {
     exportCsv: "Hamisha CSV",
   },
   workspace: {
+    publishToWeb: "Chapisha kwenye wavuti",
+    emptyFolder: "Folda tupu",
+    folderOptions: "Chaguo za {name}",
+    allFolders: "Folda zote",
     tagsHint: "Tenganisha lebo kwa nafasi au koma. Pia unaweza kuandika #lebo kwenye dokezo.",
     writings: "Maandishi",
     notes: "Madokezo",

@@ -104,6 +104,16 @@ Gotchas learned the hard way:
 
 ## Status (October 2026)
 
+- Owner refinement (17 Oct): home is now Workspace with folder cards, Artifacts
+  below folders on Workspace only (removed from the sidebar), bordered note lists,
+  content previews in gallery, actual folder back labels, a default More button
+  without a separate compose icon, icon menus and a scrollable editor strip,
+  adjacent multi-photo layout, live camera/page review/PDF scanning and retryable
+  metadata previews through a deployed stable endpoint. Folder snapshots no
+  longer churn on note edits; hidden phone lists and repeated toolbar state
+  updates were removed. Read [the refinement record](docs/reviews/2026-10-17-writing-refinement.md)
+  for measured evidence and the remaining scanner/performance boundaries.
+
 - Writing workspace checkpoint (17 Oct): folders, list/gallery/date grouping,
   richer editor, attachments/TOC/tags, spreadsheet formulas, linked note and
   invoice reminders, browser media and phone-owned sharing are implemented.
@@ -400,6 +410,10 @@ and France: "No" until the French declaration is filed. Never set
 TestFlight refuse the upload; each build asks in TestFlight instead.
 
 ## Next
+
+- Review the [17 October refinement](docs/reviews/2026-10-17-writing-refinement.md)
+  on the TECNO and iPhone. Continue measured performance work, real document/card
+  scanning and native media checks; keep the earlier Lock and public-ID work open.
 
 - Continue the [17 October writing checkpoint](docs/reviews/2026-10-17-writing-checkpoint.md).
   The packaged Android launch and share chooser checks passed. Next, native-to-native

@@ -33,7 +33,7 @@ export function EditableImage({
     });
   };
   return (
-    <div className="group relative" style={{ width: `${layout.width}%` }}>
+    <div className="group relative w-full">
       <MediaImage
         src={src}
         alt={alt}
@@ -55,59 +55,63 @@ export function EditableImage({
           label={labels.imageOptions}
           className="absolute end-2 top-2"
           onClick={(event) =>
-            openMenu(event.currentTarget, [
-              { label: labels.replacePhoto, onSelect: () => file.current?.click() },
-              ...([100, 75, 50, 25] as const).map((width) => ({
-                label: `${labels.imageSize} ${width}%`,
-                checked: layout.width === width,
-                onSelect: () =>
-                  change((node) => {
-                    if ($isImageNode(node)) node.setLayout({ width });
-                  }),
-              })),
-              "divider",
-              ...(["16 / 9", "4 / 3", "1 / 1", "original"] as const).map((aspect) => ({
-                label:
-                  aspect === "original"
-                    ? labels.original
-                    : `${labels.crop} ${aspect.replaceAll(" ", "")}`,
-                checked: layout.aspect === aspect,
-                onSelect: () =>
-                  change((node) => {
-                    if ($isImageNode(node)) node.setLayout({ aspect });
-                  }),
-              })),
-              {
-                label: labels.fit,
-                checked: layout.fit === "contain",
-                onSelect: () =>
-                  change((node) => {
-                    if ($isImageNode(node))
-                      node.setLayout({ fit: layout.fit === "contain" ? "cover" : "contain" });
-                  }),
-              },
-              {
-                label: labels.moveUp,
-                onSelect: () =>
-                  change((node) => {
-                    const previous = node.getPreviousSibling();
-                    if (previous) previous.insertBefore(node);
-                  }),
-              },
-              {
-                label: labels.moveDown,
-                onSelect: () =>
-                  change((node) => {
-                    const next = node.getNextSibling();
-                    if (next) next.insertAfter(node);
-                  }),
-              },
-              {
-                label: labels.removePhoto,
-                destructive: true,
-                onSelect: () => change((node) => node.remove()),
-              },
-            ])
+            openMenu(
+              event.currentTarget,
+              [
+                { label: labels.replacePhoto, onSelect: () => file.current?.click() },
+                ...([100, 75, 50, 25] as const).map((width) => ({
+                  label: `${labels.imageSize} ${width}%`,
+                  checked: layout.width === width,
+                  onSelect: () =>
+                    change((node) => {
+                      if ($isImageNode(node)) node.setLayout({ width });
+                    }),
+                })),
+                "divider",
+                ...(["16 / 9", "4 / 3", "1 / 1", "original"] as const).map((aspect) => ({
+                  label:
+                    aspect === "original"
+                      ? labels.original
+                      : `${labels.crop} ${aspect.replaceAll(" ", "")}`,
+                  checked: layout.aspect === aspect,
+                  onSelect: () =>
+                    change((node) => {
+                      if ($isImageNode(node)) node.setLayout({ aspect });
+                    }),
+                })),
+                {
+                  label: labels.fit,
+                  checked: layout.fit === "contain",
+                  onSelect: () =>
+                    change((node) => {
+                      if ($isImageNode(node))
+                        node.setLayout({ fit: layout.fit === "contain" ? "cover" : "contain" });
+                    }),
+                },
+                {
+                  label: labels.moveUp,
+                  onSelect: () =>
+                    change((node) => {
+                      const previous = node.getPreviousSibling();
+                      if (previous) previous.insertBefore(node);
+                    }),
+                },
+                {
+                  label: labels.moveDown,
+                  onSelect: () =>
+                    change((node) => {
+                      const next = node.getNextSibling();
+                      if (next) next.insertAfter(node);
+                    }),
+                },
+                {
+                  label: labels.removePhoto,
+                  destructive: true,
+                  onSelect: () => change((node) => node.remove()),
+                },
+              ],
+              { edge: "trailing" },
+            )
           }
         >
           <MoreIcon size={17} />

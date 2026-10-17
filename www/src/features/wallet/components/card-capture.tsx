@@ -1,4 +1,11 @@
-import { Button } from "@phe-rus/hino";
+import {
+  Button,
+  CameraIcon,
+  ChevronRightIcon,
+  IconButton,
+  NfcReadIcon,
+  PhotoIcon,
+} from "@phe-rus/hino";
 import { useEffect, useRef, useState } from "react";
 import { t } from "../../../i18n/i18n";
 import { captureCardFrame, openCardCamera } from "../lib/card-image";
@@ -119,9 +126,11 @@ export function CardCapture() {
       </div>
     );
   return (
-    <div className="mx-auto flex w-full max-w-[500px] flex-col gap-6">
-      <h2 className="font-serif text-3xl font-semibold">{t("wallet.scanTitle")}</h2>
-      <p className="text-label-secondary">{t("wallet.scanHint")}</p>
+    <div className="mx-auto flex w-full max-w-[440px] flex-col gap-5">
+      <h2 className="text-center text-title font-bold tracking-tight">{t("wallet.scanTitle")}</h2>
+      <p className="px-3 text-center text-subheadline text-label-secondary">
+        {t("wallet.scanHint")}
+      </p>
       {(error || cameraError) && (
         <p role="alert" className="text-sm text-label-secondary">
           {t("wallet.captureError")}
@@ -152,9 +161,14 @@ export function CardCapture() {
               {t("wallet.alignCard")}
             </p>
           </div>
-          <Button variant="default" onClick={takePhoto}>
-            {t("wallet.takePhoto")}
-          </Button>
+          <IconButton
+            variant="default"
+            className="size-16 self-center"
+            label={t("capture.takePhoto")}
+            onClick={takePhoto}
+          >
+            <CameraIcon size={28} />
+          </IconButton>
           <Button
             onClick={() => {
               epoch.current++;
@@ -167,15 +181,49 @@ export function CardCapture() {
         </>
       ) : (
         <>
-          <Button variant="default" onClick={() => void openCamera()}>
-            {t("wallet.scanCard")}
-          </Button>
-          {nfc && <Button onClick={() => void scanWalletNfc()}>{t("wallet.readNfc")}</Button>}
-          <Button onClick={chooseImage}>{t("wallet.importImage")}</Button>
+          <div className="overflow-hidden rounded-3xl border border-separator/50 bg-paper">
+            <Button
+              variant="ghost"
+              className="h-auto min-h-16 w-full justify-start gap-4 rounded-none px-5 py-4 text-start [&>span]:w-full [&>span]:justify-start [&>span]:gap-4"
+              onClick={() => void openCamera()}
+            >
+              <CameraIcon size={25} className="shrink-0 text-accent-text" />
+              <span className="grow text-body font-medium">{t("wallet.scanCard")}</span>
+              <ChevronRightIcon size={17} className="text-label-tertiary" />
+            </Button>
+            <div className="mx-5 border-t border-separator/50" />
+            <Button
+              variant="ghost"
+              className="h-auto min-h-16 w-full justify-start gap-4 rounded-none px-5 py-4 text-start [&>span]:w-full [&>span]:justify-start [&>span]:gap-4"
+              onClick={chooseImage}
+            >
+              <PhotoIcon size={25} className="shrink-0 text-accent-text" />
+              <span className="grow text-body font-medium">{t("wallet.importImage")}</span>
+              <ChevronRightIcon size={17} className="text-label-tertiary" />
+            </Button>
+            <div className="mx-5 border-t border-separator/50" />
+            <Button
+              variant="ghost"
+              disabled={!nfc}
+              className="h-auto min-h-16 w-full justify-start gap-4 rounded-none px-5 py-4 text-start [&>span]:w-full [&>span]:justify-start [&>span]:gap-4"
+              onClick={() => void scanWalletNfc()}
+            >
+              <NfcReadIcon size={25} className="shrink-0 text-accent-text" />
+              <span className="grow text-body font-medium">{t("wallet.readNfc")}</span>
+              <ChevronRightIcon size={17} className="text-label-tertiary" />
+            </Button>
+          </div>
+          {!nfc && (
+            <p className="px-5 text-center text-footnote text-label-secondary">
+              {t("wallet.nfcUnavailable")}
+            </p>
+          )}
           {(error || cameraError) && (
             <Button onClick={correctWalletCapture}>{t("wallet.correctManually")}</Button>
           )}
-          <Button onClick={() => showWallet("home")}>{t("common.cancel")}</Button>
+          <Button variant="ghost" onClick={() => showWallet("home")}>
+            {t("common.cancel")}
+          </Button>
         </>
       )}
     </div>

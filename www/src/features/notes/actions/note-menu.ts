@@ -1,10 +1,24 @@
 import { NoteKind } from "@notables/core";
-import { type ContextMenuItem, openFollowUpMenu, toast } from "@phe-rus/hino";
+import {
+  ChecklistIcon,
+  type ContextMenuItem,
+  FolderIcon,
+  LayoutIcon,
+  LinkIcon,
+  NoteIcon,
+  openFollowUpMenu,
+  PenIcon,
+  PinIcon,
+  TrashIcon,
+  toast,
+} from "@phe-rus/hino";
 import type { useNavigate } from "@tanstack/react-router";
+import { createElement } from "react";
 import { t } from "../../../i18n/i18n";
 import { appLinkFor } from "../../../platform/app-links";
 import { publicUrl } from "../../../platform/public-url";
 import { noteFontLabels, noteFonts } from "../../library/model/note-fonts";
+import { noteKindIcons } from "../../library/model/note-kind-icons";
 import { noteKindLabels } from "../../library/model/note-kind-labels";
 import { getLibrary, type LibraryEntry } from "../../library/store/library-store";
 import { moveNotesToBin } from "../../trash/lib/recycle-bin";
@@ -38,6 +52,7 @@ export function noteKindItems(entries: LibraryEntry[]): ContextMenuItem[] {
     { heading: t("notes.kind") },
     ...NoteKind.options.map((kind) => ({
       label: noteKindLabels[kind],
+      icon: createElement(noteKindIcons[kind], { size: 18 }),
       checked: shared === kind,
       onSelect: () => {
         const moving = entries.filter((entry) => entry.kind !== kind);
@@ -56,6 +71,7 @@ export function noteFormatItems(entry: LibraryEntry): ContextMenuItem[] {
     { heading: t("workspace.noteFormat") },
     ...(["document", "spreadsheet"] as const).map((format) => ({
       label: format === "spreadsheet" ? t("spreadsheet.title") : t("workspace.writings"),
+      icon: createElement(format === "spreadsheet" ? LayoutIcon : NoteIcon, { size: 18 }),
       checked: (entry.format ?? "document") === format,
       onSelect: () => getLibrary().update(entry.id, { format }),
     })),
@@ -74,6 +90,7 @@ export function noteFolderItems(entries: LibraryEntry[]): ContextMenuItem[] {
     { heading: t("workspace.moveToFolder") },
     ...library.getFolders().map((folder) => ({
       label: folder.name,
+      icon: createElement(FolderIcon, { size: 18 }),
       checked: entries.every((entry) => entry.folderId === folder.id),
       onSelect: () =>
         library.moveToFolder(
@@ -104,18 +121,33 @@ export function noteMenu(
   return [
     {
       label: t("common.open"),
+      icon: createElement(NoteIcon, { size: 18 }),
       onSelect: () => void navigate({ to: "/notes/$noteId", params: { noteId: entry.id } }),
     },
     {
       label: entry.pinned ? t("notes.unpin") : t("notes.pin"),
+      icon: createElement(PinIcon, { size: 18 }),
       onSelect: () => togglePinned([entry]),
     },
-    ...(onSelectMany ? [{ label: t("notes.select"), onSelect: onSelectMany }] : []),
-    { label: t("notes.copyAppLink"), onSelect: () => copyAppLink(entry) },
+    ...(onSelectMany
+      ? [
+          {
+            label: t("notes.select"),
+            icon: createElement(ChecklistIcon, { size: 18 }),
+            onSelect: onSelectMany,
+          },
+        ]
+      : []),
+    {
+      label: t("notes.copyAppLink"),
+      icon: createElement(LinkIcon, { size: 18 }),
+      onSelect: () => copyAppLink(entry),
+    },
     ...(entry.publicationId
       ? [
           {
             label: t("notes.copyPublicLink"),
+            icon: createElement(LinkIcon, { size: 18 }),
             onSelect: () => {
               void navigator.clipboard
                 .writeText(publicUrl(`/p/${entry.publicationId}`))
@@ -127,13 +159,23 @@ export function noteMenu(
     "divider",
     {
       label: t("workspace.moveToFolder"),
+      icon: createElement(FolderIcon, { size: 18 }),
       onSelect: () => openFollowUpMenu(noteFolderItems([entry])),
     },
-    { label: t("notes.fontMenu"), onSelect: () => openFollowUpMenu(noteFontItems(entry)) },
-    { label: t("notes.kindMenu"), onSelect: () => openFollowUpMenu(noteKindItems([entry])) },
+    {
+      label: t("notes.fontMenu"),
+      icon: createElement(PenIcon, { size: 18 }),
+      onSelect: () => openFollowUpMenu(noteFontItems(entry)),
+    },
+    {
+      label: t("notes.kindMenu"),
+      icon: createElement(NoteIcon, { size: 18 }),
+      onSelect: () => openFollowUpMenu(noteKindItems([entry])),
+    },
     "divider",
     {
       label: t("common.delete"),
+      icon: createElement(TrashIcon, { size: 18 }),
       destructive: true,
       onSelect: () => moveNotesToBin([entry]),
     },

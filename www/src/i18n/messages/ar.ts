@@ -1,6 +1,23 @@
 import type { Messages } from "./en";
 
 export const ar: Messages = {
+  capture: {
+    takePhoto: "التقاط صورة",
+    previewFailed: "تعذر تحميل المعاينة. تحقق من اتصالك وحاول مجددًا.",
+    cameraError: "الكاميرا غير متاحة. اسمح بالوصول أو استورد صورة.",
+    page: "الصفحة {count}",
+    removePage: "إزالة الصفحة",
+    addPage: "إضافة صفحة",
+    processing: "جارٍ المعالجة…",
+    useScan: "استخدام المسح",
+    alignPage: "ضع الصفحة داخل الإطار",
+    starting: "جارٍ تشغيل الكاميرا…",
+    importImages: "استيراد الصور",
+    retryCamera: "إعادة تشغيل الكاميرا",
+    scannedDocument: "مستند ممسوح",
+    scanFailed: "تعذرت قراءة المسح. جرب صورة أوضح.",
+    reviewText: "مراجعة النص الممسوح",
+  },
   lock: {
     title: "القفل",
     hint: "يحمي القفل المحفظة والخزنة والملاحظات التي تقفلها. بياناتك السرية مشفّرة سواء كان القفل مفعّلًا أم لا.",
@@ -17,6 +34,7 @@ export const ar: Messages = {
     off: "متوقف",
   },
   wallet: {
+    nfcUnavailable: "NFC غير متاح على هذا الجهاز.",
     phoneNumber: "رقم الهاتف",
     iccid: "ICCID",
     puk: "PUK",
@@ -1017,6 +1035,10 @@ export const ar: Messages = {
     exportCsv: "تصدير CSV",
   },
   workspace: {
+    publishToWeb: "النشر على الويب",
+    emptyFolder: "مجلد فارغ",
+    folderOptions: "خيارات {name}",
+    allFolders: "كل المجلدات",
     tagsHint: "افصل الوسوم بمسافات أو فواصل. يمكنك أيضًا كتابة #وسوم في الملاحظة.",
     writings: "الكتابات",
     notes: "الملاحظات",

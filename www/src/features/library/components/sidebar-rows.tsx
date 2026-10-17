@@ -80,10 +80,12 @@ export function NavItem({
   icon,
   trailing,
   menu,
+  tone = "default",
   children,
   ...link
 }: LinkProps & {
   active: boolean;
+  tone?: "default" | "danger";
   icon: ReactNode;
   trailing?: ReactNode;
   /** Actions for right-click and long-press. */
@@ -99,19 +101,23 @@ export function NavItem({
         rowClass,
         "touch-manipulation [-webkit-touch-callout:none]",
         active ? "font-medium" : "hover:bg-fill/70",
+        tone === "danger" && "bg-danger/8 text-danger hover:bg-danger/12",
       )}
     >
       {active && (
         <motion.span
           layoutId="sidebar-selection"
-          className="absolute inset-0 -z-10 rounded-md bg-accent-soft"
+          className={cn(
+            "absolute inset-0 -z-10 rounded-md",
+            tone === "danger" ? "bg-danger/12" : "bg-accent-soft",
+          )}
           transition={spring.snappy}
         />
       )}
       <span
         className={cn(
           "flex transition-colors",
-          active ? "text-accent-text" : "text-label-secondary",
+          tone === "danger" ? "text-danger" : active ? "text-accent-text" : "text-label-secondary",
         )}
       >
         {icon}
@@ -121,7 +127,7 @@ export function NavItem({
         <span
           className={cn(
             "shrink-0 text-caption tabular-nums",
-            active ? "text-accent-text" : "text-label-tertiary",
+            tone === "danger" ? "text-danger" : active ? "text-accent-text" : "text-label-tertiary",
           )}
         >
           {trailing}

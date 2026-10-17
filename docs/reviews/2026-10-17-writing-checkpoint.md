@@ -1,5 +1,8 @@
 # Writing workspace checkpoint, 17 October 2026
 
+The [later refinement](2026-10-17-writing-refinement.md) supersedes the home,
+scanner and image-layout descriptions below.
+
 The first device linking fix is committed and pushed as `6b2d9d3`.
 The larger writing changes described here are the next implementation checkpoint.
 No new TestFlight or Play release has been tagged.

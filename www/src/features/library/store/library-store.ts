@@ -6,6 +6,7 @@ import { t } from "../../../i18n/i18n";
 import { getDeviceId } from "../../../platform/device-identity";
 import { getPersistence } from "../../../platform/storage/document-storage";
 import type { NoteFont } from "../model/note-fonts";
+import type { NotePreviewBlock } from "../model/note-preview";
 
 export interface Folder {
   id: string;
@@ -40,6 +41,7 @@ export interface LibraryEntry {
   tags?: string[];
   manualTags?: string[];
   previewImage?: string | null;
+  previewContent?: NotePreviewBlock[];
   attachmentCount?: number;
   createdAt: number;
   updatedAt: number;
@@ -64,8 +66,8 @@ export class Library {
 
   constructor(private readonly persistence: Persistence = getPersistence()) {
     this.entries.observe(() => this.#refresh());
-    this.folders.observe(() => this.#refresh());
-    this.removedFolders.observe(() => this.#refresh());
+    this.folders.observe(() => this.#refresh(true));
+    this.removedFolders.observe(() => this.#refresh(true));
     this.loaded = this.persistence.bind("library", this.doc).then(() => {
       const workspace = this.doc.getMap("workspace");
       if (!workspace.get("foldersVersion")) {
@@ -89,14 +91,15 @@ export class Library {
         });
       }
       this.ready = true;
-      this.#refresh();
+      this.#refresh(true);
     });
   }
 
-  #refresh() {
-    this.#folderSnapshot = [...this.folders.values()]
-      .filter((folder) => !this.removedFolders.has(folder.id))
-      .sort((a, b) => a.order - b.order || a.createdAt - b.createdAt);
+  #refresh(foldersChanged = false) {
+    if (foldersChanged)
+      this.#folderSnapshot = [...this.folders.values()]
+        .filter((folder) => !this.removedFolders.has(folder.id))
+        .sort((a, b) => a.order - b.order || a.createdAt - b.createdAt);
     this.#snapshot = [...this.entries.values()].sort(
       (a, b) => Number(b.pinned) - Number(a.pinned) || b.updatedAt - a.updatedAt,
     );
@@ -132,6 +135,22 @@ export class Library {
     const title = name.trim().slice(0, 120);
     if (folder && title && !this.removedFolders.has(id))
       this.folders.set(id, { ...folder, name: title });
+  }
+
+  moveFolder(id: string, direction: -1 | 1) {
+    const folders = this.getFolders();
+    const index = folders.findIndex((folder) => folder.id === id);
+    const destination = index + direction;
+    if (index < 0 || destination < 0 || destination >= folders.length) return;
+    const ordered = [...folders];
+    const [folder] = ordered.splice(index, 1);
+    if (!folder) return;
+    ordered.splice(destination, 0, folder);
+    this.doc.transact(() =>
+      ordered.forEach((item, order) => {
+        if (item.order !== order) this.folders.set(item.id, { ...item, order });
+      }),
+    );
   }
 
   removeFolder(id: string) {
@@ -203,7 +222,19 @@ export class Library {
 
   update(id: string, patch: Partial<Omit<LibraryEntry, "id" | "origin" | "createdAt">>) {
     const current = this.entries.get(id);
-    if (current) this.entries.set(id, { ...current, ...patch });
+    if (!current) return;
+    const unchanged = Object.entries(patch).every(([key, value]) => {
+      const before = current[key as keyof LibraryEntry];
+      if (key === "previewContent") return JSON.stringify(before) === JSON.stringify(value);
+      return (
+        Object.is(before, value) ||
+        (Array.isArray(before) &&
+          Array.isArray(value) &&
+          before.length === value.length &&
+          before.every((item, index) => item === value[index]))
+      );
+    });
+    if (!unchanged) this.entries.set(id, { ...current, ...patch });
   }
 
   async remove(id: string) {
@@ -243,7 +274,12 @@ export function useLibraryReady(): boolean {
 }
 
 export function useEntry(id: string): LibraryEntry | undefined {
-  return useLibrary().find((entry) => entry.id === id);
+  const library = getLibrary();
+  return useSyncExternalStore(
+    library.subscribe,
+    () => library.get(id),
+    () => undefined,
+  );
 }
 
 /**

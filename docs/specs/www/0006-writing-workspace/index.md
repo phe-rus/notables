@@ -17,11 +17,12 @@ Preserve every existing note, book, recording, card and synced document.
   names, creation dates and order sync like the notes. `folderId` and `tags`
   are optional note index metadata; kind remains the content format.
 - Seed three deterministic default IDs once, Writings, Notes and Tasks.
-  Existing listed notes go to Writings so the old All notables library is
+  Existing listed notes go to the Writings folder so the old All notables library is
   intact. Renaming and deleting defaults is supported and never reseeds them.
   Deleting a folder moves its notes to another existing folder, or leaves
   them unfiled if none remain; it never deletes note contents.
-- Folder navigation uses the existing `view` search parameter with
+- Home is Workspace, a folder manager with counts and snippets. Artifacts follows
+  the folders on Workspace only; the sidebar has no Artifacts section. Folder navigation uses the existing `view` search parameter with
   `folder:<id>` values. Old view links keep working as filters. Missing or
   deleted folder links show the library, not a blank inaccessible editor.
 - New notes inherit the current folder. Moving supports one or many notes.
@@ -73,6 +74,8 @@ Preserve every existing note, book, recording, card and synced document.
 - [ ] Verify native OCR and transcription with downloaded models on a phone.
 - [ ] Finish person public ID addressing and scanning, iOS system sharing and native Lock protections.
 - [ ] Finish free image resizing/crop editing and a dedicated attachment gallery.
+- [x] Refine Workspace home, card lists, icon menus and scrollable controls.
+- [x] Add camera page review/PDF scans, multi-photo rows and deployed metadata previews.
 - [x] Complete the Android packaged launch and native share chooser check.
 - [x] Record and commit the implementation checkpoint; remaining work stays listed below.
 

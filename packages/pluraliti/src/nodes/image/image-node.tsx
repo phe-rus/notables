@@ -124,10 +124,12 @@ export class ImageNode extends DecoratorNode<JSX.Element> {
   override createDOM(): HTMLElement {
     const el = document.createElement("figure");
     el.className = "nt-figure";
+    el.style.width = `${this.__layout.width}%`;
     return el;
   }
 
-  override updateDOM(): false {
+  override updateDOM(_previous: ImageNode, element: HTMLElement): false {
+    element.style.width = `${this.__layout.width}%`;
     return false;
   }
 

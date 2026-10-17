@@ -3,6 +3,23 @@
  * are objects keyed by plural category; `{name}` is filled in by `t`.
  */
 export const en = {
+  capture: {
+    takePhoto: "Take photo",
+    previewFailed: "Could not load the preview. Check your connection and try again.",
+    cameraError: "Camera unavailable. Allow camera access or import an image.",
+    page: "Page {count}",
+    removePage: "Remove page",
+    addPage: "Add page",
+    processing: "Processing…",
+    useScan: "Use scan",
+    alignPage: "Place the page inside the frame",
+    starting: "Starting camera…",
+    importImages: "Import images",
+    retryCamera: "Restart camera",
+    scannedDocument: "Scanned document",
+    scanFailed: "Could not read this scan. Try a clearer image.",
+    reviewText: "Review scanned text",
+  },
   lock: {
     title: "Lock",
     hint: "The Lock protects Wallet, Vault and notes you lock. Your secret data is encrypted whether it’s on or off.",
@@ -19,6 +36,7 @@ export const en = {
     off: "Off",
   },
   wallet: {
+    nfcUnavailable: "NFC is not available on this device.",
     phoneNumber: "Phone number",
     iccid: "ICCID",
     puk: "PUK",
@@ -940,6 +958,10 @@ export const en = {
     exportCsv: "Export CSV",
   },
   workspace: {
+    publishToWeb: "Publish to the web",
+    emptyFolder: "Empty folder",
+    folderOptions: "Options for {name}",
+    allFolders: "All folders",
     tagsHint: "Separate tags with spaces or commas. You can also write #tags in a note.",
     writings: "Writings",
     notes: "Notes",

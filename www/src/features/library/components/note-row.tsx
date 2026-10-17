@@ -7,6 +7,7 @@ import type { ListPreferences } from "../../settings/model/preferences";
 import { formatUpdated } from "../lib/date-format";
 import { noteKindLabels } from "../model/note-kind-labels";
 import type { LibraryEntry } from "../store/library-store";
+import { NotePagePreview } from "./note-page-preview";
 import { moreButton, type SwipeButton, swipeButton } from "./note-swipe-actions";
 import { NoteThumbnail } from "./note-thumbnail";
 
@@ -178,7 +179,7 @@ export function NoteRow({
     <div
       ref={row}
       data-note-id={entry.id}
-      className="relative isolate overflow-hidden rounded-xl transition-transform duration-fast select-none data-[held]:scale-[0.98]"
+      className="relative isolate overflow-hidden rounded-2xl border border-separator/60 bg-paper select-none"
     >
       <motion.div
         aria-hidden={swiped !== "right"}
@@ -200,7 +201,7 @@ export function NoteRow({
       </motion.div>
       <motion.div
         style={{ x }}
-        className="relative bg-surface touch-pan-y"
+        className="relative bg-paper touch-pan-y"
         onPointerDown={onPointerDown}
         onPointerMove={onPointerMove}
         onPointerUp={onPointerUp}
@@ -247,10 +248,8 @@ export function NoteRow({
               {selected && <CheckIcon size={13} strokeWidth={2.6} />}
             </span>
           </motion.span>
-          <span className={cn("flex min-w-0 grow flex-col", compact ? "gap-px" : "gap-[3px]")}>
-            {options.layout === "gallery" && entry.previewImage && (
-              <NoteThumbnail src={entry.previewImage} gallery />
-            )}
+          <div className={cn("flex min-w-0 grow flex-col", compact ? "gap-px" : "gap-[3px]")}>
+            {options.layout === "gallery" && <NotePagePreview entry={entry} />}
             <span className="flex items-center gap-1.5 text-subheadline font-semibold text-label">
               {pinMark && <PinIcon size={13} className="text-accent-text" />}
               <span className="truncate">{entry.title || t("notes.newNote")}</span>
@@ -260,7 +259,10 @@ export function NoteRow({
                 </span>
               )}
             </span>
-            {(options.previewLines > 0 || snippet) && (
+            {options.layout === "gallery" && date && (
+              <span className="text-caption text-label-tertiary">{date}</span>
+            )}
+            {options.layout !== "gallery" && (options.previewLines > 0 || snippet) && (
               <span
                 className={cn(
                   "text-footnote text-label-secondary",
@@ -290,7 +292,7 @@ export function NoteRow({
                   {kind && <Chip tone={active || selected ? "accent" : "neutral"}>{kind}</Chip>}
                 </span>
               )}
-          </span>
+          </div>
           {options.layout !== "gallery" && entry.previewImage && (
             <NoteThumbnail src={entry.previewImage} />
           )}

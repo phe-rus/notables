@@ -1,4 +1,5 @@
 import { createFileRoute } from "@tanstack/react-router";
+import { WorkspaceScreen } from "../../features/library/components/workspace-screen";
 import { t } from "../../i18n/i18n";
 
 export const Route = createFileRoute("/_app/")({
@@ -6,6 +7,8 @@ export const Route = createFileRoute("/_app/")({
 });
 
 function NoNoteSelected() {
+  const { view } = Route.useSearch();
+  if (!view || view === "workspace") return <WorkspaceScreen />;
   return (
     <div className="flex grow flex-col items-center justify-center gap-2 p-10 text-center">
       <p className="font-serif text-title2 font-semibold text-label">{t("notes.emptyTitle")}</p>

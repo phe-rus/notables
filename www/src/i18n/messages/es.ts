@@ -1,6 +1,23 @@
 import type { Messages } from "./en";
 
 export const es: Messages = {
+  capture: {
+    takePhoto: "Tomar foto",
+    previewFailed: "No se pudo cargar la vista previa. Comprueba la conexión e inténtalo de nuevo.",
+    cameraError: "Cámara no disponible. Permite el acceso o importa una imagen.",
+    page: "Página {count}",
+    removePage: "Eliminar página",
+    addPage: "Añadir página",
+    processing: "Procesando…",
+    useScan: "Usar escaneo",
+    alignPage: "Coloca la página dentro del marco",
+    starting: "Iniciando cámara…",
+    importImages: "Importar imágenes",
+    retryCamera: "Reiniciar cámara",
+    scannedDocument: "Documento escaneado",
+    scanFailed: "No se pudo leer el escaneo. Prueba una imagen más clara.",
+    reviewText: "Revisar texto escaneado",
+  },
   lock: {
     title: "Bloqueo",
     hint: "El bloqueo protege la Billetera, la Bóveda y las notas que bloquees. Tus datos secretos se cifran esté activado o no.",
@@ -17,6 +34,7 @@ export const es: Messages = {
     off: "Desactivado",
   },
   wallet: {
+    nfcUnavailable: "NFC no está disponible en este dispositivo.",
     phoneNumber: "Número de teléfono",
     iccid: "ICCID",
     puk: "PUK",
@@ -947,6 +965,10 @@ export const es: Messages = {
     exportCsv: "Exportar CSV",
   },
   workspace: {
+    publishToWeb: "Publicar en la web",
+    emptyFolder: "Carpeta vacía",
+    folderOptions: "Opciones de {name}",
+    allFolders: "Todas las carpetas",
     tagsHint:
       "Separa las etiquetas con espacios o comas. También puedes escribir #etiquetas en una nota.",
     writings: "Escritos",

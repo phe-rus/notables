@@ -14,13 +14,13 @@ export function indexNoteMedia() {
     try {
       for (const entry of library.getSnapshot()) {
         if (stopped) break;
-        if (!isListedNote(entry) || entry.attachmentCount !== undefined || attempted.has(entry.id))
+        if (!isListedNote(entry) || entry.previewContent !== undefined || attempted.has(entry.id))
           continue;
         attempted.add(entry.id);
         const document = await loadNoteContent(entry.id).catch(() => undefined);
-        if (!document || stopped || library.get(entry.id)?.attachmentCount !== undefined) continue;
-        const { previewImage, attachmentCount } = notePreview(document);
-        library.update(entry.id, { previewImage, attachmentCount });
+        if (!document || stopped || library.get(entry.id)?.previewContent !== undefined) continue;
+        const { previewImage, previewContent, attachmentCount } = notePreview(document);
+        library.update(entry.id, { previewImage, previewContent, attachmentCount });
         await new Promise((resolve) => setTimeout(resolve, 0));
       }
     } finally {

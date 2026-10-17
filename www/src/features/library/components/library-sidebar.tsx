@@ -1,13 +1,11 @@
 import {
   BookIcon,
-  CalendarIcon,
   cn,
   confirmDialog,
   FolderIcon,
   GlobeIcon,
   IconButton,
   InvoiceIcon,
-  LayoutIcon,
   LessonIcon,
   NoteIcon,
   PenIcon,
@@ -17,17 +15,14 @@ import {
   SearchIcon,
   StoryIcon,
   TrashIcon,
-  WalletIcon,
 } from "@phe-rus/hino";
 import { useNavigate } from "@tanstack/react-router";
 import { type ReactNode, useEffect, useRef, useState } from "react";
 import { setDrawerOpen } from "../../../components/layout/drawer-store";
 import { t } from "../../../i18n/i18n";
 import { shortcutLabel } from "../../../lib/keyboard/shortcuts";
-import { inBrowserSession } from "../../../platform/session/browser-session-store";
 import { useTrashedBooks } from "../../books/store/book-store";
 import { useSeries } from "../../books/store/series-store";
-import { useUpcomingCount } from "../../calendar/store/use-upcoming-count";
 import { noteMenu } from "../../notes/actions/note-menu";
 import { openSearch } from "../../search/store/search-palette";
 import { usePreferences } from "../../settings/store/preferences-store";
@@ -43,11 +38,12 @@ import {
 } from "../store/library-store";
 import { RECENT_WINDOW, useOpened } from "../store/recents-store";
 import { SidebarProfileRow } from "./sidebar-profile-row";
-import { ActionRow, DisclosureRow, NavItem, SectionHeader } from "./sidebar-rows";
+import { ActionRow, NavItem, SectionHeader } from "./sidebar-rows";
 import { SidebarTopBar } from "./sidebar-top-bar";
 
 export type SidebarLocation =
   | SidebarItemId
+  | "workspace"
   | "all"
   | "calendar"
   | "connections"
@@ -62,7 +58,6 @@ export const sidebarIcons: Record<SidebarItemId, ReactNode> = {
   invoices: <InvoiceIcon size={17} />,
   published: <GlobeIcon size={17} />,
 };
-const artifactPlaces: readonly SidebarLocation[] = ["books", "calendar", "wallet", "invoices"];
 
 export function Sidebar({
   active,
@@ -81,19 +76,13 @@ export function Sidebar({
   const folders = useFolders();
   const library = useLibrary();
   const entries = library.filter(isListedNote);
-  const upcoming = useUpcomingCount();
   const trashedBooks = useTrashedBooks();
   const series = useSeries();
   const bin = binSeriesAndBooks(trashedBooks, series);
   const binCount = binNotes(library, trashedBooks).length + bin.books.length + bin.series.length;
   const { counts } = usePreferences().sidebar;
-  const inArtifacts = artifactPlaces.includes(active);
-  const [artifactsShown, setArtifactsShown] = useState(inArtifacts);
   const folderName = useRef<HTMLInputElement>(null);
   const [renaming, setRenaming] = useState<{ id: string | null; name: string } | null>(null);
-  useEffect(() => {
-    if (inArtifacts) setArtifactsShown(true);
-  }, [inArtifacts]);
   const renameId = renaming?.id;
   const adding = renaming !== null;
   useEffect(() => {
@@ -193,37 +182,6 @@ export function Sidebar({
         >
           {t("common.search")}
         </ActionRow>
-        <DisclosureRow
-          icon={<LayoutIcon size={17} />}
-          open={artifactsShown}
-          onToggle={() => setArtifactsShown(!artifactsShown)}
-          controls="sidebar-artifacts"
-        >
-          {t("nav.artifacts")}
-        </DisclosureRow>
-        {artifactsShown && (
-          <div id="sidebar-artifacts" className="flex flex-col gap-px ps-4">
-            <NavItem to="/books" active={active === "books"} icon={<BookIcon size={17} />}>
-              {t("nav.books")}
-            </NavItem>
-            <NavItem
-              to="/calendar"
-              active={active === "calendar"}
-              icon={<CalendarIcon size={17} />}
-              trailing={counts && upcoming > 0 ? upcoming : undefined}
-            >
-              {t("nav.calendar")}
-            </NavItem>
-            {!inBrowserSession() && (
-              <NavItem to="/wallet" active={active === "wallet"} icon={<WalletIcon size={17} />}>
-                {t("wallet.title")}
-              </NavItem>
-            )}
-            <NavItem to="/invoices" active={active === "invoices"} icon={<InvoiceIcon size={17} />}>
-              {t("nav.invoices")}
-            </NavItem>
-          </div>
-        )}
       </div>
       <div className="no-scrollbar -mx-2.5 flex grow flex-col gap-5 overflow-y-auto px-2.5 pb-4">
         <section className="flex flex-col gap-px">
@@ -240,6 +198,14 @@ export function Sidebar({
               </IconButton>
             }
           />
+          <NavItem
+            to="/"
+            search={{}}
+            active={active === "workspace"}
+            icon={<FolderIcon size={17} />}
+          >
+            {t("workspace.allFolders")}
+          </NavItem>
           {renaming?.id === null && folderInput()}
           {folders.map((folder) =>
             renaming?.id === folder.id ? (
@@ -250,13 +216,7 @@ export function Sidebar({
                 to="/"
                 search={{ view: `folder:${folder.id}` }}
                 active={active === `folder:${folder.id}`}
-                icon={
-                  folder.id === "default-writings" ? (
-                    <StoryIcon size={17} />
-                  ) : (
-                    <FolderIcon size={17} />
-                  )
-                }
+                icon={<FolderIcon size={17} />}
                 trailing={
                   counts
                     ? entries.filter((entry) => entry.folderId === folder.id).length
@@ -265,10 +225,12 @@ export function Sidebar({
                 menu={() => [
                   {
                     label: t("workspace.renameFolder"),
+                    icon: <PenIcon size={17} />,
                     onSelect: () => setRenaming({ id: folder.id, name: folder.name }),
                   },
                   {
                     label: t("common.delete"),
+                    icon: <TrashIcon size={17} />,
                     destructive: true,
                     onSelect: () => void removeFolder(folder),
                   },
@@ -291,6 +253,7 @@ export function Sidebar({
           )}
           <NavItem
             to="/trash"
+            tone="danger"
             active={active === "trash"}
             icon={<TrashIcon size={17} />}
             trailing={counts ? binCount : undefined}

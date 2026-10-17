@@ -13,10 +13,16 @@ import {
   ChevronLeftIcon,
   type ContextMenuItem,
   cn,
+  FolderIcon,
+  GlobeIcon,
+  HeadphonesIcon,
   IconButton,
+  LayoutIcon,
   MoreIcon,
+  NoteIcon,
   openFollowUpMenu,
   openMenu,
+  PenIcon,
   PinIcon,
   riseMotion,
   ShareIcon,
@@ -44,6 +50,7 @@ import {
   getLibrary,
   type LibraryEntry,
   useEntry,
+  useFolders,
   useLibraryReady,
 } from "../../library/store/library-store";
 import { recordOpened } from "../../library/store/recents-store";
@@ -141,11 +148,15 @@ function NoteEditorScreen({
   const navigate = useNavigate();
   // Chapters written for a book lead back to it.
   const book = useBook(entry.bookId ?? "");
+  const folders = useFolders();
+  const folder = folders.find((item) => item.id === entry.folderId);
   const { noteFont } = usePreferences();
   // "Record chapter" on an audiobook opens its new chapter already recording.
   const [tagging, setTagging] = useState(false);
   const [recording, setRecording] = useState(() => takeRecording(entry.id));
   const articleRef = useRef<HTMLElement>(null);
+  const readTrigger = useRef<HTMLButtonElement>(null);
+  const publishTrigger = useRef<HTMLButtonElement>(null);
   const [titleInBar, setTitleInBar] = useState(false);
   // On touch screens a note opens for reading, so scrolling never brings up
   // the keyboard; a tap on its text edits, and Done reads again. New notes
@@ -222,10 +233,38 @@ function NoteEditorScreen({
     "divider",
     {
       label: t("workspace.moveToFolder"),
+      icon: <FolderIcon size={18} />,
       onSelect: () => openFollowUpMenu(noteFolderItems([entry])),
     },
-    { label: t("workspace.noteFormat"), onSelect: () => openFollowUpMenu(noteFormatItems(entry)) },
-    { label: t("notes.fontMenu"), onSelect: () => openFollowUpMenu(noteFontItems(entry)) },
+    {
+      label: t("workspace.noteFormat"),
+      icon: <LayoutIcon size={18} />,
+      onSelect: () => openFollowUpMenu(noteFormatItems(entry)),
+    },
+    {
+      label: t("notes.fontMenu"),
+      icon: <PenIcon size={18} />,
+      onSelect: () => openFollowUpMenu(noteFontItems(entry)),
+    },
+    { label: t("workspace.tags"), icon: <NoteIcon size={18} />, onSelect: () => setTagging(true) },
+    ...(!browser && !spreadsheet
+      ? [
+          {
+            label: t("notes.readAloud"),
+            icon: <HeadphonesIcon size={18} />,
+            onSelect: () => readTrigger.current?.click(),
+          },
+        ]
+      : []),
+    ...(!spreadsheet
+      ? [
+          {
+            label: t("workspace.publishToWeb"),
+            icon: <GlobeIcon size={18} />,
+            onSelect: () => publishTrigger.current?.click(),
+          },
+        ]
+      : []),
     "divider",
     {
       label: t("notes.deleteNote"),
@@ -276,7 +315,7 @@ function NoteEditorScreen({
             ) : (
               <Link
                 to="/"
-                search={(s) => s}
+                search={{ view: folder ? `folder:${folder.id}` : undefined }}
                 className="flex min-h-11 shrink-0 items-center gap-0.5 px-1 text-body text-accent-text no-underline md:hidden"
               >
                 <ChevronLeftIcon size={22} strokeWidth={2.2} className="shrink-0" />
@@ -286,7 +325,7 @@ function NoteEditorScreen({
                     titleInBar && "@max-[860px]/note:sr-only",
                   )}
                 >
-                  {entry.title || t("notes.newNote")}
+                  {folder?.name || t("nav.workspace")}
                 </span>
               </Link>
             )}
@@ -348,7 +387,12 @@ function NoteEditorScreen({
                 </button>
               )}
               {!browser && !spreadsheet && (
-                <ReadAloudButton root={articleRef} title={entry.title} />
+                <ReadAloudButton
+                  root={articleRef}
+                  title={entry.title}
+                  triggerRef={readTrigger}
+                  className="hidden"
+                />
               )}
               <AiAssist />
               <IconButton
@@ -402,10 +446,17 @@ function NoteEditorScreen({
                   ? t("sharing.shared", { count: shareSession.peers.length + 1 })
                   : t("sharing.share")}
               </Button>
-              {!spreadsheet && <PublishControl entry={entry} doc={provider.doc} />}
+              {!spreadsheet && (
+                <PublishControl
+                  entry={entry}
+                  doc={provider.doc}
+                  triggerRef={publishTrigger}
+                  menuOnly
+                />
+              )}
               <IconButton
                 size="icon-sm"
-                variant="ghost"
+                variant="default"
                 label={t("notes.more")}
                 onClick={(event) => {
                   openMenu(event.currentTarget, moreItems(), { edge: "trailing" });

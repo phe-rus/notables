@@ -97,6 +97,14 @@ update **Status** in `AGENTS.md`, and record lasting decisions in `docs/adr/`.
 
 ## Owner's direction, 17 October 2026
 
+The owner's follow-up after testing changes the home to a Workspace folder
+manager, asks for inset note cards, consistent icons and scrollable controls,
+real camera scanning, side-by-side photos, complete link metadata and measured
+smoothness. Gallery previews show opening note content, folder names drive back
+labels, and a default More button replaces the separate compose control.
+Artifacts remains on Workspace and is removed from the sidebar. See [the refinement record](reviews/2026-10-17-writing-refinement.md).
+
+
 Device linking and management come first. The owner tested v0.2.2:
 Android can approve the iPhone, but Android cannot finish joining the
 iPhone's space after the four words. Android reports a connection error.

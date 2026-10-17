@@ -5,6 +5,7 @@ import type * as Y from "yjs";
 import { locale, t } from "../../../i18n/i18n";
 import { fileNameFor, saveFile } from "../../../platform/save-file";
 import { saveNoteContent } from "../../../platform/storage/note-content-cache";
+import { previewContent } from "../../library/lib/note-preview";
 import { getLibrary, type LibraryEntry } from "../../library/store/library-store";
 import { calculateCell, columnName } from "../lib/formulas";
 
@@ -106,6 +107,7 @@ export function SpreadsheetEditor({ doc, entry }: { doc: Y.Doc; entry: LibraryEn
       },
     };
     void saveNoteContent(entry.id, document);
+    getLibrary().update(entry.id, { previewContent: previewContent(document) });
     if (noteDoc.title(doc) !== entry.title) noteDoc.setTitle(doc, entry.title);
   }, [values, entry.title, entry.id, doc, formatter]);
   const write = (key: string, value: string) => {

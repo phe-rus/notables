@@ -57,7 +57,7 @@ export function WalletScreen() {
       >
         {sidebar.collapsed && <CollapsedSidebarControls />}
         <div className="flex items-center gap-2">
-          {onCard ? (
+          {onCard || state.view === "add" ? (
             <IconButton
               size="icon-sm"
               variant="ghost"
@@ -78,7 +78,11 @@ export function WalletScreen() {
             </IconButton>
           )}
           <h1 className="min-w-0 grow truncate text-title2 font-bold tracking-tight">
-            {onCard ? selected.draft.displayName : t("wallet.title")}
+            {onCard
+              ? selected.draft.displayName
+              : state.view === "add"
+                ? t("wallet.addCard")
+                : t("wallet.title")}
           </h1>
           {accessible && state.status?.protected && !onCard && (
             <IconButton
@@ -100,7 +104,6 @@ export function WalletScreen() {
               label={t("wallet.addCard")}
               disabled={state.busy}
               onClick={() => showWallet("add")}
-              className="bg-fill"
             >
               <PlusIcon size={20} strokeWidth={2} />
             </IconButton>

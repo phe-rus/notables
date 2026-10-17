@@ -39,3 +39,20 @@ test("concurrent folder deletion and note creation leave the note visible", asyn
   if (!note) throw new Error("lost note");
   expect(folderView(home, true, first.getFolders()).matches(note)).toBe(true);
 });
+
+test("editing a note preserves folder snapshots and unchanged metadata emits no update", async () => {
+  const library = new Library(createMemoryPersistence());
+  await library.loaded;
+  const entry = library.create();
+  const folders = library.getFolders();
+  let notifications = 0;
+  const unsubscribe = library.subscribe(() => {
+    notifications++;
+  });
+  library.update(entry.id, { title: "Changed", tags: ["travel"] });
+  expect(notifications).toBe(1);
+  expect(library.getFolders()).toBe(folders);
+  library.update(entry.id, { title: "Changed", tags: ["travel"] });
+  expect(notifications).toBe(1);
+  unsubscribe();
+});

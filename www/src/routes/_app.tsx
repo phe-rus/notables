@@ -71,9 +71,7 @@ function WorkspaceShell() {
   useWarmRoutes();
   const { view: viewId } = Route.useSearch();
   const folders = useFolders();
-  const folder =
-    folders.find((item) => `folder:${item.id}` === viewId) ??
-    (!viewId ? (folders.find((item) => item.id === "default-writings") ?? folders[0]) : undefined);
+  const folder = folders.find((item) => `folder:${item.id}` === viewId);
   const view = folder
     ? folderView(
         folder,
@@ -94,7 +92,8 @@ function WorkspaceShell() {
   const inConnections = pathname.startsWith("/connections");
   const inWallet = pathname === "/wallet" || pathname === "/wallet/";
   // Settings, Calendar, Connections and Recently Deleted fill the content area without a list beside them.
-  const fullPage = inSettings || inTrash || inCalendar || inConnections || inWallet;
+  const workspace = pathname === "/" && !folder && (!viewId || viewId === "workspace");
+  const fullPage = workspace || inSettings || inTrash || inCalendar || inConnections || inWallet;
   const noteId = note?.params.noteId;
   const bookId = book?.params.bookId;
   const invoiceId = invoice?.params.invoiceId;
@@ -110,23 +109,25 @@ function WorkspaceShell() {
   const [liveWidth, setLiveWidth] = useState<number | null>(null);
   const width = liveWidth ?? storedWidth;
 
-  const location: SidebarLocation = inWallet
-    ? "wallet"
-    : inSettings
-      ? "settings"
-      : inTrash
-        ? "trash"
-        : inCalendar
-          ? "calendar"
-          : inConnections
-            ? "connections"
-            : inInvoices
-              ? "invoices"
-              : inBooks
-                ? "books"
-                : view.id.startsWith("folder:")
-                  ? (view.id as SidebarLocation)
-                  : (groupOf(view.id) ?? "all");
+  const location: SidebarLocation = workspace
+    ? "workspace"
+    : inWallet
+      ? "wallet"
+      : inSettings
+        ? "settings"
+        : inTrash
+          ? "trash"
+          : inCalendar
+            ? "calendar"
+            : inConnections
+              ? "connections"
+              : inInvoices
+                ? "invoices"
+                : inBooks
+                  ? "books"
+                  : view.id.startsWith("folder:")
+                    ? (view.id as SidebarLocation)
+                    : (groupOf(view.id) ?? "all");
 
   const createNote = useCallback(
     (kind?: NoteKind, format?: "document" | "spreadsheet") => {
@@ -291,6 +292,7 @@ function WorkspaceShell() {
         )}
       >
         {!fullPage &&
+          !(isPhone && detailOpen) &&
           (inInvoices ? (
             <InvoicesList
               activeId={invoiceId}

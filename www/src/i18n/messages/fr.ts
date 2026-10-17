@@ -1,6 +1,23 @@
 import type { Messages } from "./en";
 
 export const fr: Messages = {
+  capture: {
+    takePhoto: "Prendre une photo",
+    previewFailed: "Impossible de charger l’aperçu. Vérifiez votre connexion et réessayez.",
+    cameraError: "Caméra indisponible. Autorisez son accès ou importez une image.",
+    page: "Page {count}",
+    removePage: "Supprimer la page",
+    addPage: "Ajouter une page",
+    processing: "Traitement…",
+    useScan: "Utiliser le scan",
+    alignPage: "Placez la page dans le cadre",
+    starting: "Démarrage de la caméra…",
+    importImages: "Importer des images",
+    retryCamera: "Relancer la caméra",
+    scannedDocument: "Document numérisé",
+    scanFailed: "Impossible de lire ce scan. Essayez une image plus nette.",
+    reviewText: "Vérifier le texte numérisé",
+  },
   lock: {
     title: "Verrou",
     hint: "Le verrou protège le Portefeuille, le Coffre et les notes verrouillées. Vos données secrètes sont chiffrées, qu’il soit activé ou non.",
@@ -17,6 +34,7 @@ export const fr: Messages = {
     off: "Désactivé",
   },
   wallet: {
+    nfcUnavailable: "Le NFC n’est pas disponible sur cet appareil.",
     phoneNumber: "Numéro de téléphone",
     iccid: "ICCID",
     puk: "PUK",
@@ -952,6 +970,10 @@ export const fr: Messages = {
     exportCsv: "Exporter en CSV",
   },
   workspace: {
+    publishToWeb: "Publier sur le web",
+    emptyFolder: "Dossier vide",
+    folderOptions: "Options pour {name}",
+    allFolders: "Tous les dossiers",
     tagsHint:
       "Séparez les tags par des espaces ou des virgules. Vous pouvez aussi écrire des #tags dans une note.",
     writings: "Écrits",

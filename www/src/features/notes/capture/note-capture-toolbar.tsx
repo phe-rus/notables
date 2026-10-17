@@ -4,11 +4,12 @@ import { Button, Sheet, toast } from "@phe-rus/hino";
 import { useRef, useState } from "react";
 import { t } from "../../../i18n/i18n";
 import { saveMedia } from "../../../platform/storage/media-store";
-import { getLinkPreview } from "../../../server/link-preview/link-preview.functions";
 import type { EventTarget } from "../../calendar/components/event-form";
 import { EventSheet } from "../../calendar/components/event-sheet";
 import { getCalendarStore } from "../../calendar/store/calendar-store";
+import { DocumentScanner } from "../../capture/components/document-scanner";
 import { editorLabels } from "../lib/editor-labels";
+import { fetchLinkPreview } from "./link-preview";
 
 /** Captures content into the current editor and reuses the calendar's reminder editor. */
 export function NoteCaptureToolbar({
@@ -28,10 +29,10 @@ export function NoteCaptureToolbar({
   className?: string;
   menuPlacement?: "above" | "below";
 }) {
-  const { insertAttachment, insertImage, insertLinkCard, appendContent } = useEditorCommands();
+  const { insertAttachment, insertLinkCard, appendContent } = useEditorCommands();
   const file = useRef<HTMLInputElement>(null);
-  const scan = useRef<HTMLInputElement>(null);
-  const mode = useRef<"text" | "document">("text");
+  const [scanMode, setScanMode] = useState<"text" | "document" | null>(null);
+  const [scannedText, setScannedText] = useState<string | null>(null);
   const [reminder, setReminder] = useState<EventTarget | null>(null);
   const previewJob = useRef(0);
   const closePreview = () => {
@@ -62,43 +63,65 @@ export function NoteCaptureToolbar({
       }
     }
   };
-  const scanFile = async (item?: File) => {
-    if (!item || busy) return;
+  const scanFiles = async (files: File[]) => {
+    if (!files.length || busy) return;
     setBusy(true);
     try {
-      if (mode.current === "document") {
-        const { prepareCardImage } = await import("../../wallet/lib/card-recognition");
-        const canvas = await prepareCardImage(item);
-        const blob = await new Promise<Blob>((resolve, reject) =>
-          canvas.toBlob(
-            (value) => (value ? resolve(value) : reject(new Error("image-failed"))),
-            "image/jpeg",
-            0.92,
-          ),
-        );
-        canvas.width = 0;
-        canvas.height = 0;
-        insertImage({
+      const { prepareCardImage, recognizeCard } = await import("../../wallet/lib/card-recognition");
+      if (scanMode === "document") {
+        const { PDFDocument } = await import("pdf-lib");
+        const pdf = await PDFDocument.create();
+        for (const file of files.slice(0, 10)) {
+          const canvas = await prepareCardImage(file);
+          try {
+            const blob = await new Promise<Blob>((resolve, reject) =>
+              canvas.toBlob(
+                (value) => (value ? resolve(value) : reject(new Error("capture-failed"))),
+                "image/jpeg",
+                0.9,
+              ),
+            );
+            const image = await pdf.embedJpg(await blob.arrayBuffer());
+            const page = pdf.addPage([595.28, 841.89]);
+            const fit = Math.min(555.28 / image.width, 801.89 / image.height);
+            const width = image.width * fit;
+            const height = image.height * fit;
+            page.drawImage(image, {
+              x: (595.28 - width) / 2,
+              y: (841.89 - height) / 2,
+              width,
+              height,
+            });
+          } finally {
+            canvas.width = 0;
+            canvas.height = 0;
+          }
+        }
+        const bytes = await pdf.save();
+        const blob = new Blob([new Uint8Array(bytes)], { type: "application/pdf" });
+        insertAttachment({
           src: localMediaSrc(await saveMedia(blob)),
-          alt: item.name,
-          layout: { aspect: "original", fit: "contain" },
+          name: `${t("capture.scannedDocument")}.pdf`,
+          mime: blob.type,
+          size: blob.size,
         });
       } else {
-        const { prepareCardImage, recognizeCard } = await import(
-          "../../wallet/lib/card-recognition"
-        );
         const { currentLanguage } = await import("../../../i18n/i18n");
-        const canvas = await prepareCardImage(item);
-        const result = await recognizeCard(canvas, currentLanguage(), () => {}).result;
+        const first = files[0];
+        if (!first) return;
+        const canvas = await prepareCardImage(first);
+        const result = await recognizeCard(canvas, currentLanguage(), () => {}, "document").result;
         if (!result.text.trim()) throw new Error("no-text");
-        appendContent({ paragraphs: result.text.trim().split(/\n\s*\n/) });
+        setScannedText(result.text.trim());
       }
-    } catch {
-      toast.error(t("editor.photoFailed"));
+    } catch (error) {
+      toast.error(t("capture.scanFailed"));
+      throw error;
     } finally {
       setBusy(false);
     }
   };
+
   return (
     <>
       <BlockToolbar
@@ -119,16 +142,14 @@ export function NoteCaptureToolbar({
           browser || busy
             ? undefined
             : () => {
-                mode.current = "text";
-                scan.current?.click();
+                setScanMode("text");
               }
         }
         onScanDocument={
           browser || busy
             ? undefined
             : () => {
-                mode.current = "document";
-                scan.current?.click();
+                setScanMode("document");
               }
         }
         className={className}
@@ -144,17 +165,38 @@ export function NoteCaptureToolbar({
           event.target.value = "";
         }}
       />
-      <input
-        ref={scan}
-        type="file"
-        accept="image/jpeg,image/png,image/webp"
-        capture="environment"
-        hidden
-        onChange={(event) => {
-          void scanFile(event.target.files?.[0]);
-          event.target.value = "";
-        }}
-      />
+      <DocumentScanner mode={scanMode} onClose={() => setScanMode(null)} onCapture={scanFiles} />
+      <Sheet
+        open={scannedText !== null}
+        onClose={() => setScannedText(null)}
+        label={t("capture.reviewText")}
+        className="max-w-[540px]"
+      >
+        <div className="flex flex-col gap-4 p-5">
+          <h2 className="text-title3 font-semibold">{t("capture.reviewText")}</h2>
+          <textarea
+            aria-label={t("capture.reviewText")}
+            value={scannedText ?? ""}
+            rows={10}
+            onChange={(event) => setScannedText(event.target.value)}
+            className="rounded-xl control-field p-3 text-body"
+          />
+          <div className="flex justify-end gap-2">
+            <Button variant="ghost" onClick={() => setScannedText(null)}>
+              {t("common.cancel")}
+            </Button>
+            <Button
+              disabled={!scannedText?.trim()}
+              onClick={() => {
+                appendContent({ paragraphs: (scannedText ?? "").split(/\n\s*\n/) });
+                setScannedText(null);
+              }}
+            >
+              {t("editor.apply")}
+            </Button>
+          </div>
+        </div>
+      </Sheet>
       <Sheet
         open={linking}
         onClose={closePreview}
@@ -176,16 +218,17 @@ export function NoteCaptureToolbar({
             const job = ++previewJob.current;
             setPreviewing(true);
             try {
-              const preview = await getLinkPreview({ data: { url: url.href } });
-              if (previewJob.current === job) insertLinkCard(preview);
+              const preview = await fetchLinkPreview(url.href);
+              if (previewJob.current === job) {
+                insertLinkCard(preview);
+                setLinking(false);
+                setLink("");
+              }
             } catch {
-              if (previewJob.current === job)
-                insertLinkCard({ url: url.href, title: url.hostname, description: "", image: "" });
+              if (previewJob.current === job) toast.error(t("capture.previewFailed"));
             } finally {
               if (previewJob.current === job) {
                 setPreviewing(false);
-                setLinking(false);
-                setLink("");
               }
             }
           }}

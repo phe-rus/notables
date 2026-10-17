@@ -83,7 +83,14 @@ export function useSelectionState(): SelectionState {
   useEffect(() => {
     const read = () => {
       const next = $readSelectionState();
-      if (next) setState(next);
+      if (next)
+        setState((current) =>
+          (Object.keys(next) as Array<keyof SelectionState>).every(
+            (key) => current[key] === next[key],
+          )
+            ? current
+            : next,
+        );
     };
     return mergeRegister(
       editor.registerUpdateListener(({ editorState }) => editorState.read(read)),

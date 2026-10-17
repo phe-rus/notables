@@ -88,6 +88,7 @@ export function recognizeCard(
   canvas: HTMLCanvasElement,
   locale: keyof typeof languages,
   progress: (value: number) => void,
+  mode: "card" | "document" = "card",
 ) {
   cancelCardRecognition();
   let worker: Worker | null = null;
@@ -111,7 +112,7 @@ export function recognizeCard(
       rejectJob = reject;
       void (async () => {
         try {
-          const { createWorker } = await import("tesseract.js");
+          const { createWorker, PSM } = await import("tesseract.js");
           if (cancelled) return;
           const language = languages[locale];
           const loaded = await createWorker(language === "eng" ? "eng" : `${language}+eng`, 1, {
@@ -131,9 +132,10 @@ export function recognizeCard(
             return;
           }
           // Grayscale, stretched contrast and enough pixels for small print.
-          image = enhanceForReading(image);
-          // Barcodes often carry what the print says, more reliably (PDF417 on IDs).
-          const codes = await readCardCodes(image).catch(() => []);
+          if (mode === "card") image = enhanceForReading(image);
+          else await loaded.setParameters({ tessedit_pageseg_mode: PSM.AUTO });
+          // Card codes are useful on IDs, but scanning a text page should not spend time on them.
+          const codes = mode === "card" ? await readCardCodes(image).catch(() => []) : [];
           if (cancelled || !image) return;
           const { data } = await loaded.recognize(image);
           const text = [data.text, ...codes].join("\n");

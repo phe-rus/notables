@@ -8,7 +8,7 @@ import {
   toast,
   useDismiss,
 } from "@phe-rus/hino";
-import { useCallback, useId, useRef, useState } from "react";
+import { type RefObject, useCallback, useId, useRef, useState } from "react";
 import type * as Y from "yjs";
 import { getAuthorName } from "../../../platform/author-preferences";
 import type { LibraryEntry } from "../../library/store/library-store";
@@ -18,7 +18,17 @@ import { useNotePublication } from "../hooks/use-note-publication";
  * Publish, update and unpublish a note. Lives inside the editor so it can
  * snapshot the current document.
  */
-export function PublishControl({ entry, doc }: { entry: LibraryEntry; doc: Y.Doc }) {
+export function PublishControl({
+  entry,
+  doc,
+  menuOnly = false,
+  triggerRef,
+}: {
+  entry: LibraryEntry;
+  doc: Y.Doc;
+  menuOnly?: boolean;
+  triggerRef?: RefObject<HTMLButtonElement | null>;
+}) {
   const {
     isPublished: published,
     link,
@@ -64,10 +74,11 @@ export function PublishControl({ entry, doc }: { entry: LibraryEntry; doc: Y.Doc
   return (
     <div ref={root} className="relative">
       <IconButton
+        ref={triggerRef}
         size="icon-sm"
         label={published ? "Published" : "Publish"}
         variant={published ? "link" : "ghost"}
-        className="@min-[600px]/note:hidden"
+        className={menuOnly ? "hidden" : "@min-[600px]/note:hidden"}
         aria-expanded={open}
         aria-controls={panelId}
         onClick={() => setOpen((v) => !v)}
@@ -76,7 +87,7 @@ export function PublishControl({ entry, doc }: { entry: LibraryEntry; doc: Y.Doc
       </IconButton>
       <Button
         variant={published ? "secondary" : "default"}
-        className="@max-[600px]/note:hidden"
+        className={menuOnly ? "hidden" : "@max-[600px]/note:hidden"}
         aria-expanded={open}
         aria-controls={panelId}
         onClick={() => setOpen((v) => !v)}

@@ -28,6 +28,8 @@ export const INSERT_CONTENTS_COMMAND: LexicalCommand<void> =
 
 export const INSERT_IMAGE_COMMAND: LexicalCommand<ImageInput> =
   createCommand("INSERT_IMAGE_COMMAND");
+export const INSERT_IMAGES_COMMAND: LexicalCommand<ImageInput[]> =
+  createCommand("INSERT_IMAGES_COMMAND");
 
 export const INSERT_AUDIO_CLIP_COMMAND: LexicalCommand<{
   src: string;
@@ -45,6 +47,20 @@ export function MediaPlugin() {
   useEffect(
     () =>
       mergeRegister(
+        editor.registerCommand(
+          INSERT_IMAGES_COMMAND,
+          (photos) => {
+            let previous: ReturnType<typeof $createImageNode> | undefined;
+            for (const photo of photos) {
+              const node = $createImageNode(photo);
+              if (previous) previous.insertAfter(node);
+              else $insertNodeToNearestRoot(node);
+              previous = node;
+            }
+            return true;
+          },
+          COMMAND_PRIORITY_EDITOR,
+        ),
         editor.registerCommand(
           INSERT_LINK_CARD_COMMAND,
           (input) => {

@@ -2,6 +2,23 @@ import type { Messages } from "./en";
 
 /** Simplified Chinese. Chinese has one plural form, so plurals carry only `other`. */
 export const zh: Messages = {
+  capture: {
+    takePhoto: "拍照",
+    previewFailed: "无法加载预览。请检查网络后重试。",
+    cameraError: "相机不可用。请允许相机访问或导入图片。",
+    page: "第 {count} 页",
+    removePage: "移除页面",
+    addPage: "添加页面",
+    processing: "正在处理…",
+    useScan: "使用扫描",
+    alignPage: "将页面放入取景框",
+    starting: "正在启动相机…",
+    importImages: "导入图片",
+    retryCamera: "重启相机",
+    scannedDocument: "扫描文档",
+    scanFailed: "无法识别扫描内容。请尝试更清晰的图片。",
+    reviewText: "检查扫描文字",
+  },
   lock: {
     title: "锁定",
     hint: "锁定可保护钱包、保险库和你锁定的笔记。无论是否开启，你的私密数据都会加密。",
@@ -18,6 +35,7 @@ export const zh: Messages = {
     off: "关闭",
   },
   wallet: {
+    nfcUnavailable: "此设备不支持 NFC。",
     phoneNumber: "电话号码",
     iccid: "ICCID",
     puk: "PUK",
@@ -893,6 +911,10 @@ export const zh: Messages = {
     exportCsv: "导出CSV",
   },
   workspace: {
+    publishToWeb: "发布到网页",
+    emptyFolder: "空文件夹",
+    folderOptions: "{name} 的选项",
+    allFolders: "所有文件夹",
     tagsHint: "用空格或逗号分隔标签，也可以在笔记中输入 #标签。",
     writings: "写作",
     notes: "笔记",
