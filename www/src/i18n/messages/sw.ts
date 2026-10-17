@@ -89,6 +89,12 @@ export const sw: Messages = {
     kindMembership: "Uanachama",
     kindOther: "Nyingine",
 
+    cameraStarting: "Kamera inafunguka…",
+    autoScanHint: "Weka kadi ndani ya fremu. Maelezo yanasomwa kiotomatiki.",
+    holdSteady: "Kadi imetambuliwa. Tuliza kamera.",
+    scanRetry: "Sogea karibu, epuka mngʼao au chagua picha.",
+    nfcWaiting: "Weka kifaa karibu na lebo ya NFC.",
+    nfcUnsupported: "Lebo hii haina maelezo yanayokubalika. Changanua kadi iliyochapishwa.",
     scanTitle: "Ongeza kadi",
     scanHint: "Changanua kadi au leta picha. Kagua taarifa kabla ya kuhifadhi.",
     scanCard: "Changanua kadi",

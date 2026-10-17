@@ -1,7 +1,6 @@
 import type { Worker } from "tesseract.js";
 import type { CardKind } from "../model/wallet-model";
 import { readCardCodes } from "./card-codes";
-import { enhanceForReading } from "./card-image";
 import { readMrz } from "./mrz";
 
 export interface CardSuggestions {
@@ -42,31 +41,64 @@ export function suggestCardFields(text: string): CardSuggestions {
     .map((line) => line.trim())
     .filter(Boolean);
   const number =
-    text.match(/(?<!\d)(?:\d{4}[ -]){3}\d{4}(?!\d)|(?<!\d)\d{12,19}(?!\d)/)?.[0].trim() ?? "";
+    text
+      .match(
+        /(?<!\d)(?:\d{4}[ -]){3}\d{4}(?!\d)|(?<!\d)\d{4}[ -]\d{6}[ -]\d{5}(?!\d)|(?<!\d)\d{12,19}(?!\d)/,
+      )?.[0]
+      .trim() ?? "";
   const expiry = text.match(/\b(?:0[1-9]|1[0-2])\s*\/\s*\d{2}(?:\d{2})?\b/)?.[0] ?? "";
-  const holder =
+  const labeledHolder =
     lines
       .find((line) => /^(?:cardholder|holder|name|titulaire|titular|jina)\s*:/i.test(line))
       ?.replace(/^[^:]+:\s*/, "")
       .slice(0, 4096) ?? "";
   const electricity = /\b(?:umeme|yaka|electricity|electric|meter)\b/i.test(text);
-  const labeled = (label: string) =>
-    lines
-      .find((line) => new RegExp(`^(?:${label})\\s*(?:number|no\\.?)?\\s*[:#-]`, "i").test(line))
-      ?.replace(/^[^:#-]+[:#-]\s*/, "")
-      .trim()
-      .slice(0, 4096) ?? "";
+  const labeled = (label: string) => {
+    const pattern = new RegExp(`^(?:${label})\\b\\s*(?:number|no\\.?)?\\s*[:#-]?\\s*(.*)$`, "i");
+    for (const [index, line] of lines.entries()) {
+      const match = line.match(pattern);
+      if (!match) continue;
+      const value = match[1]?.trim() || lines[index + 1]?.trim() || "";
+      if (/^(?=.*\d)[\p{L}\d][\p{L}\d -]{2,}$/u.test(value)) return value.slice(0, 4096);
+    }
+    return "";
+  };
+  const bank = !!number && !!expiry;
+  const membership = /\b(?:membership|member|loyalty)\b/i.test(text);
+  const identity = /\b(?:national identity|national id|identity card|nin)\b/i.test(text);
+  const labeledNumber = labeled("card|member|membership|id|nin|passport");
+  const holder =
+    labeledHolder ||
+    (bank
+      ? (lines.findLast(
+          (line) =>
+            /^[\p{L}][\p{L} .'-]+\s[\p{L} .'-]+$/u.test(line) &&
+            !/\b(?:bank|visa|mastercard|credit|debit|valid|thru|expires|member|card|american express)\b/i.test(
+              line,
+            ),
+        ) ?? "")
+      : "");
   // A SIM card's ICCID: 19 or 20 digits starting with 89, often printed in groups.
   const iccid = electricity
     ? ""
     : (text.replace(/[ -]/g, "").match(/(?<!\d)89\d{17,18}(?!\d)/)?.[0] ?? "");
   return {
-    kind: electricity ? "electricity" : iccid ? "sim" : number && expiry ? "bank" : "other",
+    kind: electricity
+      ? "electricity"
+      : iccid
+        ? "sim"
+        : bank
+          ? "bank"
+          : identity
+            ? "national-id"
+            : membership
+              ? "membership"
+              : "other",
     meter: labeled("meter"),
     account: iccid || labeled("account|customer"),
     displayName: lines[0]?.slice(0, 200) ?? "",
     holder,
-    number: electricity || iccid ? "" : number,
+    number: electricity || iccid ? "" : number || labeledNumber,
     expiry: electricity ? "" : expiry,
     issuer: /\bumeme\b/i.test(text) ? "Umeme" : "",
     // PUK1 is the code that unlocks a blocked SIM; the holder card prints it.
@@ -94,6 +126,7 @@ export function recognizeCard(
   let worker: Worker | null = null;
   let image: HTMLCanvasElement | null = canvas;
   let cancelled = false;
+  let stopReader: (() => void) | undefined;
   let rejectJob: (error: Error) => void = () => {};
   const cancel = () => {
     cancelled = true;
@@ -103,6 +136,7 @@ export function recognizeCard(
       image = null;
     }
     void worker?.terminate();
+    stopReader?.();
     rejectJob(new Error("cancelled"));
   };
   active = cancel;
@@ -112,6 +146,20 @@ export function recognizeCard(
       rejectJob = reject;
       void (async () => {
         try {
+          if (mode === "card") {
+            const { createCardReader } = await import("./card-reader");
+            if (cancelled || !image) return;
+            const reader = createCardReader(locale);
+            stopReader = () => reader.stop();
+            const reading = await reader.read(image);
+            const codes = await readCardCodes(image).catch(() => []);
+            if (cancelled) return;
+            const text = [reading.text, ...codes].join("\n");
+            if (!text.trim()) throw new Error("no-readable-details");
+            progress(1);
+            resolve({ ...reading, text, suggestions: suggestCardFields(text) });
+            return;
+          }
           const { createWorker, PSM } = await import("tesseract.js");
           if (cancelled) return;
           const language = languages[locale];
@@ -131,14 +179,10 @@ export function recognizeCard(
             await loaded.terminate();
             return;
           }
-          // Grayscale, stretched contrast and enough pixels for small print.
-          if (mode === "card") image = enhanceForReading(image);
-          else await loaded.setParameters({ tessedit_pageseg_mode: PSM.AUTO });
-          // Card codes are useful on IDs, but scanning a text page should not spend time on them.
-          const codes = mode === "card" ? await readCardCodes(image).catch(() => []) : [];
+          await loaded.setParameters({ tessedit_pageseg_mode: PSM.AUTO });
           if (cancelled || !image) return;
           const { data } = await loaded.recognize(image);
-          const text = [data.text, ...codes].join("\n");
+          const text = data.text;
           if (!cancelled)
             resolve({
               text: text.slice(0, 20_000),
@@ -154,6 +198,7 @@ export function recognizeCard(
             image = null;
           }
           void worker?.terminate();
+          stopReader?.();
         }
       })();
     },

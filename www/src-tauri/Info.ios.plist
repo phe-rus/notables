@@ -14,6 +14,8 @@
   <string>Notables saves images and exports you choose to your photo library.</string>
   <key>NSFaceIDUsageDescription</key>
   <string>Notables uses Face ID to unlock your wallet and other places you lock.</string>
+  <key>NFCReaderUsageDescription</key>
+  <string>Notables reads supported NFC tags to add card details to your private wallet.</string>
   <!-- No ITSAppUsesNonExemptEncryption here: set to true, Apple also wants
        the code of an approved encryption document, and there is none. Each
        TestFlight build asks instead: standard encryption, not in France. -->

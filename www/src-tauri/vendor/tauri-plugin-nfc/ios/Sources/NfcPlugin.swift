@@ -82,6 +82,14 @@ class NfcPlugin: Plugin, NFCTagReaderSessionDelegate, NFCNDEFReaderSessionDelega
   var session: Session?
   var status: NfcStatus!
 
+  @objc public func cancel(_ invoke: Invoke) {
+    let previous = session
+    session = nil
+    previous?.nfcSession?.invalidate()
+    previous?.invoke.reject("cancelled")
+    invoke.resolve()
+  }
+
   public override func load(webview: WKWebView) {
     var available = false
     var errorReason: String?

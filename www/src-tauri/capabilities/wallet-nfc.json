@@ -1,8 +1,14 @@
 {
   "identifier": "wallet-nfc",
-  "description": "Read-only NFC acquisition on Android for the local main window.",
+  "description": "Read-only card acquisition for the local main window on phones and tablets.",
   "windows": ["main"],
   "local": true,
-  "platforms": ["android"],
-  "permissions": ["nfc:allow-is-available", "nfc:allow-scan", "nfc:allow-cancel"]
+  "platforms": ["android", "iOS"],
+  "permissions": [
+    "nfc:allow-is-available",
+    "nfc:allow-scan",
+    "nfc:allow-cancel",
+    "card-reader:allow-recognize",
+    "card-reader:allow-cancel"
+  ]
 }

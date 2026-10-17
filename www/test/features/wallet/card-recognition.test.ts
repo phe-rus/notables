@@ -2,6 +2,27 @@ import { describe, expect, it } from "bun:test";
 import { suggestCardFields } from "../../../src/features/wallet/lib/card-recognition";
 
 describe("wallet recognition suggestions", () => {
+  it("reads labeled membership and national identity numbers", () => {
+    expect(suggestCardFields("LIBRARY\nMEMBERSHIP\nMember No: AB001234")).toMatchObject({
+      kind: "membership",
+      number: "AB001234",
+    });
+    expect(suggestCardFields("NATIONAL IDENTITY CARD\nNIN: CM00123456")).toMatchObject({
+      kind: "national-id",
+      number: "CM00123456",
+    });
+  });
+  it("reads utility labels without punctuation and values on the next line", () => {
+    const fields = suggestCardFields("UMEME\nMeter No 00123456789\nAccount Number\n0004567");
+    expect(fields.meter).toBe("00123456789");
+    expect(fields.account).toBe("0004567");
+  });
+  it("reads a printed bank holder and split Amex number", () => {
+    const fields = suggestCardFields("TEST BANK\n3782 822463 10005\n12/29\nJANE EXAMPLE");
+    expect(fields.kind).toBe("bank");
+    expect(fields.number).toBe("3782 822463 10005");
+    expect(fields.holder).toBe("JANE EXAMPLE");
+  });
   it("recognizes Umeme as electricity and preserves meter and account zeros", () => {
     const fields = suggestCardFields("UMEME\nMETER NUMBER: 00123456789\nACCOUNT NUMBER: 0004567");
     expect(fields.kind).toBe("electricity");

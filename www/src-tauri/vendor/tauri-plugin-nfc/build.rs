@@ -5,6 +5,15 @@
 const COMMANDS: &[&str] = &["is_available", "write", "scan", "cancel"];
 
 fn main() {
+    #[cfg(target_os = "macos")]
+    tauri_plugin::mobile::update_entitlements(|entitlements| {
+        entitlements.insert(
+            "com.apple.developer.nfc.readersession.formats".into(),
+            vec!["TAG".into()].into(),
+        );
+    })
+    .expect("failed to configure NFC entitlement");
+
     let result = tauri_plugin::Builder::new(COMMANDS)
         .global_api_script_path("./api-iife.js")
         .android_path("android")

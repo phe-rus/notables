@@ -23,12 +23,12 @@ function CardSurface({
   return (
     <div
       className={cn(
-        "relative isolate flex aspect-[85.6/54] w-full flex-col overflow-hidden rounded-3xl p-5 shadow-[0_14px_34px_-16px_var(--color-shadow-floating)] select-none",
+        "relative isolate flex aspect-[85.6/54] w-full flex-col overflow-hidden rounded-3xl p-5 shadow-md ring-1 ring-inset ring-black/5 select-none",
         className,
       )}
       style={{
         backgroundColor: colors.accent,
-        backgroundImage: `linear-gradient(150deg, ${colors.accent}, color-mix(in srgb, ${colors.accent} 82%, ${colors.accentText}))`,
+        backgroundImage: `linear-gradient(155deg, color-mix(in srgb, ${colors.accent} 85%, white), ${colors.accent})`,
         color: colors.onAccent,
       }}
     >
@@ -54,10 +54,10 @@ function CardHeading({
   return (
     <div className="flex items-start justify-between gap-3">
       <div className="flex min-w-0 flex-col">
-        <span className="truncate text-headline font-semibold">{name}</span>
+        <span className="truncate text-headline font-semibold tracking-tight">{name}</span>
         {issuer && <span className="truncate text-footnote opacity-75">{issuer}</span>}
       </div>
-      <span className="shrink-0 pt-0.5 text-caption2 font-semibold tracking-[0.08em] uppercase opacity-70">
+      <span className="max-w-[35%] shrink-0 rounded-full bg-black/5 px-2 py-1 text-end text-caption2 font-medium opacity-80">
         {kind}
       </span>
     </div>
@@ -71,7 +71,7 @@ export function CardFace({ card, side = "front" }: { card: WalletCard; side?: "f
     draft.fields.find((field) => field.key === key && field.side === side);
   const layout = cardFaceFields[draft.kind];
   const primary = value(layout.primary);
-  const footer = layout.footer.flatMap((key) => value(key) ?? []);
+  const footer = layout.footer.flatMap((key) => value(key) ?? []).filter((field) => field.value);
   const backFields = draft.fields
     .filter((field) => field.side === "back")
     .sort((a, b) => a.order - b.order);

@@ -89,6 +89,12 @@ export const es: Messages = {
     kindMembership: "Membresía",
     kindOther: "Otra",
 
+    cameraStarting: "Abriendo la cámara…",
+    autoScanHint: "Coloca la tarjeta dentro del marco. Los datos se leen automáticamente.",
+    holdSteady: "Tarjeta detectada. Mantén la cámara quieta.",
+    scanRetry: "Acércate, evita los reflejos o elige una imagen.",
+    nfcWaiting: "Acerca el dispositivo a la etiqueta NFC.",
+    nfcUnsupported: "La etiqueta no contiene datos compatibles. Escanea la tarjeta impresa.",
     scanTitle: "Añadir una tarjeta",
     scanHint: "Escanea tu tarjeta o importa una imagen. Revisa los datos antes de guardar.",
     scanCard: "Escanear tarjeta",

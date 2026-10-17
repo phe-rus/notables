@@ -1,5 +1,29 @@
 # Wallet context and resume checkpoint
 
+## Latest checkpoint, 18 October 2026
+
+The owner confirmed automatic camera review on the physical TECNO with the
+updated debug APK, installed with data preserved. Card capture now owns a
+live recognition session: bundled native ML Kit on Android, Apple Vision
+implemented for iOS, and a retained bundled Tesseract fallback. Agreement
+between two clear frames opens review; saving remains explicit. Review starts
+with the card and compact grouped editable rows. Keep this design and the
+existing vault, keys and protection behavior.
+
+Native reader: `www/src-tauri/plugins/tauri-plugin-card-reader`. Frames are
+bounded, transient and never written to disk. Android decoded bitmaps must
+be mutable for secure cleanup: erasing an immutable bitmap crashed the first
+physical probe, now fixed and checked with three repeated native reads.
+NFC is registered for Android and iOS with read-only permissions, iOS usage
+description, build-time TAG entitlement and cancellation. It imports NDEF
+text, not arbitrary payment-card chips. The TECNO has no NFC hardware.
+
+All repository checks passed. iOS compilation/phone evidence and physical NFC
+evidence are still owed. Before an Android release, reconcile ML Kit SDK
+diagnostic collection with store disclosures. Details and measured evidence:
+`docs/reviews/2026-10-18-wallet-scanning.md`. Older checkpoints below describe
+the earlier implementation and do not supersede this checkpoint.
+
 Read this before resuming wallet work. The user resumed on 8 October 2026 and
 authorized physical phone interaction by saying “proceed”. Continue wallet work
 within this scope and preserve existing app data.

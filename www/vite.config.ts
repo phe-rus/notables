@@ -85,6 +85,8 @@ export default defineConfig({
       "date-holidays",
       "fflate",
       "pdfjs-dist/legacy/build/pdf.mjs",
+      "tesseract.js",
+      "zxing-wasm/reader",
     ],
   },
   server: {

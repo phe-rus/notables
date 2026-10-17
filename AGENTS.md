@@ -115,6 +115,19 @@ Gotchas learned the hard way:
 
 ## Status (October 2026)
 
+- Wallet live scanning and presentation (18 Oct): camera frames now use a
+  retained, bundled Android ML Kit reader, with Apple Vision implemented for
+  iOS and bundled Tesseract fallback. Two clear frames must agree before
+  review; nothing saves automatically. Installed on the TECNO with data
+  preserved; the owner confirmed automatic review from a physical card.
+  Three synthetic native reads took 425, 161 and 139 ms. Card-first review,
+  compact grouped fields and controls, tighter stack and shared card motion
+  replace the large form. NFC is now registered on iOS too, with usage text,
+  TAG entitlement and cancellation. It reads NDEF text only; NFC hardware/tag
+  and iPhone verification remain owed. See the
+  [Wallet checkpoint](docs/reviews/2026-10-18-wallet-scanning.md), including
+  Android SDK diagnostic disclosure required before release.
+
 - Android v0.2.5 build fix (18 Oct): the ONNX preparation step hashed an empty
   buffer on a fresh runner. Bun.file retained missing file metadata after its
   exists check, even after Bun.write downloaded the valid archive. The reader
@@ -521,8 +534,11 @@ TestFlight refuse the upload; each build asks in TestFlight instead.
 
 ## Next
 
-- Confirm the Android v0.2.5 retry clears ONNX preparation and reaches Play
-  internal testing. The iOS v0.2.5 TestFlight build already succeeded. Keep
+- Wallet: verify a physical NFC tag on supported hardware, compile and test
+  Apple Vision on an iPhone, and update the Android SDK diagnostic disclosure
+  before a release. Preserve the TECNO's current review and existing cards.
+- The owner confirmed the Android v0.2.5 retry works. The iOS v0.2.5
+  TestFlight build already succeeded. Keep
   the Android voice check on the TECNO, since both ABIs now use shared ONNX.
 
 - Remote Disconnect (built 17 Oct, v0.2.4): run it between two real devices

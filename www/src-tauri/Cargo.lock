@@ -2721,6 +2721,7 @@ dependencies = [
  "symphonia",
  "tauri",
  "tauri-build",
+ "tauri-plugin-card-reader",
  "tauri-plugin-deep-link",
  "tauri-plugin-dialog",
  "tauri-plugin-log",
@@ -4901,6 +4902,15 @@ dependencies = [
  "serde_json",
  "tauri-utils",
  "walkdir",
+]
+
+[[package]]
+name = "tauri-plugin-card-reader"
+version = "0.1.0"
+dependencies = [
+ "serde",
+ "tauri",
+ "tauri-plugin",
 ]
 
 [[package]]

@@ -88,6 +88,12 @@ export const zh: Messages = {
     kindMembership: "会员卡",
     kindOther: "其他",
 
+    cameraStarting: "正在打开相机…",
+    autoScanHint: "将卡片放入框内，详细信息会自动识别。",
+    holdSteady: "已检测到卡片，请保持稳定。",
+    scanRetry: "请靠近、减少反光，或选择图片。",
+    nfcWaiting: "将设备靠近 NFC 标签。",
+    nfcUnsupported: "此标签没有受支持的卡片信息，请扫描实体卡片。",
     scanTitle: "添加卡片",
     scanHint: "扫描卡片或导入图片。保存前请检查识别出的信息。",
     scanCard: "扫描卡片",

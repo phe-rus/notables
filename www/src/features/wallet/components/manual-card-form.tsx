@@ -1,8 +1,9 @@
-import { Button } from "@phe-rus/hino";
+import { Button, LabeledContent, Section, SegmentedControl } from "@phe-rus/hino";
+import { Toggle } from "@phe-rus/hino/toggle";
 import { type AccentId, accents } from "@phe-rus/hino/tokens";
 import { useForm } from "@tanstack/react-form";
 import { useRef, useState } from "react";
-import { Field, PickerInput, TextInput } from "../../../components/form/form-fields";
+import { PickerInput } from "../../../components/form/form-fields";
 import { t } from "../../../i18n/i18n";
 import type { CardSuggestions } from "../lib/card-recognition";
 import { fieldLabels } from "../model/card-layout";
@@ -134,132 +135,11 @@ export function ManualCardForm({
         event.preventDefault();
         void form.handleSubmit();
       }}
-      className="flex flex-col gap-6"
+      className="mx-auto flex w-full max-w-md flex-col gap-5"
     >
-      <h2 className="font-serif text-2xl font-semibold">
-        {card ? t("wallet.editCard") : t("wallet.addCard")}
-      </h2>
-      <p className="text-sm text-label-secondary">{t("wallet.manualHint")}</p>
-      <fieldset disabled={busy} className="grid min-w-0 gap-4 sm:grid-cols-2">
-        <legend className="sr-only">{t("wallet.cardDetails")}</legend>
-        <Field label={t("wallet.cardKind")}>
-          <PickerInput
-            value={kind}
-            label={t("wallet.cardKind")}
-            options={cardKinds.map((value) => ({ value, label: t(kindMessageKeys[value]) }))}
-            onChange={(value) => {
-              setKind(value);
-              operation.current = crypto.randomUUID();
-            }}
-          />
-        </Field>
-        {textFields
-          .filter(
-            ({ name }) =>
-              name === "displayName" ||
-              name === "issuer" ||
-              kindKeys[kind].some((key) => key === name),
-          )
-          .map(({ name, label, max }) => (
-            <form.Field key={name} name={name}>
-              {(field) => (
-                <Field label={label}>
-                  <TextInput
-                    value={field.state.value}
-                    onBlur={field.handleBlur}
-                    maxLength={max}
-                    autoComplete="off"
-                    spellCheck={false}
-                    required={name === "displayName"}
-                    dir={name === "number" || name === "expiry" ? "ltr" : "auto"}
-                    onChange={(event) => {
-                      operation.current = crypto.randomUUID();
-                      field.handleChange(event.target.value);
-                    }}
-                  />
-                </Field>
-              )}
-            </form.Field>
-          ))}
-        <form.Field name="palette">
-          {(field) => (
-            <Field label={t("wallet.appearance")}>
-              <PickerInput
-                value={field.state.value}
-                label={t("wallet.appearance")}
-                options={Object.values(accents).map((accent) => ({
-                  value: accent.id,
-                  label: t(`wallet.palette.${accent.id}`),
-                }))}
-                onChange={(value) => {
-                  operation.current = crypto.randomUUID();
-                  field.handleChange(value);
-                }}
-              />
-            </Field>
-          )}
-        </form.Field>
-        <form.Field name="backAvailable">
-          {(field) => (
-            <label className="flex items-center gap-3 text-sm">
-              <input
-                type="checkbox"
-                checked={field.state.value}
-                onChange={(event) => {
-                  operation.current = crypto.randomUUID();
-                  field.handleChange(event.target.checked);
-                }}
-              />
-              {t("wallet.includeBack")}
-            </label>
-          )}
-        </form.Field>
-        {kind === "bank" && (
-          <form.Field name="retainSecurityCode">
-            {(field) => (
-              <label className="flex items-center gap-3 text-sm">
-                <input
-                  type="checkbox"
-                  checked={field.state.value}
-                  onChange={(event) => {
-                    operation.current = crypto.randomUUID();
-                    field.handleChange(event.target.checked);
-                    if (!event.target.checked) form.setFieldValue("cvv", "");
-                  }}
-                />
-                {t("wallet.keepSecurityCode")}
-              </label>
-            )}
-          </form.Field>
-        )}
-        <form.Subscribe selector={(state) => kind === "bank" && state.values.retainSecurityCode}>
-          {(retain) =>
-            retain && (
-              <form.Field name="cvv">
-                {(field) => (
-                  <Field label={t("wallet.securityCode")}>
-                    <TextInput
-                      dir="ltr"
-                      autoComplete="off"
-                      spellCheck={false}
-                      maxLength={4096}
-                      value={field.state.value}
-                      onChange={(event) => {
-                        operation.current = crypto.randomUUID();
-                        field.handleChange(event.target.value);
-                      }}
-                    />
-                  </Field>
-                )}
-              </form.Field>
-            )
-          }
-        </form.Subscribe>
-      </fieldset>
       <form.Subscribe selector={(state) => state.values}>
         {(value) => (
-          <section className="flex max-w-[650px] flex-col gap-4" aria-label={t("wallet.preview")}>
-            <h3 className="text-sm font-semibold">{t("wallet.preview")}</h3>
+          <section className="flex flex-col gap-3" aria-label={t("wallet.preview")}>
             <CardFace
               side={previewSide}
               card={{
@@ -270,26 +150,168 @@ export function ManualCardForm({
                 updatedAt: card?.updatedAt ?? 0,
               }}
             />
-            <div className="flex gap-3">
-              <Button
-                aria-pressed={previewSide === "front"}
-                onClick={() => setPreviewSide("front")}
-              >
-                {t("wallet.front")}
-              </Button>
-              <Button aria-pressed={previewSide === "back"} onClick={() => setPreviewSide("back")}>
-                {t("wallet.back")}
-              </Button>
-            </div>
+            {(value.backAvailable || value.retainSecurityCode) && (
+              <SegmentedControl
+                label={t("wallet.preview")}
+                value={previewSide}
+                onChange={setPreviewSide}
+                options={[
+                  { value: "front", label: t("wallet.front") },
+                  { value: "back", label: t("wallet.back") },
+                ]}
+              />
+            )}
           </section>
         )}
       </form.Subscribe>
-      <div className="flex flex-wrap gap-3">
-        <Button type="submit" variant="default" disabled={busy}>
-          {busy ? t("wallet.saving") : t("common.save")}
-        </Button>
-        <Button disabled={busy} onClick={() => showWallet(card ? "detail" : "home")}>
+      <fieldset disabled={busy} className="min-w-0">
+        <legend className="sr-only">{t("wallet.cardDetails")}</legend>
+        <Section title={t("wallet.cardDetails")} footer={t("wallet.manualHint")}>
+          <LabeledContent label={t("wallet.cardKind")}>
+            <PickerInput
+              value={kind}
+              label={t("wallet.cardKind")}
+              options={cardKinds.map((value) => ({ value, label: t(kindMessageKeys[value]) }))}
+              onChange={(value) => {
+                setKind(value);
+                operation.current = crypto.randomUUID();
+              }}
+            />
+          </LabeledContent>
+          {textFields
+            .filter(
+              ({ name }) =>
+                name === "displayName" ||
+                name === "issuer" ||
+                kindKeys[kind].some((key) => key === name),
+            )
+            .map(({ name, label, max }) => (
+              <form.Field key={name} name={name}>
+                {(field) => (
+                  <LabeledContent label={label}>
+                    <input
+                      aria-label={label}
+                      className="w-full min-w-0 bg-transparent py-0.5 text-end text-subheadline text-label-secondary outline-none placeholder:text-label-tertiary focus:text-label focus-visible:rounded-sm focus-visible:ring-2 focus-visible:ring-accent"
+                      value={field.state.value}
+                      onBlur={field.handleBlur}
+                      maxLength={max}
+                      autoComplete="off"
+                      spellCheck={false}
+                      required={name === "displayName"}
+                      dir={
+                        ["number", "expiry", "meter", "account", "puk"].includes(name)
+                          ? "ltr"
+                          : "auto"
+                      }
+                      onChange={(event) => {
+                        operation.current = crypto.randomUUID();
+                        field.handleChange(event.target.value);
+                      }}
+                    />
+                  </LabeledContent>
+                )}
+              </form.Field>
+            ))}
+        </Section>
+      </fieldset>
+      <details className="group">
+        <summary className="cursor-pointer px-4 py-2 text-subheadline font-medium text-accent-text">
+          {t("wallet.appearance")}
+        </summary>
+        <div className="mt-2">
+          <Section>
+            <form.Field name="palette">
+              {(field) => (
+                <LabeledContent label={t("wallet.appearance")}>
+                  <PickerInput
+                    value={field.state.value}
+                    label={t("wallet.appearance")}
+                    options={Object.values(accents).map((accent) => ({
+                      value: accent.id,
+                      label: t(`wallet.palette.${accent.id}`),
+                    }))}
+                    onChange={(value) => {
+                      operation.current = crypto.randomUUID();
+                      field.handleChange(value);
+                    }}
+                  />
+                </LabeledContent>
+              )}
+            </form.Field>
+            <form.Field name="backAvailable">
+              {(field) => (
+                <div className="px-4 py-3">
+                  <Toggle
+                    style="checkbox"
+                    label={t("wallet.includeBack")}
+                    checked={field.state.value}
+                    onChange={(value) => {
+                      operation.current = crypto.randomUUID();
+                      field.handleChange(value);
+                    }}
+                  />
+                </div>
+              )}
+            </form.Field>
+          </Section>
+        </div>
+      </details>
+      {kind === "bank" && (
+        <Section>
+          <form.Field name="retainSecurityCode">
+            {(field) => (
+              <div className="px-4 py-3">
+                <Toggle
+                  style="checkbox"
+                  label={t("wallet.keepSecurityCode")}
+                  checked={field.state.value}
+                  onChange={(value) => {
+                    operation.current = crypto.randomUUID();
+                    field.handleChange(value);
+                    if (!value) form.setFieldValue("cvv", "");
+                  }}
+                />
+              </div>
+            )}
+          </form.Field>
+          <form.Subscribe selector={(state) => state.values.retainSecurityCode}>
+            {(retain) =>
+              retain && (
+                <form.Field name="cvv">
+                  {(field) => (
+                    <LabeledContent label={t("wallet.securityCode")}>
+                      <input
+                        aria-label={t("wallet.securityCode")}
+                        className="w-full min-w-0 bg-transparent text-end text-subheadline outline-none focus-visible:ring-2 focus-visible:ring-accent"
+                        dir="ltr"
+                        autoComplete="off"
+                        inputMode="numeric"
+                        maxLength={4}
+                        value={field.state.value}
+                        onChange={(event) => {
+                          operation.current = crypto.randomUUID();
+                          field.handleChange(event.target.value);
+                        }}
+                      />
+                    </LabeledContent>
+                  )}
+                </form.Field>
+              )
+            }
+          </form.Subscribe>
+        </Section>
+      )}
+      <div className="flex items-center justify-end gap-2">
+        <Button
+          variant="ghost"
+          size="sm"
+          disabled={busy}
+          onClick={() => showWallet(card ? "detail" : "home")}
+        >
           {t("common.cancel")}
+        </Button>
+        <Button type="submit" size="sm" variant="default" disabled={busy}>
+          {busy ? t("wallet.saving") : t("common.save")}
         </Button>
       </div>
     </form>

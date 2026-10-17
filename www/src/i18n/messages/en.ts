@@ -92,6 +92,12 @@ export const en = {
     kindMembership: "Membership",
     kindOther: "Other",
 
+    cameraStarting: "Starting camera…",
+    autoScanHint: "Keep the card inside the frame. Details are read automatically.",
+    holdSteady: "Card detected. Hold steady.",
+    scanRetry: "Move closer, reduce glare, or choose an image instead.",
+    nfcWaiting: "Hold your device near the NFC tag.",
+    nfcUnsupported: "This tag has no supported card details. Scan the printed card instead.",
     scanTitle: "Add a card",
     scanHint: "Scan your card or import an image. Review the recognized details before saving.",
     scanCard: "Scan card",

@@ -90,6 +90,13 @@ export const fr: Messages = {
     kindMembership: "Adhésion",
     kindOther: "Autre",
 
+    cameraStarting: "Ouverture de la caméra…",
+    autoScanHint: "Placez la carte dans le cadre. Les détails sont lus automatiquement.",
+    holdSteady: "Carte détectée. Ne bougez plus.",
+    scanRetry: "Rapprochez-vous, évitez les reflets ou importez une image.",
+    nfcWaiting: "Approchez votre appareil de la puce NFC.",
+    nfcUnsupported:
+      "Cette puce ne contient aucun détail pris en charge. Scannez la carte imprimée.",
     scanTitle: "Ajouter une carte",
     scanHint:
       "Scannez votre carte ou importez une image. Vérifiez les informations avant de les enregistrer.",

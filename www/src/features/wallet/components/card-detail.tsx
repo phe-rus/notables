@@ -7,7 +7,7 @@ import {
   SegmentedControl,
   toast,
 } from "@phe-rus/hino";
-import { AnimatePresence, motion } from "motion/react";
+import { AnimatePresence, motion, useReducedMotion } from "motion/react";
 import { useState } from "react";
 import { t } from "../../../i18n/i18n";
 import { ltrFieldKeys } from "../model/card-layout";
@@ -23,6 +23,7 @@ import { CardPresentation } from "./card-presentation";
 export function CardDetail({ card }: { card: WalletCard }) {
   const { view } = useWallet();
   const [side, setSide] = useState<"front" | "back">("front");
+  const reducedMotion = useReducedMotion();
   const fields = [...card.draft.fields].sort((a, b) =>
     a.side === b.side ? a.order - b.order : a.side === "front" ? -1 : 1,
   );
@@ -35,20 +36,24 @@ export function CardDetail({ card }: { card: WalletCard }) {
     }
   };
   return (
-    <div className="mx-auto flex w-full max-w-[480px] flex-col gap-6">
-      <div className="[perspective:1200px]">
+    <div className="mx-auto flex w-full max-w-md flex-col gap-5">
+      <motion.div
+        layoutId={reducedMotion ? undefined : `wallet-card-${card.draft.id}`}
+        transition={{ type: "spring", stiffness: 380, damping: 34 }}
+        className="[perspective:1200px]"
+      >
         <AnimatePresence mode="wait" initial={false}>
           <motion.div
             key={side}
-            initial={{ rotateY: side === "back" ? -90 : 90, opacity: 0.6 }}
+            initial={reducedMotion ? false : { rotateY: side === "back" ? -90 : 90, opacity: 0.6 }}
             animate={{ rotateY: 0, opacity: 1 }}
-            exit={{ rotateY: side === "back" ? 90 : -90, opacity: 0.6 }}
-            transition={{ duration: 0.18 }}
+            exit={reducedMotion ? undefined : { rotateY: side === "back" ? 90 : -90, opacity: 0.6 }}
+            transition={{ duration: reducedMotion ? 0 : 0.18 }}
           >
             <CardFace card={card} side={side} />
           </motion.div>
         </AnimatePresence>
-      </div>
+      </motion.div>
       <div className="flex flex-col gap-3">
         <SegmentedControl
           label={t("wallet.cardDetails")}
@@ -59,7 +64,12 @@ export function CardDetail({ card }: { card: WalletCard }) {
             { value: "back", label: t("wallet.back") },
           ]}
         />
-        <Button variant="default" onClick={() => showWallet("present")}>
+        <Button
+          size="sm"
+          variant="default"
+          className="self-center"
+          onClick={() => showWallet("present")}
+        >
           {t("wallet.present")}
         </Button>
       </div>

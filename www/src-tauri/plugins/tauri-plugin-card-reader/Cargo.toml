@@ -1,0 +1,13 @@
+[package]
+name = "tauri-plugin-card-reader"
+version = "0.1.0"
+edition = "2024"
+links = "tauri-plugin-card-reader"
+license = "MIT"
+
+[dependencies]
+tauri = { version = "2.12.1", default-features = false }
+serde = { version = "1", features = ["derive"] }
+
+[build-dependencies]
+tauri-plugin = { version = "2.7.1", features = ["build"] }

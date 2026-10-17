@@ -2,6 +2,7 @@ import { createStore, useSelector } from "@tanstack/react-store";
 import { currentLanguage } from "../../../i18n/i18n";
 import { isTauri } from "../../../platform/runtime";
 import { cancelWalletNfc, readWalletNfc } from "../lib/card-nfc";
+import type { CardReading } from "../lib/card-reader";
 import {
   type CardSuggestions,
   cancelCardRecognition,
@@ -28,6 +29,8 @@ interface WalletState {
   } | null;
   captureProgress: number | null;
   captureError: boolean;
+  captureMethod: "image" | "nfc" | null;
+  captureNfcUnsupported: boolean;
   cards: WalletPreview[];
   selected: WalletCard | null;
   view: "home" | "add" | "detail" | "edit" | "present";
@@ -42,6 +45,8 @@ const initial = (): WalletState => ({
   captureReview: null,
   captureProgress: null,
   captureError: false,
+  captureMethod: null,
+  captureNfcUnsupported: false,
   cards: [],
   selected: null,
   view: "home",
@@ -144,7 +149,13 @@ export function cancelWalletCapture() {
   epoch++;
   cancelCardRecognition();
   cancelWalletNfc();
-  update({ captureProgress: null, captureReview: null, captureError: false });
+  update({
+    captureProgress: null,
+    captureReview: null,
+    captureError: false,
+    captureMethod: null,
+    captureNfcUnsupported: false,
+  });
 }
 
 export function correctWalletCapture() {
@@ -167,6 +178,13 @@ export function correctWalletCapture() {
   });
 }
 
+/** The camera session owns cancellation; only accept results into an accessible wallet. */
+export function reviewWalletReading(review: CardReading) {
+  const state = wallet.get();
+  if (!state.status?.initialized || state.status.locked || state.view !== "add") return;
+  update({ captureReview: review, captureProgress: null, captureError: false });
+}
+
 export async function recognizeWalletCanvas(canvas: HTMLCanvasElement) {
   const token = epoch;
   if (!wallet.get().status?.initialized || wallet.get().status?.locked) {
@@ -174,7 +192,14 @@ export async function recognizeWalletCanvas(canvas: HTMLCanvasElement) {
     canvas.height = 0;
     return;
   }
-  update({ view: "add", captureProgress: 0, captureError: false, captureReview: null });
+  update({
+    view: "add",
+    captureProgress: 0,
+    captureError: false,
+    captureReview: null,
+    captureMethod: "image",
+    captureNfcUnsupported: false,
+  });
   const job = recognizeCard(canvas, currentLanguage(), (value) => {
     if (token === epoch) update({ captureProgress: value });
   });
@@ -316,7 +341,13 @@ export function mountWallet() {
 export async function scanWalletNfc() {
   const token = epoch;
   if (!wallet.get().status?.initialized || wallet.get().status?.locked) return;
-  update({ captureProgress: 0, captureError: false, captureReview: null });
+  update({
+    captureProgress: 0,
+    captureError: false,
+    captureReview: null,
+    captureMethod: "nfc",
+    captureNfcUnsupported: false,
+  });
   try {
     const text = await readWalletNfc();
     if (token === epoch)
@@ -328,8 +359,12 @@ export async function scanWalletNfc() {
           suggestions: suggestCardFields(text),
         },
       });
-  } catch {
-    if (token === epoch) update({ captureError: true });
+  } catch (error) {
+    if (token === epoch)
+      update({
+        captureError: true,
+        captureNfcUnsupported: error instanceof Error && error.message === "no-readable-details",
+      });
   } finally {
     if (token === epoch) update({ captureProgress: null });
   }

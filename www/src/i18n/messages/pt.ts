@@ -90,6 +90,12 @@ export const pt: Messages = {
     kindMembership: "Associação",
     kindOther: "Outro",
 
+    cameraStarting: "A abrir a câmara…",
+    autoScanHint: "Coloque o cartão dentro da moldura. Os dados são lidos automaticamente.",
+    holdSteady: "Cartão detetado. Mantenha a câmara estável.",
+    scanRetry: "Aproxime-se, evite reflexos ou escolha uma imagem.",
+    nfcWaiting: "Aproxime o dispositivo da etiqueta NFC.",
+    nfcUnsupported: "A etiqueta não contém dados compatíveis. Digitalize o cartão impresso.",
     scanTitle: "Adicionar cartão",
     scanHint: "Digitalize o cartão ou importe uma imagem. Confira os dados antes de guardar.",
     scanCard: "Digitalizar cartão",

@@ -1,5 +1,6 @@
 import { invoke } from "@tauri-apps/api/core";
 import { isAvailable, scan, type Tag } from "@tauri-apps/plugin-nfc";
+import { t } from "../../../i18n/i18n";
 import { isTauri } from "../../../platform/runtime";
 
 let pending = false;
@@ -52,7 +53,10 @@ export async function readWalletNfc() {
   pending = true;
   const timer = window.setTimeout(cancelWalletNfc, 30_000);
   try {
-    const tag = await scan({ type: "tag" }, { keepSessionAlive: false });
+    const tag = await scan(
+      { type: "tag" },
+      { keepSessionAlive: false, message: t("wallet.nfcWaiting") },
+    );
     const text = cardNfcText(tag);
     if (!text.trim()) throw new Error("no-readable-details");
     return text;

@@ -34,7 +34,7 @@ export async function openCardCamera(): Promise<MediaStream> {
  * video cropped to a card's shape (object-fit: cover), so this cuts the
  * same region from the full frame: only the card is read, not the table.
  */
-export function captureCardFrame(video: HTMLVideoElement): HTMLCanvasElement {
+export function captureCardFrame(video: HTMLVideoElement, maxWidth = 1800): HTMLCanvasElement {
   const width = video.videoWidth;
   const height = video.videoHeight;
   let cropWidth = width;
@@ -46,8 +46,9 @@ export function captureCardFrame(video: HTMLVideoElement): HTMLCanvasElement {
   cropWidth *= 1 - GUIDE_INSET;
   cropHeight *= 1 - GUIDE_INSET;
   const canvas = document.createElement("canvas");
-  canvas.width = Math.round(cropWidth);
-  canvas.height = Math.round(cropHeight);
+  const scale = Math.min(1, maxWidth / cropWidth);
+  canvas.width = Math.round(cropWidth * scale);
+  canvas.height = Math.round(cropHeight * scale);
   canvas
     .getContext("2d")
     ?.drawImage(video, x, y, cropWidth, cropHeight, 0, 0, canvas.width, canvas.height);

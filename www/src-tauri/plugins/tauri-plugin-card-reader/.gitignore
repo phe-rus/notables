@@ -1,0 +1,6 @@
+/android/.tauri/
+/android/build/
+/ios/.build/
+/ios/.tauri/
+/ios/Package.resolved
+/permissions/schemas/
