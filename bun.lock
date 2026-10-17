@@ -38,6 +38,7 @@
         "@lexical/react": "catalog:",
         "@lexical/rich-text": "catalog:",
         "@lexical/selection": "catalog:",
+        "@lexical/table": "0.52.0",
         "@lexical/utils": "catalog:",
         "@lexical/yjs": "catalog:",
         "@notables/core": "workspace:*",

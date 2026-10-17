@@ -1,3 +1,4 @@
+import type { NoteKind } from "@notables/core";
 import { TranscriptionProvider } from "@notables/pluraliti";
 import { cn, spring, useMediaQuery } from "@phe-rus/hino";
 import {
@@ -20,8 +21,9 @@ import { startBrowserSessions } from "../features/devices/lib/browser-sessions";
 import { InvoicesList } from "../features/invoices/components/invoices-list";
 import { Sidebar, type SidebarLocation } from "../features/library/components/library-sidebar";
 import { NotesList } from "../features/library/components/notes-list";
-import { getView, groupOf } from "../features/library/model/library-views";
-import { getLibrary, useLibraryReady } from "../features/library/store/library-store";
+import { indexNoteMedia } from "../features/library/lib/index-note-media";
+import { folderView, getView, groupOf } from "../features/library/model/library-views";
+import { getLibrary, useFolders, useLibraryReady } from "../features/library/store/library-store";
 import { MiniPlayer } from "../features/listening/components/mini-player";
 import { ModelPacksRunner } from "../features/listening/components/model-packs-runner";
 import { seedWelcomeLibrary } from "../features/onboarding/lib/seed-welcome-library";
@@ -37,18 +39,13 @@ import { eraseExpired } from "../features/trash/lib/recycle-bin";
 import { WidgetPublisher } from "../features/widgets/components/widget-publisher";
 import { isShortcut } from "../lib/keyboard/shortcuts";
 import { markAppReady } from "../platform/app-ready";
+import { canOpenLibrary, standaloneWeb } from "../platform/library-access";
 import { createNativeTranscription } from "../platform/native-transcription";
 import { preventPageZoom } from "../platform/page-zoom";
 import { isTauri } from "../platform/runtime";
 import { inBrowserSession } from "../platform/session/browser-session-store";
 import { startSpace } from "../platform/space/space-identity";
 import { startSpaceSync } from "../platform/space/space-sync";
-
-/**
- * The web is a window onto a phone, in development too. Store screenshots
- * and UI work can opt into a standalone library with VITE_STANDALONE_WEB=1.
- */
-const standaloneWeb = import.meta.env.DEV && import.meta.env.VITE_STANDALONE_WEB === "1";
 
 /** iOS sheet motion: quick to start, long gentle settle. */
 const drawerEase = [0.32, 0.72, 0, 1] as const;
@@ -62,9 +59,28 @@ export const Route = createFileRoute("/_app")({
 });
 
 function AppShell() {
+  const navigate = useNavigate();
+  const allowed = canOpenLibrary();
+  useEffect(() => {
+    if (!allowed) void navigate({ to: "/link", replace: true });
+  }, [allowed, navigate]);
+  return allowed ? <WorkspaceShell /> : null;
+}
+
+function WorkspaceShell() {
   useWarmRoutes();
   const { view: viewId } = Route.useSearch();
-  const view = getView(viewId);
+  const folders = useFolders();
+  const folder =
+    folders.find((item) => `folder:${item.id}` === viewId) ??
+    (!viewId ? (folders.find((item) => item.id === "default-writings") ?? folders[0]) : undefined);
+  const view = folder
+    ? folderView(
+        folder,
+        folder.id === (folders.find((item) => item.id === "default-writings") ?? folders[0])?.id,
+        folders,
+      )
+    : getView(viewId);
   const navigate = useNavigate();
   const note = useMatch({ from: "/_app/notes/$noteId", shouldThrow: false });
   const book = useMatch({ from: "/_app/books/$bookId", shouldThrow: false });
@@ -108,12 +124,18 @@ function AppShell() {
               ? "invoices"
               : inBooks
                 ? "books"
-                : (groupOf(view.id) ?? (view.id === "published" ? "published" : "all"));
+                : view.id.startsWith("folder:")
+                  ? (view.id as SidebarLocation)
+                  : (groupOf(view.id) ?? "all");
 
-  const createNote = useCallback(() => {
-    const entry = getLibrary().create(view.kind);
-    void navigate({ to: "/notes/$noteId", params: { noteId: entry.id }, search: (s) => s });
-  }, [navigate, view.kind]);
+  const createNote = useCallback(
+    (kind?: NoteKind, format?: "document" | "spreadsheet") => {
+      const entry = getLibrary().create(kind ?? view.kind, view.folderId);
+      if (format) getLibrary().update(entry.id, { format });
+      void navigate({ to: "/notes/$noteId", params: { noteId: entry.id }, search: (s) => s });
+    },
+    [navigate, view.kind, view.folderId],
+  );
 
   useEffect(() => {
     const onKey = (event: KeyboardEvent) => {
@@ -151,6 +173,10 @@ function AppShell() {
   useEffect(() => {
     if (libraryReady) markAppReady();
   }, [libraryReady]);
+
+  useEffect(() => {
+    if (libraryReady && !browser) return indexNoteMedia();
+  }, [libraryReady, browser]);
 
   // A first visit finds a short guide and a few examples instead of nothing.
   useEffect(() => {

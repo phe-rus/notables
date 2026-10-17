@@ -67,3 +67,40 @@ describe("editor document model", () => {
     });
   });
 });
+
+it("preserves images, attachments, contents and editable tables through stored JSON", async () => {
+  const { $createImageNode } = await import("../../src/nodes/image/image-node");
+  const { $createAttachmentNode } = await import("../../src/nodes/attachment/attachment-node");
+  const { $createContentsNode } = await import("../../src/nodes/contents/contents-node");
+  const { $createTableNodeWithDimensions } = await import("@lexical/table");
+  const editor = headless();
+  editor.update(
+    () => {
+      $getRoot().append(
+        $createImageNode({
+          src: "media:photo",
+          layout: { width: 50, aspect: "1 / 1", fit: "contain" },
+        }),
+        $createAttachmentNode({
+          src: "media:file",
+          name: "Budget.pdf",
+          mime: "application/pdf",
+          size: 123,
+        }),
+        $createContentsNode(),
+        $createTableNodeWithDimensions(2, 3, true),
+      );
+    },
+    { discrete: true },
+  );
+  const document = editor.getEditorState().toJSON();
+  const restored = headless();
+  restored.setEditorState(restored.parseEditorState(document));
+  expect(restored.getEditorState().toJSON()).toEqual(document);
+  expect(document.root.children.map((node) => node.type)).toEqual([
+    "image",
+    "attachment",
+    "contents",
+    "table",
+  ]);
+});

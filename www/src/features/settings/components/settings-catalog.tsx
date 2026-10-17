@@ -6,18 +6,21 @@ import {
   LinkIcon,
   LockIcon,
   NoteIcon,
+  PeopleIcon,
   SidebarIcon,
   SparkleIcon,
   TouchIcon,
   VerifiedIcon,
 } from "@phe-rus/hino";
 import type { ReactNode } from "react";
+import { setDrawerOpen } from "../../../components/layout/drawer-store";
 import { t } from "../../../i18n/i18n";
 import { hapticsAvailable } from "../../../platform/haptics";
 import { isTauri } from "../../../platform/runtime";
 import { inBrowserSession } from "../../../platform/session/browser-session-store";
 import { AiSettingsSection } from "../../ai/components/ai-settings-section";
 import { ReminderSettingsSection } from "../../calendar/components/reminder-settings-section";
+import { ConnectionsScreen } from "../../connections/components/connections-screen";
 import { BrowserSessionPage } from "../../devices/components/browser-session-page";
 import { ConnectedDevicesPage } from "../../devices/components/connected-devices-page";
 import { LinkedDevicesPage } from "../../devices/components/linked-devices-page";
@@ -35,6 +38,7 @@ import { SidebarPage } from "./pages/sidebar-page";
 
 export const settingsPageIds = [
   "profile",
+  "circles",
   "connected-devices",
   "appearance",
   "notes",
@@ -71,6 +75,14 @@ const onDevice =
     !inBrowserSession() && check();
 
 export const settingsPages: Record<SettingsPageId, SettingsPage> = {
+  circles: page({
+    id: "circles",
+    get title() {
+      return t("workspace.circles");
+    },
+    icon: <PeopleIcon size={17} />,
+    content: () => <ConnectionsScreen onOpenSidebar={() => setDrawerOpen(true)} embedded />,
+  }),
   "connected-devices": page({
     id: "connected-devices",
     get title() {
@@ -194,7 +206,7 @@ export const settingsPages: Record<SettingsPageId, SettingsPage> = {
 export const settingsGroups: readonly (readonly SettingsPageId[])[] = [
   ["connected-devices"],
   ["appearance", "notes", "sidebar"],
-  ["devices", "privacy"],
+  ["devices", "circles", "privacy"],
   ["listening", "reminders", "haptics", "widgets", "ai"],
   ["about"],
 ];

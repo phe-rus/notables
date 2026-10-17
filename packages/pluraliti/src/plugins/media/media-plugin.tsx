@@ -2,13 +2,29 @@ import { useLexicalComposerContext } from "@lexical/react/LexicalComposerContext
 import { $insertNodeToNearestRoot, mergeRegister } from "@lexical/utils";
 import { COMMAND_PRIORITY_EDITOR, createCommand, type LexicalCommand } from "lexical";
 import { useEffect } from "react";
+import {
+  $createAttachmentNode,
+  type AttachmentInput,
+} from "../../nodes/attachment/attachment-node";
+import { $createContentsNode } from "../../nodes/contents/contents-node";
 import { markInkInserted } from "../../nodes/ink/ink-block";
+import { $createLinkCardNode, type LinkCardInput } from "../../nodes/link-card/link-card-node";
 import {
   $createAudioClipNode,
   $createImageNode,
   $createInkNode,
   type ImageInput,
 } from "../../nodes/node-registry";
+
+export const INSERT_LINK_CARD_COMMAND: LexicalCommand<LinkCardInput> = createCommand(
+  "INSERT_LINK_CARD_COMMAND",
+);
+
+export const INSERT_ATTACHMENT_COMMAND: LexicalCommand<AttachmentInput> = createCommand(
+  "INSERT_ATTACHMENT_COMMAND",
+);
+export const INSERT_CONTENTS_COMMAND: LexicalCommand<void> =
+  createCommand("INSERT_CONTENTS_COMMAND");
 
 export const INSERT_IMAGE_COMMAND: LexicalCommand<ImageInput> =
   createCommand("INSERT_IMAGE_COMMAND");
@@ -29,6 +45,30 @@ export function MediaPlugin() {
   useEffect(
     () =>
       mergeRegister(
+        editor.registerCommand(
+          INSERT_LINK_CARD_COMMAND,
+          (input) => {
+            $insertNodeToNearestRoot($createLinkCardNode(input));
+            return true;
+          },
+          COMMAND_PRIORITY_EDITOR,
+        ),
+        editor.registerCommand(
+          INSERT_ATTACHMENT_COMMAND,
+          (input) => {
+            $insertNodeToNearestRoot($createAttachmentNode(input));
+            return true;
+          },
+          COMMAND_PRIORITY_EDITOR,
+        ),
+        editor.registerCommand(
+          INSERT_CONTENTS_COMMAND,
+          () => {
+            $insertNodeToNearestRoot($createContentsNode());
+            return true;
+          },
+          COMMAND_PRIORITY_EDITOR,
+        ),
         editor.registerCommand(
           INSERT_IMAGE_COMMAND,
           (payload) => {

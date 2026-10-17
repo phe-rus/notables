@@ -11,6 +11,7 @@ import {
   repeatLabels,
 } from "@notables/core";
 import { Button, CloseIcon, IconButton, openMenu, Toggle, toast } from "@phe-rus/hino";
+import { Link } from "@tanstack/react-router";
 import { useState } from "react";
 import {
   DateField,
@@ -330,6 +331,30 @@ export function EventForm({
             ))}
           </div>
         </fieldset>
+
+        {event.related && (
+          <Field label={t("calendar.related")}>
+            {event.related.type === "note" ? (
+              <Link
+                to="/notes/$noteId"
+                params={{ noteId: event.related.id }}
+                onClick={onClose}
+                className="text-body text-accent-text"
+              >
+                {t("calendar.openWriting")}
+              </Link>
+            ) : (
+              <Link
+                to="/invoices/$invoiceId"
+                params={{ invoiceId: event.related.id }}
+                onClick={onClose}
+                className="text-body text-accent-text"
+              >
+                {t("calendar.openInvoice")}
+              </Link>
+            )}
+          </Field>
+        )}
 
         <Field label={t("calendar.notes")}>
           <TextArea

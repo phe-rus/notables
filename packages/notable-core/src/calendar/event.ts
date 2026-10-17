@@ -49,6 +49,8 @@ export interface CalendarEvent {
   /** Minutes before the start to alert; null for no alert. All-day alerts count from 9:00. */
   alert: number | null;
   notes: string;
+  /** The writing or invoice this event refers to, independent of its freeform notes. */
+  related?: { type: "note" | "invoice"; id: string };
   /** Hex colour shown on the calendar. */
   color: string;
   /** Days, YYYY-MM-DD, removed from a repeating event. */

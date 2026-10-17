@@ -756,3 +756,31 @@
     color: var(--color-label);
   }
 }
+
+@layer components {
+  .nt-subscript {
+    vertical-align: sub;
+    font-size: 0.75em;
+  }
+  .nt-superscript {
+    vertical-align: super;
+    font-size: 0.75em;
+  }
+  .nt-table {
+    width: 100%;
+    border-collapse: collapse;
+    table-layout: fixed;
+    margin-block: 1em;
+  }
+  .nt-table-cell {
+    border: 1px solid var(--color-separator);
+    padding: 0.5em;
+    vertical-align: top;
+    min-width: 3em;
+    overflow-wrap: anywhere;
+  }
+  .nt-table-header {
+    background: var(--color-fill);
+    font-weight: 600;
+  }
+}

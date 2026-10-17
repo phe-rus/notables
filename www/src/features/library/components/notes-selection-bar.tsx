@@ -9,7 +9,7 @@ import {
 } from "@phe-rus/hino";
 import { motion } from "motion/react";
 import { t } from "../../../i18n/i18n";
-import { noteKindItems, togglePinned } from "../../notes/actions/note-menu";
+import { noteFolderItems, togglePinned } from "../../notes/actions/note-menu";
 import { moveNotesToBin } from "../../trash/lib/recycle-bin";
 import type { LibraryEntry } from "../store/library-store";
 
@@ -51,9 +51,11 @@ export function NotesSelectionBar({
         <IconButton
           variant="ghost"
           size="icon"
-          label={t("notes.kind")}
+          label={t("workspace.moveToFolder")}
           disabled={none}
-          onClick={(event) => openMenu(event.currentTarget, noteKindItems(chosen), { above: true })}
+          onClick={(event) =>
+            openMenu(event.currentTarget, noteFolderItems(chosen), { above: true })
+          }
         >
           <FolderIcon size={19} />
         </IconButton>

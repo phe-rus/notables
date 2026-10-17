@@ -1,6 +1,7 @@
 import { sha256 } from "@noble/hashes/sha2.js";
 import { bytesToHex } from "@noble/hashes/utils.js";
 import * as Y from "yjs";
+import type { PeerMedia } from "../peer/media-exchange";
 import type { FrameLink } from "../session/session-frames";
 import { type DocSource, SessionHost } from "../session/session-host";
 
@@ -58,6 +59,10 @@ export class SpacePeer {
         if (name === "library" && !this.#digestSent) void this.#sendDigest();
       },
     );
+  }
+
+  shareMedia(media: PeerMedia, arrived?: (id: string) => void) {
+    this.#host.shareMedia(media, arrived);
   }
 
   attach(link: FrameLink) {

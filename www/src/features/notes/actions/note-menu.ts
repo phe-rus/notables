@@ -51,10 +51,37 @@ export function noteKindItems(entries: LibraryEntry[]): ContextMenuItem[] {
   ];
 }
 
+export function noteFormatItems(entry: LibraryEntry): ContextMenuItem[] {
+  return [
+    { heading: t("workspace.noteFormat") },
+    ...(["document", "spreadsheet"] as const).map((format) => ({
+      label: format === "spreadsheet" ? t("spreadsheet.title") : t("workspace.writings"),
+      checked: (entry.format ?? "document") === format,
+      onSelect: () => getLibrary().update(entry.id, { format }),
+    })),
+  ];
+}
+
 /** Pins every note, or unpins them when all of them are pinned already. */
 export function togglePinned(entries: LibraryEntry[]) {
   const pinned = !entries.every((entry) => entry.pinned);
   for (const entry of entries) getLibrary().update(entry.id, { pinned });
+}
+
+export function noteFolderItems(entries: LibraryEntry[]): ContextMenuItem[] {
+  const library = getLibrary();
+  return [
+    { heading: t("workspace.moveToFolder") },
+    ...library.getFolders().map((folder) => ({
+      label: folder.name,
+      checked: entries.every((entry) => entry.folderId === folder.id),
+      onSelect: () =>
+        library.moveToFolder(
+          entries.map((entry) => entry.id),
+          folder.id,
+        ),
+    })),
+  ];
 }
 
 export function copyAppLink(entry: LibraryEntry) {
@@ -98,6 +125,10 @@ export function noteMenu(
         ]
       : []),
     "divider",
+    {
+      label: t("workspace.moveToFolder"),
+      onSelect: () => openFollowUpMenu(noteFolderItems([entry])),
+    },
     { label: t("notes.fontMenu"), onSelect: () => openFollowUpMenu(noteFontItems(entry)) },
     { label: t("notes.kindMenu"), onSelect: () => openFollowUpMenu(noteKindItems([entry])) },
     "divider",

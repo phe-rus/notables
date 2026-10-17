@@ -6,6 +6,7 @@ import { saveNoteContent } from "../../../platform/storage/note-content-cache";
 import { documentText } from "../../search/lib/document-text";
 import { summarize } from "../model/library-views";
 import { getLibrary, type LibraryEntry } from "../store/library-store";
+import { notePreview } from "./note-preview";
 
 export interface NewNote {
   kind: NoteKind;
@@ -41,6 +42,7 @@ export async function writeNote({
   await saveNoteContent(entry.id, document);
   const { title, excerpt } = summarize(documentText(document));
   library.update(entry.id, {
+    ...notePreview(document, documentText(document)),
     title,
     excerpt,
     pinned: pinned ?? false,

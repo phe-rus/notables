@@ -43,10 +43,14 @@ export function mediaReferences(doc: Y.Doc, prefix = "media:"): string[] {
   };
 
   for (const [name, type] of doc.share) {
-    // A root nobody has opened yet has no concrete type; Lexical's is text.
+    // Restore the root constructors from the document schema before scanning.
     visit(
       (type.constructor === Y.AbstractType
-        ? doc.get(name, Y.XmlText)
+        ? name === "root"
+          ? doc.get(name, Y.XmlText)
+          : name === "transcript"
+            ? doc.getArray(name)
+            : doc.getMap(name)
         : type) as Y.AbstractType<unknown>,
     );
   }

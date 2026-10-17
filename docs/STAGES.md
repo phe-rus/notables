@@ -105,7 +105,8 @@ for browsers, mask the space and current device IDs under No account needed,
 and provide a way to disconnect without deleting local notes.
 
 After that, work through the writing changes below. These are the owner's
-requested direction, not claims that the features exist or have been tested.
+requested direction. The [17 October checkpoint](reviews/2026-10-17-writing-checkpoint.md)
+records implementation, phone evidence and the remaining boundaries.
 
 1. [ ] Fix the iOS editor toolbar when the keyboard opens. Android already
    places it above the keyboard; on iOS it is hidden and another bar appears.
@@ -116,7 +117,7 @@ requested direction, not claims that the features exist or have been tested.
    superscript, links, lists, checklists, pen and image or file attachments.
    Link previews show compact metadata and an image. Notes with images
    show their first image as a thumbnail in the list and gallery.
-2. [ ] Introduce folders as the Workspace, with editable default folders
+2. [x] Introduce folders as the Workspace, with editable default folders
    Writings, Notes and Tasks. Each can be renamed or deleted. The Workspace
    heading has an add folder button. Hold a folder to rename it in the
    sidebar; tapping opens its contents or details. Keep Recently Deleted.
@@ -132,7 +133,7 @@ requested direction, not claims that the features exist or have been tested.
    boundaries and the older notes group before implementation.
    Notes can move between folders. Support text and document scanning,
    drawing, and locking a note through the shared Lock design (spec 0004).
-5. [ ] Put Books under Artifacts alongside Calendar and Invoices. Remove
+5. [x] Put Books under Artifacts alongside Calendar and Invoices. Remove
    Published from the Workspace. Move Connections to Settings as Circles,
    for people who can receive selected notes in their Notables. Keep Recents
    with a small fixed maximum, replacing older entries. Opening Settings
@@ -141,7 +142,7 @@ requested direction, not claims that the features exist or have been tested.
    transcription failing with an error about audio needing 32 bit float
    samples. Add a table of contents, tasks, reminders, attachments and
    calculations. Calendar, reminders and invoices should work together.
-7. [ ] Add a spreadsheet note format for budgets: a full table editing
+7. [x] Add a spreadsheet note format for budgets: a full table editing
    surface with formulas and calculations, rather than only an embedded
    table. Define supported formulas, currencies and editing behavior first.
 8. [ ] Support multiple image attachments, rearranging, resizing, removing,

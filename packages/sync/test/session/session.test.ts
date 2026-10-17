@@ -152,3 +152,84 @@ describe("an editor that mounts twice", () => {
     expect(store.released).toEqual(["note:1"]);
   });
 });
+
+describe("direct session media", () => {
+  it("moves referenced files in both directions and leaves unrelated files private", async () => {
+    const library = new Y.Doc();
+    library.getMap("notes").set("image", { src: "media:photo" });
+    const files = new Map<string, Blob>([
+      ["photo", new Blob([new Uint8Array(40000).fill(7)], { type: "image/png" })],
+      ["private", new Blob(["private"], { type: "text/plain" })],
+    ]);
+    const memory = new Map<string, Blob>();
+    const { host, client, connect, disconnect } = session({ library });
+    host.shareMedia({
+      has: async (id) => files.has(id),
+      read: async (id) => files.get(id) ?? null,
+      write: async (id, file) => {
+        files.set(id, file);
+      },
+    });
+    client.shareMedia({
+      has: async (id) => memory.has(id),
+      read: async (id) => memory.get(id) ?? null,
+      write: async (id, file) => {
+        memory.set(id, file);
+      },
+    });
+    connect();
+    const copy = new Y.Doc();
+    await client.open("library", copy);
+    await new Promise((resolve) => setTimeout(resolve, 150));
+    expect(memory.get("photo")?.size).toBe(40000);
+    expect(memory.has("private")).toBe(false);
+    memory.set("file", new Blob(["budget"], { type: "application/pdf" }));
+    copy.getMap("notes").set("attachment", { src: "media:file" });
+    await new Promise((resolve) => setTimeout(resolve, 150));
+    expect(await files.get("file")?.text()).toBe("budget");
+    disconnect();
+  });
+  it("does not put media onto the relay", async () => {
+    const library = new Y.Doc();
+    library.getMap("notes").set("a", { src: "media:photo" });
+    const { host, client, key, disconnect } = session({ library });
+    let mediaFrames = 0;
+    host.shareMedia({
+      has: async () => true,
+      read: async () => new Blob(["photo"], { type: "image/png" }),
+      write: async () => {},
+    });
+    client.shareMedia({ has: async () => false, read: async () => null, write: async () => {} });
+    host.attach({
+      media: false,
+      send: (data) => {
+        if (decodeFrame(key, data)?.kind === FrameKind.media) mediaFrames++;
+        client.receive(data);
+      },
+    });
+    client.attach({
+      media: false,
+      send: (data) => {
+        if (decodeFrame(key, data)?.kind === FrameKind.media) mediaFrames++;
+        host.receive(data);
+      },
+    });
+    await client.open("library", new Y.Doc());
+    await new Promise((resolve) => setTimeout(resolve, 100));
+    expect(mediaFrames).toBe(0);
+    disconnect();
+  });
+});
+
+it("routes approved browser actions to the phone and rejects actions after disconnect", async () => {
+  const { host, client, connect, disconnect } = session({});
+  host.handleRequests(async (method, input) => {
+    if (method !== "echo") throw new Error("unsupported");
+    return input;
+  });
+  connect();
+  expect(await client.request("echo", { noteId: "one" })).toEqual({ noteId: "one" });
+  await expect(client.request("unknown", null)).rejects.toThrow("Phone could not complete");
+  disconnect();
+  await expect(client.request("echo", null)).rejects.toThrow("Phone disconnected");
+});

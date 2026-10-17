@@ -25,7 +25,11 @@ import {
   TextArea,
   TextInput,
 } from "../../../components/form/form-fields";
+import { t } from "../../../i18n/i18n";
 import { printPage } from "../../../platform/print-page";
+import type { EventTarget } from "../../calendar/components/event-form";
+import { EventSheet } from "../../calendar/components/event-sheet";
+import { getCalendarStore } from "../../calendar/store/calendar-store";
 import { RecentClientPicker } from "../business/recent-client-picker";
 import { exportInvoicePdf } from "../export/export-invoice";
 import {
@@ -61,6 +65,20 @@ export function InvoiceScreen({ invoice }: { invoice: InvoiceDocument }) {
 
   const [exporting, setExporting] = useState(false);
   const [fullscreen, setFullscreen] = useState(false);
+  const [reminder, setReminder] = useState<EventTarget | null>(null);
+
+  const openReminder = () => {
+    const calendar = getCalendarStore();
+    const existing = calendar
+      .getSnapshot()
+      .find((event) => event.related?.type === "invoice" && event.related.id === invoice.id);
+    const event = existing ?? {
+      ...calendar.draft("deadline", invoice.dueOn ?? undefined, null),
+      title: [invoice.number, invoice.client.name].filter(Boolean).join(" · "),
+      related: { type: "invoice" as const, id: invoice.id },
+    };
+    setReminder({ event, day: event.date, isNew: !existing });
+  };
 
   const downloadPdf = async () => {
     if (!link || !issuerId) return;
@@ -252,6 +270,11 @@ export function InvoiceScreen({ invoice }: { invoice: InvoiceDocument }) {
                     />
                   </Field>
                 )}
+                {invoice.kind !== "receipt" && (
+                  <Button type="button" variant="secondary" onClick={openReminder}>
+                    {t("calendar.invoiceReminder")}
+                  </Button>
+                )}
               </div>
             </FormSection>
 
@@ -379,6 +402,7 @@ export function InvoiceScreen({ invoice }: { invoice: InvoiceDocument }) {
         onPrint={print}
         downloading={exporting}
       />
+      <EventSheet target={reminder} onClose={() => setReminder(null)} />
       {createPortal(
         <div className="print-root">
           <InvoicePaper invoice={invoice} verifyLink={link} issuerId={issuerId} />

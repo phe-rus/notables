@@ -10,7 +10,7 @@ import {
   type Spread,
 } from "lexical";
 import type { JSX } from "react";
-import { MediaImage } from "../../media/media-image";
+import { EditableImage } from "./editable-image";
 import { RedrawButton } from "./redraw-button";
 
 export type SerializedImageNode = Spread<
@@ -20,9 +20,35 @@ export type SerializedImageNode = Spread<
     caption: string;
     /** Set on drawn pages: the editable scene the image was rendered from. */
     scene?: string;
+    layout?: ImageLayout;
   },
   SerializedLexicalNode
 >;
+
+export interface ImageLayout {
+  width: number;
+  aspect: "16 / 9" | "4 / 3" | "1 / 1" | "original";
+  fit: "cover" | "contain";
+  position: number;
+}
+const defaultLayout: ImageLayout = { width: 100, aspect: "16 / 9", fit: "cover", position: 50 };
+function normalizedLayout(value?: Partial<ImageLayout>): ImageLayout {
+  return {
+    width:
+      typeof value?.width === "number" && Number.isFinite(value.width)
+        ? Math.max(25, Math.min(100, value.width))
+        : 100,
+    aspect:
+      value?.aspect && ["16 / 9", "4 / 3", "1 / 1", "original"].includes(value.aspect)
+        ? value.aspect
+        : "16 / 9",
+    fit: value?.fit === "contain" ? "contain" : "cover",
+    position:
+      typeof value?.position === "number" && Number.isFinite(value.position)
+        ? Math.max(0, Math.min(100, value.position))
+        : 50,
+  };
+}
 
 /** A photo in the flow of a note, journal or story, or a drawn page. */
 export class ImageNode extends DecoratorNode<JSX.Element> {
@@ -30,13 +56,16 @@ export class ImageNode extends DecoratorNode<JSX.Element> {
   __alt: string;
   __caption: string;
   __scene: string;
+  __layout: ImageLayout;
 
   static override getType(): string {
     return "image";
   }
 
   static override clone(node: ImageNode): ImageNode {
-    return new ImageNode(node.__src, node.__alt, node.__caption, node.__scene, node.__key);
+    const copy = new ImageNode(node.__src, node.__alt, node.__caption, node.__scene, node.__key);
+    copy.__layout = node.__layout;
+    return copy;
   }
 
   static override importJSON(json: SerializedImageNode): ImageNode {
@@ -58,6 +87,11 @@ export class ImageNode extends DecoratorNode<JSX.Element> {
     this.__alt = alt;
     this.__caption = caption;
     this.__scene = scene;
+    this.__layout = defaultLayout;
+  }
+
+  setLayout(layout: Partial<ImageLayout>) {
+    this.getWritable().__layout = normalizedLayout({ ...this.__layout, ...layout });
   }
 
   /** Replaces a drawn page after it has been redrawn. */
@@ -75,6 +109,7 @@ export class ImageNode extends DecoratorNode<JSX.Element> {
       src: this.__src,
       alt: this.__alt,
       caption: this.__caption,
+      layout: this.__layout,
       ...(this.__scene ? { scene: this.__scene } : {}),
     };
   }
@@ -103,7 +138,13 @@ export class ImageNode extends DecoratorNode<JSX.Element> {
   override decorate(): JSX.Element {
     return (
       <>
-        <MediaImage src={this.__src} alt={this.__alt} />
+        <EditableImage
+          nodeKey={this.__key}
+          src={this.__src}
+          alt={this.__alt}
+          layout={this.__layout}
+          scene={Boolean(this.__scene)}
+        />
         {this.__scene && <RedrawButton nodeKey={this.__key} scene={this.__scene} />}
         {this.__caption && <figcaption className="nt-caption">{this.__caption}</figcaption>}
       </>
@@ -116,10 +157,13 @@ export interface ImageInput {
   alt?: string;
   caption?: string;
   scene?: string;
+  layout?: Partial<ImageLayout>;
 }
 
 export function $createImageNode(input: ImageInput): ImageNode {
-  return $applyNodeReplacement(new ImageNode(input.src, input.alt, input.caption, input.scene));
+  const node = new ImageNode(input.src, input.alt, input.caption, input.scene);
+  node.__layout = normalizedLayout(input.layout);
+  return $applyNodeReplacement(node);
 }
 
 export function $isImageNode(node: LexicalNode | null | undefined): node is ImageNode {

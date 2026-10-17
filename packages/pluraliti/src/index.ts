@@ -53,3 +53,4 @@ export {
   type MediaRenderers,
 } from "./rendering/document-view";
 export { BlockToolbar, type BlockToolbarProps } from "./toolbar/block-toolbar";
+export { defaultToolbarLabels, type ToolbarLabels } from "./toolbar/toolbar-labels";

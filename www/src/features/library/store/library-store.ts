@@ -1,9 +1,18 @@
 import { createId, type NoteKind } from "@notables/core";
+import type { Persistence } from "@notables/sync";
 import { useSyncExternalStore } from "react";
 import * as Y from "yjs";
+import { t } from "../../../i18n/i18n";
 import { getDeviceId } from "../../../platform/device-identity";
 import { getPersistence } from "../../../platform/storage/document-storage";
 import type { NoteFont } from "../model/note-fonts";
+
+export interface Folder {
+  id: string;
+  name: string;
+  createdAt: number;
+  order: number;
+}
 
 export interface LibraryEntry {
   id: string;
@@ -26,6 +35,12 @@ export interface LibraryEntry {
   trashedAt?: number | null;
   /** The note's own font; unset follows the default in Settings. */
   font?: NoteFont;
+  folderId?: string | null;
+  format?: "document" | "spreadsheet";
+  tags?: string[];
+  manualTags?: string[];
+  previewImage?: string | null;
+  attachmentCount?: number;
   createdAt: number;
   updatedAt: number;
 }
@@ -34,27 +49,54 @@ export interface LibraryEntry {
  * The index of notes on this device. It is itself a Yjs document, so it
  * merges cleanly once it syncs between a person's devices.
  */
-class Library {
+export class Library {
   readonly doc = new Y.Doc();
   readonly entries = this.doc.getMap<LibraryEntry>("notes");
+  readonly folders = this.doc.getMap<Folder>("folders");
+  readonly removedFolders = this.doc.getMap<boolean>("removed-folders");
   ready = false;
   #snapshot: LibraryEntry[] = [];
+  #folderSnapshot: Folder[] = [];
   #listeners = new Set<() => void>();
 
   /** Resolves once the stored library has loaded. */
   readonly loaded: Promise<void>;
 
-  constructor() {
+  constructor(private readonly persistence: Persistence = getPersistence()) {
     this.entries.observe(() => this.#refresh());
-    this.loaded = getPersistence()
-      .bind("library", this.doc)
-      .then(() => {
-        this.ready = true;
-        this.#refresh();
-      });
+    this.folders.observe(() => this.#refresh());
+    this.removedFolders.observe(() => this.#refresh());
+    this.loaded = this.persistence.bind("library", this.doc).then(() => {
+      const workspace = this.doc.getMap("workspace");
+      if (!workspace.get("foldersVersion")) {
+        this.doc.transact(() => {
+          const now = Date.now();
+          for (const [order, name] of ["writings", "notes", "tasks"].entries()) {
+            const id = `default-${name}`;
+            if (!this.folders.has(id) && !this.removedFolders.has(id))
+              this.folders.set(id, {
+                id,
+                name: t(`workspace.${name as "writings" | "notes" | "tasks"}`),
+                createdAt: now,
+                order,
+              });
+          }
+          for (const entry of this.entries.values()) {
+            if (!entry.folderId && !entry.bookId)
+              this.entries.set(entry.id, { ...entry, folderId: "default-writings" });
+          }
+          workspace.set("foldersVersion", 1);
+        });
+      }
+      this.ready = true;
+      this.#refresh();
+    });
   }
 
   #refresh() {
+    this.#folderSnapshot = [...this.folders.values()]
+      .filter((folder) => !this.removedFolders.has(folder.id))
+      .sort((a, b) => a.order - b.order || a.createdAt - b.createdAt);
     this.#snapshot = [...this.entries.values()].sort(
       (a, b) => Number(b.pinned) - Number(a.pinned) || b.updatedAt - a.updatedAt,
     );
@@ -69,16 +111,62 @@ class Library {
   };
 
   getSnapshot = () => this.#snapshot;
+  getFolders = () => this.#folderSnapshot;
+
+  createFolder(name: string): Folder {
+    const title = name.trim().slice(0, 120);
+    if (!title) throw new Error("A folder needs a name");
+    const now = Date.now();
+    const folder = {
+      id: createId(now),
+      name: title,
+      createdAt: now,
+      order: Math.max(-1, ...[...this.folders.values()].map((item) => item.order)) + 1,
+    };
+    this.folders.set(folder.id, folder);
+    return folder;
+  }
+
+  renameFolder(id: string, name: string) {
+    const folder = this.folders.get(id);
+    const title = name.trim().slice(0, 120);
+    if (folder && title && !this.removedFolders.has(id))
+      this.folders.set(id, { ...folder, name: title });
+  }
+
+  removeFolder(id: string) {
+    const destination = this.getFolders().find((folder) => folder.id !== id)?.id ?? null;
+    this.doc.transact(() => {
+      for (const entry of this.entries.values()) {
+        if (entry.folderId === id) this.entries.set(entry.id, { ...entry, folderId: destination });
+      }
+      this.removedFolders.set(id, true);
+      this.folders.delete(id);
+    });
+  }
+
+  moveToFolder(ids: readonly string[], folderId: string | null) {
+    if (folderId !== null && !this.getFolders().some((folder) => folder.id === folderId)) return;
+    this.doc.transact(() => {
+      for (const id of ids) this.update(id, { folderId });
+    });
+  }
 
   get(id: string): LibraryEntry | undefined {
     return this.entries.get(id);
   }
 
-  create(kind: NoteKind = "note"): LibraryEntry {
+  create(kind: NoteKind = "note", folderId?: string | null): LibraryEntry {
     const now = Date.now();
     const entry: LibraryEntry = {
       id: createId(now),
       kind,
+      folderId:
+        folderId === undefined
+          ? this.getFolders().some((folder) => folder.id === "default-writings")
+            ? "default-writings"
+            : (this.getFolders()[0]?.id ?? null)
+          : folderId,
       title: "",
       excerpt: "",
       pinned: false,
@@ -120,7 +208,7 @@ class Library {
 
   async remove(id: string) {
     this.entries.delete(id);
-    await getPersistence().remove(`note:${id}`);
+    await this.persistence.remove(`note:${id}`);
   }
 }
 
@@ -133,6 +221,12 @@ export function getLibrary(): Library {
 }
 
 const EMPTY: LibraryEntry[] = [];
+const NO_FOLDERS: Folder[] = [];
+
+export function useFolders(): Folder[] {
+  const library = getLibrary();
+  return useSyncExternalStore(library.subscribe, library.getFolders, () => NO_FOLDERS);
+}
 
 export function useLibrary(): LibraryEntry[] {
   const library = getLibrary();

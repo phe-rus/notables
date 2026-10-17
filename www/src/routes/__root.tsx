@@ -15,6 +15,7 @@ import { ListeningSession } from "../features/listening/components/listening-ses
 import { appearanceBootScript } from "../features/settings/lib/appearance-boot";
 import { useLanguage } from "../i18n/i18n";
 import { languages } from "../i18n/languages";
+import { canOpenLibrary } from "../platform/library-access";
 import { resolveMediaUrl } from "../platform/storage/media-store";
 import { startWindowFrame } from "../platform/window-frame";
 import styles from "../styles/app.css?url";
@@ -76,7 +77,7 @@ function RootDocument({ children }: { children: ReactNode }) {
             {/* A new language redraws every screen in it. */}
             <Fragment key={language}>{children}</Fragment>
             {/* Audiobooks keep playing from page to page. */}
-            {!widget && !pairing && <ListeningSession />}
+            {!widget && !pairing && canOpenLibrary() && <ListeningSession />}
           </MediaResolverProvider>
           <Toaster />
           <DialogHost />

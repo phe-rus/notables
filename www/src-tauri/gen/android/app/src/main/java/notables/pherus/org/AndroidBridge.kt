@@ -2,6 +2,7 @@ package notables.pherus.org
 
 import android.app.Activity
 import android.appwidget.AppWidgetManager
+import android.content.Intent
 import android.content.ComponentName
 import android.os.Build
 import android.view.HapticFeedbackConstants
@@ -71,6 +72,21 @@ class AndroidBridge(private val activity: Activity, private val webView: WebView
   fun deviceModel(): String {
     val maker = Build.MANUFACTURER.replaceFirstChar { it.uppercase() }
     return if (Build.MODEL.startsWith(maker, ignoreCase = true)) Build.MODEL else "$maker ${Build.MODEL}"
+  }
+
+  /** Let Android offer the person's installed sharing transports and apps. */
+  @JavascriptInterface
+  fun shareText(title: String, text: String): Boolean {
+    if (text.isBlank() || text.length > 16384 || title.length > 1024) return false
+    activity.runOnUiThread {
+      val intent = Intent(Intent.ACTION_SEND).apply {
+        type = "text/plain"
+        putExtra(Intent.EXTRA_SUBJECT, title)
+        putExtra(Intent.EXTRA_TEXT, text)
+      }
+      activity.startActivity(Intent.createChooser(intent, null))
+    }
+    return true
   }
 
   companion object {

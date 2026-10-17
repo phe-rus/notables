@@ -1,4 +1,5 @@
 import { useSyncExternalStore } from "react";
+import { inBrowserSession } from "../../../platform/session/browser-session-store";
 
 const KEY = "notables:last-seen";
 
@@ -23,7 +24,7 @@ export function markSeen(keys: readonly string[], now = Date.now()) {
   if (keys.length === 0) return;
   cached = { ...read(), ...Object.fromEntries(keys.map((key) => [key, now])) };
   try {
-    localStorage.setItem(KEY, JSON.stringify(cached));
+    if (!inBrowserSession()) localStorage.setItem(KEY, JSON.stringify(cached));
   } catch {
     // Remembered for this session.
   }

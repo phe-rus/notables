@@ -1,5 +1,5 @@
 import * as Y from "yjs";
-import { inBrowserSession } from "../session/browser-session-store";
+import { canOpenLibrary, ownsLibrary } from "../library-access";
 import { getPersistence } from "../storage/document-storage";
 
 /**
@@ -31,7 +31,7 @@ let values: Y.Map<unknown> | null = null;
 const registry = new Map<string, Registered>();
 let started = false;
 
-const keepsLocalCopy = () => !inBrowserSession();
+const keepsLocalCopy = ownsLibrary;
 
 function readLocal(key: string, format: Format): unknown {
   try {
@@ -54,7 +54,7 @@ function writeLocal(key: string, format: Format, value: unknown) {
 
 /** Opens the document once, after mount: the server prerender has no storage. */
 function start() {
-  if (started || typeof window === "undefined") return;
+  if (started || typeof window === "undefined" || !canOpenLibrary()) return;
   started = true;
   const doc = new Y.Doc();
   const map = doc.getMap<unknown>("values");

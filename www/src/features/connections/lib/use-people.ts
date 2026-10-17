@@ -1,12 +1,16 @@
-import { useEffect, useMemo } from "react";
+import { useEffect, useMemo, useState } from "react";
+import { inBrowserSession } from "../../../platform/session/browser-session-store";
+import { phoneConnection } from "../../../platform/session/phone-connection";
 import { activeMembers } from "../../sharing/lib/share-members";
 import { sessionFor, useShareSessionsVersion } from "../../sharing/lib/share-sessions";
 import { useShares } from "../../sharing/store/share-store";
-import { gatherPeople, type Person, type ShareSnapshot } from "../model/people";
+import { gatherPeople, PeopleSnapshot, type Person, type ShareSnapshot } from "../model/people";
 import { markSeen } from "../store/last-seen-store";
 
 /** Everyone this device shares with, live: re-renders as people come online or leave. */
 export function usePeople(): Person[] {
+  const browser = inBrowserSession();
+  const [remote, setRemote] = useState<Person[]>([]);
   const shares = useShares();
   const version = useShareSessionsVersion();
   const people = useMemo(() => {
@@ -21,8 +25,27 @@ export function usePeople(): Person[] {
     return gatherPeople(snapshots);
   }, [shares, version]);
 
+  useEffect(() => {
+    if (!browser) return;
+    let active = true;
+    const refresh = async () => {
+      try {
+        const people = PeopleSnapshot.parse(
+          await phoneConnection()?.client.request("sharing.people", null),
+        );
+        if (active) setRemote(people);
+      } catch {}
+    };
+    void refresh();
+    const timer = setInterval(() => void refresh(), 5000);
+    return () => {
+      active = false;
+      clearInterval(timer);
+    };
+  }, [browser]);
+  const visible = browser ? remote : people;
   // Whoever is here now was seen now; the list shows when the others last were.
-  const online = people.filter((person) => person.online).map((person) => person.key);
+  const online = visible.filter((person) => person.online).map((person) => person.key);
   const onlineKey = online.join("|");
   useEffect(() => {
     markSeen(online);
@@ -31,5 +54,5 @@ export function usePeople(): Person[] {
     return () => window.clearInterval(timer);
   }, [onlineKey]);
 
-  return people;
+  return visible;
 }

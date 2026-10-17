@@ -11,6 +11,7 @@ import {
 } from "@notables/sync";
 import { useSyncExternalStore } from "react";
 import { showPhoneSpace } from "../space/space-identity";
+import { mediaArrived, peerMedia } from "../storage/peer-media";
 import { type BrowserSession, browserSession, clearBrowserSession } from "./browser-session-store";
 import { roomEndpoint } from "./room-endpoint";
 import { thisDeviceName } from "./this-device";
@@ -62,6 +63,7 @@ class PhoneConnection {
       const space = message as { type?: string; code?: string };
       if (space.type === "space" && typeof space.code === "string") showPhoneSpace(space.code);
     });
+    this.client.shareMedia(peerMedia, mediaArrived);
     this.#room = new RoomSocket(roomEndpoint(), roomOf(session.key), session.browserId);
     this.#room.on("presence", (online) => this.#onPresence(online));
     this.#room.on("message", ({ from, body }) => {
@@ -120,7 +122,7 @@ class PhoneConnection {
     }, LOCAL_TIMEOUT);
     link.on("open", () => {
       clearTimeout(timeout);
-      this.client.attach({ send: (data) => void link.send(data) });
+      this.client.attach(link);
       this.client.sendControl({ type: "hello", name: thisDeviceName() });
       this.#set("connected");
     });

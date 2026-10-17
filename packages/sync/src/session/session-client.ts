@@ -2,6 +2,8 @@ import * as decoding from "lib0/decoding";
 import * as encoding from "lib0/encoding";
 import * as syncProtocol from "y-protocols/sync";
 import type * as Y from "yjs";
+import type { PeerMedia } from "../peer/media-exchange";
+import { mediaReferences } from "../peer/media-references";
 import {
   controlBody,
   decodeFrame,
@@ -11,6 +13,8 @@ import {
   type FrameLink,
   readControl,
 } from "./session-frames";
+import { SessionMedia } from "./session-media";
+import { SessionRequests } from "./session-rpc";
 
 interface Open {
   doc: Y.Doc;
@@ -28,6 +32,25 @@ interface Open {
  */
 export class SessionClient {
   #link: FrameLink | null = null;
+  #media: SessionMedia | null = null;
+  #requests = new SessionRequests((message) => this.sendControl(message));
+
+  request(method: string, input: unknown): Promise<unknown> {
+    if (!this.connected) return Promise.reject(new Error("Phone disconnected"));
+    return this.#requests.request(method, input);
+  }
+
+  shareMedia(media: PeerMedia, arrived: (id: string) => void = () => {}) {
+    this.#media?.detach();
+    this.#requests.detach();
+    this.#media = new SessionMedia(
+      media,
+      () => [...this.#open.values()].flatMap(({ doc }) => mediaReferences(doc)),
+      (body) => this.#send(FrameKind.media, "", body),
+      arrived,
+    );
+    this.#media.attach(this.#link !== null && this.#link.media !== false);
+  }
   #open = new Map<string, Open>();
 
   constructor(
@@ -42,11 +65,14 @@ export class SessionClient {
   /** Connected: catch up on every open document, both ways. */
   attach(link: FrameLink) {
     this.#link = link;
+    this.#media?.attach(link.media !== false);
     for (const [name, open] of this.#open) this.#step1(name, open.doc);
   }
 
   detach() {
     this.#link = null;
+    this.#media?.detach();
+    this.#requests.detach();
   }
 
   /** Fills `doc` from the phone and keeps it in step; resolves once its content is in. */
@@ -66,6 +92,7 @@ export class SessionClient {
       const encoder = encoding.createEncoder();
       syncProtocol.writeUpdate(encoder, update);
       this.#send(FrameKind.sync, name, encoding.toUint8Array(encoder));
+      this.#media?.refresh();
     };
     doc.on("update", onUpdate);
     this.#open.set(name, { doc, holders: 1, onUpdate, loaded, markLoaded });
@@ -101,9 +128,13 @@ export class SessionClient {
   receive(data: Uint8Array) {
     const frame = decodeFrame(this.key, data);
     if (!frame) return;
+    if (frame.kind === FrameKind.media) {
+      this.#media?.receive(frame.body);
+      return;
+    }
     if (frame.kind === FrameKind.control) {
       const message = readControl(frame.body);
-      if (message) this.onControl(message);
+      if (message && !this.#requests.receive(message)) this.onControl(message);
       return;
     }
     const open = this.#open.get(frame.doc);
@@ -118,6 +149,7 @@ export class SessionClient {
     if (encoding.length(encoder) > 0) {
       this.#send(FrameKind.sync, frame.doc, encoding.toUint8Array(encoder));
     }
+    this.#media?.refresh();
     if (type === syncProtocol.messageYjsSyncStep2) open.markLoaded();
   }
 
@@ -128,6 +160,6 @@ export class SessionClient {
   }
 
   #send(kind: FrameKindValue, doc: string, body: Uint8Array) {
-    this.#link?.send(encodeFrame(this.key, { kind, doc, body }));
+    return this.#link?.send(encodeFrame(this.key, { kind, doc, body }));
   }
 }

@@ -9,6 +9,10 @@ export const editorTheme: EditorThemeClasses = {
   code: "nt-code-block",
   link: "nt-link",
   hr: "nt-hr",
+  table: "nt-table",
+  tableCell: "nt-table-cell",
+  tableCellHeader: "nt-table-header",
+  tableRow: "nt-table-row",
   list: {
     ul: "nt-ul",
     ol: "nt-ol",
@@ -26,5 +30,7 @@ export const editorTheme: EditorThemeClasses = {
     underlineStrikethrough: "nt-underline nt-strike",
     code: "nt-code",
     highlight: "nt-highlight",
+    subscript: "nt-subscript",
+    superscript: "nt-superscript",
   },
 };

@@ -6,7 +6,14 @@ import { bytesToHex, hexToBytes, randomBytes, utf8ToBytes } from "@noble/hashes/
 export { bytesToHex, hexToBytes, randomBytes };
 
 /** What each key is for. A key is only ever used for its own purpose. */
-export type KeyPurpose = "space-id" | "room" | "frames" | "backup" | "media" | "session";
+export type KeyPurpose =
+  | "space-id"
+  | "room"
+  | "frames"
+  | "backup"
+  | "media"
+  | "session"
+  | "direct-signals";
 
 const NONCE = 24;
 

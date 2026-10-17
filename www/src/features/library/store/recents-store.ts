@@ -46,9 +46,10 @@ function write(next: Opened) {
 
 /** Notes past the window are dropped as new ones arrive. */
 export function recordOpened(noteId: string, now = Date.now()) {
-  const kept = Object.entries(read()).filter(
-    ([id, at]) => id !== noteId && now - at < RECENT_WINDOW,
-  );
+  const kept = Object.entries(read())
+    .filter(([id, at]) => id !== noteId && now - at < RECENT_WINDOW)
+    .sort((a, b) => b[1] - a[1])
+    .slice(0, 4);
   write({ ...Object.fromEntries(kept), [noteId]: now });
 }
 

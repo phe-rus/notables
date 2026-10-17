@@ -11,7 +11,8 @@ export const MEDIA_CHUNK_BYTES = 16 * 1024;
 /** Nothing larger than this is accepted from another device. */
 const MAX_BYTES = 512 * 1024 * 1024;
 /** Kinds of file a note can hold: photos, recordings, videos, drawing scenes. */
-const ALLOWED_TYPE = /^(?:image|audio|video)\/[\w.+-]+$|^application\/json$/;
+const ALLOWED_TYPE =
+  /^(?:image|audio|video)\/[\w.+-]+$|^application\/(?:json|pdf|octet-stream|zip|msword|vnd\.[\w.+-]+)$|^text\/(?:plain|csv|markdown)$/;
 /** A request with no answer is asked again after this long. */
 const RETRY_AFTER = 60_000;
 
@@ -65,6 +66,14 @@ export class MediaExchange {
     /** Called once a file has arrived and been stored. */
     private readonly arrived: (id: string) => void = () => {},
   ) {}
+
+  disconnect(peer: string) {
+    for (const [id, request] of this.#asked)
+      if (request.peer === peer) {
+        this.#asked.delete(id);
+        this.#incoming.delete(id);
+      }
+  }
 
   /** Asks connected peers for every referenced file this device lacks. */
   async fetchMissing(peers: readonly string[]) {
@@ -135,7 +144,7 @@ export class MediaExchange {
   async #serve(peer: string, id: string) {
     const allowed = new Set(this.referenced()).has(id);
     const file = allowed && (await this.media.has(id)) ? await this.media.read(id) : null;
-    if (!file) {
+    if (!file || file.size > MAX_BYTES || !ALLOWED_TYPE.test(file.type)) {
       await this.send(peer, frame(MEDIA_MISSING, id));
       return;
     }

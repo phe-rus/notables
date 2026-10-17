@@ -1,21 +1,10 @@
 import { androidBridge } from "../android-bridge";
+import { getDeviceId } from "../device-identity";
 import { browserNames } from "../device-info";
 import { devicePlatform } from "../device-platform";
 
-const DEVICE_ID = "notables:device-id";
-
-/** This device's id in rooms: random, made once, never derived from anything about it. */
-export function thisDeviceId(): string {
-  try {
-    const saved = localStorage.getItem(DEVICE_ID);
-    if (saved) return saved;
-    const id = crypto.randomUUID();
-    localStorage.setItem(DEVICE_ID, id);
-    return id;
-  } catch {
-    return crypto.randomUUID();
-  }
-}
+/** Room and content attribution use the same installation identity. */
+export const thisDeviceId = getDeviceId;
 
 const systems = {
   macos: "macOS",

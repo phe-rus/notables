@@ -1,6 +1,5 @@
-import { localMediaSrc, noteDoc } from "@notables/core";
+import { localMediaId, localMediaSrc, noteDoc } from "@notables/core";
 import {
-  BlockToolbar,
   type DocumentChange,
   KeepCaretVisiblePlugin,
   NotesEditor,
@@ -16,12 +15,14 @@ import {
   cn,
   IconButton,
   MoreIcon,
+  openFollowUpMenu,
   openMenu,
   PinIcon,
   riseMotion,
   ShareIcon,
   StatusIndicator,
   TrashIcon,
+  toast,
   useMediaQuery,
 } from "@phe-rus/hino";
 import { Link, useNavigate } from "@tanstack/react-router";
@@ -29,14 +30,16 @@ import { motion } from "motion/react";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { t } from "../../../i18n/i18n";
 import { getDeviceId } from "../../../platform/device-identity";
+import { saveFile } from "../../../platform/save-file";
 import { inBrowserSession } from "../../../platform/session/browser-session-store";
-import { saveMedia } from "../../../platform/storage/media-store";
+import { loadMedia, saveMedia } from "../../../platform/storage/media-store";
 import { saveNoteContent } from "../../../platform/storage/note-content-cache";
 import { AiAssist } from "../../ai/components/ai-assist";
 import { PendingNarration } from "../../books/narration/components/pending-narration";
 import { useBook } from "../../books/store/book-store";
 import { formatFull } from "../../library/lib/date-format";
-import { getView, summarize } from "../../library/model/library-views";
+import { notePreview } from "../../library/lib/note-preview";
+import { summarize } from "../../library/model/library-views";
 import {
   getLibrary,
   type LibraryEntry,
@@ -51,10 +54,15 @@ import { takeRecording } from "../../recording/lib/pending-recording";
 import { usePreferences } from "../../settings/store/preferences-store";
 import { ShareSheet } from "../../sharing/components/share-sheet";
 import { useShareSession } from "../../sharing/lib/share-sessions";
+import { SpreadsheetEditor } from "../../spreadsheets/components/spreadsheet-editor";
 import { PendingDrawing } from "../../studio/components/pending-drawing";
 import { moveNotesToBin } from "../../trash/lib/recycle-bin";
-import { noteFontItems } from "../actions/note-menu";
+import { noteFolderItems, noteFontItems, noteFormatItems } from "../actions/note-menu";
+import { NoteCaptureToolbar } from "../capture/note-capture-toolbar";
+import { useKeyboardInset } from "../hooks/use-keyboard-inset";
 import { useNoteProvider } from "../hooks/use-note-provider";
+import { editorLabels } from "../lib/editor-labels";
+import { NoteTagsSheet } from "./note-tags-sheet";
 
 const statusLabel = (status: SyncStatus) => t(`notes.status.${status}`);
 /** How far the page scrolls before the title has left the screen and moves into the bar. */
@@ -93,7 +101,18 @@ export function NoteScreen({ noteId, viewId }: { noteId: string; viewId?: string
 /** Reopens the editor when a note starts or stops being shared, so it loads from the right place. */
 function SharedAwareEditor({ entry, viewId }: { entry: LibraryEntry; viewId?: string }) {
   const shared = useShareSession(entry.id) !== undefined;
-  return <NoteEditorScreen key={`${entry.id}:${shared}`} entry={entry} viewId={viewId} />;
+  const [sharing, setSharing] = useState(false);
+  return (
+    <>
+      <NoteEditorScreen
+        key={`${entry.id}:${shared}`}
+        entry={entry}
+        viewId={viewId}
+        onShare={() => setSharing(true)}
+      />
+      <ShareSheet entry={entry} open={sharing} onClose={() => setSharing(false)} />
+    </>
+  );
 }
 
 /** A new note takes the caret once its document has loaded, ready to type. */
@@ -108,19 +127,25 @@ function FocusWhenLoaded({ loaded }: { loaded: boolean }) {
   return null;
 }
 
-function NoteEditorScreen({ entry, viewId }: { entry: LibraryEntry; viewId?: string }) {
+function NoteEditorScreen({
+  entry,
+  onShare,
+}: {
+  entry: LibraryEntry;
+  viewId?: string;
+  onShare: () => void;
+}) {
   const { provider, status } = useNoteProvider(entry.id);
-  // A browser showing a phone's notes leaves recording, read aloud and stored photos to the phone.
+  // Recording and read aloud run on the phone; its browser exchanges files over their link.
   const browser = inBrowserSession();
   const navigate = useNavigate();
-  const view = getView(viewId);
   // Chapters written for a book lead back to it.
   const book = useBook(entry.bookId ?? "");
   const { noteFont } = usePreferences();
   // "Record chapter" on an audiobook opens its new chapter already recording.
+  const [tagging, setTagging] = useState(false);
   const [recording, setRecording] = useState(() => takeRecording(entry.id));
   const articleRef = useRef<HTMLElement>(null);
-  const [sharing, setSharing] = useState(false);
   const [titleInBar, setTitleInBar] = useState(false);
   // On touch screens a note opens for reading, so scrolling never brings up
   // the keyboard; a tap on its text edits, and Done reads again. New notes
@@ -128,6 +153,7 @@ function NoteEditorScreen({ entry, viewId }: { entry: LibraryEntry; viewId?: str
   const touch = useMediaQuery("(pointer: coarse)");
   const [fresh] = useState(() => !entry.title);
   const [editing, setEditing] = useState(fresh);
+  const spreadsheet = entry.format === "spreadsheet";
   const reading = touch && !editing;
   const startEditing = useCallback(() => setEditing(true), []);
   // Using the formatting tools means editing: a drawing or photo added
@@ -140,6 +166,8 @@ function NoteEditorScreen({ entry, viewId }: { entry: LibraryEntry; viewId?: str
   const storePhoto = useCallback(async (file: File) => localMediaSrc(await saveMedia(file)), []);
   // The floating formatting tools sit above the keyboard; typing stays above them.
   const tools = useRef<HTMLElement>(null);
+  const pane = useRef<HTMLDivElement>(null);
+  const keyboardInset = useKeyboardInset(pane);
   const toolsTop = useCallback(() => {
     const rect = tools.current?.getBoundingClientRect();
     return rect && rect.height > 0 ? rect.top : Number.POSITIVE_INFINITY;
@@ -163,10 +191,16 @@ function NoteEditorScreen({ entry, viewId }: { entry: LibraryEntry; viewId?: str
       loaded.current = true;
       void saveNoteContent(entry.id, document);
       if (provider && noteDoc.title(provider.doc) !== title) noteDoc.setTitle(provider.doc, title);
-      getLibrary().update(
-        entry.id,
-        edited ? { title, excerpt, updatedAt: Date.now() } : { title, excerpt },
-      );
+      const preview = notePreview(document, text);
+      getLibrary().update(entry.id, {
+        title,
+        excerpt,
+        ...preview,
+        tags: [
+          ...new Set([...(getLibrary().get(entry.id)?.manualTags ?? []), ...preview.tags]),
+        ].slice(0, 30),
+        ...(edited ? { updatedAt: Date.now() } : {}),
+      });
     },
     [entry.id, provider],
   );
@@ -186,7 +220,12 @@ function NoteEditorScreen({ entry, viewId }: { entry: LibraryEntry; viewId?: str
       onSelect: () => getLibrary().update(entry.id, { pinned: !entry.pinned }),
     },
     "divider",
-    ...noteFontItems(entry),
+    {
+      label: t("workspace.moveToFolder"),
+      onSelect: () => openFollowUpMenu(noteFolderItems([entry])),
+    },
+    { label: t("workspace.noteFormat"), onSelect: () => openFollowUpMenu(noteFormatItems(entry)) },
+    { label: t("notes.fontMenu"), onSelect: () => openFollowUpMenu(noteFontItems(entry)) },
     "divider",
     {
       label: t("notes.deleteNote"),
@@ -197,11 +236,28 @@ function NoteEditorScreen({ entry, viewId }: { entry: LibraryEntry; viewId?: str
   ];
 
   return (
-    <NotesEditor id={entry.id} provider={provider} bootstrap={entry.origin === getDeviceId()}>
+    <NotesEditor
+      id={entry.id}
+      provider={provider}
+      bootstrap={entry.origin === getDeviceId()}
+      labels={editorLabels()}
+      resolvePhoto={storePhoto}
+      onAttachment={async (input) => {
+        try {
+          const id = localMediaId(input.src);
+          const blob = id ? await loadMedia(id) : null;
+          if (!blob) throw new Error("missing-media");
+          await saveFile(blob, input.name, input.mime);
+        } catch {
+          toast.error(t("editor.photoFailed"));
+        }
+      }}
+      onEdit={startEditing}
+    >
       <ReadModePlugin reading={reading} onEdit={startEditing} />
-      {fresh && <FocusWhenLoaded loaded={status !== "loading"} />}
+      {fresh && !spreadsheet && <FocusWhenLoaded loaded={status !== "loading"} />}
       <KeepCaretVisiblePlugin coveredFrom={toolsTop} />
-      <div className="@container/note relative flex min-h-0 grow flex-col">
+      <div ref={pane} className="@container/note relative flex min-h-0 grow flex-col">
         <div
           className="relative flex min-h-0 grow flex-col overflow-y-auto"
           onScroll={(event) => setTitleInBar(event.currentTarget.scrollTop > TITLE_SCROLLED_PX)}
@@ -230,7 +286,7 @@ function NoteEditorScreen({ entry, viewId }: { entry: LibraryEntry; viewId?: str
                     titleInBar && "@max-[860px]/note:sr-only",
                   )}
                 >
-                  {view.title}
+                  {entry.title || t("notes.newNote")}
                 </span>
               </Link>
             )}
@@ -244,13 +300,18 @@ function NoteEditorScreen({ entry, viewId }: { entry: LibraryEntry; viewId?: str
             >
               {entry.title || t("notes.newNote")}
             </span>
-            <div className="contents" onPointerDownCapture={editFromTools}>
-              <BlockToolbar
-                onRecord={browser ? undefined : startRecording}
-                resolvePhoto={browser ? undefined : storePhoto}
-                className="@max-[860px]/note:hidden"
-              />
-            </div>
+            {!spreadsheet && (
+              <div className="contents" onPointerDownCapture={editFromTools}>
+                <NoteCaptureToolbar
+                  noteId={entry.id}
+                  title={entry.title}
+                  browser={browser}
+                  onRecord={startRecording}
+                  resolvePhoto={storePhoto}
+                  className="@max-[860px]/note:hidden"
+                />
+              </div>
+            )}
             <div className="ms-auto flex shrink-0 items-center gap-1 @min-[600px]/note:gap-2">
               <StatusIndicator
                 state={
@@ -286,7 +347,9 @@ function NoteEditorScreen({ entry, viewId }: { entry: LibraryEntry; viewId?: str
                   {t("common.done")}
                 </button>
               )}
-              {!browser && <ReadAloudButton root={articleRef} title={entry.title} />}
+              {!browser && !spreadsheet && (
+                <ReadAloudButton root={articleRef} title={entry.title} />
+              )}
               <AiAssist />
               <IconButton
                 size="icon-sm"
@@ -324,14 +387,14 @@ function NoteEditorScreen({ entry, viewId }: { entry: LibraryEntry; viewId?: str
                 label={t("sharing.share")}
                 variant={shareSession ? "link" : "ghost"}
                 className="@min-[600px]/note:hidden"
-                onClick={() => setSharing(true)}
+                onClick={onShare}
               >
                 <ShareIcon size={19} />
               </IconButton>
               <Button
                 variant="secondary"
                 className="@max-[600px]/note:hidden"
-                onClick={() => setSharing(true)}
+                onClick={onShare}
                 data-tooltip={t("sharing.tooltip")}
               >
                 <ShareIcon size={16} />
@@ -339,12 +402,11 @@ function NoteEditorScreen({ entry, viewId }: { entry: LibraryEntry; viewId?: str
                   ? t("sharing.shared", { count: shareSession.peers.length + 1 })
                   : t("sharing.share")}
               </Button>
-              <PublishControl entry={entry} doc={provider.doc} />
+              {!spreadsheet && <PublishControl entry={entry} doc={provider.doc} />}
               <IconButton
                 size="icon-sm"
                 variant="ghost"
                 label={t("notes.more")}
-                className="@min-[520px]/note:hidden"
                 onClick={(event) => {
                   openMenu(event.currentTarget, moreItems(), { edge: "trailing" });
                 }}
@@ -354,46 +416,56 @@ function NoteEditorScreen({ entry, viewId }: { entry: LibraryEntry; viewId?: str
             </div>
           </header>
 
-          <article
-            ref={articleRef}
-            data-note-font={entry.font ?? noteFont}
-            className="flex grow justify-center px-6 pt-6 pb-36 @min-[600px]/note:pt-11"
-          >
-            <div className="flex w-full max-w-[640px] flex-col gap-4">
-              <p
-                data-read-aloud-skip
-                className="text-center font-sans text-caption text-label-tertiary @min-[600px]/note:text-start @min-[600px]/note:text-footnote"
-              >
-                {formatFull(entry.createdAt)}
-              </p>
-              <div className="relative">
-                <NotesEditorContent
-                  label={entry.title || t("notes.newNote")}
-                  placeholder={t("notes.title")}
-                  onDocumentChange={onDocumentChange}
-                />
+          {spreadsheet ? (
+            <SpreadsheetEditor doc={provider.doc} entry={entry} />
+          ) : (
+            <article
+              ref={articleRef}
+              data-note-font={entry.font ?? noteFont}
+              className="flex grow justify-center px-6 pt-6 pb-36 @min-[600px]/note:pt-11"
+            >
+              <div className="flex w-full max-w-[640px] flex-col gap-4">
+                <p
+                  data-read-aloud-skip
+                  className="text-center font-sans text-caption text-label-tertiary @min-[600px]/note:text-start @min-[600px]/note:text-footnote"
+                >
+                  {formatFull(entry.createdAt)}
+                </p>
+                <div className="relative">
+                  <NotesEditorContent
+                    label={entry.title || t("notes.newNote")}
+                    placeholder={t("notes.title")}
+                    onDocumentChange={onDocumentChange}
+                  />
+                </div>
               </div>
-            </div>
-          </article>
+            </article>
+          )}
         </div>
 
         {/* The formatting tools float at the bottom wherever the top bar has no room for them. */}
-        <motion.footer
-          ref={tools}
-          onPointerDownCapture={editFromTools}
-          {...riseMotion}
-          className="glass-menu absolute inset-x-3 bottom-[max(12px,env(safe-area-inset-bottom))] z-20 mx-auto flex max-w-[480px] rounded-full px-2 py-1 @min-[860px]/note:hidden"
-        >
-          <BlockToolbar
-            onRecord={browser ? undefined : startRecording}
-            resolvePhoto={browser ? undefined : storePhoto}
-            menuPlacement="above"
-            className="w-full justify-around"
-          />
-        </motion.footer>
+        {!spreadsheet && (
+          <motion.footer
+            ref={tools}
+            style={keyboardInset > 0 ? { bottom: keyboardInset + 8 } : undefined}
+            onPointerDownCapture={editFromTools}
+            {...riseMotion}
+            className="glass-menu absolute inset-x-3 bottom-[max(12px,env(safe-area-inset-bottom))] z-20 mx-auto flex max-w-[480px] rounded-full px-2 py-1 @min-[860px]/note:hidden"
+          >
+            <NoteCaptureToolbar
+              noteId={entry.id}
+              title={entry.title}
+              browser={browser}
+              onRecord={startRecording}
+              resolvePhoto={storePhoto}
+              menuPlacement="above"
+              className="w-full justify-start"
+            />
+          </motion.footer>
+        )}
       </div>
 
-      <ShareSheet entry={entry} open={sharing} onClose={() => setSharing(false)} />
+      <NoteTagsSheet entry={entry} open={tagging} onClose={() => setTagging(false)} />
       <NoteRecorder open={recording} title={entry.title} onClose={() => setRecording(false)} />
       <PendingNarration noteId={entry.id} ready={status === "local" || status === "synced"} />
       <PendingDrawing noteId={entry.id} ready={status === "local" || status === "synced"} />

@@ -12,6 +12,7 @@ const FIELDS = {
   title: "t",
   kind: "c",
   origin: "o",
+  format: "m",
 } as const;
 
 /**
@@ -21,7 +22,8 @@ const FIELDS = {
 export function invitationLink(invitation: Invitation): string {
   const params = new URLSearchParams();
   for (const [field, short] of Object.entries(FIELDS)) {
-    params.set(short, String(invitation[field as keyof typeof FIELDS]));
+    const value = invitation[field as keyof typeof FIELDS];
+    if (value !== undefined) params.set(short, String(value));
   }
   return `${publicUrl(`/s/${invitation.shareId}`)}#${params.toString()}`;
 }
@@ -40,6 +42,7 @@ export function readInvitation(shareId: string, hash: string): Invitation | null
     title: value("title"),
     kind: (value("kind") || "note") as NoteKind,
     origin: value("origin"),
+    format: value("format") === "spreadsheet" ? "spreadsheet" : "document",
   };
   return invitation.noteId && invitation.key && invitation.inviteId && invitation.secret
     ? invitation

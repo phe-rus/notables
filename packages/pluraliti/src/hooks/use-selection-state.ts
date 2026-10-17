@@ -3,6 +3,7 @@ import { $isLinkNode } from "@lexical/link";
 import { $isListNode, ListNode } from "@lexical/list";
 import { useLexicalComposerContext } from "@lexical/react/LexicalComposerContext";
 import { $isHeadingNode, $isQuoteNode } from "@lexical/rich-text";
+import { TableCellNode } from "@lexical/table";
 import { $getNearestNodeOfType, mergeRegister } from "@lexical/utils";
 import {
   $getSelection,
@@ -15,6 +16,7 @@ import type { BlockType } from "../blocks/block-types";
 
 export interface SelectionState {
   block: BlockType;
+  inTable: boolean;
   bold: boolean;
   italic: boolean;
   underline: boolean;
@@ -26,6 +28,7 @@ export interface SelectionState {
 
 const initial: SelectionState = {
   block: "body",
+  inTable: false,
   bold: false,
   italic: false,
   underline: false,
@@ -61,6 +64,7 @@ function $readSelectionState(): SelectionState | null {
 
   return {
     block,
+    inTable: Boolean($getNearestNodeOfType(anchor, TableCellNode)),
     bold: selection.hasFormat("bold"),
     italic: selection.hasFormat("italic"),
     underline: selection.hasFormat("underline"),

@@ -1,4 +1,14 @@
-import { cn, IconButton, PenIcon, SearchField, SidebarIcon, spring } from "@phe-rus/hino";
+import { NoteKind } from "@notables/core";
+import {
+  cn,
+  IconButton,
+  MoreIcon,
+  openMenu,
+  PenIcon,
+  SearchField,
+  SidebarIcon,
+  spring,
+} from "@phe-rus/hino";
 import { useNavigate } from "@tanstack/react-router";
 import { AnimatePresence, motion } from "motion/react";
 import { useCallback, useDeferredValue, useEffect, useMemo, useRef, useState } from "react";
@@ -10,10 +20,11 @@ import { ExamplesNotice } from "../../onboarding/components/examples-notice";
 import { search } from "../../search/lib/rank";
 import { useSearchableNotes } from "../../search/lib/use-searchable-notes";
 import type { ListPreferences } from "../../settings/model/preferences";
-import { usePreferences } from "../../settings/store/preferences-store";
+import { updatePreferences, usePreferences } from "../../settings/store/preferences-store";
 import { bucket } from "../lib/date-format";
 import { useHoldToSelect } from "../lib/use-hold-to-select";
 import { type GroupId, groupOf, type View } from "../model/library-views";
+import { noteKindLabels } from "../model/note-kind-labels";
 import { isListedNote, type LibraryEntry, useLibraryReady } from "../store/library-store";
 import { GroupSwitcher } from "./group-switcher";
 import { NoteRow, type SwipeSide } from "./note-row";
@@ -41,7 +52,7 @@ export function NotesList({
   view: View;
   activeId?: string;
   onOpenSidebar: () => void;
-  onCreateNote: () => void;
+  onCreateNote: (kind?: NoteKind, format?: "document" | "spreadsheet") => void;
   className?: string;
 }) {
   const ready = useLibraryReady();
@@ -49,6 +60,7 @@ export function NotesList({
   const options = preferences.list;
   const navigate = useNavigate();
   const [query, setQuery] = useState("");
+  const [attachmentsOnly, setAttachmentsOnly] = useState(false);
   const deferredQuery = useDeferredValue(query.trim());
   const notes = useSearchableNotes(Boolean(deferredQuery));
   // Manga and comics views also show the bound books of that kind.
@@ -56,7 +68,12 @@ export function NotesList({
   const shelfBooks = !deferredQuery && (view.id === "manga" || view.id === "comic") ? shelf : [];
 
   const groups = useMemo<Group[]>(() => {
-    const inView = notes.filter((note) => isListedNote(note.entry) && view.matches(note.entry));
+    const inView = notes.filter(
+      (note) =>
+        isListedNote(note.entry) &&
+        view.matches(note.entry) &&
+        (!attachmentsOnly || (note.entry.attachmentCount ?? 0) > 0),
+    );
     // Searching shows the best matches first, with the passage that matched.
     if (deferredQuery) {
       const hits = search(inView, deferredQuery);
@@ -98,6 +115,7 @@ export function NotesList({
     options.order,
     options.groupByDate,
     options.pinnedOnTop,
+    attachmentsOnly,
   ]);
 
   const listed = useMemo(() => groups.flatMap((group) => group.items), [groups]);
@@ -198,7 +216,7 @@ export function NotesList({
             </h1>
           </div>
           <div className="flex shrink-0 items-center gap-1">
-            {(selecting || order.length > 0) && (
+            {selecting && (
               <button
                 type="button"
                 onClick={() => (selecting ? stopSelecting() : select(new Set()))}
@@ -213,9 +231,77 @@ export function NotesList({
             {!selecting && (
               <IconButton
                 size="icon-sm"
+                variant="ghost"
+                label={t("notes.more")}
+                onClick={(event) =>
+                  openMenu(event.currentTarget, [
+                    {
+                      label: t(
+                        options.layout === "gallery"
+                          ? "workspace.viewAsList"
+                          : "workspace.viewAsGallery",
+                      ),
+                      onSelect: () =>
+                        updatePreferences((p) => ({
+                          ...p,
+                          list: {
+                            ...p.list,
+                            layout: options.layout === "gallery" ? "list" : "gallery",
+                          },
+                        })),
+                    },
+                    { label: t("nav.newNote"), onSelect: () => onCreateNote() },
+                    { label: t("notes.selectTitle"), onSelect: () => select(new Set()) },
+                    "divider",
+                    ...(["edited", "created", "title"] as const).map((sort) => ({
+                      label: t(
+                        sort === "edited"
+                          ? "settings.sortEdited"
+                          : sort === "created"
+                            ? "settings.sortCreated"
+                            : "settings.sortTitle",
+                      ),
+                      checked: options.sort === sort,
+                      onSelect: () =>
+                        updatePreferences((p) => ({ ...p, list: { ...p.list, sort } })),
+                    })),
+                    {
+                      label: t("settings.groupByDate"),
+                      checked: options.groupByDate,
+                      onSelect: () =>
+                        updatePreferences((p) => ({
+                          ...p,
+                          list: { ...p.list, groupByDate: !p.list.groupByDate },
+                        })),
+                    },
+                    {
+                      label: t("workspace.viewAttachments"),
+                      checked: attachmentsOnly,
+                      onSelect: () => setAttachmentsOnly(!attachmentsOnly),
+                    },
+                  ])
+                }
+              >
+                <MoreIcon size={20} />
+              </IconButton>
+            )}
+            {!selecting && (
+              <IconButton
+                size="icon-sm"
                 label={t("nav.newNote")}
                 variant="link"
-                onClick={onCreateNote}
+                onClick={(event) =>
+                  openMenu(event.currentTarget, [
+                    {
+                      label: t("spreadsheet.title"),
+                      onSelect: () => onCreateNote("note", "spreadsheet"),
+                    },
+                    ...NoteKind.options.map((kind) => ({
+                      label: noteKindLabels[kind],
+                      onSelect: () => onCreateNote(kind),
+                    })),
+                  ])
+                }
               >
                 <PenIcon size={20} strokeWidth={1.9} />
               </IconButton>
@@ -241,12 +327,17 @@ export function NotesList({
           label={view.id === "comic" ? t("notes.yourComics") : t("notes.yourManga")}
         />
         {ready && groups.length === 0 && shelfBooks.length === 0 && (
-          <EmptyList searching={Boolean(deferredQuery)} onCreate={onCreateNote} />
+          <EmptyList searching={Boolean(deferredQuery)} onCreate={() => onCreateNote()} />
         )}
         {groups.map((group, index) => (
-          <div key={group.label ?? `group-${index}`} className="flex flex-col">
+          <div
+            key={group.label ?? `group-${index}`}
+            className={
+              options.layout === "gallery" ? "grid grid-cols-2 gap-2 pb-2" : "flex flex-col"
+            }
+          >
             {group.label && (
-              <h2 className="px-3 pt-3 pb-1 text-caption font-medium text-label-tertiary">
+              <h2 className="col-span-full px-3 pt-3 pb-1 text-caption font-medium text-label-tertiary">
                 {group.label}
               </h2>
             )}

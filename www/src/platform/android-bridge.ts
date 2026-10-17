@@ -12,6 +12,7 @@ interface AndroidBridge {
   setSystemBarsDark?(dark: boolean): void;
   /** Maker and model, e.g. "TECNO CAMON 19", for About. */
   deviceModel?(): string;
+  shareText?(title: string, text: string): boolean;
 }
 
 export function androidBridge(): AndroidBridge | undefined {

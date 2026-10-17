@@ -1,5 +1,5 @@
 use serde::Serialize;
-use tauri::ipc::{Channel, InvokeBody, Request};
+use tauri::ipc::{Channel, Request};
 use tauri::{AppHandle, Manager};
 
 use super::decode::{self, SAMPLE_RATE};
@@ -58,10 +58,8 @@ pub async fn whisper_download_model(
 /// Optional header `x-language`: an ISO 639-1 code, or omitted to detect.
 #[tauri::command]
 pub async fn whisper_transcribe(app: AppHandle, request: Request<'_>) -> Result<Vec<Segment>> {
-    let InvokeBody::Raw(bytes) = request.body() else {
-        return Err(TranscriptionError::InvalidAudio);
-    };
-    let samples = samples_from_bytes(bytes)?;
+    let bytes = crate::ipc_bytes::bytes(request.body()).ok_or(TranscriptionError::InvalidAudio)?;
+    let samples = samples_from_bytes(&bytes)?;
     let language = request
         .headers()
         .get("x-language")

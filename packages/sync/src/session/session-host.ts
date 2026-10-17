@@ -2,6 +2,8 @@ import * as decoding from "lib0/decoding";
 import * as encoding from "lib0/encoding";
 import * as syncProtocol from "y-protocols/sync";
 import type * as Y from "yjs";
+import type { PeerMedia } from "../peer/media-exchange";
+import { mediaReferences } from "../peer/media-references";
 import {
   controlBody,
   decodeFrame,
@@ -10,6 +12,8 @@ import {
   type FrameLink,
   readControl,
 } from "./session-frames";
+import { SessionMedia } from "./session-media";
+import { type SessionRequestHandler, SessionResponder } from "./session-rpc";
 
 /** Where the phone's documents come from: the live ones if open, else from storage. */
 export interface DocSource {
@@ -30,6 +34,23 @@ interface Served {
  */
 export class SessionHost {
   #link: FrameLink | null = null;
+  #media: SessionMedia | null = null;
+  #responder = new SessionResponder((reply) => this.sendControl(reply));
+
+  handleRequests(handler: SessionRequestHandler) {
+    this.#responder.handle(handler);
+  }
+
+  shareMedia(media: PeerMedia, arrived: (id: string) => void = () => {}) {
+    this.#media?.detach();
+    this.#media = new SessionMedia(
+      media,
+      () => [...this.#served.values()].flatMap(({ doc }) => mediaReferences(doc)),
+      (body) => this.#send(FrameKind.media, "", body),
+      arrived,
+    );
+    this.#media.attach(this.#link !== null && this.#link.media !== false);
+  }
   #served = new Map<string, Served>();
   /** Frames are handled one at a time, in order, since opening a document waits on storage. */
   #queue: Promise<void> = Promise.resolve();
@@ -66,11 +87,13 @@ export class SessionHost {
 
   attach(link: FrameLink) {
     this.#link = link;
+    this.#media?.attach(link.media !== false);
   }
 
   /** The connection is gone: let go of every document until the browser asks again. */
   detach() {
     this.#link = null;
+    this.#media?.detach();
     for (const name of [...this.#served.keys()]) this.#release(name);
   }
 
@@ -84,6 +107,9 @@ export class SessionHost {
     this.#queue = this.#queue
       .then(async () => {
         switch (frame.kind) {
+          case FrameKind.media:
+            this.#media?.receive(frame.body);
+            break;
           case FrameKind.sync:
             await this.#sync(frame.doc, frame.body);
             break;
@@ -96,7 +122,7 @@ export class SessionHost {
             break;
           case FrameKind.control: {
             const message = readControl(frame.body);
-            if (message) this.onControl(message);
+            if (message && !this.#responder.receive(message)) this.onControl(message);
             break;
           }
         }
@@ -111,6 +137,7 @@ export class SessionHost {
       const encoder = encoding.createEncoder();
       syncProtocol.writeUpdate(encoder, update);
       this.#send(FrameKind.sync, name, encoding.toUint8Array(encoder));
+      this.#media?.refresh();
     };
     doc.on("update", onUpdate);
     this.#served.set(name, { doc, release, onUpdate });
@@ -129,6 +156,8 @@ export class SessionHost {
     );
     if (encoding.length(encoder) > 0)
       this.#send(FrameKind.sync, name, encoding.toUint8Array(encoder));
+    this.#media?.refresh();
+    this.#media?.refresh();
     if (kind === syncProtocol.messageYjsSyncStep2) this.onSynced(name);
     // Ask for what the other side has that this one lacks: edits made while apart.
     if (opened) {
@@ -147,6 +176,6 @@ export class SessionHost {
   }
 
   #send(kind: (typeof FrameKind)[keyof typeof FrameKind], doc: string, body: Uint8Array) {
-    this.#link?.send(encodeFrame(this.key, { kind, doc, body }));
+    return this.#link?.send(encodeFrame(this.key, { kind, doc, body }));
   }
 }

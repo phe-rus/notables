@@ -1,3 +1,4 @@
+import { z } from "zod";
 import { OWNER, type ShareCredentials, type ShareMember } from "../../sharing/model/share";
 
 /** One note shared with a person, and how. */
@@ -96,3 +97,21 @@ export function gatherPeople(snapshots: readonly ShareSnapshot[]): Person[] {
     (a, b) => Number(b.online) - Number(a.online) || a.name.localeCompare(b.name),
   );
 }
+
+export const PeopleSnapshot = z.array(
+  z.object({
+    key: z.string(),
+    name: z.string(),
+    online: z.boolean(),
+    liveOn: z.array(z.string()),
+    since: z.number(),
+    notes: z.array(
+      z.object({
+        noteId: z.string(),
+        relation: z.enum(["invited", "invitedYou", "together"]),
+        inviteId: z.string().nullable(),
+        joined: z.boolean(),
+      }),
+    ),
+  }),
+);

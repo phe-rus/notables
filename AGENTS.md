@@ -104,6 +104,14 @@ Gotchas learned the hard way:
 
 ## Status (October 2026)
 
+- Writing workspace checkpoint (17 Oct): folders, list/gallery/date grouping,
+  richer editor, attachments/TOC/tags, spreadsheet formulas, linked note and
+  invoice reminders, browser media and phone-owned sharing are implemented.
+  Read [the checkpoint](docs/reviews/2026-10-17-writing-checkpoint.md) before
+  resuming: it distinguishes device evidence from outstanding work. Lock,
+  public person IDs and physical iPhone verification remain open. No new store
+  release has been tagged. TECNO Wi-Fi ADB moved to 192.168.1.3, port 5555.
+
 - Device linking followup (17 Oct): the owner tested v0.2.2. Android could
   approve the iPhone, but joining the iPhone's space failed after the four
   words: Android's secure store only created keys and refused replacing the
@@ -392,6 +400,11 @@ and France: "No" until the French declaration is filed. Never set
 TestFlight refuse the upload; each build asks in TestFlight instead.
 
 ## Next
+
+- Continue the [17 October writing checkpoint](docs/reviews/2026-10-17-writing-checkpoint.md).
+  The packaged Android launch and share chooser checks passed. Next, native-to-native
+  media and physical iPhone checks. Finish the shared Lock from spec 0004 and separate public
+  person identity before claiming the full owner request complete.
 
 - Owner's 17 October direction in docs/STAGES.md takes priority: finish
   device verification, then the iOS keyboard toolbar and note title, then

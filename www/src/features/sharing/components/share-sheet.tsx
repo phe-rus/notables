@@ -6,6 +6,7 @@ import {
   confirmDialog,
   IconButton,
   LinkIcon,
+  QrCodeGlyph,
   ShareIcon,
   Sheet,
   toast,
@@ -13,6 +14,9 @@ import {
 import { useEffect, useState } from "react";
 import { t } from "../../../i18n/i18n";
 import { useAuthorName } from "../../../platform/author-preferences";
+import { inBrowserSession } from "../../../platform/session/browser-session-store";
+import { phoneConnection } from "../../../platform/session/phone-connection";
+import { SealCode } from "../../invoices/components/seal-code";
 import type { LibraryEntry } from "../../library/store/library-store";
 import { handOver } from "../lib/hand-over";
 import {
@@ -24,6 +28,7 @@ import {
 } from "../lib/share-actions";
 import { membersOf } from "../lib/share-members";
 import { useShareSession } from "../lib/share-sessions";
+import { BrowserShareStatus } from "../model/browser-share";
 import { OWNER, type ShareMember } from "../model/share";
 import { useShares } from "../store/share-store";
 
@@ -48,10 +53,14 @@ export function ShareSheet({
 }
 
 function ShareContent({ entry, onClose }: { entry: LibraryEntry; onClose: () => void }) {
+  const browser = inBrowserSession();
+  const [remote, setRemote] = useState<BrowserShareStatus | null>(null);
   const share = useShares().find((item) => item.noteId === entry.id);
   const session = useShareSession(entry.id);
   const authorName = useAuthorName();
   const [name, setName] = useState("");
+  const [generated, setGenerated] = useState<string | null>(null);
+  const [qr, setQr] = useState(false);
   const [busy, setBusy] = useState(false);
   const [members, setMembers] = useState<Array<[string, ShareMember]>>([]);
 
@@ -68,8 +77,33 @@ function ShareContent({ entry, onClose }: { entry: LibraryEntry; onClose: () => 
     return () => map.unobserve(read);
   }, [session]);
 
-  const online = new Set(session?.peers.map((peer) => peer.inviteId));
-  const owner = share?.role === "owner";
+  useEffect(() => {
+    if (!browser) return;
+    let active = true;
+    const refresh = async () => {
+      try {
+        const result = await phoneConnection()?.client.request("sharing.status", {
+          noteId: entry.id,
+        });
+        const status = BrowserShareStatus.parse(result);
+        if (active) setRemote(status);
+      } catch {}
+    };
+    void refresh();
+    const timer = setInterval(() => void refresh(), 5000);
+    return () => {
+      active = false;
+      clearInterval(timer);
+    };
+  }, [browser, entry.id]);
+  const online = new Set(browser ? remote?.online : session?.peers.map((peer) => peer.inviteId));
+  const owner = browser ? remote?.role === "owner" : share?.role === "owner";
+  const canInvite = browser ? remote?.role !== "member" : owner || !share;
+  const shared = browser
+    ? remote?.role !== undefined && remote.role !== "unshared"
+    : Boolean(share);
+  const mine = browser ? remote?.mine : share?.inviteId;
+  const people = browser ? (remote?.members ?? []) : members;
 
   const invite = async () => {
     const person = name.trim();
@@ -84,6 +118,26 @@ function ShareContent({ entry, onClose }: { entry: LibraryEntry; onClose: () => 
       toast.error(t("sharing.couldNotInvite"), {
         description: error instanceof Error ? error.message : undefined,
       });
+    } finally {
+      setBusy(false);
+    }
+  };
+
+  const shareLink = async (mode: "copy" | "qr" | "system") => {
+    setBusy(true);
+    try {
+      if (!share) startSharing(entry, authorName);
+      const link =
+        generated ?? (await invitePerson(entry, name.trim() || t("sharing.linkRecipient")));
+      setGenerated(link);
+      if (mode === "qr") setQr(!qr);
+      else if (mode === "system") await handOver(link, entry.title || t("common.untitled"));
+      else {
+        await navigator.clipboard.writeText(link);
+        toast.success(t("sharing.linkCopied"));
+      }
+    } catch {
+      toast.error(t("sharing.couldNotInvite"));
     } finally {
       setBusy(false);
     }
@@ -116,7 +170,45 @@ function ShareContent({ entry, onClose }: { entry: LibraryEntry; onClose: () => 
       </header>
 
       <div className="flex grow flex-col gap-5 overflow-y-auto px-6 pt-3 pb-6">
-        {(owner || !share) && (
+        {canInvite && (
+          <>
+            <div className="grid grid-cols-3 gap-2">
+              <Button
+                variant="secondary"
+                className="h-auto min-h-16 flex-col gap-1 whitespace-normal px-1 text-caption"
+                disabled={busy}
+                onClick={() => void shareLink("copy")}
+              >
+                <LinkIcon size={17} />
+                {t("sharing.copyInvitation")}
+              </Button>
+              <Button
+                variant="secondary"
+                className="h-auto min-h-16 flex-col gap-1 whitespace-normal px-1 text-caption"
+                disabled={busy}
+                onClick={() => void shareLink("qr")}
+              >
+                <QrCodeGlyph size={17} />
+                {t("sharing.scanCode")}
+              </Button>
+              <Button
+                variant="secondary"
+                className="h-auto min-h-16 flex-col gap-1 whitespace-normal px-1 text-caption"
+                disabled={busy}
+                onClick={() => void shareLink("system")}
+              >
+                <ShareIcon size={17} />
+                {t("sharing.systemShare")}
+              </Button>
+            </div>
+            {qr && generated && (
+              <div className="mx-auto rounded-3xl bg-white p-4">
+                <SealCode value={generated} size={232} />
+              </div>
+            )}
+          </>
+        )}
+        {canInvite && (
           <form
             className="flex gap-2"
             onSubmit={(event) => {
@@ -139,15 +231,15 @@ function ShareContent({ entry, onClose }: { entry: LibraryEntry; onClose: () => 
           </form>
         )}
 
-        {members.length > 0 && (
+        {people.length > 0 && (
           <section className="flex flex-col gap-1.5" aria-label={t("sharing.people")}>
             <h3 className="text-caption font-semibold tracking-wide text-label-tertiary uppercase">
               {t("sharing.people")}
             </h3>
             <ul className="flex flex-col divide-y divide-separator/60 overflow-hidden rounded-3xl border border-separator/60 bg-elevated">
-              {members.map(([inviteId, member]) => {
-                const here = online.has(inviteId) || inviteId === share?.inviteId;
-                const isMe = inviteId === share?.inviteId;
+              {people.map(([inviteId, member]) => {
+                const here = online.has(inviteId) || inviteId === mine;
+                const isMe = inviteId === mine;
                 return (
                   <li key={inviteId} className="flex items-center gap-3 px-4 py-3">
                     <span
@@ -183,8 +275,16 @@ function ShareContent({ entry, onClose }: { entry: LibraryEntry; onClose: () => 
                             variant="ghost"
                             label={t("sharing.copyLink")}
                             onClick={() => {
-                              const link = linkFor(entry, inviteId);
-                              if (link) void handOver(link, entry.title || t("common.untitled"));
+                              void (async () => {
+                                const link = browser
+                                  ? await phoneConnection()?.client.request("sharing.link", {
+                                      noteId: entry.id,
+                                      inviteId,
+                                    })
+                                  : linkFor(entry, inviteId);
+                                if (typeof link === "string")
+                                  await handOver(link, entry.title || t("common.untitled"));
+                              })().catch(() => toast.error(t("sharing.couldNotInvite")));
                             }}
                           >
                             <LinkIcon size={17} />
@@ -194,7 +294,11 @@ function ShareContent({ entry, onClose }: { entry: LibraryEntry; onClose: () => 
                           size="icon-sm"
                           variant="ghost"
                           label={t("sharing.remove", { name: member.name })}
-                          onClick={() => removePerson(entry.id, inviteId)}
+                          onClick={() =>
+                            void Promise.resolve(removePerson(entry.id, inviteId)).catch(() =>
+                              toast.error(t("sharing.couldNotInvite")),
+                            )
+                          }
                         >
                           <CloseIcon size={16} />
                         </IconButton>
@@ -219,7 +323,7 @@ function ShareContent({ entry, onClose }: { entry: LibraryEntry; onClose: () => 
         </ul>
       </div>
 
-      {share && (
+      {shared && (
         <footer className="flex justify-between gap-2 border-t border-separator/60 px-6 py-4 pb-[max(16px,env(safe-area-inset-bottom))]">
           <button
             type="button"

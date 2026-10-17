@@ -3,10 +3,12 @@ import { useLexicalEditable } from "@lexical/react/useLexicalEditable";
 import { DrawIcon } from "@phe-rus/hino";
 import { $getNodeByKey, type NodeKey } from "lexical";
 import { useDrawingStudio } from "../../media/drawing-studio";
+import { useEditorTools } from "../../media/editor-tools";
 import { $isImageNode } from "./image-node";
 
 /** Reopens a drawn page in the studio and swaps in the new version. */
 export function RedrawButton({ nodeKey, scene }: { nodeKey: NodeKey; scene: string }) {
+  const { labels } = useEditorTools();
   const [editor] = useLexicalComposerContext();
   const editable = useLexicalEditable();
   const studio = useDrawingStudio();
@@ -25,7 +27,7 @@ export function RedrawButton({ nodeKey, scene }: { nodeKey: NodeKey; scene: stri
       }}
     >
       <DrawIcon size={15} />
-      Edit page
+      {labels.editPage}
     </button>
   );
 }

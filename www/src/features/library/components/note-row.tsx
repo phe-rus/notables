@@ -8,6 +8,7 @@ import { formatUpdated } from "../lib/date-format";
 import { noteKindLabels } from "../model/note-kind-labels";
 import type { LibraryEntry } from "../store/library-store";
 import { moreButton, type SwipeButton, swipeButton } from "./note-swipe-actions";
+import { NoteThumbnail } from "./note-thumbnail";
 
 /** Which side a row is swiped open to show its actions. */
 export type SwipeSide = "right" | "left";
@@ -218,6 +219,8 @@ export function NoteRow({
           aria-selected={selecting ? selected : undefined}
           className={cn(
             "group relative isolate flex items-start rounded-xl px-3 no-underline transition-colors duration-fast [-webkit-touch-callout:none]",
+            options.layout === "gallery" &&
+              "min-h-36 flex-wrap border border-separator/60 bg-paper",
             compact ? "py-2" : "py-3",
             !active && !selected && "hover:bg-fill/60",
           )}
@@ -245,6 +248,9 @@ export function NoteRow({
             </span>
           </motion.span>
           <span className={cn("flex min-w-0 grow flex-col", compact ? "gap-px" : "gap-[3px]")}>
+            {options.layout === "gallery" && entry.previewImage && (
+              <NoteThumbnail src={entry.previewImage} gallery />
+            )}
             <span className="flex items-center gap-1.5 text-subheadline font-semibold text-label">
               {pinMark && <PinIcon size={13} className="text-accent-text" />}
               <span className="truncate">{entry.title || t("notes.newNote")}</span>
@@ -266,13 +272,28 @@ export function NoteRow({
                 {snippet ?? (entry.excerpt || t("notes.noText"))}
               </span>
             )}
-            {!compact && (kind || entry.publicationId) && (
-              <span className="mt-[3px] flex gap-1.5">
-                {entry.publicationId && <Chip tone="public">{t("notes.public")}</Chip>}
-                {kind && <Chip tone={active || selected ? "accent" : "neutral"}>{kind}</Chip>}
-              </span>
-            )}
+            {!compact &&
+              (kind ||
+                entry.publicationId ||
+                entry.tags?.length ||
+                entry.format === "spreadsheet") && (
+                <span className="mt-[3px] flex flex-wrap gap-1.5">
+                  {entry.publicationId && <Chip tone="public">{t("notes.public")}</Chip>}
+                  {entry.format === "spreadsheet" && (
+                    <Chip tone="neutral">{t("spreadsheet.title")}</Chip>
+                  )}
+                  {entry.tags?.slice(0, 3).map((tag) => (
+                    <Chip key={tag} tone="neutral">
+                      #{tag}
+                    </Chip>
+                  ))}
+                  {kind && <Chip tone={active || selected ? "accent" : "neutral"}>{kind}</Chip>}
+                </span>
+              )}
           </span>
+          {options.layout !== "gallery" && entry.previewImage && (
+            <NoteThumbnail src={entry.previewImage} />
+          )}
         </Link>
       </motion.div>
     </div>

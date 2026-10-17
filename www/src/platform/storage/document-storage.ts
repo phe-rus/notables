@@ -7,6 +7,7 @@ import {
   type RemoteSync,
 } from "@notables/sync";
 import * as Y from "yjs";
+import { ownsLibrary } from "../library-access";
 import { isTauri } from "../runtime";
 import { phoneConnection } from "../session/phone-connection";
 import { createSessionPersistence } from "../session/session-persistence";
@@ -31,6 +32,7 @@ export function getPersistence(): Persistence {
     } else if (phone) {
       persistence = createSessionPersistence(phone.client);
     } else {
+      if (!ownsLibrary()) throw new Error("Link a phone before opening a library");
       persistence = createSharedPersistence(createIndexedDbPersistence("notables"));
       void requestPersistentStorage();
     }

@@ -23,7 +23,7 @@ import { ago } from "../../../lib/time/relative-time";
 import { type LibraryEntry, useLibrary } from "../../library/store/library-store";
 import { usePreferences } from "../../settings/store/preferences-store";
 import { handOver } from "../../sharing/lib/hand-over";
-import { linkFor, removePerson } from "../../sharing/lib/share-actions";
+import { invitationLinkFor, removePerson } from "../../sharing/lib/share-actions";
 import { usePeople } from "../lib/use-people";
 import type { Person, SharedNote } from "../model/people";
 import { useLastSeen } from "../store/last-seen-store";
@@ -34,7 +34,13 @@ import { InviteSheet } from "./invite-sheet";
  * everyone else with when they were last seen and what you share. Laid
  * out by the pane's own width, one column on a phone up to three.
  */
-export function ConnectionsScreen({ onOpenSidebar }: { onOpenSidebar: () => void }) {
+export function ConnectionsScreen({
+  onOpenSidebar,
+  embedded = false,
+}: {
+  onOpenSidebar: () => void;
+  embedded?: boolean;
+}) {
   const people = usePeople();
   const { collapsed } = usePreferences().sidebar;
   const [query, setQuery] = useState("");
@@ -49,11 +55,13 @@ export function ConnectionsScreen({ onOpenSidebar }: { onOpenSidebar: () => void
     <div className="@container/people flex min-h-0 grow flex-col">
       <header
         data-tauri-drag-region
-        className="flex flex-col gap-3 px-4 pt-[max(12px,env(safe-area-inset-top))] pb-3 @min-[600px]/people:px-6"
+        className={cn(
+          "flex flex-col gap-3 px-4 pt-[max(12px,env(safe-area-inset-top))] pb-3 @min-[600px]/people:px-6",
+        )}
       >
-        {collapsed && <CollapsedSidebarControls />}
+        {collapsed && !embedded && <CollapsedSidebarControls />}
         <div data-tauri-drag-region className="flex items-center justify-between gap-2">
-          <div className="flex min-w-0 items-center gap-1">
+          <div className={cn("flex min-w-0 items-center gap-1", embedded && "invisible")}>
             <IconButton
               size="icon-sm"
               variant="ghost"
@@ -263,13 +271,20 @@ function SharedNoteRow({
   const title = entry?.title || t("common.untitled");
   const here = person.liveOn.includes(note.noteId);
   const actions = () => {
-    const link = entry && note.inviteId ? linkFor(entry, note.inviteId) : null;
     return [
-      ...(link
+      ...(entry && note.inviteId
         ? [
             {
               label: t("connections.copyLink"),
-              onSelect: () => void handOver(link, title),
+              onSelect: async () => {
+                if (!entry || !note.inviteId) return;
+                try {
+                  const link = await invitationLinkFor(entry, note.inviteId);
+                  if (link) await handOver(link, title);
+                } catch {
+                  toast.error(t("sharing.couldNotInvite"));
+                }
+              },
             },
           ]
         : []),
@@ -286,8 +301,12 @@ function SharedNoteRow({
                   destructive: true,
                 });
                 if (confirmed && note.inviteId) {
-                  removePerson(note.noteId, note.inviteId);
-                  toast(t("connections.stopSharing"));
+                  try {
+                    await removePerson(note.noteId, note.inviteId);
+                    toast(t("connections.stopSharing"));
+                  } catch {
+                    toast.error(t("connections.stopSharingFailed"));
+                  }
                 }
               },
             },

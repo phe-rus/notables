@@ -1,4 +1,5 @@
 import { Emitter } from "../lib/typed-emitter";
+import { DirectFrames, directPieces } from "./direct-frames";
 
 type Events = {
   open: () => void;
@@ -23,6 +24,9 @@ export class LocalLink extends Emitter<Events> {
   readonly #connection = new RTCPeerConnection({ iceServers: [] });
   #channel: RTCDataChannel | null = null;
   #closed = false;
+  #frames = new DirectFrames();
+  #nextFrame = 0;
+  #sendQueue: Promise<void> = Promise.resolve();
 
   constructor(private readonly signal: (signal: LinkSignal) => void) {
     super();
@@ -60,7 +64,17 @@ export class LocalLink extends Emitter<Events> {
     }
   }
 
-  async send(data: Uint8Array) {
+  send(data: Uint8Array): Promise<void> {
+    const id = this.#nextFrame++;
+    this.#sendQueue = this.#sendQueue
+      .then(async () => {
+        for (const piece of directPieces(data, id)) await this.#sendPiece(piece);
+      })
+      .catch(() => this.close());
+    return this.#sendQueue;
+  }
+
+  async #sendPiece(data: Uint8Array) {
     const channel = this.#channel;
     if (channel?.readyState !== "open") return;
     if (channel.bufferedAmount > BUFFER_HIGH) {
@@ -96,7 +110,10 @@ export class LocalLink extends Emitter<Events> {
     channel.addEventListener("open", () => this.emit("open"));
     channel.addEventListener("close", () => this.close());
     channel.addEventListener("message", (event) => {
-      if (event.data instanceof ArrayBuffer) this.emit("data", new Uint8Array(event.data));
+      if (event.data instanceof ArrayBuffer) {
+        const frame = this.#frames.receive(new Uint8Array(event.data));
+        if (frame) this.emit("data", frame);
+      }
     });
   }
 

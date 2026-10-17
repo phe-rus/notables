@@ -50,6 +50,7 @@ export interface Invitation {
   from: string;
   title: string;
   kind: NoteKind;
+  format?: "document" | "spreadsheet";
   /** Device the note started on, so the invited device doesn't seed it. */
   origin: string;
 }

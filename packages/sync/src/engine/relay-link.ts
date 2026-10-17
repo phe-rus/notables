@@ -22,6 +22,7 @@ interface Piece {
  * ciphertext addressed to a device id.
  */
 export class RelayLink implements FrameLink {
+  readonly media = false;
   #next = 0;
   #partial = new Map<number, string[]>();
 

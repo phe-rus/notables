@@ -28,10 +28,15 @@ export function formatFull(ms: number): string {
 export function bucket(ms: number, now = Date.now()): string {
   const startOfToday = new Date(now).setHours(0, 0, 0, 0);
   if (ms >= startOfToday) return t("dates.today");
-  if (ms >= startOfToday - DAY) return t("dates.yesterday");
-  if (ms >= startOfToday - 6 * DAY) return t("dates.thisWeek");
-  if (ms >= startOfToday - 29 * DAY) return t("dates.thisMonth");
-  return new Intl.DateTimeFormat(locale(), { month: "long", year: "numeric" }).format(ms);
+  const monday = new Date(startOfToday);
+  monday.setDate(monday.getDate() - ((monday.getDay() + 6) % 7));
+  if (ms >= monday.getTime()) return t("workspace.thisWeek");
+  const month = new Date(startOfToday);
+  month.setDate(month.getDate() - 30);
+  if (ms >= month.getTime()) return t("workspace.previous30Days");
+  const year = new Date(startOfToday).getFullYear();
+  if (new Date(ms).getFullYear() === year) return t("workspace.thisYear");
+  return new Intl.DateTimeFormat(locale(), { year: "numeric" }).format(ms);
 }
 
 /** Compact age for tight spaces: "now", "5m", "3h", "2d", "4w", then a date. */

@@ -29,6 +29,7 @@ export type ThemePreference = "system" | "light" | "dark";
 export type TextSize = "small" | "medium" | "large";
 
 export interface ListPreferences {
+  layout: "list" | "gallery";
   density: "comfortable" | "compact";
   /** How many lines of each note show under its title, as in Mail; 0 hides them. */
   previewLines: PreviewLines;
@@ -79,12 +80,13 @@ export const defaultPreferences: Preferences = {
   textSize: "medium",
   noteFont: "default",
   list: {
+    layout: "list",
     density: "comfortable",
     previewLines: 2,
     kindTags: true,
     sort: "edited",
     order: "standard",
-    groupByDate: true,
+    groupByDate: false,
     pinnedOnTop: true,
     showDates: true,
     swipeRight: "pin",
@@ -147,6 +149,7 @@ export function normalizePreferences(raw: unknown): Preferences {
     textSize: oneOf(input.textSize, ["small", "medium", "large"], defaults.textSize),
     noteFont: oneOf(input.noteFont, noteFonts, defaults.noteFont),
     list: {
+      layout: oneOf(list.layout, ["list", "gallery"], defaults.list.layout),
       density: oneOf(list.density, ["comfortable", "compact"], defaults.list.density),
       // Before the line count, the preview was only on or off.
       previewLines: previewLineCounts.includes(list.previewLines as PreviewLines)

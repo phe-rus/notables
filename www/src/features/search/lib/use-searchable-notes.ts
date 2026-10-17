@@ -48,7 +48,7 @@ export function useSearchableNotes(enabled: boolean): SearchableNote[] {
       entries.map((entry) => ({
         id: entry.id,
         title: entry.title,
-        body: texts.get(entry.id)?.text ?? entry.excerpt,
+        body: `${texts.get(entry.id)?.text ?? entry.excerpt}\n${(entry.tags ?? []).map((tag) => `#${tag}`).join(" ")}`,
         updatedAt: entry.updatedAt,
         entry,
       })),

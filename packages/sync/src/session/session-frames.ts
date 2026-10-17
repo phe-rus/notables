@@ -16,6 +16,8 @@ export const FrameKind = {
   remove: 2,
   /** A small JSON message that is not about a document. */
   control: 3,
+  /** Media bytes, permitted only on a direct connection. */
+  media: 4,
 } as const;
 
 export type FrameKindValue = (typeof FrameKind)[keyof typeof FrameKind];
@@ -52,7 +54,9 @@ export function decodeFrame(key: Uint8Array, data: Uint8Array): Frame | null {
 
 /** Where frames go: a data channel, or anything else that delivers bytes in order. */
 export interface FrameLink {
-  send(data: Uint8Array): void;
+  send(data: Uint8Array): void | Promise<void>;
+  /** Relays explicitly disable media. Direct links permit it. */
+  media?: boolean;
 }
 
 const text = new TextEncoder();

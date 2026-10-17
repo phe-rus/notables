@@ -20,6 +20,7 @@
         "resizable": true,
         "titleBarStyle": "Overlay",
         "hiddenTitle": true,
+        "disableInputAccessoryView": true,
         "trafficLightPosition": {
           "x": 18,
           "y": 22

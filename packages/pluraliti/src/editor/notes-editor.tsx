@@ -9,15 +9,19 @@ import { LinkPlugin } from "@lexical/react/LexicalLinkPlugin";
 import { ListPlugin } from "@lexical/react/LexicalListPlugin";
 import { MarkdownShortcutPlugin } from "@lexical/react/LexicalMarkdownShortcutPlugin";
 import { TabIndentationPlugin } from "@lexical/react/LexicalTabIndentationPlugin";
+import { TablePlugin } from "@lexical/react/LexicalTablePlugin";
 import { $createHeadingNode } from "@lexical/rich-text";
 import { $createParagraphNode, $getRoot } from "lexical";
 import { type ReactNode, useCallback } from "react";
 import type * as Y from "yjs";
 import { type DocumentProvider, toLexicalProvider } from "../collaboration/document-provider";
 import { sanitizeUrl } from "../lib/sanitize-url";
+import { EditorToolsProvider } from "../media/editor-tools";
+import type { AttachmentInput } from "../nodes/attachment/attachment-node";
 import { editorNodes } from "../nodes/node-registry";
 import { markdownTransformers } from "../plugins/markdown/markdown-transformers";
 import { MediaPlugin } from "../plugins/media/media-plugin";
+import { defaultToolbarLabels, type ToolbarLabels } from "../toolbar/toolbar-labels";
 import { editorTheme } from "./editor-theme";
 
 export interface NotesEditorProps {
@@ -34,6 +38,10 @@ export interface NotesEditorProps {
   /** How a new note begins: with a title line (Apple Notes style) or body text. */
   firstBlock?: "title" | "body";
   children: ReactNode;
+  labels?: ToolbarLabels;
+  resolvePhoto?: (file: File) => Promise<string>;
+  onEdit?: () => void;
+  onAttachment?: (input: AttachmentInput) => Promise<void>;
 }
 
 /**
@@ -47,6 +55,10 @@ export function NotesEditor({
   editable = true,
   firstBlock = "title",
   children,
+  labels = defaultToolbarLabels,
+  resolvePhoto,
+  onEdit,
+  onAttachment,
 }: NotesEditorProps) {
   // Lexical reconnects when these identities change, so keep them stable.
   const seed = useCallback(() => {
@@ -95,9 +107,17 @@ export function NotesEditor({
       <ClickableLinkPlugin newTab />
       <HorizontalRulePlugin />
       <TabIndentationPlugin />
+      <TablePlugin hasCellMerge hasCellBackgroundColor={false} />
       <MarkdownShortcutPlugin transformers={markdownTransformers} />
       <MediaPlugin />
-      {children}
+      <EditorToolsProvider
+        labels={labels}
+        resolvePhoto={resolvePhoto}
+        onEdit={onEdit}
+        onAttachment={onAttachment}
+      >
+        {children}
+      </EditorToolsProvider>
     </LexicalComposer>
   );
 

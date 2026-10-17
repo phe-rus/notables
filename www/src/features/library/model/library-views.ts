@@ -1,10 +1,10 @@
 import type { NoteKind } from "@notables/core";
 import { t } from "../../../i18n/i18n";
 import type { Messages } from "../../../i18n/messages/en";
-import type { LibraryEntry } from "../store/library-store";
+import type { Folder, LibraryEntry } from "../store/library-store";
 
 export type GroupId = "writing" | "books" | "planning";
-export type ViewId = "all" | "published" | "writing" | "planning" | NoteKind;
+export type ViewId = "all" | "published" | "writing" | "planning" | NoteKind | `folder:${string}`;
 
 export interface View {
   id: ViewId;
@@ -12,6 +12,24 @@ export interface View {
   /** The kind a new note gets when created from this view. */
   kind: NoteKind;
   matches: (entry: LibraryEntry) => boolean;
+  folderId?: string;
+}
+
+export function folderView(
+  folder: Folder,
+  acceptsUnfiled = false,
+  knownFolders: readonly Folder[] = [folder],
+): View {
+  const known = new Set(knownFolders.map((item) => item.id));
+  return {
+    id: `folder:${folder.id}`,
+    title: folder.name,
+    kind: "note",
+    folderId: folder.id,
+    matches: (entry) =>
+      entry.folderId === folder.id ||
+      (acceptsUnfiled && (!entry.folderId || !known.has(entry.folderId))),
+  };
 }
 
 type ViewTitleKey = keyof Messages["views"];

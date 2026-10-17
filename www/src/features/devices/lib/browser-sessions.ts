@@ -16,6 +16,7 @@ import { roomEndpoint } from "../../../platform/session/room-endpoint";
 import { thisDeviceId } from "../../../platform/session/this-device";
 import { spaceRoot } from "../../../platform/space/space-identity";
 import { getPersistence } from "../../../platform/storage/document-storage";
+import { mediaArrived, peerMedia } from "../../../platform/storage/peer-media";
 
 /** A browser this phone has approved (spec 0005, AC-22). Its key never leaves the phone otherwise. */
 export interface BrowserSessionRecord {
@@ -92,6 +93,11 @@ class ServedBrowser {
       const space = spaceRoot();
       if (space) this.#host.sendControl({ type: "space", code: spaceCode(spaceIdOf(space)) });
     });
+    this.#host.shareMedia(peerMedia, mediaArrived);
+    this.#host.handleRequests(async (method, input) => {
+      const { browserShareRequest } = await import("../../sharing/lib/browser-share-request");
+      return browserShareRequest(method, input);
+    });
     this.#room = new RoomSocket(roomEndpoint(), roomOf(this.#key), thisDeviceId());
     this.#room.on("message", ({ from, body }) => {
       if (from !== record.id) return;
@@ -116,7 +122,7 @@ class ServedBrowser {
     );
     this.#link = link;
     link.on("open", () => {
-      this.#host.attach({ send: (data) => void link.send(data) });
+      this.#host.attach(link);
       setLive(this.record.id, true);
     });
     link.on("data", (data) => this.#host.receive(data));

@@ -137,3 +137,33 @@ describe("DocumentView", () => {
     );
   });
 });
+
+it("renders a contents block with working heading anchors and rejects unsafe attachment URLs", () => {
+  const html = renderToStaticMarkup(
+    <DocumentView
+      document={{
+        root: {
+          children: [
+            { type: "contents" },
+            { type: "heading", tag: "h2", children: [{ type: "text", text: "Budget" }] },
+            { type: "attachment", src: "javascript:alert(1)", name: "bad" },
+            {
+              type: "table",
+              children: [
+                {
+                  type: "tablerow",
+                  children: [{ type: "tablecell", children: [{ type: "text", text: "200" }] }],
+                },
+              ],
+            },
+          ],
+        },
+      }}
+    />,
+  );
+  expect(html).toContain('href="#contents-heading-0"');
+  expect(html).toContain('id="contents-heading-0"');
+  expect(html).toContain("<table");
+  expect(html).toContain("200");
+  expect(html).not.toContain("javascript:");
+});

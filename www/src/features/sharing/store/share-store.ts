@@ -1,12 +1,15 @@
 import { useSyncExternalStore } from "react";
+import { inBrowserSession } from "../../../platform/session/browser-session-store";
 import type { ShareCredentials } from "../model/share";
 
 const KEY = "notables:shares";
 const listeners = new Set<() => void>();
 let cached: ShareCredentials[] | undefined;
+const EMPTY: ShareCredentials[] = [];
 
 /** Shares this device takes part in. Secrets stay on this device. */
 export function getShares(): ShareCredentials[] {
+  if (inBrowserSession()) return EMPTY;
   if (cached) return cached;
   try {
     cached = JSON.parse(localStorage.getItem(KEY) ?? "[]") as ShareCredentials[];

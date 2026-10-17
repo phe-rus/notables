@@ -1,21 +1,29 @@
-import { LabeledContent, Section, Toggle } from "@phe-rus/hino";
+import { FolderIcon, LabeledContent, Section, Toggle } from "@phe-rus/hino";
+import { Link } from "@tanstack/react-router";
 import { t } from "../../../../i18n/i18n";
-import { sidebarIcons } from "../../../library/components/library-sidebar";
-import { SidebarEditor } from "../../../library/components/sidebar-editor";
+import { useFolders } from "../../../library/store/library-store";
 import { type Preferences, sidebarWidth } from "../../model/preferences";
 import { updatePreferences, usePreferences } from "../../store/preferences-store";
 
 const setSidebar = (change: Partial<Preferences["sidebar"]>) =>
   updatePreferences((p) => ({ ...p, sidebar: { ...p.sidebar, ...change } }));
 
-/** What the sidebar shows, in which order, and how wide. */
 export function SidebarPage() {
   const { sidebar } = usePreferences();
+  const folders = useFolders();
   return (
-    <Section title={t("settings.sidebar")} footer={t("settings.sidebarFooter")}>
-      <div className="px-2.5 py-2">
-        <SidebarEditor icons={sidebarIcons} />
-      </div>
+    <Section title={t("settings.sidebar")}>
+      {folders.map((folder) => (
+        <Link
+          key={folder.id}
+          to="/"
+          search={{ view: `folder:${folder.id}` }}
+          className="flex items-center gap-3 px-4 py-3 text-body text-label"
+        >
+          <FolderIcon size={18} />
+          {folder.name}
+        </Link>
+      ))}
       <LabeledContent label={t("settings.showCounts")}>
         <Toggle
           label={t("settings.showCounts")}

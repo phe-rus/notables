@@ -1,5 +1,7 @@
 import { getAuthorName } from "../../../platform/author-preferences";
 import { getDeviceId } from "../../../platform/device-identity";
+import { inBrowserSession } from "../../../platform/session/browser-session-store";
+import { phoneConnection } from "../../../platform/session/phone-connection";
 import type { LibraryEntry } from "../../library/store/library-store";
 import { getLibrary } from "../../library/store/library-store";
 import { type Invitation, OWNER, type ShareCredentials } from "../model/share";
@@ -10,7 +12,8 @@ import { membersOf } from "./share-members";
 import { sessionFor, syncShareSessions } from "./share-sessions";
 
 /** Makes a note shareable from this device, which becomes its owner. */
-export function startSharing(entry: LibraryEntry, name: string): ShareCredentials {
+export function startSharing(entry: LibraryEntry, name: string): ShareCredentials | undefined {
+  if (inBrowserSession()) return;
   const existing = shareFor(entry.id);
   if (existing) return existing;
   const share: ShareCredentials = {
@@ -31,6 +34,14 @@ export function startSharing(entry: LibraryEntry, name: string): ShareCredential
 
 /** Invites one person, returning the link that only they should open. */
 export async function invitePerson(entry: LibraryEntry, name: string): Promise<string> {
+  if (inBrowserSession()) {
+    const result = await phoneConnection()?.client.request("sharing.invite", {
+      noteId: entry.id,
+      name,
+    });
+    if (typeof result !== "string") throw new Error("Phone unavailable");
+    return result;
+  }
   const share = shareFor(entry.id);
   const session = sessionFor(entry.id);
   if (!share || share.role !== "owner" || !session) throw new Error("This note isn’t shared yet.");
@@ -65,13 +76,28 @@ export function linkFor(entry: LibraryEntry, inviteId: string): string | null {
     from: share.name,
     title: entry.title,
     kind: entry.kind,
+    format: entry.format,
     origin: entry.origin,
   };
   return invitationLink(invitation);
 }
 
+export async function invitationLinkFor(
+  entry: LibraryEntry,
+  inviteId: string,
+): Promise<string | null> {
+  if (!inBrowserSession()) return linkFor(entry, inviteId);
+  const value = await phoneConnection()?.client.request("sharing.link", {
+    noteId: entry.id,
+    inviteId,
+  });
+  return typeof value === "string" ? value : null;
+}
+
 /** Stops sharing with one person; their device disconnects and stops syncing. */
 export function removePerson(noteId: string, inviteId: string) {
+  if (inBrowserSession())
+    return phoneConnection()?.client.request("sharing.remove", { noteId, inviteId });
   const session = sessionFor(noteId);
   const members = session && membersOf(session.doc);
   const member = members?.get(inviteId);
@@ -83,6 +109,10 @@ export function removePerson(noteId: string, inviteId: string) {
  * Either way the note stays on this device as an ordinary note.
  */
 export async function stopSharing(noteId: string) {
+  if (inBrowserSession()) {
+    await phoneConnection()?.client.request("sharing.stop", { noteId });
+    return;
+  }
   const share = shareFor(noteId);
   const session = sessionFor(noteId);
   if (share && session) {
@@ -114,6 +144,7 @@ export function acceptInvitation(invitation: Invitation): LibraryEntry {
     // Never this device: its empty copy must not seed the note.
     origin: invitation.origin || `shared-by-${invitation.shareId}`,
   });
+  if (invitation.format) getLibrary().update(entry.id, { format: invitation.format });
   if (!shareFor(invitation.noteId)) {
     saveShare({
       noteId: invitation.noteId,
