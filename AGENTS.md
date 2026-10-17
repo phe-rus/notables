@@ -105,7 +105,7 @@ Gotchas learned the hard way:
 ## Status (October 2026)
 
 - Owner refinement (17 Oct): home is now Workspace with folder cards, Artifacts
-  below folders on Workspace only (removed from the sidebar), grouped note lists with inset separators,
+  below folders on Workspace only (removed from the sidebar), grouped white note lists on a fill backdrop, large folder headings and inset separators,
   three-column gallery previews with centered captions, actual folder back labels,
   a 32 px default More button
   without a separate compose icon, shared note open/return transitions on phones,

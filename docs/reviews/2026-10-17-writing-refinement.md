@@ -21,6 +21,11 @@ scanner and home-screen descriptions.
   rounded group per date section with inset row separators. Gallery follows
   Apple’s iOS 26 reference: three columns, landscape page previews, centered
   titles/dates and actual folder names below, without an outer card or chips.
+  The owner then rejected the list’s low contrast and small heading. List mode
+  now uses a distinct fill backdrop, white grouped rows, a 34 px folder heading,
+  24 px row insets, larger 60 px thumbnails, inline date/preview text and no
+  extra kind-label row. New preferences default to one preview line and date
+  grouping, while existing custom preview lengths remain adjustable.
   More uses Hino’s 32 px `icon-xs` size and an 18 px icon. Opening a note
   matches only the tapped card to the editor using the router’s native view
   transition, and Back returns to that note. Reduce Motion disables the spatial
@@ -97,7 +102,7 @@ WebView opens Workspace from packaged resources, with four 48 px folder rows
 and no development-server requests. Real ADB taps opened Writings and More;
 gallery shows the actual content of both notes and More offers View as List.
 The separate compose button is absent. The web is deployed as Worker version
-`a60111dc-ab34-45f5-b23c-0e343864a14b`.
+`1f815685-810b-4372-b542-4afbf96f43ce`.
 The final card refinement was installed and checked with real ADB taps:
 three equal 101.33 px gallery columns, a 32 px More button, and open/return
 transitions both reporting `ready` then `finished`. Browser Reduce Motion
@@ -107,3 +112,11 @@ An intermediate package failed with `asset not found: index.html` because
 overlapping web and native builds replaced the shared frontend output. The
 corrected build ran the native frontend and APK sequentially and checked
 `dist/client/index.html` before packaging. Keep these builds sequential.
+
+List correction follow-up: installed on the TECNO at 192.168.1.2:5555.
+Real ADB taps set Preview to 1 line and date grouping on through Settings,
+then selected View as List. The final screen has visible white Pinned/Today/
+This Week groups, inset separators, 82 px regular rows and larger media
+thumbnails. The folder title respects the phone’s text scale (28.9 px on
+this device, 34 px at the default app scale). Type checks, lint, 303 TypeScript
+tests, native/web builds and Worker smoke passed.

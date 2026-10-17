@@ -82,11 +82,11 @@ export const defaultPreferences: Preferences = {
   list: {
     layout: "list",
     density: "comfortable",
-    previewLines: 2,
+    previewLines: 1,
     kindTags: true,
     sort: "edited",
     order: "standard",
-    groupByDate: false,
+    groupByDate: true,
     pinnedOnTop: true,
     showDates: true,
     swipeRight: "pin",

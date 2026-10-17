@@ -6,7 +6,6 @@ import { t } from "../../../i18n/i18n";
 import type { ListPreferences } from "../../settings/model/preferences";
 import { formatUpdated } from "../lib/date-format";
 import { isTransitionNote, prepareNoteTransition } from "../lib/note-transition";
-import { noteKindLabels } from "../model/note-kind-labels";
 import { type LibraryEntry, useFolders } from "../store/library-store";
 import { NotePagePreview } from "./note-page-preview";
 import { moreButton, type SwipeButton, swipeButton } from "./note-swipe-actions";
@@ -60,7 +59,6 @@ export function NoteRow({
   /** Returns true when the list handled the tap (selecting, closing a swipe). */
   onTap: () => boolean;
 }) {
-  const kind = entry.kind === "note" || !options.kindTags ? null : noteKindLabels[entry.kind];
   const gallery = options.layout === "gallery";
   const folders = useFolders();
   const folderName = folders.find((folder) => folder.id === entry.folderId)?.name;
@@ -187,7 +185,7 @@ export function NoteRow({
       data-note-id={entry.id}
       className={cn(
         "relative isolate overflow-hidden select-none",
-        gallery ? "rounded-xl" : "bg-paper",
+        gallery ? "rounded-xl" : "bg-background",
       )}
     >
       <motion.div
@@ -210,7 +208,7 @@ export function NoteRow({
       </motion.div>
       <motion.div
         style={{ x }}
-        className={cn("relative touch-pan-y", !gallery && "bg-paper")}
+        className={cn("relative touch-pan-y", !gallery && "bg-background")}
         onPointerDown={onPointerDown}
         onPointerMove={onPointerMove}
         onPointerUp={onPointerUp}
@@ -231,8 +229,8 @@ export function NoteRow({
           aria-selected={selecting ? selected : undefined}
           className={cn(
             "group relative isolate flex items-start no-underline transition-colors duration-fast [-webkit-touch-callout:none]",
-            gallery ? "rounded-xl pb-1" : "px-5",
-            !gallery && (compact ? "py-2.5" : "py-3.5"),
+            gallery ? "rounded-xl pb-1" : "min-h-[82px] px-6",
+            !gallery && (compact ? "py-2.5" : "py-3"),
             !active && !selected && "hover:bg-fill/60",
           )}
         >
@@ -268,52 +266,49 @@ export function NoteRow({
             <span
               className={cn(
                 "flex min-w-0 max-w-full items-center gap-1 text-label",
-                gallery ? "text-footnote font-medium leading-tight" : "text-body font-semibold",
+                gallery
+                  ? "text-footnote font-medium leading-tight"
+                  : "text-body font-semibold leading-snug",
               )}
             >
               {pinMark && <PinIcon size={13} className="text-accent-text" />}
               <span className={gallery ? "line-clamp-2 break-words" : "truncate"}>
                 {entry.title || t("notes.newNote")}
               </span>
-              {compact && date && (
-                <span className="ms-auto shrink-0 text-caption font-normal text-label-tertiary">
-                  {date}
-                </span>
-              )}
             </span>
             {options.layout === "gallery" && date && (
               <span className="text-caption text-label-tertiary">{date}</span>
             )}
-            {options.layout !== "gallery" && (options.previewLines > 0 || snippet) && (
+            {!gallery && (options.previewLines > 0 || snippet || date) && (
               <span
                 className={cn(
-                  "text-subheadline text-label-secondary",
+                  "min-w-0 text-subheadline leading-snug text-label-secondary",
                   previewClamp[options.previewLines || 1],
                 )}
               >
-                {!compact && date && <span>{date}</span>}
-                {!compact && date && "  "}
-                {snippet ?? (entry.excerpt || t("notes.noText"))}
+                {date && <time>{date}</time>}
+                {date && "  "}
+                {(options.previewLines > 0 || snippet) && (
+                  <span>
+                    {snippet ??
+                      (entry.excerpt ||
+                        entry.tags?.map((tag) => `#${tag}`).join(" ") ||
+                        t("notes.noText"))}
+                  </span>
+                )}
               </span>
             )}
             {folderName && (
-              <span className="flex max-w-full items-center gap-1 text-caption text-label-secondary">
+              <span
+                className={cn(
+                  "flex max-w-full items-center gap-1 leading-snug text-label-secondary",
+                  gallery ? "text-caption" : "text-footnote",
+                )}
+              >
                 <FolderIcon size={13} className="shrink-0" />
                 <span className="truncate">{folderName}</span>
               </span>
             )}
-            {!gallery &&
-              !compact &&
-              (entry.tags?.length || kind || entry.format === "spreadsheet") && (
-                <span className="truncate text-caption text-label-secondary">
-                  {[
-                    entry.format === "spreadsheet" ? t("spreadsheet.title") : kind,
-                    ...(entry.tags?.slice(0, 3).map((tag) => `#${tag}`) ?? []),
-                  ]
-                    .filter(Boolean)
-                    .join(" · ")}
-                </span>
-              )}
           </div>
           {options.layout !== "gallery" && entry.previewImage && (
             <NoteThumbnail src={entry.previewImage} />

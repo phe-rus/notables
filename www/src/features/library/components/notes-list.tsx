@@ -202,7 +202,8 @@ export function NotesList({
     <section
       aria-label={view.title}
       className={cn(
-        "relative flex w-full flex-col bg-surface md:w-[330px] md:shrink-0 md:border-r md:border-separator/70",
+        "relative flex w-full flex-col md:w-[330px] md:shrink-0 md:border-r md:border-separator/70",
+        options.layout === "list" ? "bg-fill/45" : "bg-surface",
         className,
       )}
     >
@@ -234,7 +235,12 @@ export function NotesList({
                   <SidebarIcon size={20} />
                 </IconButton>
               ))}
-            <h1 className="truncate text-title2 font-bold tracking-tight">
+            <h1
+              className={cn(
+                "truncate text-title2 font-bold tracking-tight",
+                !selecting && "hidden md:block",
+              )}
+            >
               {selecting
                 ? chosen.length === 0
                   ? t("notes.selectTitle")
@@ -345,6 +351,11 @@ export function NotesList({
             )}
           </div>
         </div>
+        {!selecting && (
+          <div className="px-1 pt-1 md:hidden">
+            <h1 className="truncate text-large-title font-bold tracking-tight">{view.title}</h1>
+          </div>
+        )}
         {groupOf(view.id) && <GroupSwitcher group={groupOf(view.id) as GroupId} active={view.id} />}
         <SearchField
           value={query}
@@ -382,7 +393,9 @@ export function NotesList({
             )}
             <div
               className={
-                options.layout === "gallery" ? "contents" : "overflow-hidden rounded-3xl bg-paper"
+                options.layout === "gallery"
+                  ? "contents"
+                  : "overflow-hidden rounded-[26px] bg-background"
               }
             >
               <AnimatePresence initial={false}>
@@ -392,7 +405,7 @@ export function NotesList({
                     className={
                       options.layout === "gallery"
                         ? undefined
-                        : "[&:not(:last-child)]:after:ms-5 [&:not(:last-child)]:after:block [&:not(:last-child)]:after:h-px [&:not(:last-child)]:after:bg-separator/70"
+                        : "[&:not(:last-child)]:after:mx-5 [&:not(:last-child)]:after:block [&:not(:last-child)]:after:h-px [&:not(:last-child)]:after:bg-separator/70"
                     }
                     initial={false}
                     animate={{ opacity: 1, scale: 1 }}
