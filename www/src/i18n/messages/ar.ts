@@ -1,6 +1,41 @@
 import type { Messages } from "./en";
 
 export const ar: Messages = {
+  finances: {
+    all: "الكل",
+    ledger: "السجل",
+    ledgerHint:
+      "يُحدّث تلقائيًا. الفواتير تطلب الدفع والإيصالات توثقه وعروض الأسعار تقديرات. تبقى العملات منفصلة.",
+    add: "إضافة إلى المالية",
+    transaction: "معاملة",
+    scanReceipt: "مسح إيصال",
+    importReceipt: "إيصال من الصور",
+    importMessage: "رسالة أموال الهاتف",
+    export: "تصدير جدول بيانات",
+    date: "التاريخ",
+    type: "النوع",
+    description: "الوصف",
+    reference: "المرجع",
+    currency: "العملة",
+    amount: "المبلغ",
+    income: "دخل",
+    expense: "مصروف",
+    invoice: "فاتورة",
+    receipt: "إيصال",
+    quote: "عرض سعر",
+    empty: "أضف دخلاً أو مصروفًا أو إيصالاً أو مستندًا.",
+    reviewHint: "راجع التفاصيل والتاريخ قبل الحفظ. لن تُنقل أي أموال.",
+    message: "نص الرسالة",
+    extract: "استخراج التفاصيل",
+    invalid: "أدخل وصفًا ومبلغًا موجبًا صالحًا.",
+    duplicate: "هذه الرسالة أو مرجع المعاملة موجود بالفعل في السجل.",
+    saveFailed: "تعذر الحفظ. حاول مجددًا.",
+    emptyTitle: "أموالك في مكان واحد",
+    emptyBody:
+      "تابع أموالك الشخصية والتجارية واحتفظ بالإيصالات وأنشئ المستندات. الملف التجاري اختياري.",
+    profile: "بيانات شخصية أو تجارية",
+    newDocument: "مستند جديد",
+  },
   capture: {
     takePhoto: "التقاط صورة",
     previewFailed: "تعذر تحميل المعاينة. تحقق من اتصالك وحاول مجددًا.",
@@ -172,7 +207,7 @@ export const ar: Messages = {
   },
   nav: {
     main: "الرئيسي",
-    artifacts: "الأدوات",
+    artifacts: "شخصي",
     workspace: "مساحة العمل",
     newNote: "ملاحظة جديدة",
     allNotes: "الكتابات",
@@ -193,7 +228,7 @@ export const ar: Messages = {
     noAccount: "لا حاجة إلى حساب",
     notes: "الملاحظات",
     books: "الكتب",
-    invoices: "الفواتير",
+    invoices: "الشؤون المالية",
     calendar: "التقويم",
     writing: "الكتابة",
     planning: "خطط وتعلّم",
@@ -398,8 +433,7 @@ export const ar: Messages = {
     width: "العرض",
     widthPoints: "{count} نقطة",
     you: "أنت",
-    youFooter:
-      "يظهر على ما تنشره. لا يحتاج Notables إلى حساب؛ وتسجيل الدخول للنسخ الاحتياطي سيكون اختياريًا.",
+    youFooter: "يُستخدم في ملاحظاتك ومستنداتك.",
     name: "الاسم",
     namePlaceholder: "اسمك أو اسمك المستعار",
     about: "حول",
@@ -1068,6 +1102,19 @@ export const ar: Messages = {
     tags: "الوسوم",
   },
   devices: {
+    identifiers: "المعرّفات",
+    identifiersHint:
+      "معرّف المساحة يحدد مكتبتك المشتركة ومعرّف الجهاز يحدد هذا التثبيت. لا يُستخدم أي منهما للاقتران.",
+    deviceListHint: "اجمع أجهزتك. اعرض رمزًا على أحدها وامسحه أو أدخله على الآخر.",
+    scanOrEnter: "مسح رمز أو إدخاله",
+    showCode: "عرض رمز اقتران",
+    currentDevice: "على هذا الجهاز",
+    offline: "غير متصل",
+    noLinkedDevices: "لا توجد أجهزة أخرى مرتبطة بعد.",
+    browserListHint: "تتصل المتصفحات بشكل منفصل بجهاز ثُبّت عليه التطبيق.",
+    browserCount: "{online} متصل · {total} مرتبط",
+    externalFailed: "تعذر فتح الرابط في تطبيق آخر.",
+
     connectedTitle: "الأجهزة المتصلة",
     disconnect: "فصل هذا الجهاز",
     disconnectTitle: "هل تريد فصل هذا الجهاز؟",
@@ -1090,7 +1137,7 @@ export const ar: Messages = {
     finishing: "جارٍ إكمال الاتصال…",
     peerJoinFailed: "تعذر على الجهاز الآخر حفظ الاتصال. أبقِ التطبيقين مفتوحين وحاول مجددًا.",
     finishTimeout: "لم يؤكد الجهاز الآخر الاتصال. تحقق من شاشته قبل المحاولة مجددًا.",
-    title: "الأجهزة المرتبطة",
+    title: "المتصفحات المرتبطة",
     thisDevice: "هذا الجهاز",
     spaceTitle: "مساحتك",
     spaceId: "معرّف المساحة",
@@ -1112,7 +1159,7 @@ export const ar: Messages = {
     joinFailed: "تعذّر على هذا الجهاز الاحتفاظ بالربط. حاول مرة أخرى.",
     deviceLinked: "تم ربط الجهاز",
     browsersOnPhones: "هذا الرمز من متصفح. اربط المتصفحات من هاتفك.",
-    browsers: "المتصفحات",
+    browsers: "المتصفحات المرتبطة",
     browsersFooter:
       "يعرض المتصفح ملاحظاتك من هذا الهاتف ما دام الاثنان على شبكة Wi-Fi نفسها. ولا يُخزَّن فيه شيء.",
     unnamedBrowser: "متصفح",
@@ -1154,6 +1201,9 @@ export const ar: Messages = {
     otherNetwork: "وصّل هذا الحاسوب بشبكة Wi-Fi نفسها التي يتصل بها هاتفك.",
     ended: "تم تسجيل خروج هذا المتصفح.",
     linkAgain: "اربط مجددًا",
+    hostDevice: "الجهاز المضيف",
+    linkedBrowser: "متصفح مرتبط",
+    syncedDevice: "جهاز متزامن",
   },
   trash: {
     moved: "نُقل إلى المحذوفة مؤخرًا",
@@ -1361,6 +1411,8 @@ export const ar: Messages = {
     tryIt: "جرّب",
   },
   widgets: {
+    chromeosHint:
+      "لا يوفر ChromeOS أدوات Android على الشاشة الرئيسية. افتح اليوم هنا لعرض خططك وتذكيراتك.",
     title: "الأدوات",
     today: "اليوم",
     open: "فتح Notables",
@@ -1376,7 +1428,7 @@ export const ar: Messages = {
     addToHomeHint: "خطط اليوم والملاحظات المثبّتة، على شاشتك الرئيسية.",
   },
   invoices: {
-    title: "الفواتير",
+    title: "الشؤون المالية",
     yourBusiness: "عملك التجاري",
     setUpBusiness: "إعداد عملك التجاري",
     setUpBusinessBody: "الاسم والشعار والعملة وبيانات الدفع، تُملأ لك تلقائيًا.",

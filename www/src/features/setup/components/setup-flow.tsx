@@ -144,7 +144,12 @@ export function SetupFlow() {
         )}
       </header>
 
-      <main className="mx-auto flex w-full max-w-[540px] grow flex-col justify-center px-6 py-8">
+      <main
+        className={cn(
+          "mx-auto flex w-full grow flex-col justify-center px-6 py-8",
+          step === "intro" ? "max-w-[960px]" : "max-w-[540px]",
+        )}
+      >
         <AnimatePresence mode="wait" initial={false} custom={heading}>
           <motion.div
             key={step}
@@ -158,7 +163,10 @@ export function SetupFlow() {
             animate="center"
             exit="exit"
             transition={spring.smooth}
-            className="flex flex-col gap-6"
+            className={cn(
+              "flex flex-col gap-6",
+              step === "intro" && "md:grid md:grid-cols-[.85fr_1.15fr] md:items-center md:gap-12",
+            )}
           >
             {step === "intro" && <IntroStep />}
             {step === "licence" && <LicenceStep agreed={agreed} onAgree={setAgreed} />}

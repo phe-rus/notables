@@ -1,5 +1,12 @@
-import { CopyIcon, IconButton, LabeledContent, Section, toast } from "@phe-rus/hino";
-import { Button } from "@phe-rus/hino/button";
+import {
+  CopyIcon,
+  IconButton,
+  LabeledContent,
+  MoreIcon,
+  openMenu,
+  Section,
+  toast,
+} from "@phe-rus/hino";
 import { useEffect, useState } from "react";
 import { t } from "../../../i18n/i18n";
 import { isTauri } from "../../../platform/runtime";
@@ -16,12 +23,12 @@ export function SpaceIdSection() {
   if (!space) return null;
 
   return (
-    <Section title={t("nav.noAccount")} footer={t("devices.spaceFooter")}>
-      <LabeledContent label={t("devices.spaceId")} stacked>
+    <Section title={t("devices.identifiers")} footer={t("devices.identifiersHint")}>
+      <LabeledContent label={t("devices.spaceId")}>
         <PrivateId key={space.code} value={space.code} />
       </LabeledContent>
       {deviceId && (
-        <LabeledContent label={t("devices.deviceId")} stacked>
+        <LabeledContent label={t("devices.deviceId")}>
           <PrivateId key={deviceId} value={deviceId} />
         </LabeledContent>
       )}
@@ -42,28 +49,38 @@ function PrivateId({ value }: { value: string }) {
   };
 
   return (
-    <div className="flex min-w-0 flex-wrap items-center gap-1">
-      <span className="break-all font-mono text-subheadline tabular-nums select-all" dir="ltr">
-        {revealed ? value : value.replace(/[a-z0-9]/gi, "*")}
-      </span>
-      <Button
-        variant="ghost"
-        size="sm"
-        aria-pressed={revealed}
-        onClick={() => setRevealed(!revealed)}
+    <div className="flex min-w-0 items-center justify-end gap-1">
+      <span
+        className="max-w-[min(38vw,280px)] truncate font-mono text-caption text-label-secondary select-all"
+        dir="ltr"
+        title={revealed ? value : undefined}
       >
-        {t(revealed ? "devices.hideId" : "devices.showId")}
-      </Button>
-      {revealed && (
-        <IconButton
-          size="icon-sm"
-          variant="ghost"
-          label={t("devices.copyId")}
-          onClick={() => void copy()}
-        >
-          <CopyIcon size={16} />
-        </IconButton>
-      )}
+        {revealed ? value : "•••• •••• ••••"}
+      </span>
+      <IconButton
+        size="icon-xs"
+        variant="ghost"
+        label={t("devices.identifiers")}
+        onClick={(event) =>
+          openMenu(
+            event.currentTarget,
+            [
+              {
+                label: t(revealed ? "devices.hideId" : "devices.showId"),
+                onSelect: () => setRevealed(!revealed),
+              },
+              {
+                label: t("devices.copyId"),
+                icon: <CopyIcon size={16} />,
+                onSelect: () => void copy(),
+              },
+            ],
+            { edge: "trailing" },
+          )
+        }
+      >
+        <MoreIcon size={16} />
+      </IconButton>
     </div>
   );
 }

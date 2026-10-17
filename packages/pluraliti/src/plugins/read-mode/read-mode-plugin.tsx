@@ -1,4 +1,10 @@
+import { $isListItemNode } from "@lexical/list";
 import { useLexicalComposerContext } from "@lexical/react/LexicalComposerContext";
+import {
+  $getNearestNodeFromDOMNode,
+  SKIP_DOM_SELECTION_TAG,
+  SKIP_SELECTION_FOCUS_TAG,
+} from "lexical";
 import { useEffect, useRef } from "react";
 
 /** Moving further than this, in CSS pixels, makes a touch a scroll, not a tap. */
@@ -62,7 +68,40 @@ export function ReadModePlugin({ reading, onEdit }: { reading: boolean; onEdit: 
     };
 
     function onDown(down: PointerEvent) {
-      if (down.pointerType === "mouse" || !down.isPrimary) return;
+      if (!down.isPrimary) return;
+      const target = down.target;
+      if (target instanceof HTMLElement && target.matches('li[role="checkbox"]')) {
+        const rect = target.getBoundingClientRect();
+        const rtl = getComputedStyle(target).direction === "rtl";
+        const width = Number.parseFloat(getComputedStyle(target, "::before").width) || 20;
+        const distance = rtl ? rect.right - down.clientX : down.clientX - rect.left;
+        if (distance >= -8 && distance <= width + 8) {
+          down.preventDefault();
+          const started = performance.now();
+          const finish = (up: PointerEvent) => {
+            cleanup();
+            if (
+              Math.hypot(up.clientX - down.clientX, up.clientY - down.clientY) > TAP_SLOP ||
+              performance.now() - started > TAP_TIME
+            )
+              return;
+            editor.update(
+              () => {
+                const node = $getNearestNodeFromDOMNode(target);
+                if ($isListItemNode(node)) node.toggleChecked();
+              },
+              { tag: [SKIP_DOM_SELECTION_TAG, SKIP_SELECTION_FOCUS_TAG] },
+            );
+          };
+          const cleanup = () => {
+            window.removeEventListener("pointerup", finish);
+            window.removeEventListener("pointercancel", cleanup);
+          };
+          window.addEventListener("pointerup", finish);
+          window.addEventListener("pointercancel", cleanup);
+          return;
+        }
+      }
       if ((down.target as Element).closest(OWN_TAP)) return;
       const started = performance.now();
       const finish = (up: PointerEvent) => {

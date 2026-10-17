@@ -167,7 +167,7 @@ function LinkBrowserContent({
           <h2 className="text-title3 font-bold tracking-tight">{title}</h2>
           {stage.name === "scan" && (
             <p className="text-footnote leading-snug text-label-secondary">
-              {t(kind === "device" ? "devices.scanDeviceHint" : "devices.scanHint")}
+              {t(kind === "device" ? "devices.deviceListHint" : "devices.scanHint")}
             </p>
           )}
         </div>

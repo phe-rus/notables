@@ -29,9 +29,11 @@ export function BrowserSessionPage() {
       <Section title={t("devices.linkedTo")} footer={t("devices.nothingStored")}>
         <LabeledContent
           label={session.phoneName}
-          description={status ? phoneStatusText(status) : undefined}
+          description={[t("devices.hostDevice"), status ? phoneStatusText(status) : null]
+            .filter(Boolean)
+            .join(" · ")}
         >
-          <Button variant="ghost" onClick={() => void logOut()}>
+          <Button variant="destructive" size="xs" onClick={() => void logOut()}>
             {t("devices.logOut")}
           </Button>
         </LabeledContent>

@@ -33,7 +33,7 @@ type Stage =
  */
 export function LinkDeviceSheet({ open, onClose }: { open: boolean; onClose: () => void }) {
   return (
-    <Sheet open={open} onClose={onClose} label={t("devices.joinTitle")} className="max-w-[440px]">
+    <Sheet open={open} onClose={onClose} label={t("devices.showCode")} className="max-w-[440px]">
       {open && <LinkDeviceContent onClose={onClose} />}
     </Sheet>
   );
@@ -102,10 +102,10 @@ function LinkDeviceContent({ onClose }: { onClose: () => void }) {
     <>
       <header className="flex items-start justify-between gap-3 px-6 pt-6 pb-2">
         <div className="flex min-w-0 flex-col gap-1">
-          <h2 className="text-title3 font-bold tracking-tight">{t("devices.joinTitle")}</h2>
+          <h2 className="text-title3 font-bold tracking-tight">{t("devices.showCode")}</h2>
           {stage.name === "waiting" && (
             <p className="text-footnote leading-snug text-label-secondary">
-              {t("devices.joinHint")}
+              {t("devices.deviceListHint")}
             </p>
           )}
         </div>

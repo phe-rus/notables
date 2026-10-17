@@ -41,5 +41,33 @@ export function AppearanceSync() {
     return () => media.removeEventListener("change", apply);
   }, [theme]);
 
+  useEffect(() => {
+    const bridge = androidBridge();
+    if (!bridge?.setWindowBackground) return;
+    const media = window.matchMedia("(prefers-color-scheme: dark)");
+    const apply = () => {
+      // A canvas resolves Hino's CSS color space into the RGB bytes Android accepts.
+      const probe = document.createElement("span");
+      probe.style.color = "var(--color-sidebar)";
+      probe.hidden = true;
+      window.document.body.appendChild(probe);
+      const color = getComputedStyle(probe).color;
+      probe.remove();
+      const canvas = document.createElement("canvas");
+      canvas.width = canvas.height = 1;
+      const context = canvas.getContext("2d", { colorSpace: "srgb" });
+      if (!context) return;
+      context.fillStyle = color;
+      context.fillRect(0, 0, 1, 1);
+      const rgb = context.getImageData(0, 0, 1, 1).data;
+      bridge.setWindowBackground?.(
+        `#${Array.from(rgb.slice(0, 3), (byte) => byte.toString(16).padStart(2, "0")).join("")}`,
+      );
+    };
+    apply();
+    media.addEventListener("change", apply);
+    return () => media.removeEventListener("change", apply);
+  }, [theme, accent]);
+
   return null;
 }

@@ -1,6 +1,42 @@
 import type { Messages } from "./en";
 
 export const fr: Messages = {
+  finances: {
+    all: "Tous",
+    ledger: "Registre",
+    ledgerHint:
+      "Mise à jour automatique. Les factures demandent un paiement, les reçus le documentent et les devis sont des estimations. Les devises restent séparées.",
+    add: "Ajouter aux finances",
+    transaction: "Transaction",
+    scanReceipt: "Scanner un reçu",
+    importReceipt: "Reçu depuis des images",
+    importMessage: "Message de paiement mobile",
+    export: "Exporter le tableur",
+    date: "Date",
+    type: "Type",
+    description: "Description",
+    reference: "Référence",
+    currency: "Devise",
+    amount: "Montant",
+    income: "Revenu",
+    expense: "Dépense",
+    invoice: "Facture",
+    receipt: "Reçu",
+    quote: "Devis",
+    empty: "Ajoutez un revenu, une dépense, un reçu ou un document.",
+    reviewHint:
+      "Vérifiez les informations et la date avant de les enregistrer. Aucun argent ne sera transféré.",
+    message: "Texte du message",
+    extract: "Extraire les détails",
+    invalid: "Saisissez une description et un montant positif valide.",
+    duplicate: "Ce message ou cette référence existe déjà dans le registre.",
+    saveFailed: "Enregistrement impossible. Réessayez.",
+    emptyTitle: "Vos finances réunies",
+    emptyBody:
+      "Suivez vos finances personnelles et professionnelles, gardez vos reçus et créez des documents. Le profil professionnel est facultatif.",
+    profile: "Coordonnées personnelles ou professionnelles",
+    newDocument: "Nouveau document",
+  },
   capture: {
     takePhoto: "Prendre une photo",
     previewFailed: "Impossible de charger l’aperçu. Vérifiez votre connexion et réessayez.",
@@ -181,7 +217,7 @@ export const fr: Messages = {
   },
   nav: {
     main: "Principal",
-    artifacts: "Outils",
+    artifacts: "Personnel",
     workspace: "Espace de travail",
     newNote: "Nouvelle note",
     allNotes: "Écrits",
@@ -202,7 +238,7 @@ export const fr: Messages = {
     noAccount: "Aucun compte nécessaire",
     notes: "Notes",
     books: "Livres",
-    invoices: "Factures",
+    invoices: "Finances",
     calendar: "Calendrier",
     writing: "Écriture",
     planning: "Planifier et apprendre",
@@ -386,8 +422,7 @@ export const fr: Messages = {
     width: "Largeur",
     widthPoints: "{count} points",
     you: "Vous",
-    youFooter:
-      "Affiché sur ce que vous publiez. Notables ne demande aucun compte ; la connexion pour la sauvegarde sera facultative.",
+    youFooter: "Utilisé dans vos notes et documents.",
     name: "Nom",
     namePlaceholder: "Votre nom ou nom de plume",
     about: "À propos",
@@ -1004,6 +1039,21 @@ export const fr: Messages = {
     tags: "Étiquettes",
   },
   devices: {
+    identifiers: "Identifiants",
+    identifiersHint:
+      "L’identifiant d’espace désigne votre bibliothèque partagée. Celui de l’appareil désigne cette installation. Aucun ne sert à l’association.",
+    deviceListHint:
+      "Gardez vos appareils ensemble. Affichez un code sur l’un et scannez-le ou saisissez-le sur l’autre.",
+    scanOrEnter: "Scanner ou saisir un code",
+    showCode: "Afficher un code d’association",
+    currentDevice: "Sur cet appareil",
+    offline: "Hors ligne",
+    noLinkedDevices: "Aucun autre appareil associé.",
+    browserListHint:
+      "Les navigateurs se connectent séparément à un appareil équipé de l’application.",
+    browserCount: "{online} en ligne · {total} associés",
+    externalFailed: "Impossible d’ouvrir le lien dans une autre application.",
+
     connectedTitle: "Appareils connectés",
     disconnect: "Déconnecter cet appareil",
     disconnectTitle: "Déconnecter cet appareil ?",
@@ -1029,7 +1079,7 @@ export const fr: Messages = {
       "L’autre appareil n’a pas pu enregistrer la connexion. Gardez les deux applications ouvertes et réessayez.",
     finishTimeout:
       "L’autre appareil n’a pas confirmé la connexion. Vérifiez son écran avant de réessayer.",
-    title: "Appareils liés",
+    title: "Navigateurs liés",
     thisDevice: "Cet appareil",
     spaceTitle: "Votre espace",
     spaceId: "ID de l'espace",
@@ -1053,7 +1103,7 @@ export const fr: Messages = {
     joinFailed: "Cet appareil n'a pas pu garder le lien. Réessayez.",
     deviceLinked: "Appareil lié",
     browsersOnPhones: "Ce code vient d'un navigateur. Liez les navigateurs depuis votre téléphone.",
-    browsers: "Navigateurs",
+    browsers: "Navigateurs liés",
     browsersFooter:
       "Un navigateur affiche les notes de ce téléphone tant que les deux sont sur le même Wi-Fi. Rien n’y est stocké.",
     unnamedBrowser: "Navigateur",
@@ -1099,6 +1149,9 @@ export const fr: Messages = {
     otherNetwork: "Connectez cet ordinateur au même Wi-Fi que votre téléphone.",
     ended: "Ce navigateur a été déconnecté.",
     linkAgain: "Lier à nouveau",
+    hostDevice: "Appareil hôte",
+    linkedBrowser: "Navigateur lié",
+    syncedDevice: "Appareil synchronisé",
   },
   trash: {
     moved: "Placé dans Supprimés récemment",
@@ -1256,6 +1309,8 @@ export const fr: Messages = {
     tryIt: "Essayer",
   },
   widgets: {
+    chromeosHint:
+      "ChromeOS ne propose pas de widgets Android sur l’écran d’accueil. Ouvrez Aujourd’hui ici pour voir vos projets et rappels.",
     title: "Widgets",
     today: "Aujourd’hui",
     open: "Ouvrir Notables",
@@ -1271,7 +1326,7 @@ export const fr: Messages = {
     addToHomeHint: "Les projets du jour et les notes épinglées, sur votre écran d’accueil.",
   },
   invoices: {
-    title: "Factures",
+    title: "Finances",
     yourBusiness: "Votre entreprise",
     setUpBusiness: "Configurer votre entreprise",
     setUpBusinessBody: "Nom, logo, devise et coordonnées de paiement, remplis pour vous.",

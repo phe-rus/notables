@@ -35,6 +35,7 @@ import { Link, useNavigate } from "@tanstack/react-router";
 import { motion } from "motion/react";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { t } from "../../../i18n/i18n";
+import { androidBridge } from "../../../platform/android-bridge";
 import { getDeviceId } from "../../../platform/device-identity";
 import { saveFile } from "../../../platform/save-file";
 import { inBrowserSession } from "../../../platform/session/browser-session-store";
@@ -162,7 +163,11 @@ function NoteEditorScreen({
   // On touch screens a note opens for reading, so scrolling never brings up
   // the keyboard; a tap on its text edits, and Done reads again. New notes
   // open ready to type.
-  const touch = useMediaQuery("(pointer: coarse)");
+  const coarsePointer = useMediaQuery("(pointer: coarse)");
+  const wideWindow = useMediaQuery("(min-width: 1024px)");
+  const desktopTools =
+    wideWindow && (!coarsePointer || Boolean(androidBridge()?.hasHardwareKeyboard?.()));
+  const touch = coarsePointer && !androidBridge()?.hasHardwareKeyboard?.();
   const [fresh] = useState(() => !entry.title);
   const [editing, setEditing] = useState(fresh);
   const spreadsheet = entry.format === "spreadsheet";
@@ -336,14 +341,7 @@ function NoteEditorScreen({
                 </span>
               </Link>
             )}
-            {/* Once the note's own title scrolls away, it moves up into the bar. */}
-            <span
-              aria-hidden={!titleInBar}
-              className={cn(
-                "min-w-0 flex-1 truncate text-center text-body font-semibold text-label transition-opacity duration-200 @min-[860px]/note:hidden",
-                titleInBar ? "opacity-100" : "opacity-0",
-              )}
-            >
+            <span className="min-w-0 flex-1 truncate text-center text-body font-semibold text-label">
               {entry.title || t("notes.newNote")}
             </span>
             {!spreadsheet && (
@@ -354,7 +352,7 @@ function NoteEditorScreen({
                   browser={browser}
                   onRecord={startRecording}
                   resolvePhoto={storePhoto}
-                  className="@max-[860px]/note:hidden"
+                  className={desktopTools ? "hidden" : "@max-[860px]/note:hidden"}
                 />
               </div>
             )}
@@ -473,6 +471,21 @@ function NoteEditorScreen({
               </IconButton>
             </div>
           </header>
+          {desktopTools && !spreadsheet && (
+            <div
+              className="sticky top-[calc(56px+env(safe-area-inset-top))] z-10 flex min-h-11 items-center border-b border-separator/50 bg-paper px-3"
+              onPointerDownCapture={editFromTools}
+            >
+              <NoteCaptureToolbar
+                noteId={entry.id}
+                title={entry.title}
+                browser={browser}
+                onRecord={startRecording}
+                resolvePhoto={storePhoto}
+                className="w-full justify-start"
+              />
+            </div>
+          )}
 
           {spreadsheet ? (
             <SpreadsheetEditor doc={provider.doc} entry={entry} />
@@ -480,7 +493,10 @@ function NoteEditorScreen({
             <article
               ref={articleRef}
               data-note-font={entry.font ?? noteFont}
-              className="flex grow justify-center px-6 pt-6 pb-36 @min-[600px]/note:pt-11"
+              className={cn(
+                "flex grow justify-center px-6 pt-6 @min-[600px]/note:pt-11",
+                desktopTools ? "pb-12" : "pb-36",
+              )}
             >
               <div className="flex w-full max-w-[640px] flex-col gap-4">
                 <p
@@ -502,7 +518,7 @@ function NoteEditorScreen({
         </div>
 
         {/* The formatting tools float at the bottom wherever the top bar has no room for them. */}
-        {!spreadsheet && (
+        {!spreadsheet && !desktopTools && (
           <motion.footer
             ref={tools}
             style={keyboardInset > 0 ? { bottom: keyboardInset + 8 } : undefined}

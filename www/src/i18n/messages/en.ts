@@ -3,6 +3,42 @@
  * are objects keyed by plural category; `{name}` is filled in by `t`.
  */
 export const en = {
+  finances: {
+    all: "All",
+    ledger: "Ledger",
+    ledgerHint:
+      "Updates automatically. Invoices are amounts requested, receipts are payments documented, and quotations are estimates. Currencies are kept separate.",
+    add: "Add to Finances",
+    transaction: "Transaction",
+    scanReceipt: "Scan receipt",
+    importReceipt: "Receipt from images",
+    importMessage: "Mobile money message",
+    export: "Export spreadsheet",
+    date: "Date",
+    type: "Type",
+    description: "Description",
+    reference: "Reference",
+    currency: "Currency",
+    amount: "Amount",
+    income: "Income",
+    expense: "Expense",
+    invoice: "Invoice",
+    receipt: "Receipt",
+    quote: "Quotation",
+    empty: "Add income, an expense, a receipt or a document to begin.",
+    reviewHint:
+      "Review the extracted details before saving. Confirm the transaction date. No money is moved.",
+    message: "Message text",
+    extract: "Extract details",
+    invalid: "Enter a description and a valid positive amount.",
+    duplicate: "This message or transaction reference is already in your ledger.",
+    saveFailed: "Could not save. Please try again.",
+    emptyTitle: "Your money, together",
+    emptyBody:
+      "Track personal and business finances, keep receipts and create documents. A business profile is optional.",
+    profile: "Personal or business details",
+    newDocument: "New document",
+  },
   capture: {
     takePhoto: "Take photo",
     previewFailed: "Could not load the preview. Check your connection and try again.",
@@ -177,7 +213,7 @@ export const en = {
   },
   nav: {
     main: "Main",
-    artifacts: "Artifacts",
+    artifacts: "Personal",
     workspace: "Workspace",
     newNote: "New note",
     allNotes: "Writings",
@@ -198,7 +234,7 @@ export const en = {
     noAccount: "No account needed",
     notes: "Notes",
     books: "Books",
-    invoices: "Invoices",
+    invoices: "Finances",
     calendar: "Calendar",
     writing: "Writing",
     planning: "Plan & learn",
@@ -382,8 +418,7 @@ export const en = {
     width: "Width",
     widthPoints: "{count} points",
     you: "You",
-    youFooter:
-      "Shown on what you publish. Notables needs no account; signing in for backup will be optional.",
+    youFooter: "Used in your notes and documents.",
     name: "Name",
     namePlaceholder: "Your name or pen name",
     about: "About",
@@ -991,6 +1026,20 @@ export const en = {
     tags: "Tags",
   },
   devices: {
+    identifiers: "Identifiers",
+    identifiersHint:
+      "Space ID identifies your shared library. Device ID identifies this installation. Neither is a pairing code.",
+    deviceListHint:
+      "Keep your devices together. Show a code on one and scan or enter it on the other.",
+    scanOrEnter: "Scan or enter a code",
+    showCode: "Show a pairing code",
+    currentDevice: "On this device",
+    offline: "Offline",
+    noLinkedDevices: "No other devices linked yet.",
+    browserListHint: "Browsers connect separately to an installed device.",
+    browserCount: "{online} online · {total} linked",
+    externalFailed: "Could not open the link in another app.",
+
     connectedTitle: "Connected Devices",
     disconnect: "Disconnect This Device",
     disconnectTitle: "Disconnect this device?",
@@ -1015,7 +1064,7 @@ export const en = {
       "The other device could not save the connection. Keep both apps open and try again.",
     finishTimeout:
       "The other device has not confirmed the connection. Check its screen before trying again.",
-    title: "Linked Devices",
+    title: "Linked Browsers",
     thisDevice: "This device",
     spaceTitle: "Your space",
     spaceId: "Space ID",
@@ -1038,7 +1087,7 @@ export const en = {
     joinFailed: "This device couldn't keep the link. Try again.",
     deviceLinked: "Device linked",
     browsersOnPhones: "That code is from a browser. Link browsers from your phone.",
-    browsers: "Browsers",
+    browsers: "Linked Browsers",
     browsersFooter:
       "A browser shows your notes from this phone while both are on the same Wi-Fi. Nothing is stored in it.",
     unnamedBrowser: "Browser",
@@ -1080,6 +1129,9 @@ export const en = {
     otherNetwork: "Connect this computer to the same Wi-Fi as your phone.",
     ended: "This browser was logged out.",
     linkAgain: "Link Again",
+    hostDevice: "Host device",
+    linkedBrowser: "Linked browser",
+    syncedDevice: "Synced device",
   },
   trash: {
     moved: "Moved to Recently Deleted",
@@ -1233,6 +1285,8 @@ export const en = {
     tryIt: "Try it",
   },
   widgets: {
+    chromeosHint:
+      "ChromeOS does not provide Android home-screen widgets. Open Today here to see your plans and reminders.",
     title: "Widgets",
     today: "Today",
     open: "Open Notables",
@@ -1248,7 +1302,7 @@ export const en = {
     addToHomeHint: "Today’s plans and pinned notes, right on your home screen.",
   },
   invoices: {
-    title: "Invoices",
+    title: "Finances",
     yourBusiness: "Your business",
     setUpBusiness: "Set up your business",
     setUpBusinessBody: "Name, logo, currency and payment details, filled in for you.",

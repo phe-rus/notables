@@ -11,14 +11,19 @@ import notables.pherus.org.widgets.TodayWidgetProvider
 
 class MainActivity : TauriActivity() {
   override fun onCreate(savedInstanceState: Bundle?) {
-    enableEdgeToEdge()
+    if (!isChromeOs()) enableEdgeToEdge()
     super.onCreate(savedInstanceState)
     fitAboveKeyboard(findViewById(android.R.id.content))
   }
 
   override fun onWebViewCreate(webView: WebView) {
+    if (isChromeOs()) webView.settings.userAgentString += " NotablesChromeOS"
     webView.addJavascriptInterface(AndroidBridge(this, webView), AndroidBridge.NAME)
   }
+
+  private fun isChromeOs(): Boolean =
+    packageManager.hasSystemFeature("org.chromium.arc") ||
+      packageManager.hasSystemFeature("android.hardware.type.pc")
 
   /** Leaving the app shows what changed on the home-screen widget right away. */
   override fun onPause() {

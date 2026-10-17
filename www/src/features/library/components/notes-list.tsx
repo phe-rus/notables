@@ -5,11 +5,13 @@ import {
   ChecklistIcon,
   ChevronLeftIcon,
   ClockIcon,
+  type ContextMenuItem,
   cn,
   IconButton,
   LayoutIcon,
   MoreIcon,
   NoteIcon,
+  openFollowUpMenu,
   openMenu,
   PenIcon,
   PhotoIcon,
@@ -261,85 +263,90 @@ export function NotesList({
                 size="icon-xs"
                 variant="default"
                 label={t("notes.more")}
-                onClick={(event) =>
-                  openMenu(
-                    event.currentTarget,
-                    [
-                      {
-                        icon:
-                          options.layout === "gallery" ? (
-                            <ChaptersIcon size={18} />
-                          ) : (
-                            <LayoutIcon size={18} />
-                          ),
-                        label: t(
-                          options.layout === "gallery"
-                            ? "workspace.viewAsList"
-                            : "workspace.viewAsGallery",
+                onClick={(event) => {
+                  const items: ContextMenuItem[] = [
+                    {
+                      icon:
+                        options.layout === "gallery" ? (
+                          <ChaptersIcon size={18} />
+                        ) : (
+                          <LayoutIcon size={18} />
                         ),
-                        onSelect: () =>
-                          updatePreferences((p) => ({
-                            ...p,
-                            list: {
-                              ...p.list,
-                              layout: options.layout === "gallery" ? "list" : "gallery",
-                            },
+                      label: t(
+                        options.layout === "gallery"
+                          ? "workspace.viewAsList"
+                          : "workspace.viewAsGallery",
+                      ),
+                      onSelect: () =>
+                        updatePreferences((p) => ({
+                          ...p,
+                          list: {
+                            ...p.list,
+                            layout: options.layout === "gallery" ? "list" : "gallery",
+                          },
+                        })),
+                    },
+                    {
+                      label: t("nav.newNote"),
+                      icon: <PenIcon size={18} />,
+                      onSelect: () =>
+                        openFollowUpMenu([
+                          {
+                            label: t("common.back"),
+                            icon: <ChevronLeftIcon size={18} className="rtl:-scale-x-100" />,
+                            onSelect: () => openFollowUpMenu(items),
+                          },
+                          "divider",
+                          ...NoteKind.options.map((kind) => ({
+                            label: noteKindLabels[kind],
+                            icon: createElement(noteKindIcons[kind], { size: 18 }),
+                            onSelect: () => onCreateNote(kind),
                           })),
-                      },
-                      {
-                        label: t("nav.newNote"),
-                        icon: <PenIcon size={18} />,
-                        onSelect: () => onCreateNote(),
-                      },
-                      {
-                        label: t("spreadsheet.title"),
-                        icon: <LayoutIcon size={18} />,
-                        onSelect: () => onCreateNote("note", "spreadsheet"),
-                      },
-                      ...NoteKind.options.map((kind) => ({
-                        label: noteKindLabels[kind],
-                        icon: createElement(noteKindIcons[kind], { size: 18 }),
-                        onSelect: () => onCreateNote(kind),
-                      })),
-                      {
-                        label: t("notes.selectTitle"),
-                        icon: <ChecklistIcon size={18} />,
-                        onSelect: () => select(new Set()),
-                      },
-                      "divider",
-                      ...(["edited", "created", "title"] as const).map((sort) => ({
-                        icon: sort === "title" ? <NoteIcon size={18} /> : <ClockIcon size={18} />,
-                        label: t(
-                          sort === "edited"
-                            ? "settings.sortEdited"
-                            : sort === "created"
-                              ? "settings.sortCreated"
-                              : "settings.sortTitle",
-                        ),
-                        checked: options.sort === sort,
-                        onSelect: () =>
-                          updatePreferences((p) => ({ ...p, list: { ...p.list, sort } })),
-                      })),
-                      {
-                        label: t("settings.groupByDate"),
-                        icon: <CalendarIcon size={18} />,
-                        checked: options.groupByDate,
-                        onSelect: () =>
-                          updatePreferences((p) => ({
-                            ...p,
-                            list: { ...p.list, groupByDate: !p.list.groupByDate },
-                          })),
-                      },
-                      {
-                        label: t("workspace.viewAttachments"),
-                        icon: <PhotoIcon size={18} />,
-                        checked: attachmentsOnly,
-                        onSelect: () => setAttachmentsOnly(!attachmentsOnly),
-                      },
-                    ],
-                    { edge: "trailing" },
-                  )
-                }
+                          {
+                            label: t("spreadsheet.title"),
+                            icon: <LayoutIcon size={18} />,
+                            onSelect: () => onCreateNote("note", "spreadsheet"),
+                          },
+                        ]),
+                    },
+                    {
+                      label: t("notes.selectTitle"),
+                      icon: <ChecklistIcon size={18} />,
+                      onSelect: () => select(new Set()),
+                    },
+                    "divider",
+                    ...(["edited", "created", "title"] as const).map((sort) => ({
+                      icon: sort === "title" ? <NoteIcon size={18} /> : <ClockIcon size={18} />,
+                      label: t(
+                        sort === "edited"
+                          ? "settings.sortEdited"
+                          : sort === "created"
+                            ? "settings.sortCreated"
+                            : "settings.sortTitle",
+                      ),
+                      checked: options.sort === sort,
+                      onSelect: () =>
+                        updatePreferences((p) => ({ ...p, list: { ...p.list, sort } })),
+                    })),
+                    {
+                      label: t("settings.groupByDate"),
+                      icon: <CalendarIcon size={18} />,
+                      checked: options.groupByDate,
+                      onSelect: () =>
+                        updatePreferences((p) => ({
+                          ...p,
+                          list: { ...p.list, groupByDate: !p.list.groupByDate },
+                        })),
+                    },
+                    {
+                      label: t("workspace.viewAttachments"),
+                      icon: <PhotoIcon size={18} />,
+                      checked: attachmentsOnly,
+                      onSelect: () => setAttachmentsOnly(!attachmentsOnly),
+                    },
+                  ];
+                  openMenu(event.currentTarget, items, { edge: "trailing" });
+                }}
               >
                 <MoreIcon size={18} />
               </IconButton>

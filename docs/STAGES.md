@@ -362,3 +362,32 @@ Ready for each store's rules before submitting:
   support for native libraries (Whisper, ONNX Runtime).
 - **Microsoft Store**: MSIX packaging and signing.
 - **Mac App Store**: sandbox entitlements. **Linux**: Flathub.
+
+
+### Latest owner refinement, 17 October: Personal, Finances and ChromeOS
+
+Personal replaces the Workspace Artifacts label. Finances replaces Invoices
+and serves personal use and business use with optional tax ID. One automatic
+ledger combines documents with confirmed income and expenses. Receipt camera
+and image imports and pasted mobile money message review are implemented;
+background SMS monitoring remains to be designed and verified. Folder colors,
+a smaller Workspace title, nested New Note popup, wide editor title and blank
+library drafts are implemented. Tab roots omit mobile back arrows.
+
+The Chromebook target is the Android app in ARC, not the Linux desktop app.
+ARM translation crashes on this Dell; the native x86-64 APK opens. Continue
+native linking, keyboard/mouse, resize and tablet-layout verification. Keep
+the TECNO space when joining; then verify both-direction changes and which
+installed device serves a linked browser. See the latest refinement record.
+
+
+17 Oct checkpoint: native Chromebook/TECNO sync was checked both ways. Known
+peer history and compact device/profile components are implemented. The latest
+Settings layout redesign was rejected and reverted; inspect the actual linked
+browser and installed native screens before further refinement. Temporary APKs
+from that rejected layout must not be installed.
+
+Owner clarification before push: preserve web Settings layout. Refine compact
+component usage on installed apps. Workspace must remain the original vertical
+stack with Personal below folders. Remote Disconnect must target the other device
+from either app and remains the first unfinished device task, spec 0005 step 7.

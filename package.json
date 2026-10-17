@@ -42,6 +42,7 @@
   },
   "scripts": {
     "dev": "turbo run dev",
+    "android:chromeos": "bun scripts/android/chromeos.ts",
     "tauri": "bun run --cwd www tauri",
     "build": "turbo run build",
     "typecheck": "turbo run typecheck",

@@ -1,6 +1,7 @@
 import { Button, CloseIcon, IconButton, Picker, Sheet, toast } from "@phe-rus/hino";
 import { useState } from "react";
 import { Field, FormSection, TextArea, TextInput } from "../../../components/form/form-fields";
+import { t } from "../../../i18n/i18n";
 import { PartyFields } from "../components/party-fields";
 import { StylePanel } from "../components/style-panel";
 import {
@@ -16,7 +17,7 @@ import { currencyOptions } from "../lib/currencies";
  */
 export function BusinessSheet({ open, onClose }: { open: boolean; onClose: () => void }) {
   return (
-    <Sheet open={open} onClose={onClose} label="Your business">
+    <Sheet open={open} onClose={onClose} label={t("finances.profile")}>
       <BusinessForm onClose={onClose} />
     </Sheet>
   );
@@ -41,7 +42,7 @@ function BusinessForm({ onClose }: { onClose: () => void }) {
     <>
       <header className="flex items-start justify-between gap-3 px-6 pt-6 pb-3">
         <div className="flex flex-col gap-1">
-          <h2 className="text-title3 font-bold tracking-tight">Your business</h2>
+          <h2 className="text-title3 font-bold tracking-tight">{t("finances.profile")}</h2>
           <p className="text-footnote leading-snug text-label-secondary">
             Filled in on every new document, so you never type it twice. Documents already made stay
             as they are.
@@ -53,10 +54,10 @@ function BusinessForm({ onClose }: { onClose: () => void }) {
       </header>
 
       <div className="flex grow flex-col gap-7 overflow-y-auto px-6 pt-2 pb-6">
-        <FormSection title="Business">
+        <FormSection title={t("finances.profile")}>
           <PartyFields
             party={profile.issuer}
-            namePlaceholder="Business or company name"
+            namePlaceholder={t("finances.profile")}
             onChange={(issuer) => set({ issuer })}
           />
         </FormSection>

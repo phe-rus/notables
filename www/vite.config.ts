@@ -34,6 +34,7 @@ export default defineConfig({
     // Lexical and the y-* bindings are dependencies of the workspace packages,
     // so name the package that brings each one in.
     include: [
+      "@tauri-apps/plugin-opener",
       "@phe-rus/hino",
       "@phe-rus/hino > @hugeicons/core-free-icons",
       "@phe-rus/hino > @hugeicons/react",

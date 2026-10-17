@@ -15,6 +15,7 @@ import { ListeningSession } from "../features/listening/components/listening-ses
 import { appearanceBootScript } from "../features/settings/lib/appearance-boot";
 import { useLanguage } from "../i18n/i18n";
 import { languages } from "../i18n/languages";
+import { startExternalLinks } from "../platform/external-links";
 import { canOpenLibrary } from "../platform/library-access";
 import { resolveMediaUrl } from "../platform/storage/media-store";
 import { startWindowFrame } from "../platform/window-frame";
@@ -53,6 +54,7 @@ function RootComponent() {
 
 function RootDocument({ children }: { children: ReactNode }) {
   useEffect(startWindowFrame, []);
+  useEffect(startExternalLinks, []);
   const pathname = useRouterState({ select: (state) => state.location.pathname });
   // Shared pages and document checks open instantly, without the app's splash.
   const publicPage = pathname.startsWith("/p/") || pathname.startsWith("/verify");

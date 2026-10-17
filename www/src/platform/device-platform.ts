@@ -23,8 +23,9 @@ export function devicePlatform(): DevicePlatform {
   // iPadOS reports itself as a Mac, but has touch.
   const touchMac =
     /Macintosh/.test(agent) && typeof navigator !== "undefined" && navigator.maxTouchPoints > 1;
-  const os: OperatingSystem =
-    /iPhone|iPad|iPod/.test(agent) || touchMac
+  const os: OperatingSystem = /NotablesChromeOS|CrOS/.test(agent)
+    ? "chromeos"
+    : /iPhone|iPad|iPod/.test(agent) || touchMac
       ? "ios"
       : /Android/.test(agent)
         ? "android"

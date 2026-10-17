@@ -1,4 +1,5 @@
 import { LabeledContent, Section, Toggle } from "@phe-rus/hino";
+import { Link } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 import { t } from "../../../i18n/i18n";
 import { androidBridge } from "../../../platform/android-bridge";
@@ -14,6 +15,7 @@ export function WidgetsSettingsSection() {
   useEffect(() => setCanPin(androidBridge()?.canPinWidget() ?? false), []);
   const { os } = devicePlatform();
   const phone = isTauri() && (os === "ios" || os === "android");
+  const chromeos = isTauri() && os === "chromeos";
 
   const row = supportsDesktopWidget() ? (
     <LabeledContent label={t("widgets.desktop")} description={t("widgets.desktopHint")}>
@@ -37,6 +39,12 @@ export function WidgetsSettingsSection() {
         {t("common.add")}
       </button>
     </LabeledContent>
+  ) : chromeos ? (
+    <LabeledContent label={t("widgets.title")} description={t("widgets.chromeosHint")}>
+      <Link to="/widget" className="text-subheadline font-medium text-accent-text">
+        {t("common.open")}
+      </Link>
+    </LabeledContent>
   ) : phone ? null : (
     <LabeledContent label={t("widgets.preview")} description={t("widgets.previewHint")}>
       <a
@@ -54,7 +62,11 @@ export function WidgetsSettingsSection() {
     <Section
       title={t("widgets.title")}
       footer={
-        phone ? t("widgets.phoneHint") : supportsDesktopWidget() ? undefined : t("widgets.webHint")
+        phone
+          ? t("widgets.phoneHint")
+          : chromeos || supportsDesktopWidget()
+            ? undefined
+            : t("widgets.webHint")
       }
     >
       {row}

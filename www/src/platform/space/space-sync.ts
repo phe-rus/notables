@@ -7,6 +7,7 @@ import {
   roomOf,
   type SpaceDocs,
   SpacePeer,
+  spaceIdOf,
 } from "@notables/sync";
 import { useSyncExternalStore } from "react";
 import { devicePlatform } from "../device-platform";
@@ -22,6 +23,8 @@ export interface SpaceDevice {
   id: string;
   name: string;
   platform: string;
+  online: boolean;
+  lastSeen: number;
 }
 
 /** Every note id the library still knows; the app supplies it. */
@@ -42,9 +45,45 @@ const peers = new Map<string, Connected>();
 const opened = new Set<string>();
 const listeners = new Set<() => void>();
 let snapshot: SpaceDevice[] = [];
+let historyKey = "";
+const known = new Map<string, SpaceDevice>();
+
+function remember(device: SpaceDevice) {
+  known.set(device.id, device);
+  try {
+    localStorage.setItem(historyKey, JSON.stringify([...known.values()]));
+  } catch {
+    /* Live status still works. */
+  }
+}
+
+function loadKnown(root: Uint8Array) {
+  historyKey = `notables:known-devices:${spaceIdOf(root)}`;
+  known.clear();
+  try {
+    const records: unknown = JSON.parse(localStorage.getItem(historyKey) ?? "[]");
+    if (Array.isArray(records))
+      for (const record of records.slice(0, 100)) {
+        if (
+          record &&
+          typeof record.id === "string" &&
+          typeof record.name === "string" &&
+          typeof record.platform === "string" &&
+          typeof record.lastSeen === "number"
+        )
+          known.set(record.id, { ...record, online: false });
+      }
+  } catch {
+    /* No history on a new device. */
+  }
+}
 
 function changed() {
-  snapshot = [...peers.values()].flatMap(({ device }) => (device ? [device] : []));
+  const online = new Set([...peers.values()].flatMap(({ device }) => (device ? [device.id] : [])));
+  snapshot = [...known.values()]
+    .filter((device) => device.id !== thisDeviceId())
+    .map((device) => ({ ...device, online: online.has(device.id) }))
+    .sort((a, b) => Number(b.online) - Number(a.online) || b.lastSeen - a.lastSeen);
   for (const listener of listeners) listener();
 }
 
@@ -59,6 +98,8 @@ export function startSpaceSync(noteIds: NoteIds) {
   lastNoteIds = noteIds;
   const root = spaceRoot();
   if (!root || room) return;
+  loadKnown(root);
+  changed();
   const docs: SpaceDocs = {
     open: openQuietly,
     remove: (name) => getPersistence().remove(name),
@@ -82,7 +123,8 @@ export function startSpaceSync(noteIds: NoteIds) {
       peer: null as unknown as SpacePeer,
     };
     entry.peer = new SpacePeer(key, docs, hello, (info) => {
-      entry.device = { id, ...info };
+      entry.device = { id, ...info, online: true, lastSeen: Date.now() };
+      remember(entry.device);
       changed();
     });
     entry.peer.shareMedia(peerMedia, mediaArrived);
@@ -121,6 +163,7 @@ export function startSpaceSync(noteIds: NoteIds) {
     void (signal ? link.receive(signal) : link.call()).catch(() => link.close());
   };
   const dispose = (entry: Connected) => {
+    if (entry.device) remember({ ...entry.device, online: false, lastSeen: Date.now() });
     if (entry.retry) clearTimeout(entry.retry);
     const direct = entry.direct;
     entry.direct = null;
@@ -189,6 +232,7 @@ export function stopSpaceSync() {
   stopWatching = null;
   room?.stop();
   room = null;
+  known.clear();
   changed();
 }
 

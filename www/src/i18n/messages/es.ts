@@ -1,6 +1,41 @@
 import type { Messages } from "./en";
 
 export const es: Messages = {
+  finances: {
+    all: "Todos",
+    ledger: "Registro",
+    ledgerHint:
+      "Se actualiza automáticamente. Las facturas solicitan pagos, los recibos los documentan y los presupuestos son estimaciones. Las monedas se mantienen separadas.",
+    add: "Añadir a Finanzas",
+    transaction: "Transacción",
+    scanReceipt: "Escanear recibo",
+    importReceipt: "Recibo desde imágenes",
+    importMessage: "Mensaje de dinero móvil",
+    export: "Exportar hoja de cálculo",
+    date: "Fecha",
+    type: "Tipo",
+    description: "Descripción",
+    reference: "Referencia",
+    currency: "Moneda",
+    amount: "Importe",
+    income: "Ingreso",
+    expense: "Gasto",
+    invoice: "Factura",
+    receipt: "Recibo",
+    quote: "Presupuesto",
+    empty: "Añade un ingreso, gasto, recibo o documento.",
+    reviewHint: "Revisa los datos y la fecha antes de guardar. No se mueve dinero.",
+    message: "Texto del mensaje",
+    extract: "Extraer datos",
+    invalid: "Introduce una descripción y un importe positivo válido.",
+    duplicate: "Este mensaje o referencia ya existe en el registro.",
+    saveFailed: "No se pudo guardar. Inténtalo de nuevo.",
+    emptyTitle: "Tus finanzas juntas",
+    emptyBody:
+      "Organiza tus finanzas personales y de negocio, guarda recibos y crea documentos. El perfil de negocio es opcional.",
+    profile: "Datos personales o del negocio",
+    newDocument: "Nuevo documento",
+  },
   capture: {
     takePhoto: "Tomar foto",
     previewFailed: "No se pudo cargar la vista previa. Comprueba la conexión e inténtalo de nuevo.",
@@ -177,7 +212,7 @@ export const es: Messages = {
   },
   nav: {
     main: "Principal",
-    artifacts: "Herramientas",
+    artifacts: "Personal",
     workspace: "Espacio de trabajo",
     newNote: "Nueva nota",
     allNotes: "Escritos",
@@ -198,7 +233,7 @@ export const es: Messages = {
     noAccount: "Sin necesidad de cuenta",
     notes: "Notas",
     books: "Libros",
-    invoices: "Facturas",
+    invoices: "Finanzas",
     calendar: "Calendario",
     writing: "Escritura",
     planning: "Planificar y aprender",
@@ -383,8 +418,7 @@ export const es: Messages = {
     width: "Ancho",
     widthPoints: "{count} puntos",
     you: "Tú",
-    youFooter:
-      "Se muestra en lo que publicas. Notables no necesita cuenta; iniciar sesión para hacer copias será opcional.",
+    youFooter: "Se usa en tus notas y documentos.",
     name: "Nombre",
     namePlaceholder: "Tu nombre o seudónimo",
     about: "Acerca de",
@@ -999,6 +1033,21 @@ export const es: Messages = {
     tags: "Etiquetas",
   },
   devices: {
+    identifiers: "Identificadores",
+    identifiersHint:
+      "El ID del espacio identifica tu biblioteca compartida. El ID del dispositivo identifica esta instalación. Ninguno es un código de enlace.",
+    deviceListHint:
+      "Reúne tus dispositivos. Muestra un código en uno y escanéalo o introdúcelo en el otro.",
+    scanOrEnter: "Escanear o introducir un código",
+    showCode: "Mostrar código de enlace",
+    currentDevice: "En este dispositivo",
+    offline: "Sin conexión",
+    noLinkedDevices: "No hay otros dispositivos enlazados.",
+    browserListHint:
+      "Los navegadores se conectan por separado a un dispositivo con la aplicación instalada.",
+    browserCount: "{online} en línea · {total} enlazados",
+    externalFailed: "No se pudo abrir el enlace en otra aplicación.",
+
     connectedTitle: "Dispositivos conectados",
     disconnect: "Desconectar este dispositivo",
     disconnectTitle: "¿Desconectar este dispositivo?",
@@ -1024,7 +1073,7 @@ export const es: Messages = {
       "El otro dispositivo no pudo guardar la conexión. Mantén ambas aplicaciones abiertas e inténtalo de nuevo.",
     finishTimeout:
       "El otro dispositivo no ha confirmado la conexión. Revisa su pantalla antes de volver a intentarlo.",
-    title: "Dispositivos vinculados",
+    title: "Navegadores vinculados",
     thisDevice: "Este dispositivo",
     spaceTitle: "Tu espacio",
     spaceId: "ID del espacio",
@@ -1048,7 +1097,7 @@ export const es: Messages = {
     joinFailed: "Este dispositivo no pudo guardar el vínculo. Inténtalo de nuevo.",
     deviceLinked: "Dispositivo vinculado",
     browsersOnPhones: "Ese código es de un navegador. Vincula los navegadores desde tu teléfono.",
-    browsers: "Navegadores",
+    browsers: "Navegadores vinculados",
     browsersFooter:
       "Un navegador muestra tus notas de este teléfono mientras ambos estén en la misma Wi-Fi. No se guarda nada en él.",
     unnamedBrowser: "Navegador",
@@ -1091,6 +1140,9 @@ export const es: Messages = {
     otherNetwork: "Conecta este ordenador a la misma Wi-Fi que tu teléfono.",
     ended: "Se cerró la sesión de este navegador.",
     linkAgain: "Vincular de nuevo",
+    hostDevice: "Dispositivo anfitrión",
+    linkedBrowser: "Navegador vinculado",
+    syncedDevice: "Dispositivo sincronizado",
   },
   trash: {
     moved: "Movido a Eliminado recientemente",
@@ -1247,6 +1299,8 @@ export const es: Messages = {
     tryIt: "Probar",
   },
   widgets: {
+    chromeosHint:
+      "ChromeOS no ofrece widgets Android en la pantalla de inicio. Abre Hoy aquí para ver planes y recordatorios.",
     title: "Widgets",
     today: "Hoy",
     open: "Abrir Notables",
@@ -1262,7 +1316,7 @@ export const es: Messages = {
     addToHomeHint: "Los planes de hoy y las notas fijadas, en tu pantalla de inicio.",
   },
   invoices: {
-    title: "Facturas",
+    title: "Finanzas",
     yourBusiness: "Tu negocio",
     setUpBusiness: "Configura tu negocio",
     setUpBusinessBody: "Nombre, logotipo, moneda y datos de pago, rellenados por ti.",

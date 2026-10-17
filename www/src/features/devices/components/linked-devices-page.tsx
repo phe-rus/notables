@@ -1,4 +1,4 @@
-import { Button, confirmDialog, LabeledContent, Section } from "@phe-rus/hino";
+import { Button, confirmDialog, LinkIcon, Section } from "@phe-rus/hino";
 import { useEffect, useState } from "react";
 import { t } from "../../../i18n/i18n";
 import { ago } from "../../../lib/time/relative-time";
@@ -40,28 +40,39 @@ export function LinkedDevicesPage() {
   return (
     <>
       {servesBrowsers() && (
-        <Section title={t("devices.browsers")} footer={t("devices.browsersFooter")}>
-          {sessions.map((session) => (
-            <LabeledContent
-              key={session.id}
-              label={session.name || t("devices.unnamedBrowser")}
-              description={
-                live.has(session.id)
-                  ? t("devices.openNow")
-                  : t("devices.lastActive", { when: ago(session.lastActive) })
-              }
-            >
-              <Button variant="ghost" onClick={() => void end(session)}>
-                {t("devices.logOut")}
-              </Button>
-            </LabeledContent>
-          ))}
-          <LabeledContent label={t("devices.linkBrowserWhere")}>
-            <Button variant="secondary" onClick={() => setLinking(null)}>
-              {t("devices.linkBrowser")}
+        <>
+          <div className="flex items-center justify-between gap-3 px-1">
+            <p className="max-w-md text-footnote leading-snug text-label-secondary">
+              {t("devices.linkBrowserWhere")}
+            </p>
+            <Button size="sm" onClick={() => setLinking(null)}>
+              {t("common.add")}
             </Button>
-          </LabeledContent>
-        </Section>
+          </div>
+          <Section footer={t("devices.browsersFooter")}>
+            {sessions.map((session) => (
+              <div key={session.id} className="flex min-h-14 items-center gap-3 px-4 py-2">
+                <span className="flex size-8 shrink-0 items-center justify-center rounded-xl bg-accent-soft text-accent-text">
+                  <LinkIcon size={18} />
+                </span>
+                <span className="min-w-0 grow">
+                  <span className="block truncate text-subheadline font-medium">
+                    {session.name || t("devices.unnamedBrowser")}
+                  </span>
+                  <span className="text-caption text-label-secondary">
+                    {t("devices.linkedBrowser")} ·{" "}
+                    {live.has(session.id)
+                      ? t("devices.openNow")
+                      : t("devices.lastActive", { when: ago(session.lastActive) })}
+                  </span>
+                </span>
+                <Button size="xs" variant="destructive" onClick={() => void end(session)}>
+                  {t("devices.logOut")}
+                </Button>
+              </div>
+            ))}
+          </Section>
+        </>
       )}
       <LinkBrowserSheet
         open={linking !== false}

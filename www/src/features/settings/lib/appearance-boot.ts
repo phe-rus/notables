@@ -20,7 +20,7 @@ interface BootConfig {
 const script = `
 var root = document.documentElement, agent = navigator.userAgent;
 root.setAttribute("data-os",
-  /iPhone|iPad|iPod/.test(agent) || (/Macintosh/.test(agent) && navigator.maxTouchPoints > 1) ? "ios"
+  /NotablesChromeOS|CrOS/.test(agent) ? "chromeos" : /iPhone|iPad|iPod/.test(agent) || (/Macintosh/.test(agent) && navigator.maxTouchPoints > 1) ? "ios"
   : /Android/.test(agent) ? "android" : /CrOS/.test(agent) ? "chromeos" : /Mac/.test(agent) ? "macos"
   : /Windows/.test(agent) ? "windows" : /Linux/.test(agent) ? "linux" : "other");
 try {

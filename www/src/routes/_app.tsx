@@ -138,9 +138,13 @@ function WorkspaceShell() {
 
   const createNote = useCallback(
     (kind?: NoteKind, format?: "document" | "spreadsheet") => {
-      const entry = getLibrary().create(kind ?? view.kind, view.folderId);
+      const entry = getLibrary().create(kind ?? view.kind, view.folderId, true);
       if (format) getLibrary().update(entry.id, { format });
-      void navigate({ to: "/notes/$noteId", params: { noteId: entry.id }, search: (s) => s });
+      void navigate({
+        to: "/notes/$noteId",
+        params: { noteId: entry.id },
+        search: (s) => ({ ...s, view: entry.folderId ? `folder:${entry.folderId}` : s.view }),
+      });
     },
     [navigate, view.kind, view.folderId],
   );

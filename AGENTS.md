@@ -104,16 +104,46 @@ Gotchas learned the hard way:
 
 ## Status (October 2026)
 
+- 17 Oct device checkpoint: masked identifiers and compact device/browser rows
+  are implemented. Known authenticated devices retain offline history. Native
+  TECNO/ChromeOS sync was checked both ways with ChromeOS sync check. Debug
+  launcher is Notables Dev to distinguish it from the preserved store app.
+  A subsequent Settings layout redesign was rejected by the owner and reverted.
+  Keep web Settings navigation unchanged; refine component usage in the apps.
+  Do not install the temporary settings APK built before that revert. Check the
+  actual linked browser and installed apps before claiming visual completion.
+  Details: docs/reviews/2026-10-17-writing-refinement.md.
+
+
+- Personal, Finances and drafts (17 Oct): Workspace uses a smaller title and
+  synced Hino folder colors. Personal replaces Artifacts and includes Wallet;
+  Finances replaces the Invoices label while existing document links stay valid.
+  Tab roots Wallet, Finances and Settings no longer have mobile Workspace arrows.
+  New Note opens a follow-up menu with Back. The editor title is visible on wide
+  screens; new empty notes stay out of the library until content is entered.
+  Reading-mode checklist taps work without opening the keyboard. Finances has
+  a live ledger derived from documents and confirmed income/expense records,
+  CSV export, camera/image receipt OCR review and pasted mobile money messages
+  with duplicate checks. Background SMS monitoring is not implemented.
+- ChromeOS Android testing (17 Oct): ADB `100.115.92.2:5555` is authorized.
+  This Dell advertises ARM64 translation but the ARM debug APK crashes in
+  `libhoudini` before WebView startup. A native x86-64 build opens successfully.
+  `bun run android:chromeos` uses the checksum-pinned Microsoft ONNX Runtime
+  1.28.0 Android AAR from Maven Central, retaining natural voice support.
+  ChromeOS gets desktop launch bounds, free resizing and its own platform marker;
+  attached keyboards enter editing directly. Keep Android media IPC and native
+  notifications on ChromeOS. See the latest section of
+  [the refinement record](docs/reviews/2026-10-17-writing-refinement.md).
+
 - Settings and navigation refinement (17 Oct): compact 44 px Settings rows in
   Devices & Sharing, Personalization, Writing & Tools, and App & Privacy.
   Writing owns note fonts, sorting/display and swipe choices; Appearance keeps
   app appearance/language. Sidebar settings no longer duplicate folder links;
   unavailable Lock controls are summarized honestly. Circles is in Workspace
-  Artifacts, not Settings; old Settings links redirect to its screen. Main
+  Personal, not Settings; old Settings links redirect to its screen. Main
   screens use Workspace back links. On mobile, only Workspace shows a sidebar
   toggle; desktop/tablet sidebar controls remain available. Mobile Workspace back
-  links now appear on Books, Invoices/Receipts, Calendar, Wallet home, Settings
-  and Recently Deleted. Folder headers put the actual name next to Back,
+  links appear on Books, Calendar and Recently Deleted; tab roots omit them. Folder headers put the actual name next to Back,
   omit duplicate search (the bottom search stays), and list rows are 68 px.
 
 - Owner refinement (17 Oct): home is now Workspace with folder cards, Artifacts
@@ -426,6 +456,33 @@ TestFlight refuse the upload; each build asks in TestFlight instead.
 
 ## Next
 
+- Priority from the owner, 17 Oct: from either linked app, Disconnect must target
+  the OTHER device's row, not leave the current device. This is not implemented.
+  Implement spec 0005 step 7 with proper removal/key rotation; do not present
+  hiding an entry or disconnecting this device as remote removal. Keep Linked
+  Browsers separate, with small Hino destructive Log Out buttons.
+- Workspace layout: keep the original vertical stack, folders then Personal.
+  The owner rejected both the side column and guessed width adjustments. Its
+  container is restored exactly to the pre-column class from 6856e48.
+
+- Owner testing checkpoint, 17 Oct: review compact component usage in Settings on Notables Dev
+  on the TECNO and native ChromeOS Android app. Continue any visual corrections
+  from that evidence before broader features. Keep the store installations and
+  data intact. Remaining boundaries include automatic SMS intake, native iOS
+  widgets and iPhone editor checks; these are not completed by the finance or
+  Settings work. Details: docs/reviews/2026-10-17-writing-refinement.md.
+
+- Verify the updated ChromeOS Android window/input behavior and pairing with
+  the TECNO. Browser linking to the TECNO has shown both directions live.
+  Check reconnect and serving a browser from each installed Android device.
+  Do not replace the phone space when joining the Chromebook.
+- Finances: finish device checks for receipt camera/image import, ledger export,
+  and transaction editing. Background mobile money SMS collection needs an
+  explicit Android permission and store-policy design; iOS inbox access is not
+  available through the ordinary app APIs. Pasted message review is built.
+  A ledger row preserves invoice/receipt/quote type and currency; it must never
+  treat an unpaid invoice or a quotation as received cash.
+
 - Owner review of the compact folders, Workspace back links and reorganized
   Settings on the TECNO (currently 192.168.1.2:5555). Preserve existing data
   and preferences. Secure Lock and physical iPhone evidence remain open.
@@ -443,7 +500,7 @@ TestFlight refuse the upload; each build asks in TestFlight instead.
   device verification, then the iOS keyboard toolbar and note title, then
   folders and the revised writing Workspace. The full request is recorded
   there, including list/gallery views, optional date groups, Circles in
-  Settings, Books in Artifacts, richer editing and scanning, spreadsheet
+  Workspace Personal, Books in Personal, richer editing and scanning, spreadsheet
   notes, image management, nearby media and the float32 transcription bug.
 
 - Start with "Queued from the 16 October review" in docs/STAGES.md (A before

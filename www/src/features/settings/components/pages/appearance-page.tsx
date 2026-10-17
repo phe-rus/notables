@@ -8,6 +8,7 @@ import {
   useLanguageChoice,
 } from "../../../../i18n/i18n";
 import { languages } from "../../../../i18n/languages";
+import { isTauri } from "../../../../platform/runtime";
 import {
   type Preferences,
   type TextSize,
@@ -24,7 +25,7 @@ export function AppearancePage() {
   const languageChoice = useLanguageChoice();
   return (
     <>
-      <Section title={t("settings.appearance")}>
+      <Section title={isTauri() ? undefined : t("settings.appearance")}>
         <LabeledContent label={t("settings.theme")}>
           <PickerInput<ThemePreference>
             className="w-auto text-subheadline"

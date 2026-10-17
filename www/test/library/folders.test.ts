@@ -56,3 +56,36 @@ test("editing a note preserves folder snapshots and unchanged metadata emits no 
   expect(notifications).toBe(1);
   unsubscribe();
 });
+
+test("blank drafts stay out of saved library until content is entered", async () => {
+  const library = new Library(createMemoryPersistence());
+  await library.loaded;
+  const draft = library.create("note", "default-notes", true);
+  library.update(draft.id, { format: "document", title: "  ", excerpt: "" });
+  expect(library.get(draft.id)?.folderId).toBe("default-notes");
+  expect(library.entries.has(draft.id)).toBe(false);
+  expect(library.getSnapshot().some((entry) => entry.id === draft.id)).toBe(false);
+  const peer = new Library(createMemoryPersistence());
+  await peer.loaded;
+  Y.applyUpdate(peer.doc, Y.encodeStateAsUpdate(library.doc));
+  expect(peer.get(draft.id)).toBeUndefined();
+  library.update(draft.id, { title: "A real note" });
+  Y.applyUpdate(peer.doc, Y.encodeStateAsUpdate(library.doc));
+  expect(peer.get(draft.id)?.title).toBe("A real note");
+  expect(library.getSnapshot().filter((entry) => entry.id === draft.id)).toHaveLength(1);
+});
+
+test("folder colors survive renaming and device sync", async () => {
+  const library = new Library(createMemoryPersistence());
+  await library.loaded;
+  const folder = library.createFolder("Personal", "sage");
+  library.renameFolder(folder.id, "Home");
+  library.setFolderColor(folder.id, "ocean");
+  const peer = new Library(createMemoryPersistence());
+  await peer.loaded;
+  Y.applyUpdate(peer.doc, Y.encodeStateAsUpdate(library.doc));
+  expect(peer.getFolders().find((item) => item.id === folder.id)).toMatchObject({
+    name: "Home",
+    color: "ocean",
+  });
+});

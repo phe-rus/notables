@@ -1,10 +1,23 @@
-import { confirmDialog, LabeledContent, Section } from "@phe-rus/hino";
-import { Button } from "@phe-rus/hino/button";
+import {
+  confirmDialog,
+  IconButton,
+  LayoutIcon,
+  LinkIcon,
+  MoreIcon,
+  openMenu,
+  PlusIcon,
+  QrCodeGlyph,
+  Section,
+} from "@phe-rus/hino";
+import { Link } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 import { t } from "../../../i18n/i18n";
+import { ago } from "../../../lib/time/relative-time";
 import { thisDeviceName } from "../../../platform/session/this-device";
 import { useSpace } from "../../../platform/space/space-identity";
 import { useSpaceDevices } from "../../../platform/space/space-sync";
+import { SettingsToolbarAction } from "../../settings/components/settings-toolbar";
+import { useBrowserSessions, useLiveBrowsers } from "../lib/browser-sessions";
 import { disconnectThisDevice } from "../lib/disconnect-device";
 import { readLinkUrl } from "../lib/link-url";
 import { LinkBrowserSheet, type LinkTarget } from "./link-browser-sheet";
@@ -14,6 +27,8 @@ import { LinkDeviceSheet } from "./link-device-sheet";
 export function ConnectedDevicesPage() {
   const space = useSpace();
   const devices = useSpaceDevices();
+  const sessions = useBrowserSessions();
+  const liveBrowsers = useLiveBrowsers();
   const [adding, setAdding] = useState(false);
   const [joining, setJoining] = useState(false);
   const [busy, setBusy] = useState(false);
@@ -51,61 +66,117 @@ export function ConnectedDevicesPage() {
 
   return (
     <>
-      <Section title={t("devices.thisDevice")} footer={t("devices.devicesFooter")}>
-        <LabeledContent label={thisDeviceName()} stacked>
-          <Button
+      <SettingsToolbarAction>
+        <IconButton
+          size="icon-sm"
+          label={t("devices.addDevice")}
+          disabled={busy}
+          onClick={(event) =>
+            openMenu(
+              event.currentTarget,
+              [
+                {
+                  label: t("devices.scanOrEnter"),
+                  icon: <QrCodeGlyph size={18} />,
+                  onSelect: () => setAdding(true),
+                },
+                {
+                  label: t("devices.showCode"),
+                  icon: <LayoutIcon size={18} />,
+                  onSelect: () => setJoining(true),
+                },
+              ],
+              { edge: "trailing" },
+            )
+          }
+        >
+          <PlusIcon size={16} />
+        </IconButton>
+      </SettingsToolbarAction>
+      <Section>
+        <div className="flex min-h-14 items-center gap-3 px-4 py-2">
+          <span className="flex size-8 shrink-0 items-center justify-center rounded-xl bg-accent-soft text-accent-text">
+            <LayoutIcon size={18} />
+          </span>
+          <span className="min-w-0 grow">
+            <span className="block truncate text-subheadline font-medium">{thisDeviceName()}</span>
+            <span className="text-caption text-label-secondary">{t("devices.currentDevice")}</span>
+          </span>
+          <IconButton
             variant="ghost"
-            className="text-danger"
-            disabled={!space || busy}
-            onClick={() => void disconnect()}
+            size="icon-xs"
+            label={t("notes.more")}
+            disabled={busy || !space}
+            onClick={(event) =>
+              openMenu(
+                event.currentTarget,
+                [
+                  {
+                    label: t("devices.disconnect"),
+                    destructive: true,
+                    onSelect: () => void disconnect(),
+                  },
+                ],
+                { edge: "trailing" },
+              )
+            }
           >
-            {t("devices.disconnect")}
-          </Button>
-        </LabeledContent>
-        {error && (
-          <p role="alert" className="px-4 py-2 text-footnote text-danger">
-            {t("devices.disconnectFailed")}
-          </p>
-        )}
-      </Section>
-      <Section title={t("devices.connectedTitle")}>
+            <MoreIcon size={17} />
+          </IconButton>
+        </div>
         {devices.map((device) => (
-          <LabeledContent key={device.id} label={device.name} description={t("devices.online")}>
-            {null}
-          </LabeledContent>
+          <div key={device.id} className="flex min-h-14 items-center gap-3 px-4 py-2">
+            <span className="flex size-8 shrink-0 items-center justify-center rounded-xl bg-fill text-label-secondary">
+              <LayoutIcon size={18} />
+            </span>
+            <span className="min-w-0 grow">
+              <span className="block truncate text-subheadline font-medium">{device.name}</span>
+              <span className="text-caption text-label-secondary">
+                {t("devices.syncedDevice")} ·{" "}
+                {device.online
+                  ? t("devices.online")
+                  : t("devices.lastActive", { when: ago(device.lastSeen) })}
+              </span>
+            </span>
+            <span
+              role="img"
+              aria-label={device.online ? t("devices.online") : t("devices.offline")}
+              className={
+                device.online
+                  ? "size-2 shrink-0 rounded-full bg-success"
+                  : "size-2 shrink-0 rounded-full bg-fill"
+              }
+            />
+          </div>
         ))}
         {devices.length === 0 && (
-          <p className="px-4 py-3 text-subheadline text-label-secondary">
-            {t("devices.noDevices")}
+          <p className="px-4 py-3 text-footnote text-label-secondary">
+            {t("devices.noLinkedDevices")}
           </p>
         )}
       </Section>
-      <Section footer={t("devices.linkOnce")}>
-        <LabeledContent label={t("devices.addDeviceWhere")} stacked>
-          <Button
-            variant="secondary"
-            className="w-full"
-            disabled={!space || busy}
-            onClick={() => setAdding(true)}
-          >
-            {t("devices.addDevice")}
-          </Button>
-        </LabeledContent>
-        <LabeledContent label={t("devices.joinWhere")} stacked>
-          <Button
-            variant="secondary"
-            className="w-full"
-            disabled={busy}
-            onClick={() => setJoining(true)}
-          >
-            {t("devices.joinTitle")}
-          </Button>
-        </LabeledContent>
-        {!space && (
-          <p role="status" className="px-4 py-2 text-footnote text-label-secondary">
-            {t("devices.identityUnavailable")}
-          </p>
-        )}
+      {error && (
+        <p role="alert" className="px-1 text-footnote text-danger">
+          {t("devices.disconnectFailed")}
+        </p>
+      )}
+      {!space && (
+        <p role="status" className="px-1 text-footnote text-label-secondary">
+          {t("devices.identityUnavailable")}
+        </p>
+      )}
+      <Section footer={t("devices.browserListHint")}>
+        <Link
+          to="/settings/$page"
+          params={{ page: "devices" }}
+          className="flex min-h-12 items-center gap-3 px-4 py-2 text-subheadline text-label no-underline hover:bg-fill/50"
+        >
+          <LinkIcon size={18} className="shrink-0 text-accent-text" />
+          <span className="grow">{t("devices.browsers")}</span>
+          <span className="text-caption tabular-nums text-label-secondary">
+            {t("devices.browserCount", { online: liveBrowsers.size, total: sessions.length })}
+          </span>
+        </Link>
       </Section>
       <LinkBrowserSheet
         open={adding}
@@ -114,7 +185,7 @@ export function ConnectedDevicesPage() {
           setAdding(false);
           setTarget(null);
         }}
-        title={t("devices.addDevice")}
+        title={t("devices.scanOrEnter")}
         kind="device"
       />
       <LinkDeviceSheet open={joining} onClose={() => setJoining(false)} />

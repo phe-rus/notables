@@ -9,6 +9,7 @@ import {
 } from "@phe-rus/hino";
 import { useState } from "react";
 import { type MessageKey, t } from "../../../i18n/i18n";
+import { openExternalUrl } from "../../../platform/external-links";
 import {
   deletePack,
   downloadPack,
@@ -95,7 +96,8 @@ export function ModelPacksSection() {
   const openLicense = async (pack: PackStatus) => {
     const text = pack.installedVersion ? await packLicense(pack.id).catch(() => null) : null;
     if (text) setLicense({ title: pack.license ?? "", text });
-    else if (pack.licenseUrl) window.open(pack.licenseUrl, "_blank", "noopener");
+    else if (pack.licenseUrl)
+      void openExternalUrl(pack.licenseUrl).catch(() => toast.error(t("devices.externalFailed")));
   };
 
   return (

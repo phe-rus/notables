@@ -1,5 +1,6 @@
 import { createId, type NoteKind } from "@notables/core";
 import type { Persistence } from "@notables/sync";
+import type { AccentId } from "@phe-rus/hino/tokens";
 import { useSyncExternalStore } from "react";
 import * as Y from "yjs";
 import { t } from "../../../i18n/i18n";
@@ -9,6 +10,7 @@ import type { NoteFont } from "../model/note-fonts";
 import type { NotePreviewBlock } from "../model/note-preview";
 
 export interface Folder {
+  color?: AccentId;
   id: string;
   name: string;
   createdAt: number;
@@ -58,6 +60,7 @@ export class Library {
   readonly removedFolders = this.doc.getMap<boolean>("removed-folders");
   ready = false;
   #snapshot: LibraryEntry[] = [];
+  #drafts = new Map<string, LibraryEntry>();
   #folderSnapshot: Folder[] = [];
   #listeners = new Set<() => void>();
 
@@ -116,11 +119,12 @@ export class Library {
   getSnapshot = () => this.#snapshot;
   getFolders = () => this.#folderSnapshot;
 
-  createFolder(name: string): Folder {
+  createFolder(name: string, color?: AccentId): Folder {
     const title = name.trim().slice(0, 120);
     if (!title) throw new Error("A folder needs a name");
     const now = Date.now();
     const folder = {
+      color,
       id: createId(now),
       name: title,
       createdAt: now,
@@ -135,6 +139,11 @@ export class Library {
     const title = name.trim().slice(0, 120);
     if (folder && title && !this.removedFolders.has(id))
       this.folders.set(id, { ...folder, name: title });
+  }
+
+  setFolderColor(id: string, color: AccentId) {
+    const folder = this.folders.get(id);
+    if (folder && !this.removedFolders.has(id)) this.folders.set(id, { ...folder, color });
   }
 
   moveFolder(id: string, direction: -1 | 1) {
@@ -172,10 +181,10 @@ export class Library {
   }
 
   get(id: string): LibraryEntry | undefined {
-    return this.entries.get(id);
+    return this.entries.get(id) ?? this.#drafts.get(id);
   }
 
-  create(kind: NoteKind = "note", folderId?: string | null): LibraryEntry {
+  create(kind: NoteKind = "note", folderId?: string | null, draft = false): LibraryEntry {
     const now = Date.now();
     const entry: LibraryEntry = {
       id: createId(now),
@@ -195,7 +204,10 @@ export class Library {
       createdAt: now,
       updatedAt: now,
     };
-    this.entries.set(entry.id, entry);
+    if (draft) {
+      this.#drafts.set(entry.id, entry);
+      this.#refresh();
+    } else this.entries.set(entry.id, entry);
     return entry;
   }
 
@@ -221,8 +233,25 @@ export class Library {
   }
 
   update(id: string, patch: Partial<Omit<LibraryEntry, "id" | "origin" | "createdAt">>) {
-    const current = this.entries.get(id);
+    const current = this.get(id);
     if (!current) return;
+    if (this.#drafts.has(id)) {
+      const next = { ...current, ...patch };
+      const content =
+        next.title.trim() ||
+        next.excerpt.trim() ||
+        next.previewImage ||
+        next.attachmentCount ||
+        next.previewContent?.some((block) => block.kind === "image" || block.kind === "file");
+      if (content) {
+        this.#drafts.delete(id);
+        this.entries.set(id, next);
+      } else {
+        this.#drafts.set(id, next);
+        this.#refresh();
+      }
+      return;
+    }
     const unchanged = Object.entries(patch).every(([key, value]) => {
       const before = current[key as keyof LibraryEntry];
       if (key === "previewContent") return JSON.stringify(before) === JSON.stringify(value);
@@ -238,6 +267,7 @@ export class Library {
   }
 
   async remove(id: string) {
+    this.#drafts.delete(id);
     this.entries.delete(id);
     await this.persistence.remove(`note:${id}`);
   }

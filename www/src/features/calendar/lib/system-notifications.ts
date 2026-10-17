@@ -7,7 +7,7 @@ import { describeAlert } from "./describe-alert";
 export function schedulesNatively(): boolean {
   if (!isTauri()) return false;
   const { os } = devicePlatform();
-  return os === "ios" || os === "android";
+  return os === "ios" || os === "android" || os === "chromeos";
 }
 
 async function allowed(): Promise<boolean> {

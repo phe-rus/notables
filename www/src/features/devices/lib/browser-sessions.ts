@@ -169,6 +169,7 @@ function forget(id: string) {
 /** Starts serving every approved browser. Native apps only; safe to call again. */
 export function startBrowserSessions() {
   records = load();
+  for (const listener of listeners) listener();
   for (const record of records) {
     if (!served.has(record.id)) served.set(record.id, new ServedBrowser(record));
   }

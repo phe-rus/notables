@@ -13,10 +13,13 @@ import {
   PeopleIcon,
   PlusIcon,
   SidebarIcon,
+  SwatchPicker,
   TrashIcon,
+  WalletIcon,
 } from "@phe-rus/hino";
 import { Button } from "@phe-rus/hino/button";
 import { Sheet } from "@phe-rus/hino/sheet";
+import { type AccentId, accents } from "@phe-rus/hino/tokens";
 import { Link } from "@tanstack/react-router";
 import { useState } from "react";
 import { setDrawerOpen } from "../../../components/layout/drawer-store";
@@ -34,7 +37,11 @@ import {
 export function WorkspaceScreen() {
   const folders = useFolders();
   const notes = useLibrary().filter(isListedNote);
-  const [editing, setEditing] = useState<{ id: string | null; name: string } | null>(null);
+  const [editing, setEditing] = useState<{
+    id: string | null;
+    name: string;
+    color?: AccentId;
+  } | null>(null);
   const remove = async (folder: Folder) => {
     if (
       await confirmDialog({
@@ -50,7 +57,7 @@ export function WorkspaceScreen() {
     {
       label: t("workspace.renameFolder"),
       icon: <PenIcon size={18} />,
-      onSelect: () => setEditing({ id: folder.id, name: folder.name }),
+      onSelect: () => setEditing({ id: folder.id, name: folder.name, color: folder.color }),
     },
     ...(index > 0
       ? [
@@ -91,7 +98,7 @@ export function WorkspaceScreen() {
         >
           <SidebarIcon size={22} />
         </IconButton>
-        <h1 className="min-w-0 grow truncate text-large-title font-bold tracking-tight">
+        <h1 className="min-w-0 grow truncate text-title2 font-bold tracking-tight">
           {t("nav.workspace")}
         </h1>
         <IconButton
@@ -120,7 +127,9 @@ export function WorkspaceScreen() {
                     search={{ view: `folder:${folder.id}` }}
                     className="flex min-h-12 min-w-0 grow items-center gap-2.5 px-3.5 py-1 text-label no-underline active:bg-fill"
                   >
-                    <FolderIcon size={20} className="shrink-0 text-accent-text" />
+                    <span data-accent={folder.color} className="flex shrink-0 text-accent-text">
+                      <FolderIcon size={20} />
+                    </span>
                     <span className="flex min-w-0 grow flex-col gap-0.5">
                       <span className="truncate text-subheadline leading-tight font-semibold">
                         {folder.name}
@@ -166,6 +175,7 @@ export function WorkspaceScreen() {
               {(
                 [
                   { to: "/books", label: t("nav.books"), Icon: BookIcon },
+                  { to: "/wallet", label: t("wallet.title"), Icon: WalletIcon },
                   { to: "/calendar", label: t("nav.calendar"), Icon: CalendarIcon },
                   { to: "/invoices", label: t("nav.invoices"), Icon: InvoiceIcon },
                   { to: "/connections", label: t("workspace.circles"), Icon: PeopleIcon },
@@ -204,8 +214,10 @@ export function WorkspaceScreen() {
             onSubmit={(event) => {
               event.preventDefault();
               if (!editing.name.trim()) return;
-              if (editing.id) getLibrary().renameFolder(editing.id, editing.name);
-              else getLibrary().createFolder(editing.name);
+              if (editing.id) {
+                getLibrary().renameFolder(editing.id, editing.name);
+                if (editing.color) getLibrary().setFolderColor(editing.id, editing.color);
+              } else getLibrary().createFolder(editing.name, editing.color);
               setEditing(null);
             }}
           >
@@ -218,6 +230,17 @@ export function WorkspaceScreen() {
               value={editing.name}
               onChange={(event) => setEditing({ ...editing, name: event.target.value })}
               className="rounded-xl control-field px-3 py-3 text-body"
+            />
+            <SwatchPicker
+              label={t("setup.accentColour")}
+              value={editing.color ?? "blush"}
+              onChange={(color) => setEditing({ ...editing, color })}
+              options={Object.values(accents).map((accent) => ({
+                value: accent.id,
+                label: accent.name,
+                color: accent.swatch,
+                ink: accent.light.onAccent,
+              }))}
             />
             <div className="flex justify-end gap-2">
               <Button variant="ghost" onClick={() => setEditing(null)}>

@@ -58,6 +58,7 @@ pub fn run() {
         .plugin(tauri_plugin_notification::init())
         .plugin(tauri_plugin_os::init())
         .plugin(tauri_plugin_dialog::init())
+        .plugin(tauri_plugin_opener::init())
         .manage(Transcriber::default())
         .manage(Voice::default())
         .register_asynchronous_uri_scheme_protocol(

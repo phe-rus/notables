@@ -23,10 +23,9 @@ import { AnimatePresence, motion } from "motion/react";
 import { useState } from "react";
 import { CollapsedSidebarControls } from "../../../components/window/collapsed-sidebar-controls";
 import { t } from "../../../i18n/i18n";
-import { WorkspaceBackLink } from "../../library/components/workspace-back-link";
+import { FinanceLedger } from "../../finances/components/finance-ledger";
 import { usePreferences } from "../../settings/store/preferences-store";
 import { BusinessSheet } from "../business/business-sheet";
-import { useBusinessProfile } from "../lib/business-profile";
 import { getInvoiceStore, useInvoices } from "../store/invoice-store";
 import { InvoicePaper, PAPER_HEIGHT, PAPER_WIDTH } from "./invoice-paper";
 
@@ -50,7 +49,6 @@ export function InvoicesList({
   const invoices = filter === "all" ? all : all.filter((invoice) => invoice.kind === filter);
   const navigate = useNavigate();
   const { collapsed } = usePreferences().sidebar;
-  const business = useBusinessProfile();
   const [businessOpen, setBusinessOpen] = useState(false);
 
   const create = (kind: InvoiceKind) => {
@@ -60,7 +58,7 @@ export function InvoicesList({
 
   return (
     <section
-      aria-label="Invoices and receipts"
+      aria-label={t("invoices.title")}
       className={cn(
         "flex w-full flex-col bg-surface md:w-[330px] md:shrink-0 md:border-r md:border-separator/70",
         className,
@@ -73,7 +71,6 @@ export function InvoicesList({
         {collapsed && <CollapsedSidebarControls />}
         <div data-tauri-drag-region className="flex items-center justify-between">
           <div className="flex items-center gap-1">
-            <WorkspaceBackLink />
             <IconButton
               size="icon-sm"
               variant="ghost"
@@ -89,24 +86,20 @@ export function InvoicesList({
             <IconButton
               size="icon-sm"
               variant="ghost"
-              label={
-                business
-                  ? `${t("invoices.yourBusiness")}: ${business.issuer.name}`
-                  : t("invoices.setUpBusiness")
-              }
+              label={t("finances.profile")}
               onClick={() => setBusinessOpen(true)}
             >
               <BusinessIcon size={20} />
             </IconButton>
             <IconButton
               size="icon-sm"
-              label="New invoice, receipt or quote"
+              label={t("finances.newDocument")}
               variant="link"
               onClick={(event) => {
                 openMenu(
                   event.currentTarget,
                   (["invoice", "receipt", "quote"] as const).map((kind) => ({
-                    label: `New ${invoiceKindLabels[kind].toLowerCase()}`,
+                    label: t(`finances.${kind}`),
                     onSelect: () => create(kind),
                   })),
                   { edge: "trailing" },
@@ -117,7 +110,7 @@ export function InvoicesList({
             </IconButton>
           </div>
         </div>
-        <nav aria-label="Document type" className="flex flex-wrap gap-1.5">
+        <nav aria-label={t("finances.type")} className="flex flex-wrap gap-1.5">
           {(["all", "invoice", "receipt", "quote"] as const).map((kind) => {
             const selected = filter === kind;
             const count = kind === "all" ? all.length : all.filter((i) => i.kind === kind).length;
@@ -139,7 +132,7 @@ export function InvoicesList({
                     transition={spring.snappy}
                   />
                 )}
-                {kind === "all" ? "All" : `${invoiceKindLabels[kind]}s`}
+                {kind === "all" ? t("finances.all") : t(`finances.${kind}`)}
                 <span
                   className={cn("tabular-nums", selected ? "opacity-70" : "text-label-tertiary")}
                 >
@@ -152,23 +145,7 @@ export function InvoicesList({
       </header>
 
       <div className="flex grow flex-col overflow-y-auto px-2.5 pb-28 md:pb-8">
-        {!business && all.length > 0 && (
-          <button
-            type="button"
-            onClick={() => setBusinessOpen(true)}
-            className="mx-1.5 mb-2 flex items-center gap-3 rounded-3xl bg-accent/10 px-3.5 py-3 text-left transition-colors hover:bg-accent/15"
-          >
-            <span className="flex size-9 shrink-0 items-center justify-center rounded-full bg-accent text-on-accent">
-              <BusinessIcon size={18} />
-            </span>
-            <span className="flex flex-col">
-              <span className="text-subheadline font-semibold">{t("invoices.setUpBusiness")}</span>
-              <span className="text-caption leading-snug text-label-secondary">
-                {t("invoices.setUpBusinessBody")}
-              </span>
-            </span>
-          </button>
-        )}
+        <FinanceLedger documents={all} />
         {all.length > 0 && invoices.length === 0 && (
           <p className="px-6 pt-12 text-center text-subheadline text-label-secondary">
             No {filter === "all" ? "documents" : `${invoiceKindLabels[filter].toLowerCase()}s`} yet.
@@ -176,10 +153,9 @@ export function InvoicesList({
         )}
         {all.length === 0 && (
           <div className="flex flex-col items-center gap-2 px-6 pt-16 text-center">
-            <p className="text-subheadline font-semibold">Get paid, beautifully</p>
+            <p className="text-subheadline font-semibold">{t("finances.emptyTitle")}</p>
             <p className="text-subheadline leading-snug text-label-secondary">
-              Invoices, receipts and quotes, signed on this device so anyone can scan them to check
-              they’re genuine.
+              {t("finances.emptyBody")}
             </p>
           </div>
         )}

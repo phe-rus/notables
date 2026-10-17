@@ -1,7 +1,10 @@
 package notables.pherus.org
 
 import android.app.Activity
+import android.app.ActivityManager
+import android.graphics.Color
 import android.appwidget.AppWidgetManager
+import android.content.res.Configuration
 import android.content.Intent
 import android.content.ComponentName
 import android.os.Build
@@ -18,6 +21,10 @@ import notables.pherus.org.widgets.TodayWidgetProvider
  * Today widget to the home screen.
  */
 class AndroidBridge(private val activity: Activity, private val webView: WebView) {
+  @JavascriptInterface
+  fun hasHardwareKeyboard(): Boolean =
+    activity.resources.configuration.keyboard == Configuration.KEYBOARD_QWERTY
+
   /** Whether this launcher lets an app offer its widget for the home screen. */
   @JavascriptInterface
   fun canPinWidget(): Boolean =
@@ -67,9 +74,25 @@ class AndroidBridge(private val activity: Activity, private val webView: WebView
     }
   }
 
+  /** ChromeOS owns the caption; give it the same opaque surface as the app. */
+  @Suppress("DEPRECATION")
+  @JavascriptInterface
+  fun setWindowBackground(hex: String) {
+    if (!activity.packageManager.hasSystemFeature("org.chromium.arc") &&
+        !activity.packageManager.hasSystemFeature("android.hardware.type.pc")) return
+    if (!Regex("#[0-9a-fA-F]{6}").matches(hex)) return
+    val color = Color.parseColor(hex)
+    activity.runOnUiThread {
+      activity.setTaskDescription(ActivityManager.TaskDescription(null, null, color))
+      activity.window.statusBarColor = color
+      activity.window.navigationBarColor = color
+    }
+  }
+
   /** Maker and model, e.g. "TECNO CAMON 19", for About. */
   @JavascriptInterface
   fun deviceModel(): String {
+    if (activity.packageManager.hasSystemFeature("org.chromium.arc")) return Build.MODEL
     val maker = Build.MANUFACTURER.replaceFirstChar { it.uppercase() }
     return if (Build.MODEL.startsWith(maker, ignoreCase = true)) Build.MODEL else "$maker ${Build.MODEL}"
   }

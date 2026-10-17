@@ -216,7 +216,11 @@ export function Sidebar({
                 to="/"
                 search={{ view: `folder:${folder.id}` }}
                 active={active === `folder:${folder.id}`}
-                icon={<FolderIcon size={17} />}
+                icon={
+                  <span data-accent={folder.color} className="text-accent-text">
+                    <FolderIcon size={17} />
+                  </span>
+                }
                 trailing={
                   counts
                     ? entries.filter((entry) => entry.folderId === folder.id).length

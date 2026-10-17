@@ -72,7 +72,7 @@ export const nativeStorage = {
     // Android's WebView sends binary bodies as JSON number arrays (5 MB took
     // 7.5 s on the TECNO and froze the page); base64 pieces are 6x faster
     // and only hold the page for a moment each.
-    if (devicePlatform().os === "android") {
+    if (devicePlatform().os === "android" || devicePlatform().os === "chromeos") {
       for (let offset = 0; offset === 0 || offset < file.size; offset += MEDIA_PIECE) {
         const data = await readBase64(file.slice(offset, offset + MEDIA_PIECE));
         await invoke("storage_media_save_part", { id, offset, data });

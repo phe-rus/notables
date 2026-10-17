@@ -183,3 +183,132 @@ sidebar opener; Books, Circles and Settings have zero. Workspace return links
 work, and Settings is left open for the owner’s review. All 303 TypeScript
 tests, root type checks/lint/build, native frontend build, Worker smoke, Rust
 formatting/clippy and 49 Rust tests passed (two model tests remain ignored).
+
+
+## Latest owner direction: Personal, Finances and ChromeOS
+
+This section supersedes the earlier Artifacts labels and mobile back-link list.
+
+- Workspace has a smaller title, synced folder accent colors from Hino, and
+  Personal below folders. Personal includes Books, Wallet, Calendar, Finances
+  and Circles. The sidebar remains focused on folders. Wallet, Finances and
+  Settings are tab destinations and omit the mobile Workspace back arrow.
+- New Note replaces the parent popup with note formats and Back. It no longer
+  expands every format in the first menu. The actual note title is visible in
+  the editor header on wide screens too.
+- Newly opened blank notes are local library drafts. They do not enter folder
+  counts, lists or peer library sync until text, media or spreadsheet content
+  exists. Existing saved notes are not deleted when cleared. The editor's working
+  document can still be persisted separately; this is not a claim that blank
+  working-document bytes are never written to disk.
+- Read-mode checkboxes update the document without making it editable or
+  opening a keyboard. Mouse taps also enter editing on touch-capable desktops.
+- Finances now includes one derived ledger of existing invoices, receipts and
+  quotes alongside confirmed income/expense records. Its spreadsheet export
+  preserves currency and minor-unit precision. It does not infer paid status
+  from invoices or quotations or add currencies together. Personal use needs
+  no business profile; tax IDs remain optional.
+- Receipt acquisition uses the existing live scanner or imported images, then
+  local OCR with review. Source images are saved as media on confirmation.
+  Pasted mobile money messages suggest explicit amounts and references;
+  balance-only messages do not become payment amounts. Repeated messages or
+  references are refused locally. Automatic inbox monitoring and concurrent
+  cross-device import deduplication remain future work.
+- Real web pairing: the in-app Chromium browser linked to the TECNO, the
+  Chromebook connection test note arrived on the phone and the phone's Tasks
+  note arrived in the browser. The owner continued navigating both interfaces.
+- ChromeOS Android: the Dell Latitude 5400 Chromebook Enterprise accepts ADB
+  at 100.115.92.2:5555. ARM64 is advertised but the ARM debug build crashes in
+  libhoudini on startup. A native x86-64 Android build reaches onboarding and
+  the full app. The old org.pherus.notables.debug installation is preserved.
+- Reproducible native x86 build: scripts/android/chromeos.ts downloads the
+  official Microsoft ONNX Runtime 1.28.0 AAR, checks its pinned SHA-256, extracts
+  x86_64/libonnxruntime.so and passes ORT_LIB_PATH/ORT_PREFER_DYNAMIC_LINK to
+  Cargo. It packages that shared library; no natural voice stub is substituted.
+- ChromeOS adaptation: explicitly resizable activity, maximized landscape
+  desktop launch preference, native user-agent platform marker, physical keyboard
+  capability, protected window caption, and adaptive wide welcome layout.
+  Android transport/storage and scheduled notifications remain available.
+
+Validation: root lint (four existing warnings), all package typechecks,
+309 TypeScript tests, web and native frontend builds, Worker smoke routes,
+Cargo formatting/clippy and 49 Rust tests (two downloaded-model tests ignored).
+Physical device verification continues below this checkpoint. Background SMS,
+iPhone keyboard testing and the broader earlier parity backlog are not complete.
+
+Sources: [ChromeOS window management](https://developer.android.com/develop/devices/chromeos/learn/window-management),
+[ONNX Runtime Android packages](https://onnxruntime.ai/docs/install/),
+[Android SMS permissions](https://developer.android.com/guide/topics/permissions/default-handlers),
+[Apple message filtering](https://developer.apple.com/documentation/identitylookup/sms-and-mms-message-filtering).
+
+
+## Settings and real-device checkpoint
+
+- Confirmed native sync in both directions between the TECNO and ChromeOS
+  Android debug apps: ChromeOS sync check was created on the Chromebook,
+  arrived on the TECNO and its phone edit arrived back on the Chromebook.
+  The test note remains for the owner to inspect.
+- Installed store and debug apps had the same launcher name. Both installations
+  and their data are preserved; debug builds now use Notables Dev.
+- Devices keeps authenticated peer history per space, including offline status
+  and last seen. Browser sessions remain separate. Profile uses masked identifiers
+  with Show and Copy actions, with different explanations for space and device IDs.
+- A standalone two-pane Settings redesign, compact navigation and inline name
+  row were rejected by the owner. Reverted those layout changes and restored
+  the prior web deployment. The clean fixture screenshots did not prove the
+  real linked-browser experience, which was stuck connecting with no profile
+  loaded. Do not use the temporary settings APKs built before the revert.
+- ChromeOS caption back is suppressed with the documented activity preference.
+  Theme primary colors provide the startup caption, and the bridge receives an
+  opaque RGB color resolved from Hino's sidebar surface whenever appearance changes.
+  Window resizing stays enabled; ChromeOS owns its phone/tablet/resize controls.
+- External web, email and phone links use the native opener; internal navigation
+  remains inside Notables. ChromeOS Widgets offers Today when the launcher cannot
+  pin Android widgets. Native iOS widgets remain unfinished.
+- Clean fixture rendering checks passed but were insufficient evidence for
+  the real linked-browser and native Settings experience. Visual completion
+  remains unverified; the owner rejected that checkpoint.
+
+ChromeOS caption reference: [Optimize for ChromeOS](https://developer.android.com/develop/devices/chromeos/learn/optimizing).
+
+
+Owner clarification: Settings navigation on the website was already right. The
+requested refinement concerns component usage in phone, tablet and ChromeOS
+apps, not a new page layout. Keep the existing navigation and panes. Native
+Settings group density and the inline name field are scoped by the Tauri marker.
+Connected Devices uses a plus icon beside its title, opening only Scan or enter
+code and Show pairing code. The instruction blocks and full-width actions are
+removed. Browser sessions are labelled Linked Browsers; Log Out uses Hino's
+existing destructive variant at xs size, preserving its own confirmation and
+never deleting notes. Roles distinguish host devices, linked browsers and synced
+apps. Browser logout and leaving the current device work; remote removal of a
+full-copy app still needs spec 0005 step 7, including root-secret rotation. Do
+not substitute hiding a row or a local block for access revocation.
+
+
+Final checkpoint before push
+
+- Owner rejected placing Personal beside folders. Restored the exact pre-column
+  container from 6856e48: mx-auto flex max-w-[800px] flex-col gap-5. No side grid
+  or guessed narrower width remains. Folder colors and authorized Personal
+  destinations remain available.
+- Web Settings navigation is retained. The real linked browser showed Linked
+  Browsers and the xs destructive Log Out control, and later reconnected with
+  the person's actual name and library. Do not count its earlier connecting
+  screen or a fresh fixture as successful connection verification.
+- Both native debug packages were updated as Notables Dev. Real TECNO touches
+  verified the header plus menu with the two options, this-device Disconnect
+  menu, native Linked Browsers destructive buttons, and persisted Chromebook
+  history changing from Online to Last active while the Chromebook app stopped.
+- ChromeOS uses native x86-64; the runtime task description received its Hino
+  surface color. Its OS caption controls were not visually verified outside ARC.
+- Remote Disconnect remains unfinished. It must be offered for the other device
+  on BOTH linked apps, targeting that device rather than the one running the UI.
+  Existing disconnectThisDevice is not that implementation. Spec 0005 step 7
+  requires removal and root-secret rotation, including remaining offline peers.
+- Web deployment after the exact Workspace restore: efad6632-b043-4353-aa23-e44b1d1c7519.
+- Validation: frozen install, full root lint/typecheck/test/build, native frontend
+  prerender, Worker smoke and desktop Rust checks passed during this checkpoint.
+  309 TypeScript tests and 49 Rust tests passed; two model tests are ignored.
+  Both Android architectures built and installed. Latest Workspace rollback is
+  in source/web; Chromebook packaging is being refreshed from that frontend.

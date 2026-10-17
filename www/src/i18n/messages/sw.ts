@@ -1,6 +1,41 @@
 import type { Messages } from "./en";
 
 export const sw: Messages = {
+  finances: {
+    all: "Zote",
+    ledger: "Daftari la fedha",
+    ledgerHint:
+      "Husasishwa kiotomatiki. Ankara huomba malipo, risiti huthibitisha malipo na makadirio ni bei zinazopendekezwa. Sarafu hutenganishwa.",
+    add: "Ongeza kwenye Fedha",
+    transaction: "Muamala",
+    scanReceipt: "Changanua risiti",
+    importReceipt: "Risiti kutoka picha",
+    importMessage: "Ujumbe wa pesa kwa simu",
+    export: "Hamisha lahajedwali",
+    date: "Tarehe",
+    type: "Aina",
+    description: "Maelezo",
+    reference: "Kumbukumbu",
+    currency: "Sarafu",
+    amount: "Kiasi",
+    income: "Mapato",
+    expense: "Matumizi",
+    invoice: "Ankara",
+    receipt: "Risiti",
+    quote: "Makadirio",
+    empty: "Ongeza mapato, matumizi, risiti au hati.",
+    reviewHint: "Kagua maelezo na tarehe kabla ya kuhifadhi. Hakuna pesa inayohamishwa.",
+    message: "Maandishi ya ujumbe",
+    extract: "Toa maelezo",
+    invalid: "Weka maelezo na kiasi halali kikubwa kuliko sifuri.",
+    duplicate: "Ujumbe au kumbukumbu hii tayari ipo kwenye daftari.",
+    saveFailed: "Imeshindwa kuhifadhi. Jaribu tena.",
+    emptyTitle: "Fedha zako pamoja",
+    emptyBody:
+      "Fuatilia fedha za binafsi na biashara, hifadhi risiti na unda hati. Wasifu wa biashara si lazima.",
+    profile: "Maelezo ya binafsi au biashara",
+    newDocument: "Hati mpya",
+  },
   capture: {
     takePhoto: "Piga picha",
     previewFailed: "Imeshindikana kupakia hakikisho. Angalia muunganisho kisha ujaribu tena.",
@@ -176,7 +211,7 @@ export const sw: Messages = {
   },
   nav: {
     main: "Kuu",
-    artifacts: "Zana",
+    artifacts: "Binafsi",
     workspace: "Eneo la kazi",
     newNote: "Dokezo jipya",
     allNotes: "Maandishi",
@@ -197,7 +232,7 @@ export const sw: Messages = {
     noAccount: "Hakuna akaunti inayohitajika",
     notes: "Madokezo",
     books: "Vitabu",
-    invoices: "Ankara",
+    invoices: "Fedha",
     calendar: "Kalenda",
     writing: "Uandishi",
     planning: "Panga na ujifunze",
@@ -382,8 +417,7 @@ export const sw: Messages = {
     width: "Upana",
     widthPoints: "pointi {count}",
     you: "Wewe",
-    youFooter:
-      "Huonekana kwenye unachochapisha. Notables haihitaji akaunti; kuingia kwa ajili ya hifadhi rudufu kutakuwa hiari.",
+    youFooter: "Hutumika kwenye maelezo na hati zako.",
     name: "Jina",
     namePlaceholder: "Jina lako au jina la kalamu",
     about: "Kuhusu",
@@ -1002,6 +1036,20 @@ export const sw: Messages = {
     tags: "Lebo",
   },
   devices: {
+    identifiers: "Vitambulisho",
+    identifiersHint:
+      "Kitambulisho cha nafasi kinatambua maktaba yako ya pamoja. Kitambulisho cha kifaa kinatambua usakinishaji huu. Hakuna kinachotumika kuunganisha.",
+    deviceListHint:
+      "Unganisha vifaa vyako. Onyesha msimbo kwenye kimoja na uchanganue au uandike kwenye kingine.",
+    scanOrEnter: "Changanua au andika msimbo",
+    showCode: "Onyesha msimbo wa kuunganisha",
+    currentDevice: "Kwenye kifaa hiki",
+    offline: "Nje ya mtandao",
+    noLinkedDevices: "Hakuna vifaa vingine vilivyounganishwa.",
+    browserListHint: "Vivinjari huunganishwa kando na kifaa chenye programu iliyosakinishwa.",
+    browserCount: "{online} mtandaoni · {total} vimeunganishwa",
+    externalFailed: "Imeshindwa kufungua kiungo katika programu nyingine.",
+
     connectedTitle: "Vifaa vilivyounganishwa",
     disconnect: "Tenganisha kifaa hiki",
     disconnectTitle: "Utenganishe kifaa hiki?",
@@ -1026,7 +1074,7 @@ export const sw: Messages = {
       "Kifaa kingine hakikuweza kuhifadhi muunganisho. Acha programu zote mbili wazi na ujaribu tena.",
     finishTimeout:
       "Kifaa kingine hakijathibitisha muunganisho. Angalia skrini yake kabla ya kujaribu tena.",
-    title: "Vifaa Vilivyounganishwa",
+    title: "Vivinjari vilivyounganishwa",
     thisDevice: "Kifaa hiki",
     spaceTitle: "Nafasi yako",
     spaceId: "Kitambulisho cha nafasi",
@@ -1049,7 +1097,7 @@ export const sw: Messages = {
     joinFailed: "Kifaa hiki hakikuweza kuhifadhi muunganisho. Jaribu tena.",
     deviceLinked: "Kifaa kimeunganishwa",
     browsersOnPhones: "Msimbo huo ni wa kivinjari. Unganisha vivinjari kutoka kwenye simu yako.",
-    browsers: "Vivinjari",
+    browsers: "Vivinjari vilivyounganishwa",
     browsersFooter:
       "Kivinjari kinaonyesha madokezo yako kutoka simu hii wakati vyote viko kwenye Wi-Fi moja. Hakuna kinachohifadhiwa ndani yake.",
     unnamedBrowser: "Kivinjari",
@@ -1093,6 +1141,9 @@ export const sw: Messages = {
     otherNetwork: "Unganisha kompyuta hii kwenye Wi-Fi ile ile ya simu yako.",
     ended: "Kivinjari hiki kimetolewa.",
     linkAgain: "Unganisha Tena",
+    hostDevice: "Kifaa mwenyeji",
+    linkedBrowser: "Kivinjari kilichounganishwa",
+    syncedDevice: "Kifaa kilichosawazishwa",
   },
   trash: {
     moved: "Imehamishiwa kwenye Vilivyofutwa Karibuni",
@@ -1247,6 +1298,8 @@ export const sw: Messages = {
     tryIt: "Jaribu",
   },
   widgets: {
+    chromeosHint:
+      "ChromeOS haitoi wijeti za Android kwenye skrini ya mwanzo. Fungua Leo hapa uone mipango na vikumbusho.",
     title: "Wijeti",
     today: "Leo",
     open: "Fungua Notables",
@@ -1262,7 +1315,7 @@ export const sw: Messages = {
     addToHomeHint: "Mipango ya leo na madokezo yaliyobandikwa, kwenye skrini yako ya nyumbani.",
   },
   invoices: {
-    title: "Ankara",
+    title: "Fedha",
     yourBusiness: "Biashara yako",
     setUpBusiness: "Weka biashara yako",
     setUpBusinessBody: "Jina, nembo, sarafu na maelezo ya malipo, yanajazwa kwa ajili yako.",
