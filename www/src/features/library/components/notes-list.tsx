@@ -78,7 +78,7 @@ export function NotesList({
   const navigate = useNavigate();
   const [query, setQuery] = useState("");
   const [attachmentsOnly, setAttachmentsOnly] = useState(false);
-  const deferredQuery = useDeferredValue(query.trim());
+  const deferredQuery = useDeferredValue(view.folderId ? "" : query.trim());
   const notes = useSearchableNotes(Boolean(deferredQuery));
   // Manga and comics views also show the bound books of that kind.
   const shelf = useShelfBooks(view.id === "comic" ? "comic" : "manga");
@@ -229,18 +229,13 @@ export function NotesList({
                   size="icon-sm"
                   variant="ghost"
                   label={t("nav.showLibrary")}
-                  className="lg:hidden"
+                  className="hidden md:inline-flex lg:hidden"
                   onClick={onOpenSidebar}
                 >
                   <SidebarIcon size={20} />
                 </IconButton>
               ))}
-            <h1
-              className={cn(
-                "truncate text-title2 font-bold tracking-tight",
-                !selecting && "hidden md:block",
-              )}
-            >
+            <h1 className="truncate text-title3 font-bold tracking-tight">
               {selecting
                 ? chosen.length === 0
                   ? t("notes.selectTitle")
@@ -351,17 +346,14 @@ export function NotesList({
             )}
           </div>
         </div>
-        {!selecting && (
-          <div className="px-1 pt-1 md:hidden">
-            <h1 className="truncate text-large-title font-bold tracking-tight">{view.title}</h1>
-          </div>
-        )}
         {groupOf(view.id) && <GroupSwitcher group={groupOf(view.id) as GroupId} active={view.id} />}
-        <SearchField
-          value={query}
-          placeholder={t("notes.searchIn", { place: view.title.toLowerCase() })}
-          onChange={(event) => setQuery(event.target.value)}
-        />
+        {!view.folderId && (
+          <SearchField
+            value={query}
+            placeholder={t("notes.searchIn", { place: view.title.toLowerCase() })}
+            onChange={(event) => setQuery(event.target.value)}
+          />
+        )}
         {!selecting && <ExamplesNotice />}
       </header>
 
@@ -387,7 +379,12 @@ export function NotesList({
             }
           >
             {group.label && (
-              <h2 className="col-span-full px-1 pt-4 pb-3 text-title3 font-bold text-label">
+              <h2
+                className={cn(
+                  "col-span-full px-1 font-bold text-label",
+                  options.layout === "list" ? "pt-3 pb-2 text-headline" : "pt-4 pb-3 text-title3",
+                )}
+              >
                 {group.label}
               </h2>
             )}
@@ -395,7 +392,7 @@ export function NotesList({
               className={
                 options.layout === "gallery"
                   ? "contents"
-                  : "overflow-hidden rounded-[26px] bg-background"
+                  : "overflow-hidden rounded-4xl bg-background"
               }
             >
               <AnimatePresence initial={false}>

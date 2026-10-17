@@ -291,6 +291,13 @@ export const en = {
     thisMonth: "This month",
   },
   settings: {
+    groupDevices: "Devices & Sharing",
+    groupPersonalization: "Personalization",
+    groupTools: "Writing & Tools",
+    groupApp: "App & Privacy",
+    writing: "Writing",
+    sorting: "Sorting",
+    display: "Display",
     aboutTagline: "Anything notable, always with you.",
     versionBuild: "Version {version} ({build})",
     aboutDevice: "This Device",

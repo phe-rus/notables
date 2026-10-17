@@ -16,23 +16,6 @@ export function PrivacyPage() {
           <Toggle label={t("lock.title")} checked={false} disabled onChange={() => {}} />
         </LabeledContent>
       </Section>
-      <Section title={t("lock.unlockWith")}>
-        {[t("lock.device"), t("lock.passPin"), t("lock.password"), t("lock.passkey")].map(
-          (method) => (
-            <LabeledContent key={method} label={method} description={soon}>
-              <Toggle label={method} checked={false} disabled onChange={() => {}} />
-            </LabeledContent>
-          ),
-        )}
-      </Section>
-      <Section footer={t("lock.recoveryHint")}>
-        <LabeledContent label={t("lock.appLock")} description={soon}>
-          <Toggle label={t("lock.appLock")} checked={false} disabled onChange={() => {}} />
-        </LabeledContent>
-        <LabeledContent label={t("lock.recoveryKey")} description={soon}>
-          <span className="text-subheadline text-label-tertiary">{t("lock.off")}</span>
-        </LabeledContent>
-      </Section>
       <Section title={t("wallet.title")}>
         <LabeledContent label={t("wallet.title")} description={t("wallet.settingsHint")}>
           <Link to="/wallet" className="text-subheadline font-semibold text-accent-text">

@@ -290,6 +290,13 @@ export const sw: Messages = {
     thisMonth: "Mwezi huu",
   },
   settings: {
+    groupDevices: "Vifaa na kushiriki",
+    groupPersonalization: "Mwonekano binafsi",
+    groupTools: "Uandishi na zana",
+    groupApp: "Programu na faragha",
+    writing: "Uandishi",
+    sorting: "Mpangilio",
+    display: "Onyesho",
     aboutTagline: "Kila jambo muhimu, daima pamoja nawe.",
     versionBuild: "Toleo {version} ({build})",
     aboutDevice: "Kifaa hiki",

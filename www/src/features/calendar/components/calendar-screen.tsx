@@ -31,6 +31,7 @@ import { useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState } fr
 import { Field, PickerInput } from "../../../components/form/form-fields";
 import { CollapsedSidebarControls } from "../../../components/window/collapsed-sidebar-controls";
 import { locale, t } from "../../../i18n/i18n";
+import { WorkspaceBackLink } from "../../library/components/workspace-back-link";
 import { usePreferences } from "../../settings/store/preferences-store";
 import {
   holidayCountries,
@@ -231,11 +232,12 @@ export function CalendarScreen({
         {collapsed && <CollapsedSidebarControls />}
         <div data-tauri-drag-region className="flex items-center justify-between gap-2">
           <div className="flex min-w-0 items-center gap-1">
+            <WorkspaceBackLink />
             <IconButton
               size="icon-sm"
               variant="ghost"
               label={t("nav.showLibrary")}
-              className="lg:hidden"
+              className="hidden md:inline-flex lg:hidden"
               onClick={onOpenSidebar}
             >
               <SidebarIcon size={20} />

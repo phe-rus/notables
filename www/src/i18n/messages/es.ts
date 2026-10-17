@@ -291,6 +291,13 @@ export const es: Messages = {
     thisMonth: "Este mes",
   },
   settings: {
+    groupDevices: "Dispositivos y compartir",
+    groupPersonalization: "Personalización",
+    groupTools: "Escritura y herramientas",
+    groupApp: "App y privacidad",
+    writing: "Escritura",
+    sorting: "Ordenación",
+    display: "Visualización",
     aboutTagline: "Todo lo que importa, siempre contigo.",
     versionBuild: "Versión {version} ({build})",
     aboutDevice: "Este dispositivo",

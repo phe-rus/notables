@@ -10,6 +10,7 @@ import {
   MoreIcon,
   openMenu,
   PenIcon,
+  PeopleIcon,
   PlusIcon,
   SidebarIcon,
   TrashIcon,
@@ -167,6 +168,7 @@ export function WorkspaceScreen() {
                   { to: "/books", label: t("nav.books"), Icon: BookIcon },
                   { to: "/calendar", label: t("nav.calendar"), Icon: CalendarIcon },
                   { to: "/invoices", label: t("nav.invoices"), Icon: InvoiceIcon },
+                  { to: "/connections", label: t("workspace.circles"), Icon: PeopleIcon },
                 ] as const
               ).map(({ to, label, Icon }) => (
                 <Link

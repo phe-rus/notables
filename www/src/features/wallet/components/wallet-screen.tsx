@@ -14,6 +14,7 @@ import { setDrawerOpen } from "../../../components/layout/drawer-store";
 import { CollapsedSidebarControls } from "../../../components/window/collapsed-sidebar-controls";
 import { t } from "../../../i18n/i18n";
 import { isTauri } from "../../../platform/runtime";
+import { WorkspaceBackLink } from "../../library/components/workspace-back-link";
 import { usePreferences } from "../../settings/store/preferences-store";
 import {
   deleteWalletCard,
@@ -67,15 +68,18 @@ export function WalletScreen() {
               <ChevronLeftIcon size={20} className="rtl:-scale-x-100" />
             </IconButton>
           ) : (
-            <IconButton
-              size="icon-sm"
-              variant="ghost"
-              label={t("nav.showLibrary")}
-              className="lg:hidden"
-              onClick={() => setDrawerOpen(true)}
-            >
-              <SidebarIcon size={20} />
-            </IconButton>
+            <>
+              <WorkspaceBackLink />
+              <IconButton
+                size="icon-sm"
+                variant="ghost"
+                label={t("nav.showLibrary")}
+                className="hidden md:inline-flex lg:hidden"
+                onClick={() => setDrawerOpen(true)}
+              >
+                <SidebarIcon size={20} />
+              </IconButton>
+            </>
           )}
           <h1 className="min-w-0 grow truncate text-title2 font-bold tracking-tight">
             {onCard

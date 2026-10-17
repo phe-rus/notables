@@ -23,6 +23,7 @@ import { CollapsedSidebarControls } from "../../../components/window/collapsed-s
 import { t } from "../../../i18n/i18n";
 import { ImportSheet } from "../../imports/components/import-sheet";
 import { GroupSwitcher } from "../../library/components/group-switcher";
+import { WorkspaceBackLink } from "../../library/components/workspace-back-link";
 import { ExamplesNotice } from "../../onboarding/components/examples-notice";
 import type { BooksShelf } from "../../settings/model/preferences";
 import { updatePreferences, usePreferences } from "../../settings/store/preferences-store";
@@ -148,11 +149,12 @@ function BooksListContent({ activeId, onOpenSidebar, className }: BooksListProps
         {collapsed && <CollapsedSidebarControls />}
         <div data-tauri-drag-region className="flex items-center justify-between">
           <div className="flex items-center gap-1">
+            <WorkspaceBackLink />
             <IconButton
               size="icon-sm"
               variant="ghost"
               label={t("nav.showLibrary")}
-              className="lg:hidden"
+              className="hidden md:inline-flex lg:hidden"
               onClick={onOpenSidebar}
             >
               <SidebarIcon size={20} />

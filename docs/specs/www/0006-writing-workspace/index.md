@@ -28,13 +28,13 @@ Preserve every existing note, book, recording, card and synced document.
 - New notes inherit the current folder. Moving supports one or many notes.
   Tags are independent of folders and kinds. User names are 1 to 120 characters.
 - List/gallery and group by date follow existing synced preferences. Grouping
-  defaults off. Date boundaries use the device's local calendar: Today,
+  defaults on in the refined list. Date boundaries use the device's local calendar: Today,
   then the current Monday based week, then the prior 30 calendar days,
   then this calendar year, then prior years. Each note has exactly one group.
 - Workspace lists folders with an Add control and a long hold context menu.
   Rename edits in place, Delete moves notes safely. Books moves to Artifacts.
-  Published and Connections leave Workspace; Circles uses the existing
-  Connections feature in Settings. Recents is limited to five unpinned notes.
+  Published leaves the navigation; Circles uses the existing
+  Connections feature in Workspace Artifacts (owner revision, 17 October). Recents is limited to five unpinned notes.
 - More in the list header owns layout, select, sorting, grouping and attachment
   browsing. Selecting notes exposes Move. Note index thumbnails reference
   existing media IDs, never duplicate file contents in the library document.
@@ -64,7 +64,7 @@ Preserve every existing note, book, recording, card and synced document.
 
 - [x] Implement keyboard viewport positioning, note title, dense controls and Android PCM byte decoding.
 - [ ] Verify toolbar positioning and pairing on a physical iPhone.
-- [x] Add synced folders, safe migration and moving, folder Workspace and Settings Circles.
+- [x] Add synced folders, safe migration and moving, folder Workspace and Circles in Artifacts.
 - [x] Add gallery, optional date sections, list menus, thumbnails and capped Recents.
 - [x] Add formatting, TOC, checklists, linked reminders, tables and image/attachment management.
 - [x] Add scan entry points, explicit link previews, formulas and spreadsheet notes.

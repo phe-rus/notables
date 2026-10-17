@@ -20,6 +20,7 @@ import { useDeferredValue, useState } from "react";
 import { CollapsedSidebarControls } from "../../../components/window/collapsed-sidebar-controls";
 import { t } from "../../../i18n/i18n";
 import { ago } from "../../../lib/time/relative-time";
+import { WorkspaceBackLink } from "../../library/components/workspace-back-link";
 import { type LibraryEntry, useLibrary } from "../../library/store/library-store";
 import { usePreferences } from "../../settings/store/preferences-store";
 import { handOver } from "../../sharing/lib/hand-over";
@@ -62,17 +63,18 @@ export function ConnectionsScreen({
         {collapsed && !embedded && <CollapsedSidebarControls />}
         <div data-tauri-drag-region className="flex items-center justify-between gap-2">
           <div className={cn("flex min-w-0 items-center gap-1", embedded && "invisible")}>
+            <WorkspaceBackLink />
             <IconButton
               size="icon-sm"
               variant="ghost"
               label={t("nav.showLibrary")}
-              className="lg:hidden"
+              className="hidden md:inline-flex lg:hidden"
               onClick={onOpenSidebar}
             >
               <SidebarIcon size={20} />
             </IconButton>
             <h1 className="truncate text-title2 font-bold tracking-tight">
-              {t("nav.connections")}
+              {t("workspace.circles")}
             </h1>
           </div>
           <IconButton

@@ -6,6 +6,7 @@ import { SettingsScreen } from "../../features/settings/components/settings-scre
 export const Route = createFileRoute("/_app/settings/$page")({
   // An unknown page (an old link) lands on the Settings list.
   beforeLoad: ({ params }) => {
+    if (params.page === "circles") throw redirect({ to: "/connections", replace: true });
     if (!isSettingsPageId(params.page)) throw redirect({ to: "/settings" });
   },
   component: SettingsPageRoute,

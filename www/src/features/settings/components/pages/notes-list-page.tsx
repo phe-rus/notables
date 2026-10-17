@@ -1,6 +1,7 @@
-import { LabeledContent, Section, SegmentedControl, Toggle } from "@phe-rus/hino";
+import { LabeledContent, Section, Toggle } from "@phe-rus/hino";
 import { PickerInput } from "../../../../components/form/form-fields";
 import { t } from "../../../../i18n/i18n";
+import { type NoteFont, noteFontLabels, noteFonts } from "../../../library/model/note-fonts";
 import { ExamplesSettingsSection } from "../../../onboarding/components/examples-settings-section";
 import {
   type ListPreferences,
@@ -25,7 +26,7 @@ const picker = "w-auto min-w-[7.5rem] py-1.5 text-subheadline";
 
 /** How the notes list sorts, groups and shows its rows, and what swipes do. */
 export function NotesListPage() {
-  const { list } = usePreferences();
+  const { list, noteFont } = usePreferences();
   const byTitle = list.sort === "title";
   const swipeOptions = swipeActions.map((action) => ({
     value: action,
@@ -33,9 +34,10 @@ export function NotesListPage() {
   }));
   return (
     <>
-      <Section title={t("settings.notesList")}>
-        <LabeledContent label={t("settings.sortBy")} wide>
-          <SegmentedControl<ListPreferences["sort"]>
+      <Section title={t("settings.sorting")}>
+        <LabeledContent label={t("settings.sortBy")}>
+          <PickerInput<ListPreferences["sort"]>
+            className={picker}
             label={t("settings.sortBy")}
             value={list.sort}
             onChange={(sort) => setList({ sort })}
@@ -46,8 +48,9 @@ export function NotesListPage() {
             ]}
           />
         </LabeledContent>
-        <LabeledContent label={t("settings.order")} wide>
-          <SegmentedControl<ListPreferences["order"]>
+        <LabeledContent label={t("settings.order")}>
+          <PickerInput<ListPreferences["order"]>
+            className={picker}
             label={t("settings.order")}
             value={list.order}
             onChange={(order) => setList({ order })}
@@ -63,8 +66,34 @@ export function NotesListPage() {
             ]}
           />
         </LabeledContent>
-        <LabeledContent label={t("settings.density")} wide>
-          <SegmentedControl<ListPreferences["density"]>
+        <LabeledContent label={t("settings.pinnedOnTop")}>
+          <Toggle
+            label={t("settings.pinnedOnTop")}
+            checked={list.pinnedOnTop}
+            onChange={(pinnedOnTop) => setList({ pinnedOnTop })}
+          />
+        </LabeledContent>
+        <LabeledContent label={t("settings.groupByDate")}>
+          <Toggle
+            label={t("settings.groupByDate")}
+            checked={list.groupByDate}
+            onChange={(groupByDate) => setList({ groupByDate })}
+          />
+        </LabeledContent>
+      </Section>
+      <Section title={t("settings.display")}>
+        <LabeledContent label={t("settings.noteFont")}>
+          <PickerInput<NoteFont>
+            label={t("settings.noteFont")}
+            className={picker}
+            value={noteFont}
+            onChange={(noteFont) => updatePreferences((p) => ({ ...p, noteFont }))}
+            options={noteFonts.map((font) => ({ value: font, label: noteFontLabels[font] }))}
+          />
+        </LabeledContent>
+        <LabeledContent label={t("settings.density")}>
+          <PickerInput<ListPreferences["density"]>
+            className={picker}
             label={t("settings.density")}
             value={list.density}
             onChange={(density) => setList({ density })}
@@ -74,7 +103,7 @@ export function NotesListPage() {
             ]}
           />
         </LabeledContent>
-        <LabeledContent label={t("settings.preview")} description={t("settings.previewHint")}>
+        <LabeledContent label={t("settings.preview")}>
           <PickerInput
             label={t("settings.preview")}
             value={String(list.previewLines)}
@@ -86,38 +115,11 @@ export function NotesListPage() {
             }))}
           />
         </LabeledContent>
-        <LabeledContent label={t("settings.showDates")} description={t("settings.showDatesHint")}>
+        <LabeledContent label={t("settings.showDates")}>
           <Toggle
             label={t("settings.showDates")}
             checked={list.showDates}
             onChange={(showDates) => setList({ showDates })}
-          />
-        </LabeledContent>
-        <LabeledContent label={t("settings.showKinds")} description={t("settings.showKindsHint")}>
-          <Toggle
-            label={t("settings.showKinds")}
-            checked={list.kindTags}
-            onChange={(kindTags) => setList({ kindTags })}
-          />
-        </LabeledContent>
-        <LabeledContent
-          label={t("settings.pinnedOnTop")}
-          description={t("settings.pinnedOnTopHint")}
-        >
-          <Toggle
-            label={t("settings.pinnedOnTop")}
-            checked={list.pinnedOnTop}
-            onChange={(pinnedOnTop) => setList({ pinnedOnTop })}
-          />
-        </LabeledContent>
-        <LabeledContent
-          label={t("settings.groupByDate")}
-          description={t("settings.groupByDateHint")}
-        >
-          <Toggle
-            label={t("settings.groupByDate")}
-            checked={list.groupByDate}
-            onChange={(groupByDate) => setList({ groupByDate })}
           />
         </LabeledContent>
       </Section>

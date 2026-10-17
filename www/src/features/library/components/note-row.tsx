@@ -229,8 +229,8 @@ export function NoteRow({
           aria-selected={selecting ? selected : undefined}
           className={cn(
             "group relative isolate flex items-start no-underline transition-colors duration-fast [-webkit-touch-callout:none]",
-            gallery ? "rounded-xl pb-1" : "min-h-[82px] px-6",
-            !gallery && (compact ? "py-2.5" : "py-3"),
+            gallery ? "rounded-xl pb-1" : "min-h-[68px] px-5",
+            !gallery && (compact ? "py-1.5" : "py-2"),
             !active && !selected && "hover:bg-fill/60",
           )}
         >
@@ -268,7 +268,7 @@ export function NoteRow({
                 "flex min-w-0 max-w-full items-center gap-1 text-label",
                 gallery
                   ? "text-footnote font-medium leading-tight"
-                  : "text-body font-semibold leading-snug",
+                  : "text-subheadline font-semibold leading-tight",
               )}
             >
               {pinMark && <PinIcon size={13} className="text-accent-text" />}
@@ -282,7 +282,7 @@ export function NoteRow({
             {!gallery && (options.previewLines > 0 || snippet || date) && (
               <span
                 className={cn(
-                  "min-w-0 text-subheadline leading-snug text-label-secondary",
+                  "min-w-0 text-footnote leading-tight text-label-secondary",
                   previewClamp[options.previewLines || 1],
                 )}
               >
@@ -302,7 +302,7 @@ export function NoteRow({
               <span
                 className={cn(
                   "flex max-w-full items-center gap-1 leading-snug text-label-secondary",
-                  gallery ? "text-caption" : "text-footnote",
+                  "text-caption",
                 )}
               >
                 <FolderIcon size={13} className="shrink-0" />

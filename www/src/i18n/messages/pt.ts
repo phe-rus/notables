@@ -292,6 +292,13 @@ export const pt: Messages = {
     thisMonth: "Este mês",
   },
   settings: {
+    groupDevices: "Dispositivos e partilha",
+    groupPersonalization: "Personalização",
+    groupTools: "Escrita e ferramentas",
+    groupApp: "App e privacidade",
+    writing: "Escrita",
+    sorting: "Ordenação",
+    display: "Apresentação",
     aboutTagline: "Tudo o que importa, sempre consigo.",
     versionBuild: "Versão {version} ({build})",
     aboutDevice: "Este dispositivo",

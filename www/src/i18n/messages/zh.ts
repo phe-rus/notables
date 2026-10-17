@@ -282,6 +282,13 @@ export const zh: Messages = {
     thisMonth: "本月",
   },
   settings: {
+    groupDevices: "设备与共享",
+    groupPersonalization: "个性化",
+    groupTools: "写作与工具",
+    groupApp: "应用与隐私",
+    writing: "写作",
+    sorting: "排序",
+    display: "显示",
     aboutTagline: "值得记下的一切，始终随身。",
     versionBuild: "版本 {version}（{build}）",
     aboutDevice: "此设备",

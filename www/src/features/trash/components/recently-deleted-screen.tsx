@@ -18,6 +18,7 @@ import { kindOfBook, kindOfSeries } from "../../books/lib/book-kind";
 import { kindLabel, partCountLabel } from "../../books/model/kind-labels";
 import { type BookEntry, useTrashedBooks } from "../../books/store/book-store";
 import { type SeriesEntry, useSeries } from "../../books/store/series-store";
+import { WorkspaceBackLink } from "../../library/components/workspace-back-link";
 import { noteKindLabels } from "../../library/model/note-kind-labels";
 import { type LibraryEntry, useLibrary } from "../../library/store/library-store";
 import { usePreferences } from "../../settings/store/preferences-store";
@@ -100,11 +101,12 @@ export function RecentlyDeletedScreen({ onOpenSidebar }: { onOpenSidebar: () => 
         {collapsed && <CollapsedSidebarControls />}
         <div data-tauri-drag-region className="flex items-center justify-between gap-3">
           <div className="flex items-center gap-1">
+            <WorkspaceBackLink />
             <IconButton
               size="icon-sm"
               variant="ghost"
               label={t("nav.showLibrary")}
-              className="lg:hidden"
+              className="hidden md:inline-flex lg:hidden"
               onClick={onOpenSidebar}
             >
               <SidebarIcon size={20} />

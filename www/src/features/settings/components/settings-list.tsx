@@ -8,7 +8,7 @@ import { useSpaceDevices } from "../../../platform/space/space-sync";
 import { type SettingsPageId, settingsGroups, settingsPages } from "./settings-catalog";
 
 const row =
-  "flex min-h-12 items-center gap-3 px-3.5 py-2 no-underline transition-colors hover:bg-fill/50 active:bg-fill";
+  "relative flex min-h-11 items-center gap-2.5 px-3 py-1.5 no-underline transition-colors hover:bg-fill/50 active:bg-fill";
 
 /**
  * The Settings list, as iOS draws it: who you are at the top, then grouped
@@ -27,24 +27,24 @@ export function SettingsList({ current }: { current: SettingsPageId | null }) {
     return !check || (ready && check());
   };
   return (
-    <nav aria-label={t("settings.title")} className="flex flex-col gap-6">
+    <nav aria-label={t("settings.title")} className="flex flex-col gap-5">
       <Link
         to="/settings/$page"
         params={{ page: "profile" }}
         aria-current={current === "profile" ? "page" : undefined}
         className={cn(
-          "flex items-center gap-3.5 rounded-3xl border border-separator/60 bg-elevated px-3.5 py-3 no-underline transition-colors hover:bg-fill/40",
+          "flex items-center gap-3 rounded-2xl bg-background px-3 py-2.5 no-underline transition-colors hover:bg-fill/40",
           current === "profile" && "bg-accent-soft hover:bg-accent-soft",
         )}
       >
-        <span className="flex size-12 shrink-0 items-center justify-center rounded-full bg-accent text-title3 font-semibold text-on-accent">
+        <span className="flex size-9 shrink-0 items-center justify-center rounded-full bg-accent text-subheadline font-semibold text-on-accent">
           {(name.trim()[0] ?? "N").toUpperCase()}
         </span>
         <span className="flex min-w-0 grow flex-col">
-          <span className="truncate text-headline font-semibold text-label">
+          <span className="truncate text-subheadline font-semibold text-label">
             {name || t("nav.onThisDevice")}
           </span>
-          <span className="truncate text-footnote text-label-secondary">{t("nav.noAccount")}</span>
+          <span className="truncate text-caption text-label-secondary">{t("nav.noAccount")}</span>
           {space && (
             <span className="font-mono text-caption text-label-tertiary" dir="ltr">
               {space.code.replace(/[A-Z0-9]/g, "*")}
@@ -54,40 +54,48 @@ export function SettingsList({ current }: { current: SettingsPageId | null }) {
         <ChevronRightIcon size={16} className="text-label-tertiary rtl:-scale-x-100" />
       </Link>
       {settingsGroups.map((group) => {
-        const ids = group.filter(shown);
+        const ids = group.pages.filter(shown);
         if (ids.length === 0) return null;
         return (
-          <div
-            key={group.join()}
-            className="flex flex-col divide-y divide-separator/60 overflow-hidden rounded-3xl border border-separator/60 bg-elevated"
+          <section
+            key={group.pages.join()}
+            aria-label={group.title()}
+            className="flex flex-col gap-1.5"
           >
-            {ids.map((id) => {
-              const page = settingsPages[id];
-              const active = current === id;
-              return (
-                <Link
-                  key={id}
-                  to="/settings/$page"
-                  params={{ page: id }}
-                  aria-current={active ? "page" : undefined}
-                  className={cn(row, active && "bg-accent-soft hover:bg-accent-soft")}
-                >
-                  <span className="flex size-[30px] shrink-0 items-center justify-center rounded-full bg-accent text-on-accent">
-                    {page.icon}
-                  </span>
-                  <span className="flex min-w-0 grow flex-col">
-                    <span className="truncate text-body text-label">{page.title}</span>
+            <h2 className="px-3 text-caption font-medium text-label-secondary">{group.title()}</h2>
+            <div className="flex flex-col overflow-hidden rounded-2xl bg-background">
+              {ids.map((id) => {
+                const page = settingsPages[id];
+                const active = current === id;
+                return (
+                  <Link
+                    key={id}
+                    to="/settings/$page"
+                    params={{ page: id }}
+                    aria-current={active ? "page" : undefined}
+                    className={cn(
+                      row,
+                      "after:absolute after:inset-x-3 after:bottom-0 after:ms-9 after:h-px after:bg-separator/60 last:after:hidden",
+                      active && "bg-accent-soft hover:bg-accent-soft",
+                    )}
+                  >
+                    <span className="flex size-[26px] shrink-0 items-center justify-center rounded-lg bg-accent text-on-accent">
+                      {page.icon}
+                    </span>
+                    <span className="flex min-w-0 grow flex-col">
+                      <span className="truncate text-subheadline text-label">{page.title}</span>
+                    </span>
                     {id === "connected-devices" && devices.length > 0 && (
-                      <span className="truncate text-footnote text-label-secondary">
-                        {devices.map((device) => device.name).join(", ")}
+                      <span className="text-caption tabular-nums text-label-secondary">
+                        {devices.length}
                       </span>
                     )}
-                  </span>
-                  <ChevronRightIcon size={16} className="text-label-tertiary rtl:-scale-x-100" />
-                </Link>
-              );
-            })}
-          </div>
+                    <ChevronRightIcon size={16} className="text-label-tertiary rtl:-scale-x-100" />
+                  </Link>
+                );
+              })}
+            </div>
+          </section>
         );
       })}
     </nav>

@@ -300,6 +300,13 @@ export const ar: Messages = {
     thisMonth: "هذا الشهر",
   },
   settings: {
+    groupDevices: "الأجهزة والمشاركة",
+    groupPersonalization: "التخصيص",
+    groupTools: "الكتابة والأدوات",
+    groupApp: "التطبيق والخصوصية",
+    writing: "الكتابة",
+    sorting: "الترتيب",
+    display: "العرض",
     aboutTagline: "كل ما يستحق، معك دائمًا.",
     versionBuild: "الإصدار {version} ({build})",
     aboutDevice: "هذا الجهاز",

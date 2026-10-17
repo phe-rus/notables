@@ -102,7 +102,10 @@ manager, asks for inset note cards, consistent icons and scrollable controls,
 real camera scanning, side-by-side photos, complete link metadata and measured
 smoothness. Gallery previews show opening note content, folder names drive back
 labels, and a default More button replaces the separate compose control.
-Artifacts remains on Workspace and is removed from the sidebar. See [the refinement record](reviews/2026-10-17-writing-refinement.md).
+Artifacts remains on Workspace and is removed from the sidebar. Circles now lives
+there, with direct Workspace back links. On mobile, only Workspace shows the
+sidebar toggle; wider layouts retain their sidebar controls. Settings is grouped into compact device, personalization, writing/tool
+and app/privacy sections. See [the refinement record](reviews/2026-10-17-writing-refinement.md).
 
 
 Device linking and management come first. The owner tested v0.2.2:
@@ -137,12 +140,12 @@ records implementation, phone evidence and the remaining boundaries.
    More offers the other view, Create Note, Select Notes, Sort By, Group by
    Date and View Attachments. Remove the separate Select text button.
    Date groups include Today, This Week, Previous 30 Days and This Year;
-   grouping is optional and off by default. Define nonoverlapping date
+   grouping is optional and on by default in the compact list refinement. Define nonoverlapping date
    boundaries and the older notes group before implementation.
    Notes can move between folders. Support text and document scanning,
    drawing, and locking a note through the shared Lock design (spec 0004).
 5. [x] Put Books under Artifacts alongside Calendar and Invoices. Remove
-   Published from the Workspace. Move Connections to Settings as Circles,
+   Published from the Workspace. Move Connections to Workspace Artifacts as Circles (17 October revision),
    for people who can receive selected notes in their Notables. Keep Recents
    with a small fixed maximum, replacing older entries. Opening Settings
    closes the sidebar on layouts where it overlays the page.

@@ -102,7 +102,7 @@ WebView opens Workspace from packaged resources, with four 48 px folder rows
 and no development-server requests. Real ADB taps opened Writings and More;
 gallery shows the actual content of both notes and More offers View as List.
 The separate compose button is absent. The web is deployed as Worker version
-`1f815685-810b-4372-b542-4afbf96f43ce`.
+`efebdc69-5891-4428-9c37-50d96b844f18`.
 The final card refinement was installed and checked with real ADB taps:
 three equal 101.33 px gallery columns, a 32 px More button, and open/return
 transitions both reporting `ready` then `finished`. Browser Reduce Motion
@@ -120,3 +120,66 @@ This Week groups, inset separators, 82 px regular rows and larger media
 thumbnails. The folder title respects the phone’s text scale (28.9 px on
 this device, 34 px at the default app scale). Type checks, lint, 303 TypeScript
 tests, native/web builds and Worker smoke passed.
+
+Owner density correction: reduce normal list rows from 82 px to 68 px minimum,
+row insets from 24 px to 20 px, thumbnails from 60 px to 48 px and group corners
+from 26 px to 20 px. Titles, previews and section headings use smaller Hino text
+styles. The owner rejected the large folder heading: the actual folder name
+now sits next to Back, with no duplicate heading. Folder lists omit their own
+SearchField because the bottom bar already opens search. Hidden folder search
+queries cannot filter the notes. Gallery keeps its three columns.
+
+## Settings and Workspace navigation follow-up
+
+Settings is grouped by intent, with localized headings in all seven catalogs:
+Devices & Sharing; Personalization; Writing & Tools; App & Privacy. Rows are
+44 px with smaller 26 px icon tiles and inset separators. The profile remains
+at the top with the protected space ID, and Connected Devices is immediately
+below it in the first group. Existing settings values are retained. Circles moves to Workspace Artifacts;
+its old Settings URL redirects to `/connections`.
+
+Appearance uses compact pickers for theme, text size and language, with color
+swatches in their own group. Note font moves to Writing, whose controls are
+organized into Sorting, Display and Swipe Actions. The ineffective kind-label
+toggle is removed. Sidebar settings no longer repeat folder navigation, and
+width is desktop-only. Privacy retains the disabled Lock status and real Wallet
+link instead of listing multiple unimplemented unlock methods.
+
+A shared mobile Workspace back link now appears in Books, Invoices (including
+Receipts), Calendar, Recently Deleted, Settings and Wallet home. Nested Wallet
+screens retain their existing back-to-wallet action. Desktop sidebar controls
+remain available at their existing breakpoints. Navigation clears folder search
+parameters when returning home.
+
+Browser evidence: all visible Settings destination rows measure 44 px, available
+group titles are present, no horizontal overflow, and Appearance returns through
+Settings to Workspace. Theme/text size/font/sort/order/density use real pickers.
+Secure Lock remains unimplemented; no new security guarantee is implied.
+
+Latest owner navigation direction: keep sidebar controls alongside Workspace
+back links on the main Books, Receipts/Invoices, Calendar, Wallet, Settings,
+Recently Deleted and Circles screens. Circles is a 44 px Artifacts row on
+Workspace, not a Settings category. The old `/settings/circles` URL redirects
+to `/connections`, whose title is Circles. Browser checks verified both controls,
+opening the sidebar, navigating to Settings from its gear, absence of Circles
+in Settings, and the old-link redirect.
+
+One existing wallet SSR test needed router context after adding the back link;
+its fixture now provides a real memory router, retaining the assertion that
+rendering the browser explanation never starts native wallet storage.
+
+Final mobile navigation correction: only Workspace exposes the sidebar toggle.
+Books, Receipts/Invoices, Calendar, Circles, Wallet, Settings, Recently Deleted
+and note folders use Back plus bottom navigation. Sidebar controls at wider
+breakpoints are retained. This supersedes the earlier request for both controls
+on the main mobile screens.
+
+The final phone-width browser inventory found one visible sidebar opener on
+Workspace and zero on Books, Invoices, Calendar, Circles, Settings, Wallet,
+Recently Deleted and a note folder. Back links remain available.
+
+Final installed APK evidence on 192.168.1.2:5555: Workspace has one visible
+sidebar opener; Books, Circles and Settings have zero. Workspace return links
+work, and Settings is left open for the owner’s review. All 303 TypeScript
+tests, root type checks/lint/build, native frontend build, Worker smoke, Rust
+formatting/clippy and 49 Rust tests passed (two model tests remain ignored).

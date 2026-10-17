@@ -1,4 +1,10 @@
 import { afterEach, describe, expect, it, spyOn } from "bun:test";
+import {
+  createMemoryHistory,
+  createRootRoute,
+  createRouter,
+  RouterContextProvider,
+} from "@tanstack/react-router";
 import { renderToStaticMarkup } from "react-dom/server";
 import { WalletScreen } from "../../../src/features/wallet/components/wallet-screen";
 import { walletService } from "../../../src/features/wallet/lib/wallet-service";
@@ -54,7 +60,15 @@ describe("wallet boundary", () => {
   it("renders the browser explanation without starting native storage", () => {
     const native = spyOn(walletService, "status");
     try {
-      const html = renderToStaticMarkup(<WalletScreen />);
+      const router = createRouter({
+        routeTree: createRootRoute(),
+        history: createMemoryHistory({ initialEntries: ["/wallet"] }),
+      });
+      const html = renderToStaticMarkup(
+        <RouterContextProvider router={router}>
+          <WalletScreen />
+        </RouterContextProvider>,
+      );
       expect(html).toContain("The browser does not store wallet cards or keys");
       expect(native).not.toHaveBeenCalled();
     } finally {

@@ -104,9 +104,22 @@ Gotchas learned the hard way:
 
 ## Status (October 2026)
 
+- Settings and navigation refinement (17 Oct): compact 44 px Settings rows in
+  Devices & Sharing, Personalization, Writing & Tools, and App & Privacy.
+  Writing owns note fonts, sorting/display and swipe choices; Appearance keeps
+  app appearance/language. Sidebar settings no longer duplicate folder links;
+  unavailable Lock controls are summarized honestly. Circles is in Workspace
+  Artifacts, not Settings; old Settings links redirect to its screen. Main
+  screens use Workspace back links. On mobile, only Workspace shows a sidebar
+  toggle; desktop/tablet sidebar controls remain available. Mobile Workspace back
+  links now appear on Books, Invoices/Receipts, Calendar, Wallet home, Settings
+  and Recently Deleted. Folder headers put the actual name next to Back,
+  omit duplicate search (the bottom search stays), and list rows are 68 px.
+
 - Owner refinement (17 Oct): home is now Workspace with folder cards, Artifacts
-  below folders on Workspace only (removed from the sidebar), grouped white note lists on a fill backdrop, large folder headings and inset separators,
+  below folders on Workspace only (removed from the sidebar), compact grouped white note lists on a fill backdrop, inline folder titles and inset separators,
   three-column gallery previews with centered captions, actual folder back labels,
+  no search field inside folders (the bottom search remains),
   a 32 px default More button
   without a separate compose icon, shared note open/return transitions on phones,
   icon menus and a scrollable editor strip,
@@ -412,6 +425,10 @@ and France: "No" until the French declaration is filed. Never set
 TestFlight refuse the upload; each build asks in TestFlight instead.
 
 ## Next
+
+- Owner review of the compact folders, Workspace back links and reorganized
+  Settings on the TECNO (currently 192.168.1.2:5555). Preserve existing data
+  and preferences. Secure Lock and physical iPhone evidence remain open.
 
 - Review the [17 October refinement](docs/reviews/2026-10-17-writing-refinement.md)
   on the TECNO and iPhone. Continue measured performance work, real document/card
