@@ -463,7 +463,9 @@ TestFlight refuse the upload; each build asks in TestFlight instead.
   Browsers separate, with small Hino destructive Log Out buttons.
 - Workspace layout: keep the original vertical stack, folders then Personal.
   The owner rejected both the side column and guessed width adjustments. Its
-  container is restored exactly to the pre-column class from 6856e48.
+  width is max-w-md (448px) at the current web size, then 512px and 576px
+  when the available Workspace container reaches 1024px and 1280px. Use the
+  content width, not the whole window including its sidebar.
 
 - Owner testing checkpoint, 17 Oct: review compact component usage in Settings on Notables Dev
   on the TECNO and native ChromeOS Android app. Continue any visual corrections

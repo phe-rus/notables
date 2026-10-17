@@ -312,3 +312,11 @@ Final checkpoint before push
   309 TypeScript tests and 49 Rust tests passed; two model tests are ignored.
   Both Android architectures built and installed. Latest Workspace rollback is
   in source/web; Chromebook packaging is being refreshed from that frontend.
+
+
+Owner's final width correction: the old 800px cap still felt too wide. Workspace
+keeps folders and Personal stacked, capped at max-w-md (448px) at the owner's
+current web window. Larger caps follow the available Workspace container,
+excluding the sidebar (a container query, not window breakpoints): 512px from
+1024px of content width, 576px from 1280px. Phones naturally fit their
+narrower content width. This supersedes the earlier container-width checkpoint.

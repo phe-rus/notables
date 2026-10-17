@@ -109,8 +109,8 @@ export function WorkspaceScreen() {
           <PlusIcon size={23} />
         </IconButton>
       </header>
-      <div className="grow overflow-y-auto px-5 pb-32">
-        <div className="mx-auto flex max-w-[800px] flex-col gap-5">
+      <div className="@container/workspace grow overflow-y-auto px-5 pb-32">
+        <div className="mx-auto flex max-w-md flex-col gap-5 @min-[1024px]/workspace:max-w-lg @min-[1280px]/workspace:max-w-xl">
           <div className="overflow-hidden rounded-3xl border border-separator/50 bg-paper">
             {folders.map((folder, index) => {
               const fallback =
