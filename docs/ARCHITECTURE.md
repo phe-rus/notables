@@ -90,7 +90,7 @@ notables/
 
 ```
           ┌─────────────── www (one source tree) ───────────────┐
-          │  routes · features · packages/pluraliti · packages/ultrapeach/ui       │
+          │  routes · features · packages/pluraliti · @phe-rus/hino │
           └──────────────┬──────────────────────────┬────────────┘
                          │                          │
             vite build (SSR, Worker)       vite build (SPA, static)

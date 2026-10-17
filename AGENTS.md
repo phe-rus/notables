@@ -81,6 +81,11 @@ Gotchas learned the hard way:
   `BINDGEN_EXTRA_CLANG_ARGS_aarch64_linux_android=--sysroot=$NDK_HOME/toolchains/llvm/prebuilt/linux-x86_64/sysroot`.
   aarch64 only: `ort` has no prebuilt ONNX Runtime for x86_64 Android.
   On Android, binary IPC bodies arrive as JSON arrays (`src/ipc_bytes.rs`).
+  Every `media://` and IPC response on Android passes through
+  `RustWebViewClient.shouldInterceptRequest`, which copies the whole body into
+  the app's Java heap (256 MB on the TECNO). Read media files through the local
+  media server (`playableUrl`), never `media://`: sync sending large recordings
+  to a linked device ran the heap out (OutOfMemoryError, 17 Oct).
 - Live coding on Android (frontend edits appear on the phone in about a
   second, no APK): `adb reverse tcp:3000 tcp:3000`, then from `www/`
   `bun run tauri android dev "TECNO CI6" --host 127.0.0.1`. Without
@@ -103,6 +108,14 @@ Gotchas learned the hard way:
   launches exit silently (single instance); `pkill -f target/debug/notables`.
 
 ## Status (October 2026)
+
+- Android crash fix (18 Oct): Notables Dev on the TECNO died with
+  OutOfMemoryError allocating 28.8 MB in `Rust.handleRequest`. Media loads
+  (`nativeMedia.load`, used by device sync and browser sessions) fetched whole
+  files through `media://`; they now go through the local media server, and
+  the CSP allows `connect-src http://127.0.0.1:*`. Diagnosed from code and the
+  crash log (the notes database stays on the phone); not yet run on a device.
+  `packages/ultrapeach` (untracked leftovers) is deleted; docs name Hino.
 
 - Remote Disconnect, spec 0005 step 7 (17 Oct, v0.2.4): Disconnect is on the
   OTHER device's row in Connected Devices, never on this device. Each app has

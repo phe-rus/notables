@@ -84,10 +84,6 @@ export const nativeStorage = {
       headers: { "x-media-id": id, "x-media-type": mimeType },
     });
   },
-  /** Streams from disk through the `media` protocol, with range support. */
-  mediaUrl(id: string): string {
-    return convertFileSrc(id, MEDIA_SCHEME);
-  },
   /**
    * A URL the media player can stream: the `media` protocol, except on
    * Linux and Android, whose players can't stream from it (WebKitGTK can't

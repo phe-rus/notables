@@ -34,7 +34,10 @@ export const nativeMedia: MediaBackend = {
   },
   async load(id) {
     await browserDataMigrated();
-    const response = await fetch(nativeStorage.mediaUrl(id));
+    // Through the local media server where there is one: on Android a `media://`
+    // response is copied whole into the app's Java heap (256 MB), and a few large
+    // recordings or audiobooks sent to a linked device ran it out of memory.
+    const response = await fetch(await nativeStorage.playableUrl(id));
     return response.ok ? response.blob() : null;
   },
   async remove(id) {

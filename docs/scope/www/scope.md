@@ -141,7 +141,7 @@ From spec [0001 follow up](../../specs/www/0001-natural-voice-on-device/index.md
 Desktop and web layouts adapt to tablet widths and to small desktop windows, so controls never crowd each other. Today the Publish button and the "Saved on this device" indicator get pushed out of place in a narrow window.
 **Done when:** at every width from a phone to a wide monitor, and on tablets in both orientations, the editor bar, sidebar and lists stay usable with nothing overlapping or pushed off screen.
 - [ ] Finish and verify the remaining widths: `/develop responsive layout`
-code in `www/src/components`, `www/src/features/notes`, `www/src/features/calendar`, `packages/ultrapeach/ui`
+code in `www/src/components`, `www/src/features/notes`, `www/src/features/calendar`, Hino (`~/pherus/hino`)
 
 Resume: adaptive note controls, phone calendar layouts and screen bounded menus are built. Check tablet orientations and small desktop windows against the definition of done.
 
