@@ -1,6 +1,6 @@
 # Privacy policy
 
-**Notables, by Pherus.** Last updated 9 October 2026. The official policy is
+**Notables, by Pherus.** Last updated 18 October 2026. The official policy is
 at [pherus.org/legal/privacy-policy](https://pherus.org/legal/privacy-policy);
 this page explains the app in more detail.
 
@@ -11,19 +11,20 @@ leaves your device because you asked it to.
 ## The short version
 
 - No account. Notables works fully without signing up.
-- No ads, no analytics, no trackers, no selling or sharing of data.
+- No ads or advertising trackers. Android card recognition uses Google ML Kit,
+  which collects SDK diagnostics and usage analytics as described below.
 - Your notes, books, recordings, calendar, wallet and invoices are stored
   on your device. We cannot see them.
-- Something leaves your device only when you publish, share with a person,
-  use AI with your own key, or download a model pack.
+- Publishing, linking, sharing, optional AI and model downloads use network
+  services. Android ML Kit also sends SDK diagnostics.
 
 ## What stays on your device
 
 Everything you create: notes, journals, books, comics and audiobooks,
 handwriting and drawings, recordings and their transcripts, calendar plans
 and reminders, invoices and your business profile, and the wallet. Wallet
-cards are encrypted on the device. Speech is transcribed and read aloud on
-your device. Card scanning, text recognition and barcode reading happen on
+cards are encrypted on the device. Transcription runs on your device. Read aloud uses local voices or, if you
+choose it, an online voice provider. Card scanning, text recognition and barcode reading happen on
 your device; camera images are not uploaded.
 
 Your name, if you give one, stays on your device and appears only on what
@@ -38,7 +39,9 @@ likes, hearts and star ratings are stored with an anonymous identifier, not
 an account. You can update or take down a published note at any time, which
 removes it from the server.
 
-**Sharing with people.** Shared notes travel directly between devices. To
+**Linking and sharing.** Devices use encrypted connections to sync and
+share notes. Direct connections are used where available; the device room
+can pass encrypted sync messages between linked apps. To
 help two devices find each other, our server briefly relays encrypted
 introduction messages, kept for a couple of minutes. The server cannot read
 them or tell which note is shared.
@@ -47,6 +50,16 @@ them or tell which note is shared.
 own key for Claude (Anthropic), Gemini (Google) or OpenRouter, the text you
 ask about is sent from your device to that provider under its own privacy
 policy. We never receive it, and your key stays on your device.
+
+**Android card recognition diagnostics.** Notables uses Google's bundled
+ML Kit text recognizer. Card images and recognized text are processed on
+your device. The SDK collects device and app information, per-installation
+identifiers, performance metrics, API configuration, input/output sizes,
+feature versions, event types and error codes for diagnostics and usage
+analytics. Notables does not provide a switch to disable this SDK telemetry.
+Google documents HTTPS encryption in transit and no onward sharing with
+third parties. See [Google's ML Kit disclosure](https://developers.google.com/ml-kit/android-data-disclosure)
+and [Google's privacy policy](https://policies.google.com/privacy).
 
 **Model packs.** Optional downloads (voices and transcription models) come
 from our server. The request contains only which pack you asked for.

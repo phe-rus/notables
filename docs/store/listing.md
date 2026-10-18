@@ -107,8 +107,14 @@ Source: [ML Kit data disclosure](https://developers.google.com/ml-kit/android-da
   contact: support@pherus.org. Confirm the live deletion page and privacy
   policy describe the SDK before public testing.
 - Account creation: **No account**.
-- Pending: console questionnaire correction, privacy policy alignment and
-  final verification of the release artifact's SDK inventory.
+- Play draft updated 18 October: added **App interactions**, **Diagnostics**
+  and **Device or other IDs**, collected for **Analytics**, not shared, not
+  ephemeral, required because no telemetry opt-out is provided. Existing
+  optional Name, Photos, Voice or sound recordings and Other user-generated
+  content remain. This is saved as a draft, not submitted.
+- Pending: official privacy policy alignment and final SDK inventory review.
+  Google's checker returns **403** for the current deletion URL at
+  pherus.org/legal/privacy-policy. Resolve that before submission.
 
 ### Google Play: Content rating (IARC)
 

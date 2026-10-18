@@ -52,7 +52,8 @@ The replacement store version is v0.2.7. Do not retag v0.2.6 or reuse its store
 build number. Run 39133139435 attempt 1 built Android, passed the actual AAB verifier and
 uploaded the bundle, but Google returned service unavailable at edit commit.
 iOS compiled and archived, then automatic signing could not update the bundle
-identifier or obtain a profile. Attempt 2 retries the external steps. The
+identifier or obtain a profile. Attempt 2 uploaded Android successfully to Google Play internal testing;
+iOS is still running. The
 new NFC entitlement requires checking the App ID capability if signing repeats;
 Apple Developer Account Holder sign-in has been requested.
 

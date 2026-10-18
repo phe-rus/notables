@@ -118,8 +118,10 @@ Gotchas learned the hard way:
 - Store refresh (18 Oct): Play draft has Notables by Pherus, revised copy,
   a fresh feature graphic and six current screenshots in each phone, 7-inch
   and 10-inch tablet slot. Nothing submitted for public review. Source copy
-  and SDK disclosure corrections: docs/store/listing.md. Desktop screenshots,
-  ML Kit Data safety/privacy alignment and external beta setup remain.
+  and SDK disclosure corrections: docs/store/listing.md. Data safety draft now includes ML Kit
+  identifiers, diagnostics and interaction events for analytics. Google's checker
+  still gets 403 from the deletion/privacy URL; official policy alignment,
+  Desktop screenshots and external beta setup remain.
 
 - v0.2.7 release fix (18 Oct): v0.2.6 Android crashed on both real ABIs because
   optimization removed ML Kit registrar constructors. Narrow consumer rules,
@@ -128,7 +130,8 @@ Gotchas learned the hard way:
   x86_64, with owner data preserved. iOS tools version is corrected from 5.3
   to 5.5 for its iOS 15 manifest. CI now compiles iOS and verifies the real
   Android AAB, but first-attempt distribution failed: Apple profile lookup
-  and Google service unavailable. Run 39133139435 attempt 2 is retrying. Evidence:
+  and Google service unavailable. Run 39133139435 attempt 2 uploaded Android successfully to Play internal;
+  iOS is still running. Evidence:
   docs/reviews/2026-10-18-release-startup.md. Current TECNO is
   192.168.1.2:5555; ChromeOS is 100.115.92.2:5555. Verify model before use.
 
@@ -569,9 +572,9 @@ TestFlight refuse the upload; each build asks in TestFlight instead.
 
 ## Next
 
-- Owner’s latest priority, 18 Oct: finish v0.2.7 distribution. Check run
-  39133139435 attempt 2; Android built and passed the AAB gate, then Google
-  returned service unavailable. iOS compiled but automatic signing could not
+- Owner’s latest priority, 18 Oct: finish v0.2.7 distribution. Run
+  39133139435 attempt 2 uploaded Android to Play internal successfully.
+  iOS attempt 1 compiled but automatic signing could not
   update the bundle ID or find a profile. New iOS NFC entitlement may need
   enabling on the App ID; Apple Developer Account Holder sign-in is requested
   in the browser. Then finish disclosures, ChromeOS screenshots and public beta.
