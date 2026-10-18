@@ -102,14 +102,14 @@ const shots: Shot[] = [
   },
   {
     name: "2-note",
-    headline: "Writing that<br>feels like paper",
-    accent: "checklists, headings &amp; sketches",
+    headline: "Make room<br>for your ideas",
+    accent: "write it, sketch it, keep it",
     open: (page, ids) => visit(page, `/notes/${ids["Weekend in Jinja"]}`),
   },
   {
     name: "3-reader",
-    headline: "Your notes<br>become books",
-    accent: "with real page turns",
+    headline: "Give your words<br>another chapter",
+    accent: "your words, from page to page",
     open: async (page, ids) => {
       await visit(page, `/read/${ids["The Lighthouse Keeper"]}`);
       // Past the cover and title page, to the first chapter.
@@ -122,7 +122,7 @@ const shots: Shot[] = [
   },
   {
     name: "4-calendar",
-    headline: "Your day,<br>beautifully planned",
+    headline: "Put your day<br>on the page",
     accent: "plans, reminders &amp; deadlines",
     open: async (page) => {
       await visit(page, "/calendar");
@@ -142,7 +142,7 @@ const shots: Shot[] = [
   },
   {
     name: "5-invoice",
-    headline: "Invoices clients<br>can trust",
+    headline: "Keep the details<br>that matter",
     accent: "a signed seal and a QR check",
     open: async (page, ids) => {
       await visit(page, `/invoices/${ids["INV-0001"]}`);
@@ -169,7 +169,7 @@ const shots: Shot[] = [
   },
   {
     name: "6-comic",
-    headline: "Comics and manga,<br>made right here",
+    headline: "A world of stories,<br>made by you",
     accent: "draw them, then read them",
     open: (page, ids) => visit(page, `/read/${ids["Pip & the Lamp"]}`),
   },

@@ -42,14 +42,21 @@ on the TECNO and x86_64 on ChromeOS. Both temporary test apps were removed.
 The owner's production and debug apps and their data were untouched.
 
 This verifies the reported startup failure through the optimized code path.
-It does not establish a new OCR accuracy or biometric milestone. The full iOS
-compile remains dependent on the macOS release job.
+It does not establish a new OCR accuracy or biometric milestone. The v0.2.7 macOS job subsequently compiled the full iOS app successfully.
 
 ## Checks and next
 
 Frozen install, lint (six existing warnings), workspace types and tests,
 web build, native frontend prerender, Cargo format, Clippy and Rust tests pass.
 The replacement store version is v0.2.7. Do not retag v0.2.6 or reuse its store
-build number. After both signed builds pass, resume Play listing, screenshot
-and disclosure review. The draft copy remains in /tmp/notables-play-description.txt;
-it has not been applied in Console. Existing uploaded v5 artwork is saved.
+build number. Run 39133139435 attempt 1 built Android, passed the actual AAB verifier and
+uploaded the bundle, but Google returned service unavailable at edit commit.
+iOS compiled and archived, then automatic signing could not update the bundle
+identifier or obtain a profile. Attempt 2 retries the external steps. The
+new NFC entitlement requires checking the App ID capability if signing repeats;
+Apple Developer Account Holder sign-in has been requested.
+
+Play draft copy and artwork are now refreshed: feature graphic, six phone
+shots and six shots in each tablet slot. Source: docs/store/listing.md.
+Desktop screenshots, SDK disclosure corrections and external beta setup remain.
+The full local check sequence passed again after the screenshot-copy changes.

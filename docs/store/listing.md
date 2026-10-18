@@ -5,7 +5,7 @@ in step with this file. Limits are in brackets.
 
 ## Shared
 
-- **Tagline:** Note down anything notable, always with you.
+- **Tagline:** Anything notable, always with you.
 
 - **Category:** Productivity (secondary on the App Store: Books)
 - **Privacy policy:** https://pherus.org/legal/privacy-policy (section 4 covers Notables; [docs/PRIVACY.md](../PRIVACY.md) is the long form)
@@ -33,98 +33,82 @@ notes,journal,diary,writing,books,reader,audiobook,comics,invoice,calendar,plann
 
 ## Google Play
 
-**App name** [30]: Notables
+**App name** [30]: Notables by Pherus
 
 **Short description** [80]:
-Anything notable, always with you. Notes, books, plans and invoices, offline.
+Notes, books and plans. Yours to make. Yours to keep. No account needed.
 
 **Full description** [4000]: the full description below.
 
 ## Full description
 
-Most notes apps stop at notes. Notables keeps going.
+A thought. A plan. Your next chapter.
 
-Anything notable, always with you: a thought on the bus, a journal, a story
-that grows into a book, a comic you draw by hand, the audiobook you're
-halfway through, an invoice a client can verify. One app, made with care
-down to the last detail, that opens instantly, works offline and never
-asks you to sign up.
+Notables brings your writing, reading and everyday plans together. Capture a quick thought, sketch an idea or turn a collection of notes into a book. Start without an account, and keep writing offline on your phone or tablet.
 
-WRITE ANYTHING
-Notes, journals, stories, lessons and plans in an editor made for words:
-headings, quotes, lists, checklists, highlights, links, photos and audio,
-with Markdown shortcuts and a choice of fonts.
+Make room for your ideas.
+Write notes, journals, stories and checklists. Add headings, links, photos, recordings and handwritten sketches. Arrange your notes in folders, choose their colours and browse in a list or gallery.
 
-WRITE BY HAND
-Handwriting pages inside any note, with pen pressure and palm rejection.
-Draw comic, manga and picture-book pages, and come back to edit every
-stroke.
+Give your words another chapter.
+Gather your writing into books with parts and chapters. Import EPUBs, PDFs, comics and audiobooks. Read at your own pace, listen while you do something else, and return to the stories you want to keep close.
 
-MAKE AND READ BOOKS
-Gather notes into books with parts and chapters, then read them with real
-page turns. Import EPUB, PDF, CBZ and audio, and read comics and manga in
-readers made for them.
+Put your day on the page.
+Keep plans, reminders, birthdays and trips together. Move between day, week, month and year views. See public holidays for your country, or describe a plan in a sentence to get started.
 
-LISTEN AND READ ALONG
-Audiobooks play throughout the app with a mini player. Read-along follows
-the words as they are spoken, transcribed on your device, and any note can
-be read aloud.
+Keep the details that matter.
+Organise invoices, receipts and quotations. Create documents with a signed seal and a QR code that lets the recipient check them. Keep reference details for your bank, identity, electricity, SIM and membership cards in Wallet, encrypted on your device and protected by device authentication. Wallet cards stay on the device where you add them.
 
-RECORD AND TRANSCRIBE
-Speak, and Notables writes it down, with transcription running on your
-device. Recordings stay beside the words they became.
+Speak it. Sketch it. Keep it.
+Record audio beside your writing. Transcribe on your device, or listen to your words read aloud. Draw handwritten pages, comics and picture books, with strokes you can return to and edit.
 
-PLAN YOUR DAYS
-Plans, reminders, birthdays, anniversaries, deadlines and trips. Day, week,
-month and year views, public holidays for your country, and Type It to add a
-plan from a sentence.
+Choose what travels with you.
+Link your devices while they are online. Open the web through a linked device, or share selected notes with other people. Export your work as PDF, EPUB, Word, Markdown and more. Recently Deleted gives you seven days to recover deleted items.
 
-INVOICES YOU CAN PROVE
-Invoices, receipts and quotes with your business profile. Each carries a
-signed seal and a QR code, so anyone can check that it is genuine and
-unchanged.
+Your library starts on your device. AI help is optional and uses a provider key you choose to add. There are no ads and no account is required to start.
 
-A WALLET FOR YOUR CARDS
-Keep digital copies of bank, ID, electricity, SIM and membership cards,
-encrypted on your device, with details you can copy when you need them.
+Available in English, French, Spanish, Portuguese, Swahili, Arabic and Chinese.
 
-PUBLISH AND SHARE WHEN YOU CHOOSE
-Turn any note into a public page, or write together with specific people,
-device to device. Nothing passes through an account.
+Voice features may need a model download. Linking, sharing and online services need a connection. Available features depend on your device.
 
-TAKE IT ALL WITH YOU
-Export to EPUB, PDF, Word, HTML, Markdown, plain text, CBZ and more.
-Deleted things wait a week in Recently Deleted.
-
-PRIVATE BY DESIGN
-No account, no ads, no analytics. Your notes live on your device and work
-offline. AI help is off by default and uses your own key only if you turn
-it on.
-
-In English, French, Spanish, Portuguese, Swahili, Arabic and Chinese.
-
-Notables is open source: github.com/phe-rus/notables
+Made by Pherus. Open source at github.com/phe-rus/notables
 
 ## Questionnaires
 
-What leaves the device, which every answer below rests on: a note the
-person publishes (stored by Notables until they unpublish it), and the
-short introductions that connect their own devices and the people they
-share with (passed through, never stored). Everything else stays on the
-device. No account, ads, analytics or crash reporting. AI requests go
-straight from the device to the provider the person chose, with their own
-key, only when they ask.
+Reviewed 18 October 2026. The marketing copy above is saved in the Play
+Console draft. The questionnaire entries below remain a release checklist,
+not evidence that the current console answers have been corrected.
+
+Published notes can include text, photos and audio. Device introductions
+and encrypted sync traffic pass through the signalling service. Optional
+AI sends the requested content directly to the chosen provider using the
+person's own key. Wallet contents stay on the device.
+
+Android's bundled ML Kit text recognizer processes card images on the
+device, but its SDK collects diagnostics and usage analytics, including
+per-installation identifiers, device and app information, performance,
+API configuration, input/output sizes, event types and errors. Do not claim
+that the app has no analytics. Google's disclosure says this telemetry is
+encrypted in transit and is not shared with third parties. It does not
+say that the card image or recognized text is uploaded.
+
+Source: [ML Kit data disclosure](https://developers.google.com/ml-kit/android-data-disclosure).
 
 ### Google Play: Data safety
 
-- Collects or shares user data: **Yes** (published notes only).
-- Encrypted in transit: **Yes**. Way to request deletion: **Yes**
-  (unpublish in the app, or email support@pherus.org).
-- Data types: **App activity > Other user-generated content**: collected,
-  not shared, optional, processed not ephemerally, purpose **App
-  functionality**. Nothing else.
-- Photos, audio, files and camera stay on the device: not collected.
+- Collects user data: **Yes**. Published content and the bundled SDK's
+  telemetry must both be accounted for.
+- Review **Other user-generated content**, **Photos**, **Audio files**,
+  **Device or other IDs**, and **App info and performance** against the
+  actual form. Map diagnostic events to the applicable data types and
+  analytics purpose before submitting.
+- Publishing is optional. Do not assume every SDK telemetry field is
+  optional just because scanning is an optional feature.
+- Published content can be removed by unpublishing in the app; support
+  contact: support@pherus.org. Confirm the live deletion page and privacy
+  policy describe the SDK before public testing.
 - Account creation: **No account**.
+- Pending: console questionnaire correction, privacy policy alignment and
+  final verification of the release artifact's SDK inventory.
 
 ### Google Play: Content rating (IARC)
 
@@ -144,9 +128,10 @@ key, only when they ask.
 
 ### App Store: App Privacy
 
-- Data collected: **User Content > Other User Content** (published notes),
-  **not linked** to the person, **not used for tracking**, purpose **App
-  Functionality**. Nothing else is collected.
+- Published notes can contain **Other User Content**, **Photos or Videos**,
+  and **Audio Data**, for **App Functionality**, without tracking. Verify
+  these against the iOS archive and current App Store Connect answers.
+  Android ML Kit telemetry does not by itself establish iOS collection.
 
 ### App Store: Age rating
 
@@ -159,8 +144,8 @@ key, only when they ask.
 
 - Category: Productivity, secondary Books. Price: free, all territories
   (France blocked until the encryption declaration is filed).
-- Sign-in required for review: **No**. Review notes: "No account. Every
-  feature works offline; open Settings for AI (off by default)."
+- Sign-in required for review: **No**. Review notes: "No account is required. Writing and reading work offline. Linking,
+  sharing and optional AI need a connection. Wallet uses device authentication."
 - Contact for review: support@pherus.org, +256772769734.
 
 ## Release notes template
