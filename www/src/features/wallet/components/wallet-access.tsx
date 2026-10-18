@@ -1,21 +1,35 @@
-import { Button } from "@phe-rus/hino";
+import { Button, LockIcon } from "@phe-rus/hino";
 import { t } from "../../../i18n/i18n";
-import { initializeWallet, useWallet } from "../store/wallet-store";
+import { initializeWallet, unlockWallet, useWallet } from "../store/wallet-store";
 
 export function WalletAccess() {
   const { status, busy } = useWallet();
   const initialized = status?.initialized ?? false;
   return (
-    <div className="mx-auto flex w-full max-w-[440px] flex-col gap-5 rounded-5xl border border-separator bg-elevated p-6">
-      <h2 className="font-serif text-2xl font-semibold">
+    <div className="mx-auto flex w-full max-w-sm flex-col items-center gap-4 py-12 text-center">
+      <span className="flex size-16 items-center justify-center rounded-full bg-accent-soft text-accent-text">
+        <LockIcon size={28} />
+      </span>
+      <h2 className="text-title3 font-semibold">
         {initialized ? t("wallet.locked") : t("wallet.setupTitle")}
       </h2>
       <p className="text-sm leading-relaxed text-label-secondary">
-        {initialized ? t("wallet.migrationPending") : t("wallet.setupHint")}
+        {t(status?.systemAuthAvailable ? "wallet.authHint" : "wallet.authUnavailable")}
       </p>
+      {initialized && status?.systemAuthAvailable && (
+        <Button size="sm" disabled={busy} onClick={() => void unlockWallet()}>
+          {t("wallet.unlock")}
+        </Button>
+      )}
       {!initialized &&
+        status?.systemAuthAvailable &&
         (status?.secureStoreAvailable ? (
-          <Button variant="default" disabled={busy} onClick={() => void initializeWallet()}>
+          <Button
+            size="sm"
+            variant="default"
+            disabled={busy}
+            onClick={() => void initializeWallet()}
+          >
             {t("wallet.createWallet")}
           </Button>
         ) : (

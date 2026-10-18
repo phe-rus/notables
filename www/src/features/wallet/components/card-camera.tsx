@@ -3,12 +3,18 @@ import { useEffect, useRef, useState } from "react";
 import { currentLanguage, t } from "../../../i18n/i18n";
 import { readCardCodes } from "../lib/card-codes";
 import { captureCardFrame, openCardCamera } from "../lib/card-image";
-import { createCardReader, createCardStability } from "../lib/card-reader";
+import { type CardReading, createCardReader, createCardStability } from "../lib/card-reader";
 import { suggestCardFields } from "../lib/card-recognition";
 import { reviewWalletReading } from "../store/wallet-store";
 
 /** Keep the preview alive while recognizing; never queue camera frames. */
-export function CardCamera({ onClose }: { onClose: () => void }) {
+export function CardCamera({
+  onClose,
+  onRead,
+}: {
+  onClose: () => void;
+  onRead?: (reading: CardReading) => void;
+}) {
   const video = useRef<HTMLVideoElement>(null);
   const shutter = useRef(false);
   const [phase, setPhase] = useState<"opening" | "scanning" | "detected" | "error">("opening");
@@ -17,7 +23,7 @@ export function CardCamera({ onClose }: { onClose: () => void }) {
     let stream: MediaStream | undefined;
     let timer: ReturnType<typeof setTimeout> | undefined;
     const reader = createCardReader(currentLanguage());
-    const stable = createCardStability();
+    const stable = createCardStability(!!onRead);
     const stop = () => {
       active = false;
       clearTimeout(timer);
@@ -49,7 +55,13 @@ export function CardCamera({ onClose }: { onClose: () => void }) {
             if (!active) return;
             const text = [reading.text, ...codes].join("\n");
             stop();
-            reviewWalletReading({ ...reading, text, suggestions: suggestCardFields(text) });
+            const complete = {
+              ...reading,
+              text,
+              suggestions: { ...suggestCardFields(text), palette: reading.suggestions.palette },
+            };
+            if (onRead) onRead(complete);
+            else reviewWalletReading(complete);
             return;
           }
         }
@@ -120,7 +132,7 @@ export function CardCamera({ onClose }: { onClose: () => void }) {
       >
         <CameraIcon size={24} />
       </IconButton>
-      <Button variant="ghost" onClick={onClose}>
+      <Button size="sm" variant="ghost" className="self-center" onClick={onClose}>
         {t("common.cancel")}
       </Button>
     </div>

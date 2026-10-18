@@ -69,7 +69,7 @@ export function CardStack() {
           }
           // Each card tucks under the one before, leaving its top edge in view.
           style={index > 0 ? { marginTop: `calc(${PEEK}px - 100cqw * 54 / 85.6)` } : undefined}
-          className="relative rounded-3xl text-start outline-none focus-visible:z-10 focus-visible:ring-2 focus-visible:ring-accent disabled:opacity-60"
+          className="relative w-full shrink-0 rounded-3xl text-start outline-none focus-visible:z-10 focus-visible:ring-2 focus-visible:ring-accent disabled:opacity-60"
         >
           <CardPreviewFace card={card} />
         </motion.button>

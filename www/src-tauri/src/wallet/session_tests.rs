@@ -75,6 +75,8 @@ fn draft() -> CardDraft {
                 order: 0,
                 side: Side::Front,
                 source: "manual".into(),
+                sensitive: false,
+                redacted: false,
             },
             Field {
                 id: Uuid::new_v4(),
@@ -85,6 +87,8 @@ fn draft() -> CardDraft {
                 order: 1,
                 side: Side::Back,
                 source: "manual".into(),
+                sensitive: false,
+                redacted: false,
             },
         ],
         appearance: Appearance {
@@ -428,4 +432,105 @@ fn electricity_card_keeps_meter_zeros_across_restart_and_kind_filter() {
     );
     request.kind = Some("bank".into());
     assert!(restarted.list(request).unwrap().cards.is_empty());
+}
+
+#[test]
+fn mandatory_wallet_grants_expire_without_activity_extending_them() {
+    let dir = Directory::new();
+    let keys = Arc::new(MemoryKeys::default());
+    let mut wallet = Wallet::with_keys(&dir.0, Box::new(keys.clone()));
+    wallet.authentication_required = true;
+    wallet
+        .initialize(InitializeMode::Device, None, None)
+        .unwrap();
+    assert!(!wallet.status().unwrap().locked);
+    wallet.background();
+    wallet.foreground();
+    assert!(!wallet.status().unwrap().locked);
+    wallet.grant_sensitive().unwrap();
+    assert!(wallet.sensitive_unlocked().unwrap());
+    wallet.state.lock().unwrap().sensitive_at = Some(Instant::now() - Duration::from_secs(301));
+    assert!(!wallet.sensitive_unlocked().unwrap());
+    assert!(!wallet.status().unwrap().locked);
+    wallet.state.lock().unwrap().authorized_at = Some(Instant::now() - Duration::from_secs(1801));
+    assert!(wallet.status().unwrap().locked);
+    assert!(matches!(wallet.activity(), Err(WalletError::Locked)));
+    wallet.unlock_device(true).unwrap();
+    assert!(!wallet.status().unwrap().locked);
+    drop(wallet);
+    let mut restarted = Wallet::with_keys(&dir.0, Box::new(keys));
+    restarted.authentication_required = true;
+    assert!(restarted.status().unwrap().locked);
+}
+
+#[test]
+fn hidden_secret_survives_public_edit_and_cannot_be_overwritten_without_grant() {
+    let dir = Directory::new();
+    let mut wallet = Wallet::with_keys(&dir.0, Box::new(Arc::new(MemoryKeys::default())));
+    wallet.authentication_required = true;
+    wallet
+        .initialize(InitializeMode::Device, None, None)
+        .unwrap();
+    let mut card = draft();
+    card.retain_security_code = true;
+    let id = card.id;
+    wallet
+        .save(SaveRequest {
+            operation_id: Uuid::new_v4(),
+            draft: card,
+            expected_revision: None,
+        })
+        .unwrap();
+    let mut redacted = wallet.read(id).unwrap().redact(None).draft;
+    assert!(redacted.fields[1].redacted);
+    assert!(redacted.fields[1].value.is_empty());
+    redacted.display_name = "Updated public name".into();
+    wallet
+        .save(SaveRequest {
+            operation_id: Uuid::new_v4(),
+            draft: redacted,
+            expected_revision: Some(1),
+        })
+        .unwrap();
+    let saved = wallet.read(id).unwrap();
+    assert_eq!(saved.draft.fields[1].value, "987");
+    let mut changed = saved.draft;
+    changed.fields[1].value = "123".into();
+    assert!(matches!(
+        wallet.save(SaveRequest {
+            operation_id: Uuid::new_v4(),
+            draft: changed.clone(),
+            expected_revision: Some(2)
+        }),
+        Err(WalletError::Locked)
+    ));
+    wallet.grant_sensitive().unwrap();
+    wallet
+        .save(SaveRequest {
+            operation_id: Uuid::new_v4(),
+            draft: changed,
+            expected_revision: Some(2),
+        })
+        .unwrap();
+    wallet.lock().unwrap();
+    assert!(wallet.status().unwrap().locked);
+    assert!(!wallet.sensitive_unlocked().unwrap());
+}
+
+#[test]
+fn wallet_timeout_is_local_persistent_and_bounded() {
+    let dir = Directory::new();
+    let keys = Arc::new(MemoryKeys::default());
+    let wallet = Wallet::with_keys(&dir.0, Box::new(keys.clone()));
+    wallet
+        .initialize(InitializeMode::Device, None, None)
+        .unwrap();
+    assert_eq!(wallet.status().unwrap().unlock_minutes, 30);
+    assert!(matches!(
+        wallet.configure_timeout(0),
+        Err(WalletError::InvalidInput)
+    ));
+    wallet.configure_timeout(15).unwrap();
+    let restarted = Wallet::with_keys(&dir.0, Box::new(keys));
+    assert_eq!(restarted.status().unwrap().unlock_minutes, 15);
 }

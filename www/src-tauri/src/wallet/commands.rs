@@ -29,6 +29,14 @@ fn check_window(window: &WebviewWindow, lock_only: bool) -> Result<()> {
     if !allowed_caller(window.label(), &url, lock_only) {
         return Err(WalletError::Denied);
     }
+    #[cfg(target_os = "android")]
+    {
+        let wallet = window.app_handle().state::<Wallet>();
+        wallet.refresh_foreground()?;
+        if !lock_only && !wallet.is_foreground() {
+            return Err(WalletError::Locked);
+        }
+    }
     // Android does not implement the desktop focus getter. Native mobile
     // Suspended/Resumed events fence the session instead.
     #[cfg(desktop)]
@@ -55,9 +63,157 @@ async fn with_wallet<T: Send + 'static>(
     .map_err(|_| WalletError::Unavailable)?
 }
 
+async fn authenticate(
+    app: &AppHandle,
+    window: &WebviewWindow,
+    reason: String,
+    settings: bool,
+) -> Result<()> {
+    check_window(window, settings)?;
+    if reason.trim().is_empty() || reason.chars().count() > 200 {
+        return Err(WalletError::InvalidInput);
+    }
+    let handle = app.clone();
+    tauri::async_runtime::spawn_blocking(move || {
+        use tauri_plugin_biometric::{AuthOptions, BiometricExt};
+        handle
+            .biometric()
+            .authenticate(
+                reason,
+                AuthOptions {
+                    allow_device_credential: true,
+                    confirmation_required: Some(true),
+                    ..Default::default()
+                },
+            )
+            .map_err(|_| WalletError::Denied)
+    })
+    .await
+    .map_err(|_| WalletError::Unavailable)??;
+    // Android's system authentication activity returns before MainActivity resumes.
+    for _ in 0..40 {
+        #[cfg(target_os = "android")]
+        app.state::<Wallet>().refresh_foreground()?;
+        if app.state::<Wallet>().is_foreground() {
+            check_window(window, settings)?;
+            return Ok(());
+        }
+        tokio::time::sleep(std::time::Duration::from_millis(25)).await;
+    }
+    Err(WalletError::Locked)
+}
+
+#[tauri::command]
+pub async fn wallet_authorize(
+    app: AppHandle,
+    window: WebviewWindow,
+    reason: String,
+) -> Result<Status> {
+    check_window(&window, false)?;
+    if app.state::<Wallet>().status()?.locked {
+        return Err(WalletError::Locked);
+    }
+    authenticate(&app, &window, reason, false).await?;
+    with_wallet(app, window, false, |wallet| {
+        if wallet.status()?.locked {
+            return Err(WalletError::Locked);
+        }
+        wallet.unlock_device(false)?;
+        wallet.grant_sensitive()?;
+        wallet.status()
+    })
+    .await
+}
+
+#[tauri::command]
+pub async fn wallet_configure(
+    app: AppHandle,
+    window: WebviewWindow,
+    minutes: u64,
+    reason: String,
+) -> Result<Status> {
+    if !window
+        .url()
+        .map_err(|_| WalletError::Denied)?
+        .path()
+        .starts_with("/settings")
+    {
+        return Err(WalletError::Denied);
+    }
+    authenticate(&app, &window, reason, true).await?;
+    with_wallet(app, window, true, move |wallet| {
+        wallet.configure_timeout(minutes)
+    })
+    .await
+}
+
+#[tauri::command]
+pub async fn wallet_reveal_field(
+    app: AppHandle,
+    window: WebviewWindow,
+    id: Uuid,
+    field_id: Uuid,
+    reason: String,
+) -> Result<Card> {
+    check_window(&window, false)?;
+    if app.state::<Wallet>().status()?.locked {
+        return Err(WalletError::Locked);
+    }
+    if !app.state::<Wallet>().sensitive_unlocked()? {
+        authenticate(&app, &window, reason, false).await?;
+        if app.state::<Wallet>().status()?.locked {
+            return Err(WalletError::Locked);
+        }
+        app.state::<Wallet>().unlock_device(false)?;
+        app.state::<Wallet>().grant_sensitive()?;
+    }
+    with_wallet(app, window, false, move |wallet| {
+        let card = wallet.read(id)?;
+        if !card
+            .draft
+            .fields
+            .iter()
+            .any(|field| field.id == field_id && field.is_sensitive())
+        {
+            return Err(WalletError::InvalidInput);
+        }
+        Ok(card)
+    })
+    .await
+}
+
 #[tauri::command]
 pub async fn wallet_status(app: AppHandle, window: WebviewWindow) -> Result<Status> {
-    with_wallet(app, window, false, Wallet::status).await
+    with_wallet(app, window, true, Wallet::status).await
+}
+
+/// Explicit developer access for physical testing. Release builds contain no unlock path.
+#[tauri::command]
+pub async fn wallet_development_unlock(
+    app: AppHandle,
+    window: WebviewWindow,
+    sensitive: Option<bool>,
+) -> Result<Status> {
+    #[cfg(not(debug_assertions))]
+    {
+        let _ = (app, window, sensitive);
+        Err(WalletError::Denied)
+    }
+    #[cfg(debug_assertions)]
+    {
+        with_wallet(app, window, false, move |wallet| {
+            if !wallet.status()?.initialized {
+                wallet.initialize(InitializeMode::Device, None, None)?;
+            }
+            wallet.unlock_device(true)?;
+            wallet.reset_development_sensitive_grant()?;
+            if sensitive.unwrap_or(false) {
+                wallet.grant_sensitive()?;
+            }
+            wallet.status()
+        })
+        .await
+    }
 }
 
 #[tauri::command]
@@ -65,10 +221,12 @@ pub async fn wallet_initialize(
     app: AppHandle,
     window: WebviewWindow,
     mode: InitializeMode,
+    reason: String,
 ) -> Result<Status> {
     if !matches!(mode, InitializeMode::Device) {
         return Err(WalletError::InvalidInput);
     }
+    authenticate(&app, &window, reason, false).await?;
     with_wallet(app, window, false, move |wallet| {
         wallet.initialize(mode, None, None)
     })
@@ -80,10 +238,13 @@ pub async fn wallet_unlock(
     app: AppHandle,
     window: WebviewWindow,
     method: String,
+    reason: String,
 ) -> Result<Status> {
-    let _ = (app, window, method);
-    // Native authentication adapters have not shipped. No password fallback.
-    Err(WalletError::Unavailable)
+    if !["passcode", "faceId", "fingerprint"].contains(&method.as_str()) {
+        return Err(WalletError::InvalidInput);
+    }
+    authenticate(&app, &window, reason, false).await?;
+    with_wallet(app, window, false, |wallet| wallet.unlock_device(true)).await
 }
 
 /// Development migration only, with no product UI and no embedded credential.
@@ -123,7 +284,15 @@ pub async fn wallet_list(
 
 #[tauri::command]
 pub async fn wallet_read(app: AppHandle, window: WebviewWindow, id: Uuid) -> Result<Card> {
-    with_wallet(app, window, false, move |wallet| wallet.read(id)).await
+    with_wallet(app, window, false, move |wallet| {
+        let card = wallet.read(id)?;
+        Ok(if wallet.sensitive_unlocked()? {
+            card
+        } else {
+            card.redact(None)
+        })
+    })
+    .await
 }
 
 #[tauri::command]

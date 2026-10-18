@@ -70,6 +70,27 @@ export const fr: Messages = {
     off: "Désactivé",
   },
   wallet: {
+    checkScannedNumber:
+      "Le numéro de carte peut être incomplet ou mal lu. Comparez-le avec votre carte et corrigez-le avant d’enregistrer.",
+    backNoDetails:
+      "Aucun nouveau détail trouvé au verso. Essayez une photo plus nette et plus rapprochée. Les informations du recto sont conservées.",
+    security: "Détails protégés",
+    securityHint:
+      "Les détails sélectionnés nécessitent un déverrouillage supplémentaire de cinq minutes. Déverrouillez un détail masqué avant de le modifier.",
+    authReason: "Déverrouiller votre portefeuille",
+    secretReason: "Afficher les détails protégés de la carte",
+    authHint:
+      "Utilisez le code ou la biométrie de votre appareil pour déverrouiller le portefeuille.",
+    authUnavailable:
+      "Authentification de l’appareil indisponible. Votre portefeuille reste verrouillé.",
+    revealSecret: "Déverrouiller les détails",
+    scanBack: "Scanner ou importer le verso",
+    backMismatch:
+      "Il semble s’agir d’une autre carte. Vérifiez son type et son numéro avant d’ajouter le verso.",
+    sessionHint:
+      "Le portefeuille se verrouille au redémarrage. Les détails protégés se déverrouillent séparément pour cinq minutes. Les cartes restent sur cet appareil.",
+    relockAfter: "Verrouiller après",
+    minutes: "{count} min",
     nfcUnavailable: "Le NFC n’est pas disponible sur cet appareil.",
     phoneNumber: "Numéro de téléphone",
     iccid: "ICCID",

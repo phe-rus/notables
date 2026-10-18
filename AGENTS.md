@@ -115,6 +115,25 @@ Gotchas learned the hard way:
 
 ## Status (October 2026)
 
+- v0.2.6 preparation (18 Oct): Wallet has mandatory native authentication,
+  30 minute access and separate five minute protected fields, compact front/back
+  review and distinct card print for eight kinds. The raw progress bar is replaced
+  with a local-reading indicator; card transitions respect Reduce Motion and
+  locking removes content immediately. TECNO gallery/save/restart evidence and
+  remaining boundaries are in the Wallet handover and 18 Oct scanning review.
+  Bank-front classification is fixed, but that photo still loses one OCR digit;
+  the review warns rather than inventing it. No Wallet sync or source approval
+  transfer is implemented. Public beta setup and current store disclosures are
+  next; the release pipeline uploads to Play internal and TestFlight first.
+
+- Wallet work resumed 18 October and is not complete. The owner's mandatory
+  30 minute Wallet unlock and separate five minute sensitive field grant
+  supersede older optional protection wording. See the Wallet handover for
+  current code, physical evidence and remaining checks. TECNO is now
+  `192.168.1.3:5555`; verify its model before testing. The old address currently
+  reaches ChromeOS. The owner now prioritizes v0.2.6 and the store review after Wallet polish;
+  Circles remains queued.
+
 - Wallet live scanning and presentation (18 Oct): camera frames now use a
   retained, bundled Android ML Kit reader, with Apple Vision implemented for
   iOS and bundled Tesseract fallback. Two clear frames must agree before
@@ -533,6 +552,23 @@ and France: "No" until the French declaration is filed. Never set
 TestFlight refuse the upload; each build asks in TestFlight instead.
 
 ## Next
+
+- Owner’s latest priority, 18 Oct: commit/push the Wallet checkpoint and deploy
+  the web, tag v0.2.6 for both store builds, then review Google Play Console
+  drafts, disclosures, feature graphic and phone/tablet screenshots. The beta
+  should accept users outside the team: Play open testing and TestFlight
+  external public-link testing, after their store review/setup. Uploading to
+  the current internal pipeline alone does not open that beta. Preserve the
+  bank-photo OCR limitation in the beta testing notes. Circles follows this
+  release/store checkpoint.
+
+- Owner, 18 October: source approval and resumable sync direction is recorded
+  in [the spec 0005 amendment](docs/specs/www/0005-linked-devices/0005-source-approval-and-resume.md).
+  It is not implemented. Preserve browser memory only storage; approvals happen
+  on the source, roles are visible, iOS wake is best effort, and an explicitly
+  approved Android phone can provide browser continuity. Wallet sync is opt in,
+  native only and local network only. Older automatic Wallet sync wording is
+  superseded. Continue the unfinished Wallet protection and UI work first.
 
 - Wallet: verify a physical NFC tag on supported hardware, compile and test
   Apple Vision on an iPhone, and update the Android SDK diagnostic disclosure

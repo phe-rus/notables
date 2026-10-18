@@ -27,8 +27,25 @@ class MainActivity : TauriActivity() {
 
   /** Leaving the app shows what changed on the home-screen widget right away. */
   override fun onPause() {
+    WalletActivityState.resumed(false)
     super.onPause()
     TodayWidgetProvider.refreshAll(this)
+  }
+
+  override fun onResume() {
+    super.onResume()
+    WalletActivityState.resumed(true)
+  }
+
+  override fun onWindowFocusChanged(hasFocus: Boolean) {
+    super.onWindowFocusChanged(hasFocus)
+    WalletActivityState.focused(hasFocus)
+  }
+
+  override fun onDestroy() {
+    WalletActivityState.resumed(false)
+    WalletActivityState.focused(false)
+    super.onDestroy()
   }
 
   /**

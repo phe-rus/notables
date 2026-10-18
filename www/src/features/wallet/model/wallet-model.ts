@@ -24,6 +24,8 @@ export const walletFieldSchema = z.strictObject({
   order: z.number().int().min(0).max(100),
   side: z.enum(["front", "back"]),
   source: z.enum(["manual", "recognition"]),
+  sensitive: z.boolean().optional(),
+  redacted: z.boolean().optional(),
 });
 export const appearanceSchema = z.strictObject({
   formFactor: z.literal("landscape"),
@@ -76,6 +78,9 @@ export const walletStatusSchema = z.strictObject({
   protected: z.boolean(),
   locked: z.boolean(),
   systemAuthAvailable: z.boolean(),
+  unlockUntil: z.number().nullable().optional(),
+  unlockMinutes: z.number().int().positive().optional(),
+  sensitiveUntil: z.number().nullable().optional(),
   generation: z.number().int().positive(),
   formatVersion: z.literal(1),
 });

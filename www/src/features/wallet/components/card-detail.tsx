@@ -3,16 +3,20 @@ import {
   CopyIcon,
   IconButton,
   LabeledContent,
+  LockIcon,
   Section,
   SegmentedControl,
   toast,
+  VisibleIcon,
 } from "@phe-rus/hino";
 import { AnimatePresence, motion, useReducedMotion } from "motion/react";
 import { useState } from "react";
 import { t } from "../../../i18n/i18n";
+import { withWalletAuthentication } from "../lib/wallet-auth";
+import { walletService } from "../lib/wallet-service";
 import { ltrFieldKeys } from "../model/card-layout";
 import type { WalletCard } from "../model/wallet-model";
-import { showWallet, useWallet } from "../store/wallet-store";
+import { openWalletCard, refreshWallet, showWallet, useWallet } from "../store/wallet-store";
 import { CardFace } from "./card-face";
 import { CardPresentation } from "./card-presentation";
 
@@ -21,12 +25,13 @@ import { CardPresentation } from "./card-presentation";
  * as rows you can copy from, the way Apple Wallet's card details read.
  */
 export function CardDetail({ card }: { card: WalletCard }) {
-  const { view } = useWallet();
+  const { view, status } = useWallet();
   const [side, setSide] = useState<"front" | "back">("front");
   const reducedMotion = useReducedMotion();
-  const fields = [...card.draft.fields].sort((a, b) =>
-    a.side === b.side ? a.order - b.order : a.side === "front" ? -1 : 1,
-  );
+  const hasBack = card.draft.sideState.back === "available";
+  const fields = card.draft.fields
+    .filter((field) => field.value || field.redacted)
+    .sort((a, b) => (a.side === b.side ? a.order - b.order : a.side === "front" ? -1 : 1));
   const copy = async (value: string) => {
     try {
       await navigator.clipboard.writeText(value);
@@ -50,26 +55,33 @@ export function CardDetail({ card }: { card: WalletCard }) {
             exit={reducedMotion ? undefined : { rotateY: side === "back" ? 90 : -90, opacity: 0.6 }}
             transition={{ duration: reducedMotion ? 0 : 0.18 }}
           >
-            <CardFace card={card} side={side} />
+            <CardFace
+              card={card}
+              side={side}
+              revealSecrets={!!status?.sensitiveUntil && status.sensitiveUntil > Date.now()}
+            />
           </motion.div>
         </AnimatePresence>
       </motion.div>
-      <div className="flex flex-col gap-3">
-        <SegmentedControl
-          label={t("wallet.cardDetails")}
-          value={side}
-          onChange={setSide}
-          options={[
-            { value: "front", label: t("wallet.front") },
-            { value: "back", label: t("wallet.back") },
-          ]}
-        />
+      <div className="flex items-center justify-center gap-3">
+        {hasBack && (
+          <SegmentedControl
+            label={t("wallet.cardDetails")}
+            value={side}
+            onChange={setSide}
+            options={[
+              { value: "front", label: t("wallet.front") },
+              { value: "back", label: t("wallet.back") },
+            ]}
+          />
+        )}
         <Button
           size="sm"
-          variant="default"
-          className="self-center"
+          variant="secondary"
+          className="shrink-0 rounded-full"
           onClick={() => showWallet("present")}
         >
+          <VisibleIcon size={16} />
           {t("wallet.present")}
         </Button>
       </div>
@@ -80,19 +92,41 @@ export function CardDetail({ card }: { card: WalletCard }) {
               <div className="flex min-w-0 items-center gap-1">
                 <span
                   dir={ltrFieldKeys.has(field.key) ? "ltr" : "auto"}
-                  className="truncate text-subheadline text-label-secondary select-text"
+                  className="truncate text-footnote text-label-secondary select-text"
                 >
-                  {field.value || t("wallet.emptyField")}
+                  {field.redacted ? "••••" : field.value || t("wallet.emptyField")}
                 </span>
-                {field.value && (
+                {field.redacted ? (
                   <IconButton
-                    size="icon-sm"
+                    size="icon-xs"
                     variant="ghost"
-                    label={t("wallet.copyValue", { label: field.label })}
-                    onClick={() => void copy(field.value)}
+                    label={t("wallet.revealSecret")}
+                    onClick={() => {
+                      void withWalletAuthentication(() =>
+                        walletService.reveal(card.draft.id, field.id),
+                      )
+                        .then(async () => {
+                          await refreshWallet();
+                          await openWalletCard(card.draft.id);
+                        })
+                        .catch(() => {
+                          toast.error(t("wallet.error"));
+                        });
+                    }}
                   >
-                    <CopyIcon size={16} />
+                    <LockIcon size={15} />
                   </IconButton>
+                ) : (
+                  field.value && (
+                    <IconButton
+                      size="icon-xs"
+                      variant="ghost"
+                      label={t("wallet.copyValue", { label: field.label })}
+                      onClick={() => void copy(field.value)}
+                    >
+                      <CopyIcon size={16} />
+                    </IconButton>
+                  )
                 )}
               </div>
             </LabeledContent>

@@ -69,6 +69,25 @@ export const sw: Messages = {
     off: "Imezimwa",
   },
   wallet: {
+    checkScannedNumber:
+      "Nambari ya kadi inaweza kuwa haijakamilika au imesomwa vibaya. Linganisha na kadi yako na urekebishe kabla ya kuhifadhi.",
+    backNoDetails:
+      "Hakuna taarifa mpya zilizopatikana nyuma. Jaribu picha ya karibu na iliyo wazi zaidi. Taarifa za mbele hazijabadilika.",
+    security: "Taarifa zilizolindwa",
+    securityHint:
+      "Taarifa ulizochagua zinahitaji kufunguliwa tena kwa dakika tano. Fungua taarifa iliyofichwa kabla ya kuihariri.",
+    authReason: "Fungua Wallet yako",
+    secretReason: "Onyesha taarifa za kadi zilizolindwa",
+    authHint: "Tumia nambari ya siri au biometriki ya kifaa kufungua Wallet.",
+    authUnavailable: "Uthibitishaji wa kifaa haupatikani. Wallet yako inabaki imefungwa.",
+    revealSecret: "Fungua taarifa",
+    scanBack: "Changanua au leta upande wa nyuma",
+    backMismatch:
+      "Hii inaonekana kuwa kadi tofauti. Hakikisha aina na nambari kabla ya kuongeza upande wa nyuma.",
+    sessionHint:
+      "Wallet hufungwa programu inapoanzishwa upya. Taarifa zilizolindwa hufunguliwa kando kwa dakika tano. Kadi hubaki kwenye kifaa hiki.",
+    relockAfter: "Funga Wallet baada ya",
+    minutes: "Dakika {count}",
     nfcUnavailable: "NFC haipatikani kwenye kifaa hiki.",
     phoneNumber: "Namba ya simu",
     iccid: "ICCID",

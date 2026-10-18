@@ -2,6 +2,7 @@ use std::collections::HashSet;
 
 use serde::{Deserialize, Serialize};
 use uuid::Uuid;
+use zeroize::Zeroize;
 
 use super::error::{Result, WalletError};
 
@@ -37,6 +38,19 @@ pub struct Field {
     pub order: u32,
     pub side: Side,
     pub source: String,
+    #[serde(default, skip_serializing_if = "is_false")]
+    pub sensitive: bool,
+    #[serde(default, skip_serializing_if = "is_false")]
+    pub redacted: bool,
+}
+
+fn is_false(value: &bool) -> bool {
+    !value
+}
+impl Field {
+    pub fn is_sensitive(&self) -> bool {
+        self.sensitive || matches!(self.key.as_str(), "cvv" | "puk")
+    }
 }
 
 #[derive(Clone, Serialize, Deserialize)]
@@ -121,7 +135,8 @@ impl CardDraft {
                 .strip_prefix("custom:")
                 .and_then(|key| Uuid::parse_str(key).ok())
                 .is_some();
-            if field.card_id != self.id
+            if field.redacted
+                || field.card_id != self.id
                 || !ids.insert(field.id)
                 || !keys.insert(&field.key)
                 || field.label.trim().is_empty()
@@ -144,6 +159,16 @@ impl CardDraft {
 }
 
 impl Card {
+    pub fn redact(mut self, reveal: Option<Uuid>) -> Self {
+        for field in &mut self.draft.fields {
+            if field.is_sensitive() && reveal != Some(field.id) {
+                field.value.zeroize();
+                field.redacted = true;
+            }
+        }
+        self
+    }
+
     pub fn preview(&self) -> CardPreview {
         let last_four = self
             .draft

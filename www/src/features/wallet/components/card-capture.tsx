@@ -11,6 +11,7 @@ import {
   useWallet,
 } from "../store/wallet-store";
 import { CardCamera } from "./card-camera";
+import { CardProcessing } from "./card-processing";
 import { ManualCardForm } from "./manual-card-form";
 import { WalletIllustration } from "./wallet-illustration";
 
@@ -58,16 +59,6 @@ export function CardCapture() {
     return (
       <div className="mx-auto flex w-full max-w-md flex-col gap-4">
         <ManualCardForm card={null} suggestions={review.suggestions} />
-        {review.text && (
-          <details className="px-4 py-2">
-            <summary className="cursor-pointer text-footnote text-label-secondary">
-              {t("wallet.recognizedText")}
-            </summary>
-            <p dir="auto" className="mt-3 whitespace-pre-wrap [overflow-wrap:anywhere]">
-              {review.text}
-            </p>
-          </details>
-        )}
       </div>
     );
   return (
@@ -85,14 +76,11 @@ export function CardCapture() {
       )}
       {working ? (
         <>
-          {captureMethod === "nfc" && (
-            <NfcReadIcon size={40} className="self-center text-accent-text" />
-          )}
-          <p role="status" className="text-center text-subheadline text-label-secondary">
-            {t(captureMethod === "nfc" ? "wallet.nfcWaiting" : "wallet.recognizing")}
-          </p>
-          {captureMethod !== "nfc" && <progress className="w-full" value={progress ?? 0} max={1} />}
+          <CardProcessing nfc={captureMethod === "nfc"} />
           <Button
+            size="sm"
+            variant="secondary"
+            className="self-center"
             onClick={() => {
               cancelWalletCapture();
             }}
@@ -107,32 +95,32 @@ export function CardCapture() {
           <div className="overflow-hidden rounded-3xl border border-separator/50 bg-paper">
             <Button
               variant="ghost"
-              className="h-auto min-h-12 w-full justify-start gap-3 rounded-none px-4 py-3 text-start [&>span]:w-full [&>span]:justify-start [&>span]:gap-4"
+              className="h-auto min-h-11 w-full justify-start gap-3 rounded-none px-4 py-2.5 text-start [&>span]:w-full [&>span]:justify-start [&>span]:gap-3"
               onClick={() => setCamera(true)}
             >
               <CameraIcon size={21} className="shrink-0 text-accent-text" />
-              <span className="grow text-body font-medium">{t("wallet.scanCard")}</span>
+              <span className="grow text-subheadline font-medium">{t("wallet.scanCard")}</span>
               <ChevronRightIcon size={17} className="text-label-tertiary" />
             </Button>
             <div className="mx-4 border-t border-separator/50" />
             <Button
               variant="ghost"
-              className="h-auto min-h-12 w-full justify-start gap-3 rounded-none px-4 py-3 text-start [&>span]:w-full [&>span]:justify-start [&>span]:gap-4"
+              className="h-auto min-h-11 w-full justify-start gap-3 rounded-none px-4 py-2.5 text-start [&>span]:w-full [&>span]:justify-start [&>span]:gap-3"
               onClick={chooseImage}
             >
               <PhotoIcon size={21} className="shrink-0 text-accent-text" />
-              <span className="grow text-body font-medium">{t("wallet.importImage")}</span>
+              <span className="grow text-subheadline font-medium">{t("wallet.importImage")}</span>
               <ChevronRightIcon size={17} className="text-label-tertiary" />
             </Button>
             <div className="mx-4 border-t border-separator/50" />
             <Button
               variant="ghost"
               disabled={!nfc}
-              className="h-auto min-h-12 w-full justify-start gap-3 rounded-none px-4 py-3 text-start [&>span]:w-full [&>span]:justify-start [&>span]:gap-4"
+              className="h-auto min-h-11 w-full justify-start gap-3 rounded-none px-4 py-2.5 text-start [&>span]:w-full [&>span]:justify-start [&>span]:gap-3"
               onClick={() => void scanWalletNfc()}
             >
               <NfcReadIcon size={21} className="shrink-0 text-accent-text" />
-              <span className="grow text-body font-medium">{t("wallet.readNfc")}</span>
+              <span className="grow text-subheadline font-medium">{t("wallet.readNfc")}</span>
               <ChevronRightIcon size={17} className="text-label-tertiary" />
             </Button>
           </div>
@@ -142,7 +130,12 @@ export function CardCapture() {
             </p>
           )}
           {error && <Button onClick={correctWalletCapture}>{t("wallet.correctManually")}</Button>}
-          <Button variant="ghost" onClick={() => showWallet("home")}>
+          <Button
+            size="sm"
+            variant="ghost"
+            className="self-center"
+            onClick={() => showWallet("home")}
+          >
             {t("common.cancel")}
           </Button>
         </>

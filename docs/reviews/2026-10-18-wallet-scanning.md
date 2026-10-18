@@ -87,3 +87,82 @@ image contains only an old gibberish recognition draft, not a real card.
 - [Apple Vision text recognition](https://developer.apple.com/documentation/vision/recognizing-text-in-images): native image text recognition.
 - [Tauri NFC configuration](https://v2.tauri.app/plugin/nfc/): iOS usage description and NFC entitlement.
 - [Apple Wallet](https://www.apple.com/wallet/): visual reference for card hierarchy and presentation.
+
+## Gallery Done regression, later 18 October checkpoint
+
+The combined lifecycle, parser and security debug build was installed on the
+physical TECNO CI6 at 192.168.1.3. Real ADB taps selected each approved photo
+and confirmed Android's Done button. The electricity photo opened review with
+an 11-character meter identifier; the passport opened review with holder,
+9-character identifier and labeled expiry. No private values were logged.
+Both review forms saved through the UI under temporary QA names.
+
+After force-stop and relaunch, Wallet reported locked. A debug-only grant
+allowed verification that both records survived, the utility meter and passport
+expiry were preserved, and the passport identifier was redacted. This does not
+verify a real biometric success. Eight synthetic cards also exercised native
+secret redaction and preservation during public edits. All ten temporary records
+were removed by recorded IDs after verifying their QA names. The original debug
+wallet had zero records and returned to zero. Owner photos and the store app
+were preserved. Card previews measured 328 by 206.91 CSS units, ratio 1.585.
+
+The gallery regression is verified on this debug build. Wallet as a whole is
+still in progress: physical back capture, real authentication/cancellation,
+iOS compilation and device checks, NFC hardware evidence and release disclosure
+review remain. LAN-only Wallet transfer is a design, not an implemented feature.
+
+## Bank-front extraction and card appearance checkpoint
+
+The owner reproduced a failing bank-front import in the physical TECNO debug
+app. The recognized text contained Visa, expiry and a grouped number with one
+digit missing. The parser required a complete grouping before recognizing a
+bank card, so it returned Other and the bank-specific expiry control disappeared.
+The revised parser recognizes network names independently, preserves the read
+number, marks uncertain lengths/checksums, and excludes expiry labels from
+holder guessing. The real recognized text was checked locally with the revised
+parser, without logging private values: Bank card, number and expiry were
+recovered; holder stayed empty. Live frame agreement does not accept an uncertain
+number. Rotated complete readings outrank uncertain suggestions.
+
+All eight kinds now use distinct decorative print and surface treatments with
+Hino accent tokens. Type-specific motifs are decorative, not usable codes,
+certification seals or payment provisioning. Their proportions remain 1.585.
+The combined build installed successfully on the TECNO; eight synthetic card
+previews rendered and were then deleted by tracked IDs. The owner’s saved
+electricity card was preserved. The owner then reimported the bank front on the new build. Physical review
+confirmed Bank card, populated number and expiry, and the uncertain-number
+warning. OCR still reads 15 digits on that Visa photo, so the recognition
+quality issue remains. Holder and issuer are empty. No bank card was saved.
+
+Back capture now checks meter/account mismatches as well as card numbers and
+reports when there are no new fields to add. Physical cancellation and useful
+back-field merging remain to be verified. Wallet tests: 43 pass. Workspace type
+checks, lint (six existing warnings), full tests and web production build pass.
+Native frontend prerender and ARM64 packaging pass.
+
+## Wallet interaction polish for v0.2.6
+
+The native HTML progress bar is replaced with a card-reading activity view. It
+does not claim an upload or a percentage that native OCR cannot measure. Camera
+and back capture actions are compact; detail rows omit empty fields, copy
+controls are small, and unavailable backs do not get a nonfunctional selector.
+Presentation uses a constrained card width, one close icon and a side selector
+only when there is a back. Edit has a direct Back action to the selected card.
+Unlocked navigation and presentation animate with Reduce Motion support. The
+animation subtree is removed immediately when access is cleared or locked.
+
+The owner requested a release followed by public beta preparation. v0.2.5 is
+the previous tag; v0.2.6 is the next release. Existing CI sends Android to Play
+internal and iOS to TestFlight. Opening testing to users still requires Play
+open testing setup and TestFlight external testing review/public-link setup.
+Store descriptions and disclosures must retain the documented OCR, NFC and
+sync limitations.
+
+Final polish checkpoint: workspace lint passed with six existing warnings,
+all workspace type/test tasks passed (219 app tests), native frontend prerender
+and web build passed, Worker smoke passed, Cargo format/Clippy passed and Rust
+library tests passed (53, two ignored). The final debug APK installed on the
+TECNO. Synthetic bank opening and presentation open/close were exercised with
+real taps. Eight temporary records were deleted by tracked IDs. The owner’s
+two saved cards were preserved and Wallet was left locked. No claim of a real
+biometric success, complete bank OCR or physical NFC verification is made.

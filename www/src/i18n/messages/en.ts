@@ -72,6 +72,25 @@ export const en = {
     off: "Off",
   },
   wallet: {
+    checkScannedNumber:
+      "The card number may be incomplete or misread. Compare it with your card and correct it before saving.",
+    backNoDetails:
+      "No new details were found on this back. Try a closer, sharper photo. Your front details are unchanged.",
+    security: "Protected details",
+    securityHint:
+      "Selected details need an additional unlock for five minutes. Unlock a hidden detail before editing it.",
+    authReason: "Unlock your Wallet",
+    secretReason: "Show protected card details",
+    authHint: "Use your device passcode or biometrics to unlock Wallet.",
+    authUnavailable: "Device authentication is unavailable. Your Wallet remains locked.",
+    revealSecret: "Unlock details",
+    scanBack: "Scan or import the back",
+    backMismatch:
+      "This looks like a different card. Check its type and number before adding the back.",
+    sessionHint:
+      "Wallet locks when the app restarts. Protected details unlock separately for five minutes. Cards stay on this device.",
+    relockAfter: "Lock Wallet after",
+    minutes: "{count} min",
     nfcUnavailable: "NFC is not available on this device.",
     phoneNumber: "Phone number",
     iccid: "ICCID",

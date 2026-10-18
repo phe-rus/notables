@@ -64,3 +64,80 @@ describe("wallet recognition suggestions", () => {
     expect(fields.number).toBe("");
   });
 });
+
+describe("varied printed card layouts", () => {
+  for (const [text, expected] of [
+    [
+      "UEDCL\nMeter No: 00012345678\nCustomer: 0009876",
+      { kind: "electricity", meter: "00012345678", account: "0009876" },
+    ],
+    [
+      "DStv\nSmartcard: 00123456789",
+      { kind: "television", account: "00123456789", issuer: "DStv" },
+    ],
+    ["GOtv\nDecoder No: 0012345678", { kind: "television", account: "0012345678" }],
+    [
+      "MTN SIM CARD\nICCID: 8925600000000000000\nPUK: 00123456",
+      { kind: "sim", account: "8925600000000000000", puk: "00123456" },
+    ],
+    [
+      "PASSPORT\nDocument No: AB0123456\nSurname: EXAMPLE\nGiven names: JANE\nDate of expiry: 12/10/2030",
+      { kind: "passport", number: "AB0123456", holder: "JANE EXAMPLE", expiry: "12/10/2030" },
+    ],
+    [
+      "NATIONAL ID\nNIN\nCM001234567890\nExpiry: 12/30",
+      { kind: "national-id", number: "CM001234567890" },
+    ],
+    [
+      "MEMBERSHIP\nMember No: 0012345678901234\nExpires: 12/30",
+      { kind: "membership", number: "0012345678901234" },
+    ],
+    ["Signature\nCVV: 123", { kind: "other", cvv: "123", number: "" }],
+  ] as const) {
+    it(`reads synthetic ${expected.kind} details`, () => {
+      expect(suggestCardFields(text)).toMatchObject(expected);
+    });
+  }
+});
+
+it("reads bilingual passport labels without using birth dates as expiry", () => {
+  expect(
+    suggestCardFields(
+      "PASSPORT\nPassport No. / No du passeport\nAB0123456\nSurname / Nom\nEXAMPLE\nGiven names / Prénoms\nJANE\nDate of birth\n12/10/1990\nDate of expiry / Date d’expiration\n15 APR 2030",
+    ),
+  ).toMatchObject({
+    kind: "passport",
+    number: "AB0123456",
+    holder: "JANE EXAMPLE",
+    expiry: "15 APR 2030",
+  });
+  expect(suggestCardFields("PASSPORT\nDate of birth\n12/10/1990").expiry).toBe("");
+});
+it("recognizes spaced utility logos and national identification authority labels", () => {
+  expect(suggestCardFields("U M E M E\n00123456789")).toMatchObject({
+    kind: "electricity",
+    issuer: "Umeme",
+    meter: "00123456789",
+  });
+  expect(
+    suggestCardFields("NATIONAL IDENTIFICATION AND REGISTRATION AUTHORITY\nNIN: CM00123456").kind,
+  ).toBe("national-id");
+});
+
+describe("imperfect bank scans", () => {
+  it("keeps a Visa classification and expiry when OCR misses a digit", () => {
+    expect(suggestCardFields("EXAMPLE\n111 1111 1111 1111\nVALID THRU\n12/29\nVISA")).toMatchObject(
+      { kind: "bank", number: "111 1111 1111 1111", expiry: "12/29", numberUncertain: true },
+    );
+  });
+  it("recognizes a bank card even when the number is unreadable", () => {
+    expect(suggestCardFields("VISA\nVALID THRU\n12/29")).toMatchObject({
+      kind: "bank",
+      number: "",
+      expiry: "12/29",
+    });
+  });
+  it("does not mark a valid complete number uncertain", () => {
+    expect(suggestCardFields("VISA\n4111 1111 1111 1111\n12/29").numberUncertain).toBe(false);
+  });
+});

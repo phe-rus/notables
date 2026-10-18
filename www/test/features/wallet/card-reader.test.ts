@@ -38,9 +38,32 @@ describe("automatic wallet capture", () => {
   });
   it("waits for expiry and holder changes to settle", () => {
     const stable = createCardStability();
-    expect(stable(reading("TEST BANK\n0012 3456 7890 5678"))).toBe(false);
-    const card = reading("TEST BANK\n0012 3456 7890 5678\n12/29\nJANE EXAMPLE");
+    expect(stable(reading("TEST BANK\n4111 1111 1111 1111"))).toBe(false);
+    const card = reading("TEST BANK\n4111 1111 1111 1111\n12/29\nJANE EXAMPLE");
     expect(stable(card)).toBe(false);
     expect(stable(card)).toBe(true);
   });
+});
+
+it("prefers a useful rotated reading over confident unrelated text", async () => {
+  const { cardReadingStrength } = await import("../../../src/features/wallet/lib/card-reader");
+  const { suggestCardFields } = await import("../../../src/features/wallet/lib/card-fields");
+  const reading = (text: string, confidence: number) => ({
+    text,
+    confidence,
+    suggestions: suggestCardFields(text),
+  });
+  expect(cardReadingStrength(reading("UMEME\n00123456789", 78))).toBeGreaterThan(
+    cardReadingStrength(reading("UNRELATED TEXT", 99)),
+  );
+  expect(cardReadingStrength(reading("UMEME\n00123456789", 78))).toBeGreaterThan(
+    cardReadingStrength(reading("NIN", 79)),
+  );
+});
+
+it("does not automatically accept a repeatedly incomplete bank number", () => {
+  const stable = createCardStability();
+  const card = reading("VISA\n111 1111 1111 1111\n12/29");
+  expect(stable(card)).toBe(false);
+  expect(stable(card)).toBe(false);
 });

@@ -1,6 +1,87 @@
 # Wallet context and resume checkpoint
 
-## Latest checkpoint, 18 October 2026
+## Current work, 18 October 2026, not yet complete
+
+The owner's latest security requirements supersede the historical optional
+protection rules below and older spec 0003 wording. Wallet requires native
+device authentication. It starts locked after process restart; an unlock lasts
+30 minutes by default, adjustable in native Privacy & Security. Sensitive
+fields require another unlock for five minutes. Returning from a picker or
+another app within that grant must not require authentication again. Full app,
+note, folder, book and calendar locks are separate policies, off until enabled.
+
+Wallet stays per device, absent from the browser, and outside ordinary space
+sync. Optional transfer to selected native devices must require source approval
+and a verified direct LAN path. That transfer and remote approval are not built.
+The source approval design is in the spec 0005 amendment.
+
+Physical TECNO now uses `192.168.1.3:5555`. The previous address currently
+identifies the Chromebook. Verify `ro.product.model` is `TECNO CI6` before every
+install or interaction; never infer identity from an old IP or an open ADB port.
+
+The owner authorized a development unlock so testing can continue while they
+rest. `wallet_development_unlock` has its unlock body compiled only when Rust
+debug assertions are enabled. Release builds return Denied. It has no product
+UI. Its optional `sensitive` argument controls the separate development secret
+grant. Never use this command as evidence that real biometrics succeeded.
+
+Uncommitted work includes field masking at the native boundary, preserving
+masked fields while saving public edits, front/back capture, Hino swatches and
+switches, compact inputs, and fixed card proportions. Three authorized gallery
+photos reached review on the TECNO. Preview measured 328 by 206.91 CSS units.
+The first photo has no usable identifier; clarification about fronts and backs
+is pending. The utility photo needs orientation fallback; the passport exposed
+bilingual label and expiry mistakes, corrected in the parser and checked
+against its recognized text locally without logging private values.
+
+Android picker testing exposed lifecycle and late event races. Native activity
+callbacks now feed `WalletActivityState`, queried through JNI. Tao's NDK context
+is an Application, not an Activity. Desktop focus events must not drive mobile
+Wallet state. Import waits for native access to resume. The combined parser/orientation and security build is installed on the TECNO.
+Selecting the approved electricity and passport photos and tapping Done opened
+review on both. The utility meter, passport number, holder and labeled expiry
+were filled. Both were saved with temporary QA names, survived process restart,
+and reopened with the passport number masked. Restart began locked. All ten
+QA records, including eight synthetic cards, were deleted by recorded IDs;
+the debug wallet returned to its original zero cards. No photos or store app
+data were removed. Real authentication, cancellation and back capture still
+need full physical checks; the debug grant is not biometric evidence.
+
+The owner clarified some gallery images are backs. Back merging now checks
+meter/account identifiers too and reports no new details rather than marking
+an empty back complete. A later bank-front review was inspected on the TECNO:
+Visa and expiry were read, but OCR missed a digit, so the old strict grouping
+rejected the number and misclassified the card as Other. The revised parser
+preserves partial grouped numbers, independently recognizes the bank type,
+flags uncertain lengths/checksums, and does not auto-accept them from live
+frames. It excludes expiry labels from holder guessing. Checked against the
+actual recognized text locally; no private values logged. Distinct card print
+for all eight kinds is implemented, with Hino token colors. The latest ARM64 build is installed on the TECNO. Eight synthetic card
+previews rendered with the new print; all retained the 1.585 aspect ratio.
+Those eight records were removed, preserving the owner’s one saved electricity
+card. The owner reimported the failing bank front on this build. Physical review
+confirmed Bank card, filled number and expiry, and the uncertain-number warning.
+OCR still reads only 15 digits from that Visa photo; do not call recognition
+complete or invent the missing digit. Holder and issuer remain empty. The
+review was left unsaved on the phone. Next improve number-region recognition
+and verify it against this photo; the classification regression is fixed. Wallet tests: 43 pass;
+workspace type checks, lint (six existing warnings), tests and web build pass.
+
+Wallet polish for v0.2.6: local-reading activity replaces the native progress
+bar, compact capture actions and detail controls, front/back controls only when
+available, animated unlocked navigation/presentation with Reduce Motion, and
+proper Back navigation from Edit. The animation host unmounts immediately when
+Wallet becomes inaccessible, so exiting animations cannot retain locked cards.
+The owner authorized committing, deploying and tagging v0.2.6, then reviewing
+Play Console drafts and preparing public-user beta listings and screenshots.
+
+Next: finish Wallet and remove only temporary records created for tests. Preserve
+the owner's photos, existing cards, notes and both installed app data sets.
+The owner’s latest order is v0.2.6 commit/deploy/release, then review Play
+Console drafts and prepare external-user beta metadata and screenshots.
+Circles and broader app cases remain queued after that checkpoint.
+
+## Previous committed checkpoint, 18 October 2026
 
 The owner confirmed automatic camera review on the physical TECNO with the
 updated debug APK, installed with data preserved. Card capture now owns a
@@ -176,3 +257,11 @@ and app work, plus the wallet additions. Preserve it. Nothing was committed,
 pushed or deployed during this wallet session.
 
 _Drafted by /sync from the introducing change, worth a quick human pass._
+
+Latest polish checks: 219 app tests pass, all workspace tasks pass, native
+frontend and web builds pass, Worker smoke passes, Cargo format/Clippy pass,
+53 Rust tests pass (two ignored). The combined debug APK installed on the
+TECNO with data preserved. Real taps exercised opening a synthetic bank card
+and opening/closing presentation. Eight QA cards were removed by exact tracked
+IDs. The owner now has two saved cards, bank and electricity; both were
+preserved. Wallet was left locked. No private photo or values were logged.

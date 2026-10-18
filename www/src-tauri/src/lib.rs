@@ -38,10 +38,15 @@ pub fn run() {
                 && let Some(wallet) = window.app_handle().try_state::<wallet::session::Wallet>()
             {
                 match event {
-                    tauri::WindowEvent::Focused(false) | tauri::WindowEvent::Destroyed => {
+                    tauri::WindowEvent::Destroyed => {
+                        let _ = wallet.lock();
+                    }
+                    #[cfg(desktop)]
+                    tauri::WindowEvent::Focused(false) => {
                         wallet.background();
                         let _ = window.emit("wallet-locked", wallet.generation());
                     }
+                    #[cfg(desktop)]
                     tauri::WindowEvent::Focused(true) => wallet.foreground(),
                     #[cfg(mobile)]
                     tauri::WindowEvent::Suspended => {
@@ -59,6 +64,7 @@ pub fn run() {
         .plugin(tauri_plugin_os::init())
         .plugin(tauri_plugin_dialog::init())
         .plugin(tauri_plugin_opener::init())
+        .plugin(tauri_plugin_biometric::init())
         .manage(Transcriber::default())
         .manage(Voice::default())
         .register_asynchronous_uri_scheme_protocol(
@@ -76,6 +82,10 @@ pub fn run() {
             wallet::commands::wallet_lock,
             wallet::commands::wallet_list,
             wallet::commands::wallet_read,
+            wallet::commands::wallet_reveal_field,
+            wallet::commands::wallet_authorize,
+            wallet::commands::wallet_development_unlock,
+            wallet::commands::wallet_configure,
             wallet::commands::wallet_activity,
             wallet::commands::wallet_save,
             wallet::commands::wallet_delete,

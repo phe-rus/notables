@@ -5,13 +5,32 @@
 
 ## Current product direction
 
-**Updated 9 October 2026 (supersedes the protection choices below and in
-spec 0003):** the wallet uses the same security model as the planned Vault.
-Protection stays off by default (passwordless, still encrypted at rest).
-When turned on, the choices are PassPin (a short app PIN), a password, and
-the device's Face ID, fingerprint or passcode where the device offers them.
-Wallet is a phone tab (Notes, Wallet, Invoices, Settings); Books moved to
-the sidebar.
+**Updated 18 October 2026:** the owner's requirements below supersede all
+older optional protection and automatic sync wording in this spec and its
+children. Implementation remains in progress.
+
+Wallet requires the device's native authentication and is locked after app
+process restart. Unlock lasts 30 minutes by default, configurable per device
+in Privacy & Security. Sensitive fields require a separate five minute unlock.
+They are redacted at the native boundary outside that grant. Public edits must
+preserve hidden values without revealing them. Returning from a system picker
+or another app within a valid grant resumes access without another prompt.
+No Wallet password or separate app PIN is introduced.
+
+Full app, note, folder, book and calendar locks are separate from Wallet. Full
+app lock is off by default; those scopes may remain unlocked until app closes
+or use their own configured timeout.
+
+Wallet is native only, excluded from browsers and ordinary space sync. Cards
+are added per device. Optional transfer requires explicit source approval for
+selected linked native devices and a verified direct local network path. It
+never uses internet relays or browser sessions. This transfer is not yet built.
+The remote access contract is in
+[source approval and resume](../0005-linked-devices/0005-source-approval-and-resume.md).
+
+The owner authorized a developer unlock for unattended physical tests. Its
+unlock implementation must be absent from release builds. It never substitutes
+for proof that production device authentication works.
 
 Your correction on 8 October 2026 replaces the earlier manual form delivery and
 password fallback decisions throughout this spec and its children.

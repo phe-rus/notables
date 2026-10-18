@@ -1,110 +1,9 @@
 import type { Worker } from "tesseract.js";
-import type { CardKind } from "../model/wallet-model";
 import { readCardCodes } from "./card-codes";
-import { readMrz } from "./mrz";
 
-export interface CardSuggestions {
-  kind: CardKind;
-  meter: string;
-  account: string;
-  displayName: string;
-  holder: string;
-  number: string;
-  expiry: string;
-  issuer: string;
-  puk: string;
-}
+export { type CardSuggestions, suggestCardFields } from "./card-fields";
 
-/** Conservative suggestions only. Confirmation in review is always required. */
-export function suggestCardFields(text: string): CardSuggestions {
-  // A passport or ID card's machine-readable zone beats anything else on it.
-  const mrz = readMrz(text);
-  if (mrz) {
-    const holder = `${mrz.givenNames} ${mrz.surname}`
-      .trim()
-      .toLowerCase()
-      .replace(/\b\p{L}/gu, (letter) => letter.toUpperCase());
-    return {
-      kind: mrz.kind,
-      meter: "",
-      account: "",
-      displayName: holder || mrz.country,
-      holder,
-      number: mrz.number,
-      expiry: mrz.expiry,
-      issuer: mrz.country,
-      puk: "",
-    };
-  }
-  const lines = text
-    .split(/\r?\n/)
-    .map((line) => line.trim())
-    .filter(Boolean);
-  const number =
-    text
-      .match(
-        /(?<!\d)(?:\d{4}[ -]){3}\d{4}(?!\d)|(?<!\d)\d{4}[ -]\d{6}[ -]\d{5}(?!\d)|(?<!\d)\d{12,19}(?!\d)/,
-      )?.[0]
-      .trim() ?? "";
-  const expiry = text.match(/\b(?:0[1-9]|1[0-2])\s*\/\s*\d{2}(?:\d{2})?\b/)?.[0] ?? "";
-  const labeledHolder =
-    lines
-      .find((line) => /^(?:cardholder|holder|name|titulaire|titular|jina)\s*:/i.test(line))
-      ?.replace(/^[^:]+:\s*/, "")
-      .slice(0, 4096) ?? "";
-  const electricity = /\b(?:umeme|yaka|electricity|electric|meter)\b/i.test(text);
-  const labeled = (label: string) => {
-    const pattern = new RegExp(`^(?:${label})\\b\\s*(?:number|no\\.?)?\\s*[:#-]?\\s*(.*)$`, "i");
-    for (const [index, line] of lines.entries()) {
-      const match = line.match(pattern);
-      if (!match) continue;
-      const value = match[1]?.trim() || lines[index + 1]?.trim() || "";
-      if (/^(?=.*\d)[\p{L}\d][\p{L}\d -]{2,}$/u.test(value)) return value.slice(0, 4096);
-    }
-    return "";
-  };
-  const bank = !!number && !!expiry;
-  const membership = /\b(?:membership|member|loyalty)\b/i.test(text);
-  const identity = /\b(?:national identity|national id|identity card|nin)\b/i.test(text);
-  const labeledNumber = labeled("card|member|membership|id|nin|passport");
-  const holder =
-    labeledHolder ||
-    (bank
-      ? (lines.findLast(
-          (line) =>
-            /^[\p{L}][\p{L} .'-]+\s[\p{L} .'-]+$/u.test(line) &&
-            !/\b(?:bank|visa|mastercard|credit|debit|valid|thru|expires|member|card|american express)\b/i.test(
-              line,
-            ),
-        ) ?? "")
-      : "");
-  // A SIM card's ICCID: 19 or 20 digits starting with 89, often printed in groups.
-  const iccid = electricity
-    ? ""
-    : (text.replace(/[ -]/g, "").match(/(?<!\d)89\d{17,18}(?!\d)/)?.[0] ?? "");
-  return {
-    kind: electricity
-      ? "electricity"
-      : iccid
-        ? "sim"
-        : bank
-          ? "bank"
-          : identity
-            ? "national-id"
-            : membership
-              ? "membership"
-              : "other",
-    meter: labeled("meter"),
-    account: iccid || labeled("account|customer"),
-    displayName: lines[0]?.slice(0, 200) ?? "",
-    holder,
-    number: electricity || iccid ? "" : number || labeledNumber,
-    expiry: electricity ? "" : expiry,
-    issuer: /\bumeme\b/i.test(text) ? "Umeme" : "",
-    // PUK1 is the code that unlocks a blocked SIM; the holder card prints it.
-    puk: iccid ? (text.match(/\bPUK\s*1?\s*[:.]?\s*(\d{8})\b/i)?.[1] ?? "") : "",
-  };
-}
+import { type CardSuggestions, suggestCardFields } from "./card-fields";
 
 // Chinese reads with the English model for now: card numbers, dates and
 // Latin names come through, and chi_sim would add about 20 MB to the app.
@@ -147,17 +46,55 @@ export function recognizeCard(
       void (async () => {
         try {
           if (mode === "card") {
-            const { createCardReader } = await import("./card-reader");
+            const { createCardReader, cardReadingStrength } = await import("./card-reader");
             if (cancelled || !image) return;
             const reader = createCardReader(locale);
             stopReader = () => reader.stop();
-            const reading = await reader.read(image);
+            let reading = await reader.read(image);
+            const fields = reading.suggestions;
+            if (
+              fields.kind === "other" ||
+              fields.numberUncertain ||
+              (!fields.number && !fields.meter && !fields.account)
+            ) {
+              for (const angle of [90, 180, 270]) {
+                if (cancelled || !image) return;
+                const rotated = document.createElement("canvas");
+                rotated.width = angle % 180 ? image.height : image.width;
+                rotated.height = angle % 180 ? image.width : image.height;
+                try {
+                  const context = rotated.getContext("2d");
+                  if (!context) continue;
+                  context.translate(rotated.width / 2, rotated.height / 2);
+                  context.rotate((angle * Math.PI) / 180);
+                  context.drawImage(image, -image.width / 2, -image.height / 2);
+                  const candidate = await reader.read(rotated);
+                  if (cardReadingStrength(candidate) > cardReadingStrength(reading))
+                    reading = candidate;
+                  const found = reading.suggestions;
+                  if (
+                    reading.confidence >= 75 &&
+                    found.kind !== "other" &&
+                    !found.numberUncertain &&
+                    (found.number || found.meter || found.account)
+                  )
+                    break;
+                } finally {
+                  rotated.width = rotated.height = 0;
+                }
+              }
+            }
+            if (cancelled || !image) return;
             const codes = await readCardCodes(image).catch(() => []);
             if (cancelled) return;
             const text = [reading.text, ...codes].join("\n");
             if (!text.trim()) throw new Error("no-readable-details");
             progress(1);
-            resolve({ ...reading, text, suggestions: suggestCardFields(text) });
+            resolve({
+              ...reading,
+              text,
+              suggestions: { ...suggestCardFields(text), palette: reading.suggestions.palette },
+            });
             return;
           }
           const { createWorker, PSM } = await import("tesseract.js");

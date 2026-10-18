@@ -1,4 +1,5 @@
 import type { z } from "zod";
+import { t } from "../../../i18n/i18n";
 import { isTauri } from "../../../platform/runtime";
 import {
   type ListRequest,
@@ -66,9 +67,24 @@ export const walletService = {
   },
   activity: () => call("wallet_activity", {}, walletGenerationSchema),
   status: () => call("wallet_status", {}, walletStatusSchema),
-  initialize: () => call("wallet_initialize", { mode: "device" }, walletStatusSchema),
+  initialize: () =>
+    call(
+      "wallet_initialize",
+      { mode: "device", reason: t("wallet.authReason") },
+      walletStatusSchema,
+    ),
   unlock: (method: "passcode" | "faceId" | "fingerprint") =>
-    call("wallet_unlock", { method }, walletStatusSchema),
+    call("wallet_unlock", { method, reason: t("wallet.authReason") }, walletStatusSchema),
+  authorize: () =>
+    call("wallet_authorize", { reason: t("wallet.secretReason") }, walletStatusSchema),
+  configure: (minutes: number) =>
+    call("wallet_configure", { minutes, reason: t("wallet.authReason") }, walletStatusSchema),
+  reveal: (id: string, fieldId: string) =>
+    call(
+      "wallet_reveal_field",
+      { id, fieldId, reason: t("wallet.secretReason") },
+      walletCardSchema,
+    ),
   list: (request: ListRequest) => call("wallet_list", { request }, walletPageSchema),
   read: (id: string) => call("wallet_read", { id }, walletCardSchema),
   save: (request: SaveRequest) => call("wallet_save", { request }, walletSaveResultSchema),
@@ -80,3 +96,15 @@ export const walletService = {
     await invoke<void>("wallet_lock");
   },
 };
+
+/** Native pickers can return a file before the activity has finished resuming. */
+export async function resumedWalletStatus() {
+  for (let attempt = 0; attempt < 80; attempt++) {
+    if (document.visibilityState === "visible" && document.hasFocus()) {
+      const status = await walletService.status();
+      if (!status.locked || !status.unlockUntil || status.unlockUntil <= Date.now()) return status;
+    }
+    await new Promise<void>((resolve) => window.setTimeout(resolve, 25));
+  }
+  throw new WalletFailure("locked");
+}

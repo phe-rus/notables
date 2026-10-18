@@ -2,12 +2,29 @@ import { invoke } from "@tauri-apps/api/core";
 import type { Worker } from "tesseract.js";
 import { devicePlatform } from "../../../platform/device-platform";
 import { isTauri } from "../../../platform/runtime";
-import { suggestCardFields } from "./card-recognition";
+import { readCardPalette } from "./card-colors";
+import { suggestCardFields } from "./card-fields";
 
 export interface CardReading {
   text: string;
   confidence: number;
   suggestions: ReturnType<typeof suggestCardFields>;
+}
+
+/** Useful identifiers outweigh a confident reading of unrelated background words. */
+export function cardReadingStrength(reading: CardReading) {
+  const fields = reading.suggestions;
+  const identifiers = [fields.number, fields.meter, fields.account, fields.puk, fields.cvv].filter(
+    Boolean,
+  ).length;
+  const details = [fields.holder, fields.expiry].filter(Boolean).length;
+  return (
+    ((identifiers * (fields.numberUncertain ? 60 : 150) +
+      details * 15 +
+      (fields.kind === "other" ? 0 : 30)) *
+      Math.max(0, Math.min(100, reading.confidence))) /
+    100
+  );
 }
 
 /** A session owns one engine, one frame at a time, and no persistent images. */
@@ -70,7 +87,11 @@ export function createCardReader(locale: string) {
       }
       if (stopped) throw new Error("cancelled");
       const text = reading.text.slice(0, 20_000);
-      return { text, confidence: reading.confidence, suggestions: suggestCardFields(text) };
+      return {
+        text,
+        confidence: reading.confidence,
+        suggestions: { ...suggestCardFields(text), palette: readCardPalette(canvas) },
+      };
     },
     stop() {
       stopped = true;
@@ -81,12 +102,18 @@ export function createCardReader(locale: string) {
 }
 
 /** Do not accept a card until independent frames agree on its useful details. */
-export function createCardStability() {
+export function createCardStability(back = false) {
   let previous = "";
   return (reading: CardReading) => {
     const fields = reading.suggestions;
-    const identifier = fields.meter || fields.account || fields.number;
-    if (reading.confidence < 65 || !identifier || fields.kind === "other") {
+    const identifier =
+      fields.meter || fields.account || fields.number || (back ? fields.cvv || fields.puk : "");
+    if (
+      reading.confidence < 65 ||
+      !identifier ||
+      fields.numberUncertain ||
+      (!back && fields.kind === "other")
+    ) {
       previous = "";
       return false;
     }

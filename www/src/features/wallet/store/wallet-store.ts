@@ -10,7 +10,9 @@ import {
   recognizeCard,
   suggestCardFields,
 } from "../lib/card-recognition";
-import { WalletFailure, walletService } from "../lib/wallet-service";
+import { walletAuthenticationPending, withWalletAuthentication } from "../lib/wallet-auth";
+import { resumedWalletStatus, WalletFailure, walletService } from "../lib/wallet-service";
+import { redactCard } from "../model/card-secrets";
 import type {
   ListRequest,
   SaveRequest,
@@ -61,10 +63,40 @@ let listSequence = 0;
 let pendingLock: Promise<void> = Promise.resolve();
 
 export const useWallet = () => useSelector(wallet);
-const update = (patch: Partial<WalletState>) =>
+let accessTimer: ReturnType<typeof setTimeout> | undefined;
+let secretTimer: ReturnType<typeof setTimeout> | undefined;
+const update = (patch: Partial<WalletState>) => {
+  if ("status" in patch) {
+    clearTimeout(accessTimer);
+    clearTimeout(secretTimer);
+    if (patch.status?.unlockUntil) {
+      const status = patch.status;
+      accessTimer = setTimeout(
+        () => {
+          clearWallet();
+          update({ status: { ...status, locked: true, sensitiveUntil: null, unlockUntil: null } });
+        },
+        Math.max(0, patch.status.unlockUntil - Date.now()),
+      );
+    }
+    if (patch.status?.sensitiveUntil)
+      secretTimer = setTimeout(
+        () => {
+          wallet.setState((state) => ({
+            ...state,
+            status: state.status ? { ...state.status, sensitiveUntil: null } : null,
+            selected: state.selected ? redactCard(state.selected) : null,
+          }));
+        },
+        Math.max(0, patch.status.sensitiveUntil - Date.now()),
+      );
+  }
   wallet.setState((state) => ({ ...state, ...patch }));
+};
 
 export function clearWallet() {
+  clearTimeout(accessTimer);
+  clearTimeout(secretTimer);
   cancelCardRecognition();
   cancelWalletNfc();
   epoch++;
@@ -143,7 +175,14 @@ async function applyStatus(status: WalletStatus, token: number) {
 export const refreshWallet = () =>
   run(async (token) => applyStatus(await walletService.status(), token));
 export const initializeWallet = () =>
-  run(async (token) => applyStatus(await walletService.initialize(), token));
+  run(async (token) =>
+    applyStatus(await withWalletAuthentication(() => walletService.initialize()), token),
+  );
+
+export const unlockWallet = () =>
+  run(async (token) =>
+    applyStatus(await withWalletAuthentication(() => walletService.unlock("passcode")), token),
+  );
 
 export function cancelWalletCapture() {
   epoch++;
@@ -216,7 +255,13 @@ export async function recognizeWalletCanvas(canvas: HTMLCanvasElement) {
 export async function importWalletImage(file: File) {
   // A native file chooser may background the WebView. Only begin processing
   // its new selection after a fresh native status has reestablished access.
-  await refreshWallet();
+  try {
+    const status = await resumedWalletStatus();
+    await applyStatus(status, epoch);
+  } catch (error) {
+    fail(error);
+    return;
+  }
   const token = epoch;
   if (
     !wallet.get().status?.initialized ||
@@ -262,7 +307,7 @@ export const deleteWalletCard = (id: string, operationId: string, revision: numb
     await loadWalletPage();
   });
 
-export function suspendWallet() {
+export function lockWallet() {
   clearWallet();
   if (isTauri()) pendingLock = pendingLock.then(() => walletService.lock()).catch(() => {});
 }
@@ -274,8 +319,9 @@ export function mountWallet() {
   let unlisten: (() => void) | undefined;
   void walletService
     .onLocked((generation) => {
+      if (walletAuthenticationPending()) return;
       const status = wallet.get().status;
-      if (status && generation < status.generation) return;
+      if (status && generation <= status.generation) return;
       clearWallet();
       if (status) update({ status: { ...status, locked: true, generation } });
     })
@@ -284,9 +330,12 @@ export function mountWallet() {
       else unlisten = release;
     })
     .catch(() => {});
-  const blur = () => suspendWallet();
+  const blur = () => {
+    if (!walletAuthenticationPending()) clearWallet();
+  };
   const focus = () => {
-    if (document.visibilityState === "visible") void refreshWallet();
+    if (document.visibilityState === "visible" && !walletAuthenticationPending())
+      void refreshWallet();
   };
   const visibility = () => (document.visibilityState === "hidden" ? blur() : focus());
   let lastActivity = 0;
@@ -309,7 +358,12 @@ export function mountWallet() {
   window.addEventListener("focus", focus);
   document.addEventListener("visibilitychange", visibility);
   const timer = window.setInterval(() => {
-    if (document.visibilityState === "visible" && document.hasFocus() && !wallet.get().busy) {
+    if (
+      document.visibilityState === "visible" &&
+      document.hasFocus() &&
+      !wallet.get().busy &&
+      !walletAuthenticationPending()
+    ) {
       const token = epoch;
       void walletService
         .status()
@@ -318,6 +372,25 @@ export function mountWallet() {
           if (status.locked) {
             clearWallet();
             update({ status });
+          } else {
+            update({ status });
+            const selected = wallet.get().selected;
+            if (
+              selected &&
+              !status.sensitiveUntil &&
+              selected.draft.fields.some(
+                (field) =>
+                  (field.sensitive || field.key === "cvv" || field.key === "puk") &&
+                  !field.redacted,
+              )
+            ) {
+              void walletService
+                .read(selected.draft.id)
+                .then((card) => {
+                  if (token === epoch) update({ selected: card });
+                })
+                .catch(() => {});
+            }
           }
         })
         .catch((error) => {
@@ -334,7 +407,7 @@ export function mountWallet() {
     document.removeEventListener("visibilitychange", visibility);
     document.removeEventListener("keydown", activity);
     document.removeEventListener("pointerdown", activity);
-    suspendWallet();
+    clearWallet();
   };
 }
 

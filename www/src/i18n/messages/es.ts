@@ -69,6 +69,25 @@ export const es: Messages = {
     off: "Desactivado",
   },
   wallet: {
+    checkScannedNumber:
+      "El número puede estar incompleto o mal leído. Compáralo con tu tarjeta y corrígelo antes de guardar.",
+    backNoDetails:
+      "No se encontraron datos nuevos en el reverso. Prueba con una foto más cercana y nítida. Los datos del anverso se conservan.",
+    security: "Datos protegidos",
+    securityHint:
+      "Los datos seleccionados requieren otro desbloqueo de cinco minutos. Desbloquea un dato oculto antes de editarlo.",
+    authReason: "Desbloquear tu cartera",
+    secretReason: "Mostrar datos protegidos de la tarjeta",
+    authHint: "Usa el código o la biometría de tu dispositivo para desbloquear la cartera.",
+    authUnavailable:
+      "La autenticación del dispositivo no está disponible. Tu cartera sigue bloqueada.",
+    revealSecret: "Desbloquear datos",
+    scanBack: "Escanear o importar el reverso",
+    backMismatch: "Parece otra tarjeta. Comprueba el tipo y el número antes de añadir el reverso.",
+    sessionHint:
+      "La cartera se bloquea al reiniciar la app. Los datos protegidos se desbloquean por separado durante cinco minutos. Las tarjetas permanecen en este dispositivo.",
+    relockAfter: "Bloquear cartera después de",
+    minutes: "{count} min",
     nfcUnavailable: "NFC no está disponible en este dispositivo.",
     phoneNumber: "Número de teléfono",
     iccid: "ICCID",

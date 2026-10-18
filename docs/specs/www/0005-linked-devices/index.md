@@ -4,6 +4,16 @@
 **Status**: Accepted (15 October 2026; amended the same day: the web is a live window onto a phone)
 **Decision record**: Stage A of [ADR-0007](../../../adr/0007-linked-devices-pass-through-network.md) (Accepted). Nothing here is built.
 
+## Amendment, 18 October 2026
+
+The owner authorized adopting the recommended approach for source approval and
+resumable sync. [Source approval and resume](0005-source-approval-and-resume.md)
+defines the current contract. Its requirements override conflicting older
+wording below, including automatic Wallet sync in AC-20 and build step 10.
+This amendment records a decision, not completed implementation. Browser
+retries and memory persistence exist; remote protection grants, alternate
+phone hosting and iOS wake delivery still need implementation and verification.
+
 ## Summary
 
 You start Notables on any device and it quietly creates your **private space**: a secret that only your own devices ever hold, plus your name. To add a phone, a laptop or the web, the new device shows a QR code and a short code; a device you already have scans it or types it, you check that both screens show the same four words, and the new device receives the secret. From then on every linked device keeps a full copy of everything and stays in step: notes, the library (books, series, calendar, invoices), photos and audio, and later the wallet. Devices talk directly when they can (the same Wi-Fi first), and otherwise through Cloudflare, which forwards encrypted bytes and stores nothing. Settings shows your linked devices and the path each one is using, lets you pick a home device and remove one, and offers version history, a recovery key, and an export you can keep in any folder and import later.

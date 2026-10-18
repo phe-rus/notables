@@ -9,7 +9,7 @@ import {
   PlusIcon,
   SidebarIcon,
 } from "@phe-rus/hino";
-import { LayoutGroup } from "motion/react";
+import { AnimatePresence, LayoutGroup, motion, useReducedMotion } from "motion/react";
 import { useEffect } from "react";
 import { setDrawerOpen } from "../../../components/layout/drawer-store";
 import { CollapsedSidebarControls } from "../../../components/window/collapsed-sidebar-controls";
@@ -18,10 +18,10 @@ import { isTauri } from "../../../platform/runtime";
 import { usePreferences } from "../../settings/store/preferences-store";
 import {
   deleteWalletCard,
+  lockWallet,
   mountWallet,
   refreshWallet,
   showWallet,
-  suspendWallet,
   useWallet,
 } from "../store/wallet-store";
 import { CardCapture } from "./card-capture";
@@ -33,10 +33,12 @@ import { WalletAccess } from "./wallet-access";
 /** The wallet: a stack of cards, one card's details, or adding and editing one. */
 export function WalletScreen() {
   const state = useWallet();
+  const reducedMotion = useReducedMotion();
   const { sidebar } = usePreferences();
   useEffect(mountWallet, []);
   const accessible = state.status?.initialized && !state.status.locked;
   const selected = state.selected;
+  const editing = state.view === "edit" && selected;
   const onCard = (state.view === "detail" || state.view === "present") && selected;
   const deleteCard = async () => {
     if (!selected) return;
@@ -63,12 +65,12 @@ export function WalletScreen() {
             </div>
           )}
           <div className="mx-auto flex w-full max-w-md items-center gap-2">
-            {onCard || state.view === "add" ? (
+            {onCard || editing || state.view === "add" ? (
               <IconButton
                 size="icon-sm"
                 variant="secondary"
                 label={t("common.back")}
-                onClick={() => showWallet("home")}
+                onClick={() => showWallet(editing ? "detail" : "home")}
               >
                 <ChevronLeftIcon size={20} className="rtl:-scale-x-100" />
               </IconButton>
@@ -84,7 +86,7 @@ export function WalletScreen() {
               </IconButton>
             )}
             <h1 className="min-w-0 grow truncate text-title2 font-bold tracking-tight">
-              {onCard
+              {onCard || editing
                 ? selected.draft.displayName
                 : state.view === "add"
                   ? t("wallet.addCard")
@@ -96,7 +98,7 @@ export function WalletScreen() {
                 variant="ghost"
                 label={t("wallet.lock")}
                 onClick={() => {
-                  suspendWallet();
+                  lockWallet();
                   void refreshWallet();
                 }}
               >
@@ -143,7 +145,7 @@ export function WalletScreen() {
           </div>
         </header>
         <div className="grow overflow-y-auto px-4 pt-3 pb-32 sm:px-8 md:pb-10">
-          <div className="mx-auto flex max-w-[1000px] flex-col gap-6">
+          <div className="relative mx-auto flex max-w-[1000px] flex-col gap-6">
             {!isTauri() ? (
               <div className="mx-auto max-w-[480px] py-16 text-center">
                 <h2 className="font-serif text-3xl font-semibold">{t("wallet.nativeTitle")}</h2>
@@ -172,7 +174,7 @@ export function WalletScreen() {
                                   ? t("wallet.unlockHint")
                                   : t("wallet.error")}
                     </p>
-                    <Button disabled={state.busy} onClick={() => void refreshWallet()}>
+                    <Button size="sm" disabled={state.busy} onClick={() => void refreshWallet()}>
                       {t("wallet.retry")}
                     </Button>
                   </div>
@@ -185,14 +187,30 @@ export function WalletScreen() {
                   )
                 ) : !accessible ? (
                   <WalletAccess />
-                ) : state.view === "add" ? (
-                  <CardCapture />
-                ) : state.view === "edit" ? (
-                  <ManualCardForm card={selected} />
-                ) : onCard ? (
-                  <CardDetail card={selected} />
                 ) : (
-                  <CardStack />
+                  <AnimatePresence initial={false} mode="popLayout">
+                    <motion.div
+                      key={onCard ? `card:${selected.draft.id}` : state.view}
+                      initial={reducedMotion ? false : { opacity: 0, y: 8 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      exit={reducedMotion ? undefined : { opacity: 0 }}
+                      transition={{ duration: reducedMotion ? 0 : 0.16, ease: "easeOut" }}
+                      className="w-full"
+                    >
+                      {state.view === "add" ? (
+                        <CardCapture />
+                      ) : state.view === "edit" ? (
+                        <ManualCardForm
+                          key={`${selected?.draft.id}:${state.status?.sensitiveUntil ?? 0}`}
+                          card={selected}
+                        />
+                      ) : onCard ? (
+                        <CardDetail card={selected} />
+                      ) : (
+                        <CardStack />
+                      )}
+                    </motion.div>
+                  </AnimatePresence>
                 )}
               </>
             )}
