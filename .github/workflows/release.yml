@@ -104,6 +104,8 @@ jobs:
           export BINDGEN_EXTRA_CLANG_ARGS_x86_64_linux_android="--sysroot=$NDK_HOME/toolchains/llvm/prebuilt/linux-x86_64/sysroot"
           bun run tauri android build --aab --target aarch64 x86_64 --config \
             '{"version":"${{ needs.version.outputs.name }}","bundle":{"android":{"versionCode":${{ needs.version.outputs.code }}}}}'
+      - name: Verify ML Kit release registrations
+        run: bun scripts/android/verify-card-reader.ts www/src-tauri/gen/android/app/build/outputs/bundle/universalRelease/app-universal-release.aab "$ANDROID_HOME"
       - name: Send to Google Play
         uses: r0adkll/upload-google-play@v1
         with:
@@ -171,6 +173,8 @@ jobs:
             /usr/libexec/PlistBuddy -c "Set :CFBundleVersion ${{ needs.version.outputs.code }}" "$plist"
           done
           cp src-tauri/icons/ios/*.png src-tauri/gen/apple/Assets.xcassets/AppIcon.appiconset/
+      - name: Validate the card reader Swift package
+        run: swift package --package-path www/src-tauri/plugins/tauri-plugin-card-reader/ios dump-package > /dev/null
       - name: Build the signed app
         working-directory: www
         env:

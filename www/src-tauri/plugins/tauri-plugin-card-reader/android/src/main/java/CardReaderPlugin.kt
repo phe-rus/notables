@@ -11,6 +11,7 @@ import app.tauri.plugin.Invoke
 import app.tauri.plugin.JSObject
 import app.tauri.plugin.Plugin
 import com.google.mlkit.vision.common.InputImage
+import com.google.mlkit.vision.text.TextRecognizer
 import com.google.mlkit.vision.text.TextRecognition
 import com.google.mlkit.vision.text.latin.TextRecognizerOptions
 
@@ -19,7 +20,7 @@ class FrameArgs { lateinit var image: String }
 
 @TauriPlugin
 class CardReaderPlugin(activity: Activity) : Plugin(activity) {
-    private val reader = TextRecognition.getClient(TextRecognizerOptions.DEFAULT_OPTIONS)
+    private var reader: TextRecognizer? = null
     private var generation = 0
     private var busy = false
 
@@ -28,6 +29,12 @@ class CardReaderPlugin(activity: Activity) : Plugin(activity) {
         val args = invoke.parseArgs(FrameArgs::class.java)
         if (busy || args.image.length > 2_000_000) {
             invoke.reject("reader-busy")
+            return
+        }
+        val recognizer = try {
+            reader ?: TextRecognition.getClient(TextRecognizerOptions.DEFAULT_OPTIONS).also { reader = it }
+        } catch (_: Exception) {
+            invoke.reject("reader-unavailable")
             return
         }
         val bytes = try { Base64.decode(args.image, Base64.NO_WRAP) } catch (_: Exception) {
@@ -50,7 +57,7 @@ class CardReaderPlugin(activity: Activity) : Plugin(activity) {
         }
         busy = true
         val token = generation
-        reader.process(InputImage.fromBitmap(bitmap, 0))
+        recognizer.process(InputImage.fromBitmap(bitmap, 0))
             .addOnSuccessListener { result ->
                 if (token != generation) invoke.reject("cancelled")
                 else {
@@ -83,7 +90,8 @@ class CardReaderPlugin(activity: Activity) : Plugin(activity) {
 
     override fun onDestroy(activity: AppCompatActivity) {
         generation++
-        reader.close()
+        reader?.close()
+        reader = null
         super.onDestroy(activity)
     }
 }

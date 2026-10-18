@@ -10,7 +10,10 @@ kotlin { compilerOptions { jvmTarget = JvmTarget.JVM_1_8 } }
 android {
     namespace = "org.pherus.cardreader"
     compileSdk = 37
-    defaultConfig { minSdk = 24 }
+    defaultConfig {
+        minSdk = 24
+        consumerProguardFiles("consumer-rules.pro")
+    }
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_1_8
         targetCompatibility = JavaVersion.VERSION_1_8

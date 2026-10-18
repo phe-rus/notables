@@ -115,6 +115,15 @@ Gotchas learned the hard way:
 
 ## Status (October 2026)
 
+- v0.2.7 release fix (18 Oct): v0.2.6 Android crashed on both real ABIs because
+  optimization removed ML Kit registrar constructors. Narrow consumer rules,
+  deferred reader initialization and a real bundle verification gate address
+  it. Optimized isolated release tests launch on TECNO ARM64 and ChromeOS
+  x86_64, with owner data preserved. iOS tools version is corrected from 5.3
+  to 5.5 for its iOS 15 manifest. Full iOS build awaits macOS CI. Evidence:
+  docs/reviews/2026-10-18-release-startup.md. Current TECNO is
+  192.168.1.2:5555; ChromeOS is 100.115.92.2:5555. Verify model before use.
+
 - v0.2.6 preparation (18 Oct): Wallet has mandatory native authentication,
   30 minute access and separate five minute protected fields, compact front/back
   review and distinct card print for eight kinds. The raw progress bar is replaced
@@ -130,8 +139,7 @@ Gotchas learned the hard way:
   30 minute Wallet unlock and separate five minute sensitive field grant
   supersede older optional protection wording. See the Wallet handover for
   current code, physical evidence and remaining checks. TECNO is now
-  `192.168.1.3:5555`; verify its model before testing. The old address currently
-  reaches ChromeOS. The owner now prioritizes v0.2.6 and the store review after Wallet polish;
+  `192.168.1.2:5555`; verify its model before testing. Addresses change. The owner now prioritizes v0.2.6 and the store review after Wallet polish;
   Circles remains queued.
 
 - Wallet live scanning and presentation (18 Oct): camera frames now use a
@@ -553,7 +561,9 @@ TestFlight refuse the upload; each build asks in TestFlight instead.
 
 ## Next
 
-- Owner’s latest priority, 18 Oct: commit/push the Wallet checkpoint and deploy
+- Owner’s latest priority, 18 Oct: ship the v0.2.7 startup/build repair first,
+  then resume the store review below.
+- Previous checkpoint: commit/push the Wallet checkpoint and deploy
   the web, tag v0.2.6 for both store builds, then review Google Play Console
   drafts, disclosures, feature graphic and phone/tablet screenshots. The beta
   should accept users outside the team: Play open testing and TestFlight

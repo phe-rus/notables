@@ -1,3 +1,4 @@
+<!-- Latest release repair: see docs/reviews/2026-10-18-release-startup.md. -->
 # Wallet context and resume checkpoint
 
 ## Current work, 18 October 2026, not yet complete
@@ -15,8 +16,8 @@ sync. Optional transfer to selected native devices must require source approval
 and a verified direct LAN path. That transfer and remote approval are not built.
 The source approval design is in the spec 0005 amendment.
 
-Physical TECNO now uses `192.168.1.3:5555`. The previous address currently
-identifies the Chromebook. Verify `ro.product.model` is `TECNO CI6` before every
+Physical TECNO now uses `192.168.1.2:5555`. ChromeOS is
+`100.115.92.2:5555`. Addresses change. Verify `ro.product.model` is `TECNO CI6` before every
 install or interaction; never infer identity from an old IP or an open ADB port.
 
 The owner authorized a development unlock so testing can continue while they
