@@ -89,3 +89,42 @@ test("folder colors survive renaming and device sync", async () => {
     color: "ocean",
   });
 });
+
+test("permanent deletion wins over an offline metadata edit", async () => {
+  for (const reverse of [false, true]) {
+    const first = new Library(createMemoryPersistence());
+    const second = new Library(createMemoryPersistence());
+    await Promise.all([first.loaded, second.loaded]);
+    first.doc.clientID = reverse ? 20 : 10;
+    second.doc.clientID = reverse ? 10 : 20;
+    const entry = first.create();
+    Y.applyUpdate(second.doc, Y.encodeStateAsUpdate(first.doc));
+    await first.remove(entry.id);
+    second.update(entry.id, { title: "Edited offline" });
+    Y.applyUpdate(first.doc, Y.encodeStateAsUpdate(second.doc));
+    Y.applyUpdate(second.doc, Y.encodeStateAsUpdate(first.doc));
+    expect(first.get(entry.id)).toBeUndefined();
+    expect(second.get(entry.id)).toBeUndefined();
+  }
+});
+
+test("moving a note to Recently Deleted survives an offline title edit and can be restored", async () => {
+  for (const reverse of [false, true]) {
+    const first = new Library(createMemoryPersistence());
+    const second = new Library(createMemoryPersistence());
+    await Promise.all([first.loaded, second.loaded]);
+    first.doc.clientID = reverse ? 20 : 10;
+    second.doc.clientID = reverse ? 10 : 20;
+    const entry = first.create();
+    Y.applyUpdate(second.doc, Y.encodeStateAsUpdate(first.doc));
+    first.update(entry.id, { trashedAt: 12345 });
+    second.update(entry.id, { title: "Edited offline" });
+    Y.applyUpdate(first.doc, Y.encodeStateAsUpdate(second.doc));
+    Y.applyUpdate(second.doc, Y.encodeStateAsUpdate(first.doc));
+    expect(first.get(entry.id)?.trashedAt).toBe(12345);
+    expect(second.getSnapshot().find((note) => note.id === entry.id)?.trashedAt).toBe(12345);
+    second.update(entry.id, { trashedAt: null });
+    Y.applyUpdate(first.doc, Y.encodeStateAsUpdate(second.doc));
+    expect(first.get(entry.id)?.trashedAt).toBeNull();
+  }
+});

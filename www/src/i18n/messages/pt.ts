@@ -2,6 +2,8 @@ import type { Messages } from "./en";
 
 export const pt: Messages = {
   finances: {
+    folderName: "FINANÇAS",
+    yearSheetHint: "Atualizado automaticamente pelo livro. Edite recibos e transações em Finanças.",
     borrowing: "Empréstimo recebido",
     repayment: "Reembolso",
     transfer: "Transferência",
@@ -82,6 +84,8 @@ export const pt: Messages = {
     off: "Desativado",
   },
   wallet: {
+    liveLooking: "A procurar os dados do cartão",
+    liveNoDetails: "Ainda sem dados. Aproxime o cartão e evite reflexos.",
     checkScannedNumber:
       "O número pode estar incompleto ou ter sido lido incorretamente. Compare com o cartão e corrija antes de guardar.",
     backNoDetails:
@@ -1062,6 +1066,7 @@ export const pt: Messages = {
     viewAsGallery: "Ver como galeria",
     viewAttachments: "Ver anexos",
     thisWeek: "Esta semana",
+    previous7Days: "Últimos 7 dias",
     previous30Days: "Últimos 30 dias",
     thisYear: "Este ano",
     circles: "Círculos",

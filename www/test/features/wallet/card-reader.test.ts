@@ -2,6 +2,7 @@ import { describe, expect, it } from "bun:test";
 import {
   type CardReading,
   createCardStability,
+  hasCardDetails,
 } from "../../../src/features/wallet/lib/card-reader";
 import { suggestCardFields } from "../../../src/features/wallet/lib/card-recognition";
 
@@ -66,4 +67,11 @@ it("does not automatically accept a repeatedly incomplete bank number", () => {
   const card = reading("VISA\n111 1111 1111 1111\n12/29");
   expect(stable(card)).toBe(false);
   expect(stable(card)).toBe(false);
+});
+
+it("keeps logo-only manual captures out of an empty Wallet review", () => {
+  expect(hasCardDetails(reading("VISA\nCONTACTLESS"))).toBe(false);
+  expect(hasCardDetails(reading("DESK\nKEYBOARD"))).toBe(false);
+  expect(hasCardDetails(reading("TEST BANK\n4111 1111 1111 1111\n12/29"))).toBe(true);
+  expect(hasCardDetails(reading("UMEME\nMeter No 00123456789"))).toBe(true);
 });

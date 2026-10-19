@@ -147,3 +147,37 @@ All required checks passed: 223 app tests, workspace type checks/tests/build,
 native frontend prerender, Cargo format/Clippy and 56 Rust tests with two ignored.
 Physical Finance control verification remains pending. The new TECNO address
 192.168.1.4 identifies TECNO CI6; the previous 192.168.1.2 identifies ChromeOS.
+
+## Native receipts, yearly sheets and iOS list follow-up
+
+The TECNO's actual picker test first reproduced unreadable File references. Selected image bytes are now copied before releasing it,
+with a total 40 MB and ten-image bound. A second failure was Finance choosing
+Tesseract document mode inside Android rather than the existing ML Kit adapter.
+Receipt OCR now uses createCardReader, including the existing native and browser
+fallback policy. The physical synthetic receipt filled UGX 1250 and reference
+QA-LEDGER-261019, and its enlarged image was verified visually. Final saved
+receipt reopening and deletion checks remain pending. Owner records were not
+modified. No debug probes remain in source.
+
+The owner's additional requests are implemented: a FINANCES folder with stable
+yearly spreadsheet note IDs, live projections of the canonical ledger, no
+editable duplicate financial records, and preserved folder renaming/removal.
+Added Previous 7 Days after This Week and before Previous 30 Days. The notes
+scroller has bounded flex sizing, non-shrinking groups and a real safe-area end
+spacer. Real iPhone scrolling remains unverified. README uses the newer six
+store screenshots, copied locally for reliable rendering.
+
+The complete required checks pass: 228 app tests, all workspace checks/builds,
+native prerender, Cargo format/Clippy and 56 native tests with two ignored.
+ios-v0.2.9 (10022) has compiled and uploaded successfully, and Apple processed
+it as VALID. Export declaration is prepared and confirmation requested before
+Save. The physical Face ID issue is not yet declared resolved.
+
+## Wallet verified on iPhone
+
+The owner installed TestFlight 0.2.9 (10022) and confirmed that Wallet stays
+open after Face ID. This closes the reported immediate relock regression.
+Export compliance was submitted with explicit confirmation; the existing
+Pherus developers group lists the build as Testing. No external testers were
+added. Google's automatic listing checks also completed successfully and the
+seven updated listing changes are now in review.

@@ -2,6 +2,8 @@ import type { Messages } from "./en";
 
 export const ar: Messages = {
   finances: {
+    folderName: "المالية",
+    yearSheetHint: "يُحدّث تلقائيًا من سجلك. عدّل الإيصالات والمعاملات في المالية.",
     borrowing: "اقتراض",
     repayment: "سداد قرض",
     transfer: "تحويل",
@@ -80,6 +82,8 @@ export const ar: Messages = {
     off: "متوقف",
   },
   wallet: {
+    liveLooking: "جارٍ البحث عن تفاصيل البطاقة",
+    liveNoDetails: "لم تُكتشف تفاصيل بعد. قرّب البطاقة وتجنب انعكاس الضوء.",
     checkScannedNumber:
       "قد يكون رقم البطاقة غير مكتمل أو مقروءاً بشكل خاطئ. قارنه ببطاقتك وصححه قبل الحفظ.",
     backNoDetails:
@@ -1131,6 +1135,7 @@ export const ar: Messages = {
     viewAsGallery: "عرض كمعرض",
     viewAttachments: "عرض المرفقات",
     thisWeek: "هذا الأسبوع",
+    previous7Days: "الأيام السبعة الماضية",
     previous30Days: "آخر 30 يومًا",
     thisYear: "هذا العام",
     circles: "الدوائر",

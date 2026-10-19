@@ -44,6 +44,7 @@ import { saveNoteContent } from "../../../platform/storage/note-content-cache";
 import { AiAssist } from "../../ai/components/ai-assist";
 import { PendingNarration } from "../../books/narration/components/pending-narration";
 import { useBook } from "../../books/store/book-store";
+import { FinanceYearSheet } from "../../finances/components/finance-year-sheet";
 import { formatFull } from "../../library/lib/date-format";
 import { notePreview } from "../../library/lib/note-preview";
 import { rememberNoteTransition } from "../../library/lib/note-transition";
@@ -488,7 +489,9 @@ function NoteEditorScreen({
             </div>
           )}
 
-          {spreadsheet ? (
+          {entry.financeYear ? (
+            <FinanceYearSheet doc={provider.doc} entry={entry} />
+          ) : spreadsheet ? (
             <SpreadsheetEditor doc={provider.doc} entry={entry} />
           ) : (
             <article

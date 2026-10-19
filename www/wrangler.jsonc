@@ -19,7 +19,10 @@
   // Rooms where a person's devices and browsers meet (spec 0005). They pass
   // messages through and store nothing; SQLite backed, as the free plan needs.
   "durable_objects": {
-    "bindings": [{ "name": "SPACE_ROOMS", "class_name": "SpaceRoom" }]
+    "bindings": [{ "name": "SPACE", "class_name": "space" }]
   },
-  "migrations": [{ "tag": "v1", "new_sqlite_classes": ["SpaceRoom"] }]
+  "migrations": [
+    { "tag": "v1", "new_sqlite_classes": ["SpaceRoom"] },
+    { "tag": "v2", "renamed_classes": [{ "from": "SpaceRoom", "to": "space" }] }
+  ]
 }

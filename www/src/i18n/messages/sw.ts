@@ -2,6 +2,9 @@ import type { Messages } from "./en";
 
 export const sw: Messages = {
   finances: {
+    folderName: "FEDHA",
+    yearSheetHint:
+      "Husasishwa kiotomatiki kutoka kwenye leja. Hariri risiti na miamala kwenye Fedha.",
     borrowing: "Mkopo uliopokelewa",
     repayment: "Malipo ya mkopo",
     transfer: "Uhamisho",
@@ -80,6 +83,8 @@ export const sw: Messages = {
     off: "Imezimwa",
   },
   wallet: {
+    liveLooking: "Inatafuta maelezo ya kadi",
+    liveNoDetails: "Bado hakuna maelezo. Sogeza kadi karibu na epuka mwanga unaoakisiwa.",
     checkScannedNumber:
       "Nambari ya kadi inaweza kuwa haijakamilika au imesomwa vibaya. Linganisha na kadi yako na urekebishe kabla ya kuhifadhi.",
     backNoDetails:
@@ -1067,6 +1072,7 @@ export const sw: Messages = {
     viewAsGallery: "Onyesha matunzio",
     viewAttachments: "Onyesha viambatisho",
     thisWeek: "Wiki hii",
+    previous7Days: "Siku 7 zilizopita",
     previous30Days: "Siku 30 zilizopita",
     thisYear: "Mwaka huu",
     circles: "Vikundi",

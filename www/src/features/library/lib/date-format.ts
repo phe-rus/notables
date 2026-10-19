@@ -31,6 +31,9 @@ export function bucket(ms: number, now = Date.now()): string {
   const monday = new Date(startOfToday);
   monday.setDate(monday.getDate() - ((monday.getDay() + 6) % 7));
   if (ms >= monday.getTime()) return t("workspace.thisWeek");
+  const week = new Date(startOfToday);
+  week.setDate(week.getDate() - 7);
+  if (ms >= week.getTime()) return t("workspace.previous7Days");
   const month = new Date(startOfToday);
   month.setDate(month.getDate() - 30);
   if (ms >= month.getTime()) return t("workspace.previous30Days");

@@ -54,10 +54,12 @@ interface Connected {
   device: SpaceDevice | null;
   direct: LocalLink | null;
   retry: ReturnType<typeof setTimeout> | null;
+  relayTimer: ReturnType<typeof setTimeout> | null;
 }
 
 let room: RoomSocket | null = null;
 let lastNoteIds: NoteIds | null = null;
+let stopResuming: (() => void) | null = null;
 let stopWatching: (() => void) | null = null;
 const peers = new Map<string, Connected>();
 const opened = new Set<string>();
@@ -113,8 +115,8 @@ function changed() {
  * Keeps this device in step with the space's other devices while it runs
  * (spec 0005, step 6). They meet in the space's room, named from its
  * secret; frames are sealed with the space's frame key, so the room passes
- * ciphertext between device ids and stores nothing. This first rung relays
- * through the room; direct links on the same network come next.
+ * ciphertext between device ids and stores nothing. Local links replace
+ * the relay when available and survive a lost room connection.
  */
 export function startSpaceSync(noteIds: NoteIds) {
   lastNoteIds = noteIds;
@@ -146,6 +148,7 @@ export function startSpaceSync(noteIds: NoteIds) {
       device: null,
       direct: null,
       retry: null,
+      relayTimer: null,
       peer: null as unknown as SpacePeer,
     };
     entry.peer = new SpacePeer(key, docs, hello, (info) => {
@@ -156,7 +159,13 @@ export function startSpaceSync(noteIds: NoteIds) {
     });
     entry.peer.shareMedia(peerMedia, mediaArrived);
     peers.set(id, entry);
-    entry.peer.attach(link);
+    if (typeof RTCPeerConnection === "undefined") entry.peer.attach(link);
+    else
+      entry.relayTimer = setTimeout(() => {
+        entry.relayTimer = null;
+        if (peers.get(id) === entry && !entry.direct?.isOpen && current.open)
+          entry.peer.attach(link);
+      }, 8000);
     for (const name of opened) entry.peer.pin(name);
     if (me < id) connectDirect(id, entry);
   };
@@ -168,13 +177,25 @@ export function startSpaceSync(noteIds: NoteIds) {
     );
     entry.direct = link;
     link.on("open", () => {
-      if (entry.direct === link) entry.peer.attach(link);
+      if (entry.direct === link) {
+        if (entry.relayTimer) clearTimeout(entry.relayTimer);
+        entry.relayTimer = null;
+        entry.peer.attach(link);
+      }
     });
     link.on("data", (data) => entry.peer.receive(data));
     link.on("close", () => {
       if (entry.direct !== link) return;
       entry.direct = null;
       if (peers.get(id) !== entry) return;
+      if (!current.open || !current.online.includes(id)) {
+        peers.delete(id);
+        dispose(entry);
+        changed();
+        return;
+      }
+      if (entry.relayTimer) clearTimeout(entry.relayTimer);
+      entry.relayTimer = null;
       entry.peer.attach(entry.link);
       if (me < id)
         entry.retry = setTimeout(() => {
@@ -192,6 +213,7 @@ export function startSpaceSync(noteIds: NoteIds) {
   const dispose = (entry: Connected) => {
     if (entry.device) remember({ ...entry.device, online: false, lastSeen: Date.now() });
     if (entry.retry) clearTimeout(entry.retry);
+    if (entry.relayTimer) clearTimeout(entry.relayTimer);
     const direct = entry.direct;
     entry.direct = null;
     direct?.close();
@@ -202,7 +224,7 @@ export function startSpaceSync(noteIds: NoteIds) {
     notices?.presence(online);
     for (const id of online) if (id !== me && !removedHere.has(id)) connect(id);
     for (const [id, entry] of peers) {
-      if (online.includes(id)) continue;
+      if (online.includes(id) || entry.direct?.isOpen) continue;
       peers.delete(id);
       dispose(entry);
     }
@@ -233,8 +255,11 @@ export function startSpaceSync(noteIds: NoteIds) {
     if (entry && frame) entry.peer.receive(frame);
   });
   current.on("close", () => {
-    for (const entry of peers.values()) dispose(entry);
-    peers.clear();
+    for (const [id, entry] of peers) {
+      if (entry.direct?.isOpen) continue;
+      peers.delete(id);
+      dispose(entry);
+    }
     changed();
   });
   stopWatching = watchOpenDocuments({
@@ -248,13 +273,25 @@ export function startSpaceSync(noteIds: NoteIds) {
       for (const { peer } of peers.values()) peer.unpin(name);
     },
   });
+  const resume = () => {
+    if (document.visibilityState === "visible") current.reconnect();
+  };
+  document.addEventListener("visibilitychange", resume);
+  window.addEventListener("online", resume);
+  stopResuming = () => {
+    document.removeEventListener("visibilitychange", resume);
+    window.removeEventListener("online", resume);
+  };
   current.start();
 }
 
 /** Leaves the room: before joining another space, or when the app closes. */
 export function stopSpaceSync() {
+  stopResuming?.();
+  stopResuming = null;
   for (const entry of peers.values()) {
     if (entry.retry) clearTimeout(entry.retry);
+    if (entry.relayTimer) clearTimeout(entry.relayTimer);
     const direct = entry.direct;
     entry.direct = null;
     direct?.close();

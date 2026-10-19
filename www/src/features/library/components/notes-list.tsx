@@ -204,14 +204,14 @@ export function NotesList({
     <section
       aria-label={view.title}
       className={cn(
-        "relative flex w-full flex-col md:w-[330px] md:shrink-0 md:border-r md:border-separator/70",
+        "relative flex min-h-0 w-full flex-col md:w-[330px] md:shrink-0 md:border-r md:border-separator/70",
         options.layout === "list" ? "bg-fill/45" : "bg-surface",
         className,
       )}
     >
       <header
         data-tauri-drag-region
-        className="flex flex-col gap-3 px-4 pt-[max(12px,env(safe-area-inset-top))] pb-2.5"
+        className="flex shrink-0 flex-col gap-3 px-4 pt-[max(12px,env(safe-area-inset-top))] pb-2.5"
       >
         {preferences.sidebar.collapsed && <CollapsedSidebarControls />}
         <div data-tauri-drag-region className="flex items-center justify-between">
@@ -367,7 +367,7 @@ export function NotesList({
       <div
         ref={scroller}
         onScroll={() => swiped && setSwiped(null)}
-        className="flex grow flex-col overflow-y-auto px-4 pb-28 md:pb-8"
+        className="flex min-h-0 flex-1 flex-col overflow-y-auto overscroll-y-contain px-4"
       >
         <BookShelf
           books={shelfBooks}
@@ -381,8 +381,8 @@ export function NotesList({
             key={group.label ?? `group-${index}`}
             className={
               options.layout === "gallery"
-                ? "grid grid-cols-3 gap-x-3 gap-y-4 pb-5"
-                : "flex flex-col pb-5"
+                ? "grid shrink-0 grid-cols-3 gap-x-3 gap-y-4 pb-5"
+                : "flex shrink-0 flex-col pb-5"
             }
           >
             {group.label && (
@@ -447,6 +447,10 @@ export function NotesList({
             </div>
           </div>
         ))}
+        <div
+          aria-hidden="true"
+          className="h-[calc(112px+env(safe-area-inset-bottom))] shrink-0 md:h-8"
+        />
       </div>
       <AnimatePresence>
         {selecting && (

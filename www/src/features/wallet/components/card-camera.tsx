@@ -3,9 +3,16 @@ import { useEffect, useRef, useState } from "react";
 import { currentLanguage, t } from "../../../i18n/i18n";
 import { readCardCodes } from "../lib/card-codes";
 import { captureCardFrame, openCardCamera } from "../lib/card-image";
-import { type CardReading, createCardReader, createCardStability } from "../lib/card-reader";
+import {
+  type CardReading,
+  createCardReader,
+  createCardStability,
+  hasCardDetails,
+} from "../lib/card-reader";
 import { suggestCardFields } from "../lib/card-recognition";
-import { reviewWalletReading } from "../store/wallet-store";
+import { withWalletSystemPrompt } from "../lib/wallet-auth";
+import { kindMessageKeys } from "../model/wallet-model";
+import { resumeWalletCapture, reviewWalletReading } from "../store/wallet-store";
 
 /** Keep the preview alive while recognizing; never queue camera frames. */
 export function CardCamera({
@@ -17,6 +24,7 @@ export function CardCamera({
 }) {
   const video = useRef<HTMLVideoElement>(null);
   const shutter = useRef(false);
+  const [detected, setDetected] = useState<CardReading | null>(null);
   const [phase, setPhase] = useState<"opening" | "scanning" | "detected" | "error">("opening");
   useEffect(() => {
     let active = true;
@@ -44,22 +52,22 @@ export function CardCamera({
       try {
         const reading = await reader.read(canvas);
         if (!active) return;
+        setDetected(reading);
         const automatic = stable(reading);
-        setPhase(reading.confidence >= 65 && reading.text.trim() ? "detected" : "scanning");
+        setPhase(reading.confidence >= 65 && hasCardDetails(reading) ? "detected" : "scanning");
         if (automatic || shutter.current) {
           shutter.current = false;
-          if (!reading.text.trim()) {
-            setPhase("error");
-          } else {
-            const codes = await readCardCodes(canvas).catch(() => []);
-            if (!active) return;
-            const text = [reading.text, ...codes].join("\n");
+          const codes = await readCardCodes(canvas).catch(() => []);
+          if (!active) return;
+          const text = [reading.text, ...codes].join("\n");
+          const complete = {
+            ...reading,
+            text,
+            suggestions: { ...suggestCardFields(text), palette: reading.suggestions.palette },
+          };
+          if (!text.trim() || (!onRead && !hasCardDetails(complete))) setPhase("error");
+          else {
             stop();
-            const complete = {
-              ...reading,
-              text,
-              suggestions: { ...suggestCardFields(text), palette: reading.suggestions.palette },
-            };
             if (onRead) onRead(complete);
             else reviewWalletReading(complete);
             return;
@@ -73,7 +81,11 @@ export function CardCamera({
       }
       if (active) timer = setTimeout(() => void tick(), 350);
     };
-    void openCardCamera()
+    void withWalletSystemPrompt(async () => {
+      stream = await openCardCamera();
+      await resumeWalletCapture();
+      return stream;
+    })
       .then(async (media) => {
         stream = media;
         if (!active || !video.current) {
@@ -121,6 +133,39 @@ export function CardCamera({
               ? t("wallet.scanRetry")
               : t("wallet.autoScanHint")}
       </p>
+      {!onRead && detected && (
+        <div
+          className="rounded-2xl bg-fill px-4 py-3 text-subheadline"
+          aria-live="polite"
+          aria-atomic="true"
+        >
+          <p className="font-medium text-label">
+            {detected.suggestions.kind === "other"
+              ? t("wallet.liveLooking")
+              : t(kindMessageKeys[detected.suggestions.kind])}
+          </p>
+          {hasCardDetails(detected) ? (
+            <dl className="mt-2 space-y-1 text-footnote text-label-secondary">
+              {(["number", "meter", "account", "holder", "expiry"] as const).map((key) => {
+                const value = detected.suggestions[key];
+                if (!value) return null;
+                return (
+                  <div key={key} className="flex items-baseline justify-between gap-3">
+                    <dt>{t(`wallet.${key}`)}</dt>
+                    <dd className="max-w-[65%] truncate text-end tabular-nums">
+                      {key === "number" || key === "meter" || key === "account"
+                        ? `•••• ${value.slice(-4)}`
+                        : value}
+                    </dd>
+                  </div>
+                );
+              })}
+            </dl>
+          ) : (
+            <p className="mt-1 text-footnote text-label-secondary">{t("wallet.liveNoDetails")}</p>
+          )}
+        </div>
+      )}
       <IconButton
         variant="default"
         className="size-14 self-center"

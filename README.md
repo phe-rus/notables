@@ -26,8 +26,14 @@
 </p>
 
 <p align="center">
-  <a href="https://pherus.org/showcase/notables"><img src="https://pherus.org/showcase/notables-journal.jpg" width="49%" alt="A journal entry, A slow Sunday, open beside the notes list and the sidebar"></a>
-  <a href="https://pherus.org/showcase/notables"><img src="https://pherus.org/showcase/notables-invoice.jpg" width="49%" alt="An invoice for Harbour Café being edited, with its signed PDF preview and QR check"></a>
+  <a href="https://pherus.org/showcase/notables"><img src="docs/images/notables-notes.png" width="32%" alt="The current Workspace with folders and Personal"></a>
+  <a href="https://pherus.org/showcase/notables"><img src="docs/images/notables-note.png" width="32%" alt="Writing with headings, sketches and checklists"></a>
+  <a href="https://pherus.org/showcase/notables"><img src="docs/images/notables-reader.png" width="32%" alt="Reading a book in Notables"></a>
+</p>
+<p align="center">
+  <a href="https://pherus.org/showcase/notables"><img src="docs/images/notables-calendar.png" width="32%" alt="Plans in the current calendar"></a>
+  <a href="https://pherus.org/showcase/notables"><img src="docs/images/notables-invoice.png" width="32%" alt="Finances and document preview"></a>
+  <a href="https://pherus.org/showcase/notables"><img src="docs/images/notables-comic.png" width="32%" alt="The illustrated welcome comic"></a>
 </p>
 
 ---

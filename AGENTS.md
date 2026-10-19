@@ -115,6 +115,15 @@ Gotchas learned the hard way:
 
 ## Status (October 2026)
 
+- Sync regression checkpoint (19 Oct): see
+  [the sync recovery review](docs/reviews/2026-10-19-sync-recovery.md).
+  Regression tests reproduced missing catch-up after transport changes, missing
+  bodies for new notes, missed offline text deletion, and deleted notes returning
+  after offline metadata edits. All required repository checks pass. Native apps now try the
+  local link before relay and retain open local links if the room disconnects.
+  `SPACE` replaces `SPACE_ROOMS`; the `space` export has a rename migration from
+  `SpaceRoom`, intended namespace `notables_space`. Do not remove migration v1.
+
 - 19 October: updated Play listing had remained a draft while the older
   submission published. Saved and submitted the seven updated listing changes
   (copy, feature graphic, phone and both tablet screenshot sets). Console now
@@ -598,11 +607,25 @@ TestFlight refuse the upload; each build asks in TestFlight instead.
 
 ## Next
 
-- Finish ios-v0.2.9 upload and physical Wallet Face ID check. Finance receipt
-  previews/removal and MTN conversation imports are implemented; confirm the
-  controls physically on the TECNO before calling that verification complete.
-  Parser fixtures are anonymised. Payments, borrowing, repayments, transfers
-  and fees remain distinct even when they share a reference.
+- Current priority (19 Oct): verify the sync recovery changes on iPhone,
+  TECNO and ChromeOS after releasing a shared build. Both Android production
+  apps report 0.2.8 (10021); iPhone reports 0.2.9 (10022). LAN discovery without
+  internet, direct internet ICE traversal and visible history remain unfinished.
+  Wallet: Face ID stays open on 0.2.9, confirmed by the owner; live camera OCR
+  still fails on iPhone, and NFC closes/relocks it. System prompt lifecycle fixes
+  have regression coverage but are not yet physically verified on iPhone.
+
+- ios-v0.2.9 (10022) is Testing in the existing Pherus developers group.
+  Export answers were submitted with owner confirmation. The owner physically
+  confirmed Face ID now opens Wallet and keeps cards visible.
+- Finance conversation imports, receipt controls and native receipt recognition
+  are implemented. The TECNO read UGX 1250 and the reference from a synthetic
+  receipt, and enlarged its image. Final save/removal checks remain pending.
+  FINANCES creates stable yearly spreadsheet views of the ledger; they derive
+  from the canonical records. The folder can be renamed or removed.
+- The notes list now includes Previous 7 Days and a real bottom spacer for
+  safe-area clearance. Confirm scrolling physically on iOS. README screenshots
+  use the newer store set. Combined checks pass: 228 app, 56 Rust, two ignored.
 
 - Owner’s latest priority, 19 Oct: iPhone Wallet shows Face ID, then stays locked.
   Tao 0.37.1 emits Suspended on resign-active but only Focused(true) when

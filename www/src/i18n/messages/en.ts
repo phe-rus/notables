@@ -4,6 +4,9 @@
  */
 export const en = {
   finances: {
+    folderName: "FINANCES",
+    yearSheetHint:
+      "Updates from your ledger automatically. Edit receipts and transactions in Finances.",
     borrowing: "Borrowing",
     repayment: "Loan repayment",
     transfer: "Transfer",
@@ -84,6 +87,8 @@ export const en = {
     off: "Off",
   },
   wallet: {
+    liveLooking: "Looking for card details",
+    liveNoDetails: "No details found yet. Move closer and avoid glare.",
     checkScannedNumber:
       "The card number may be incomplete or misread. Compare it with your card and correct it before saving.",
     backNoDetails:
@@ -1057,6 +1062,7 @@ export const en = {
     viewAsGallery: "View as Gallery",
     viewAttachments: "View Attachments",
     thisWeek: "This Week",
+    previous7Days: "Previous 7 Days",
     previous30Days: "Previous 30 Days",
     thisYear: "This Year",
     circles: "Circles",

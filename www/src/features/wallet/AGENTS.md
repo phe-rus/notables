@@ -292,3 +292,31 @@ All required workspace and native Linux checks passed: 220 app tests and
 56 Rust tests, with two expected ignored tests. The UIKit adapter requires
 macOS CI compilation and physical Face ID verification in ios-v0.2.9.
 Do not describe the physical iPhone issue as resolved before that check.
+
+## Physical Face ID confirmation, 19 October
+
+The owner installed TestFlight 0.2.9 (10022) and explicitly confirmed:
+"Wallet now stays open" after Face ID. iOS CI compiled the UIKit adapter and
+uploaded the build successfully. Export answers were submitted with the
+owner's confirmation; the existing internal group lists the build as Testing.
+The reported immediate relock is now physically verified as resolved.
+
+## 19 October: iPhone scanner and NFC follow-up
+
+The owner confirmed Face ID keeps Wallet open on 0.2.9 (10022), then reported
+that live camera scanning does not extract details and NFC closes and relocks
+Wallet. NFC native sheets can blur the WebView and suspend the native vault.
+The pending system-prompt guard is distinct from authentication: it defers
+transient blur/locked/poll events, then checks native access after the sheet.
+Real document hiding, expired access and manual locking still clear access.
+Camera permission setup uses the same guard and checks access before scanning.
+The three NFC regressions cover successful return, real backgrounding and
+expiry. Physical iPhone camera/NFC verification is still required. Do not claim
+the OCR report is solved just because the permission lifecycle is guarded.
+
+The owner clarified that live capture succeeds but bank-card review is empty.
+CardCamera now shows detected type, holder/expiry and masked identifiers live;
+manual capture stays scanning when neither OCR nor barcode text yields usable
+card fields, instead of opening an empty form. Automatic capture still requires
+two clear agreeing frames. Generic document captures keep accepting plain text.
+The engine's accuracy on the owner's iPhone bank card remains unverified.

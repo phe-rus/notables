@@ -3,6 +3,8 @@ import type { Messages } from "./en";
 /** Simplified Chinese. Chinese has one plural form, so plurals carry only `other`. */
 export const zh: Messages = {
   finances: {
+    folderName: "财务",
+    yearSheetHint: "从账本自动更新。请在财务中编辑收据和交易。",
     borrowing: "借款",
     repayment: "还款",
     transfer: "转账",
@@ -79,6 +81,8 @@ export const zh: Messages = {
     off: "关闭",
   },
   wallet: {
+    liveLooking: "正在识别卡片信息",
+    liveNoDetails: "尚未识别到信息。请靠近卡片并避免反光。",
     checkScannedNumber: "卡号可能不完整或识别有误。请与卡片核对并在保存前更正。",
     backNoDetails: "背面未找到新信息。请尝试更近、更清晰的照片。正面信息保持不变。",
     security: "受保护的详细信息",
@@ -1003,6 +1007,7 @@ export const zh: Messages = {
     viewAsGallery: "以画廊显示",
     viewAttachments: "查看附件",
     thisWeek: "本周",
+    previous7Days: "过去7天",
     previous30Days: "过去30天",
     thisYear: "今年",
     circles: "圈子",

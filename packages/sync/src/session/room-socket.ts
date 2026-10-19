@@ -22,7 +22,7 @@ const RETRY_FIRST = 1000;
 const RETRY_MOST = 30_000;
 
 /**
- * A seat in a room on the server (the SpaceRoom Durable Object), which
+ * A seat in a room on the server (the space Durable Object), which
  * passes messages between the devices in it and says who is there. It
  * stores nothing. Reconnects by itself, waiting longer each time.
  */
@@ -65,6 +65,19 @@ export class RoomSocket extends Emitter<Events> {
     socket?.close();
   }
 
+  /** A resumed app must not trust a socket left open while the OS suspended it. */
+  reconnect() {
+    if (this.#stopped) return;
+    if (this.#timer) clearTimeout(this.#timer);
+    this.#timer = null;
+    const socket = this.#socket;
+    this.#socket = null;
+    socket?.close();
+    this.#online = [];
+    this.emit("close");
+    this.#connect();
+  }
+
   /** To one device, or to everyone else in the room when `to` is null. */
   send(to: string | null, body: string): boolean {
     if (!this.open) return false;
@@ -79,10 +92,12 @@ export class RoomSocket extends Emitter<Events> {
     const socket = new WebSocket(url);
     this.#socket = socket;
     socket.addEventListener("open", () => {
+      if (this.#socket !== socket) return;
       this.#retry = RETRY_FIRST;
       this.emit("open");
     });
     socket.addEventListener("message", (event) => {
+      if (this.#socket !== socket) return;
       if (typeof event.data !== "string") return;
       let message: ServerMessage;
       try {

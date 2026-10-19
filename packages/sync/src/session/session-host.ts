@@ -67,8 +67,7 @@ export class SessionHost {
   offer(name: string) {
     this.#queue = this.#queue
       .then(async () => {
-        if (this.#served.has(name)) return;
-        await this.#serve(name);
+        if (!this.#served.has(name)) await this.#serve(name);
         const ask = encoding.createEncoder();
         syncProtocol.writeSyncStep1(ask, (this.#served.get(name) as Served).doc);
         this.#send(FrameKind.sync, name, encoding.toUint8Array(ask));

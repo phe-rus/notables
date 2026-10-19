@@ -40,6 +40,8 @@ export interface LibraryEntry {
   font?: NoteFont;
   folderId?: string | null;
   format?: "document" | "spreadsheet";
+  /** A generated yearly view of the canonical finance ledger. */
+  financeYear?: number;
   tags?: string[];
   manualTags?: string[];
   previewImage?: string | null;
@@ -57,6 +59,8 @@ export class Library {
   readonly doc = new Y.Doc();
   readonly entries = this.doc.getMap<LibraryEntry>("notes");
   readonly folders = this.doc.getMap<Folder>("folders");
+  readonly noteTrash = this.doc.getMap<number | null>("note-trash");
+  readonly removedNotes = this.doc.getMap<boolean>("removed-notes");
   readonly removedFolders = this.doc.getMap<boolean>("removed-folders");
   ready = false;
   #snapshot: LibraryEntry[] = [];
@@ -68,7 +72,23 @@ export class Library {
   readonly loaded: Promise<void>;
 
   constructor(private readonly persistence: Persistence = getPersistence()) {
-    this.entries.observe(() => this.#refresh());
+    const reconcile = (ids: Iterable<string>) => {
+      this.doc.transact(() => {
+        for (const id of ids) {
+          if (this.removedNotes.has(id)) this.entries.delete(id);
+          else if (this.noteTrash.has(id)) {
+            const entry = this.entries.get(id);
+            const trashedAt = this.noteTrash.get(id);
+            if (entry && entry.trashedAt !== trashedAt)
+              this.entries.set(id, { ...entry, trashedAt });
+          }
+        }
+      });
+      this.#refresh();
+    };
+    this.entries.observe((event) => reconcile(event.keysChanged));
+    this.removedNotes.observe((event) => reconcile(event.keysChanged));
+    this.noteTrash.observe((event) => reconcile(event.keysChanged));
     this.folders.observe(() => this.#refresh(true));
     this.removedFolders.observe(() => this.#refresh(true));
     this.loaded = this.persistence.bind("library", this.doc).then(() => {
@@ -178,6 +198,7 @@ export class Library {
   }
 
   get(id: string): LibraryEntry | undefined {
+    if (this.removedNotes.has(id)) return undefined;
     return this.entries.get(id) ?? this.#drafts.get(id);
   }
 
@@ -232,6 +253,7 @@ export class Library {
   update(id: string, patch: Partial<Omit<LibraryEntry, "id" | "origin" | "createdAt">>) {
     const current = this.get(id);
     if (!current) return;
+    if (patch.trashedAt !== undefined) this.noteTrash.set(id, patch.trashedAt);
     if (this.#drafts.has(id)) {
       const next = { ...current, ...patch };
       const content =
@@ -265,7 +287,10 @@ export class Library {
 
   async remove(id: string) {
     this.#drafts.delete(id);
-    this.entries.delete(id);
+    this.doc.transact(() => {
+      this.removedNotes.set(id, true);
+      this.entries.delete(id);
+    });
     await this.persistence.remove(`note:${id}`);
   }
 }

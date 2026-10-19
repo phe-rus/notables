@@ -20,7 +20,15 @@ interface Resize {
 }
 
 /** Each cell is its own Yjs key, so devices editing different cells merge independently. */
-export function SpreadsheetEditor({ doc, entry }: { doc: Y.Doc; entry: LibraryEntry }) {
+export function SpreadsheetEditor({
+  doc,
+  entry,
+  projection,
+}: {
+  doc: Y.Doc;
+  entry: LibraryEntry;
+  projection?: { cells: Record<string, string>; rows: number; csv: string };
+}) {
   const cells = useMemo(() => doc.getMap<string>("spreadsheet:cells"), [doc]);
   const settings = useMemo(() => doc.getMap<number | string>("spreadsheet:settings"), [doc]);
   const [revision, setRevision] = useState(0);
@@ -38,10 +46,10 @@ export function SpreadsheetEditor({ doc, entry }: { doc: Y.Doc; entry: LibraryEn
   }, [cells, settings]);
   const values = useMemo(() => {
     void revision;
-    return cells.toJSON();
-  }, [cells, revision]);
-  const rows = Math.max(10, Math.min(500, Number(settings.get("rows")) || 30));
-  const columns = Math.max(4, Math.min(52, Number(settings.get("columns")) || 8));
+    return projection?.cells ?? cells.toJSON();
+  }, [cells, revision, projection]);
+  const rows = Math.max(10, projection?.rows ?? Math.min(500, Number(settings.get("rows")) || 30));
+  const columns = Math.max(4, projection ? 6 : Math.min(52, Number(settings.get("columns")) || 8));
   const currency = String(settings.get("currency") ?? "");
   // Sizes live in the synced settings, so a column keeps its width on every device.
   const sizeOf = (kind: Resize["kind"], index: number) => {
@@ -139,7 +147,8 @@ export function SpreadsheetEditor({ doc, entry }: { doc: Y.Doc; entry: LibraryEn
               type: "tablerow",
               version: 1,
               children: Array.from({ length: Math.min(52, lastColumn) }, (_, column) => {
-                const value = calculateCell(`${columnName(column)}${row + 1}`, values);
+                const key = `${columnName(column)}${row + 1}`;
+                const value = projection ? (values[key] ?? "") : calculateCell(key, values);
                 return {
                   type: "tablecell",
                   version: 1,
@@ -159,9 +168,9 @@ export function SpreadsheetEditor({ doc, entry }: { doc: Y.Doc; entry: LibraryEn
     void saveNoteContent(entry.id, document);
     getLibrary().update(entry.id, { previewContent: previewContent(document) });
     if (noteDoc.title(doc) !== entry.title) noteDoc.setTitle(doc, entry.title);
-  }, [values, entry.title, entry.id, doc, formatter]);
+  }, [values, entry.title, entry.id, doc, formatter, projection]);
   const write = (key: string, value: string) => {
-    if (value.length > 4096) return;
+    if (projection || value.length > 4096) return;
     if (value) cells.set(key, value);
     else cells.delete(key);
     const current = getLibrary().get(entry.id);
@@ -175,10 +184,12 @@ export function SpreadsheetEditor({ doc, entry }: { doc: Y.Doc; entry: LibraryEn
       });
   };
   const display = (key: string) => {
+    if (projection) return values[key] ?? "";
     const value = calculateCell(key, values);
     return typeof value === "number" ? formatter.format(value) : value;
   };
-  const numeric = (key: string) => typeof calculateCell(key, values) === "number";
+  const numeric = (key: string) =>
+    projection ? /^F\d+$/.test(key) : typeof calculateCell(key, values) === "number";
   const exportCsv = async () => {
     const encode = (value: string) => `"${value.replaceAll('"', '""')}"`;
     const content = Array.from({ length: rows }, (_, row) =>
@@ -192,7 +203,7 @@ export function SpreadsheetEditor({ doc, entry }: { doc: Y.Doc; entry: LibraryEn
     ).join("\r\n");
     try {
       await saveFile(
-        new Blob(["\ufeff", content], { type: "text/csv;charset=utf-8" }),
+        new Blob(["\ufeff", projection?.csv ?? content], { type: "text/csv;charset=utf-8" }),
         fileNameFor(entry.title, "csv"),
         "text/csv",
       );
@@ -218,27 +229,32 @@ export function SpreadsheetEditor({ doc, entry }: { doc: Y.Doc; entry: LibraryEn
           size="icon-sm"
           variant="ghost"
           onClick={(event) =>
-            openMenu(event.currentTarget, [
-              {
-                label: t("spreadsheet.addRows"),
-                disabled: rows >= 500,
-                onSelect: () => settings.set("rows", Math.min(500, rows + 10)),
-              },
-              {
-                label: t("spreadsheet.addColumn"),
-                disabled: columns >= 52,
-                onSelect: () => settings.set("columns", columns + 1),
-              },
-              "divider",
-              { heading: t("spreadsheet.numberFormat") },
-              ...["", "USD", "UGX", "EUR", "GBP", "KES", "TZS"].map((code) => ({
-                label: code || t("spreadsheet.number"),
-                checked: code === currency,
-                onSelect: () => settings.set("currency", code),
-              })),
-              "divider",
-              { label: t("spreadsheet.exportCsv"), onSelect: () => void exportCsv() },
-            ])
+            openMenu(
+              event.currentTarget,
+              projection
+                ? [{ label: t("spreadsheet.exportCsv"), onSelect: () => void exportCsv() }]
+                : [
+                    {
+                      label: t("spreadsheet.addRows"),
+                      disabled: Boolean(projection) || rows >= 500,
+                      onSelect: () => settings.set("rows", Math.min(500, rows + 10)),
+                    },
+                    {
+                      label: t("spreadsheet.addColumn"),
+                      disabled: Boolean(projection) || columns >= 52,
+                      onSelect: () => settings.set("columns", columns + 1),
+                    },
+                    "divider",
+                    { heading: t("spreadsheet.numberFormat") },
+                    ...["", "USD", "UGX", "EUR", "GBP", "KES", "TZS"].map((code) => ({
+                      label: code || t("spreadsheet.number"),
+                      checked: code === currency,
+                      onSelect: () => settings.set("currency", code),
+                    })),
+                    "divider",
+                    { label: t("spreadsheet.exportCsv"), onSelect: () => void exportCsv() },
+                  ],
+            )
           }
         >
           <MoreIcon size={20} />
@@ -252,6 +268,7 @@ export function SpreadsheetEditor({ doc, entry }: { doc: Y.Doc; entry: LibraryEn
           ƒx
         </label>
         <input
+          readOnly={Boolean(projection)}
           id={`formula-${entry.id}`}
           aria-label={t("spreadsheet.formula")}
           value={values[selected] ?? ""}
@@ -316,6 +333,7 @@ export function SpreadsheetEditor({ doc, entry }: { doc: Y.Doc; entry: LibraryEn
                   return (
                     <td key={key} className="border border-separator p-0">
                       <CellInput
+                        readOnly={Boolean(projection)}
                         address={key}
                         raw={values[key] ?? ""}
                         display={display(key)}
@@ -357,15 +375,17 @@ export function SpreadsheetEditor({ doc, entry }: { doc: Y.Doc; entry: LibraryEn
           </tbody>
         </table>
       </div>
-      <button
-        type="button"
-        className="flex items-center justify-center gap-2 py-3 text-callout text-accent-text disabled:text-label-tertiary"
-        disabled={rows >= 500}
-        onClick={() => settings.set("rows", Math.min(500, rows + 10))}
-      >
-        <PlusIcon size={16} />
-        {t("spreadsheet.addRows")}
-      </button>
+      {!projection && (
+        <button
+          type="button"
+          className="flex items-center justify-center gap-2 py-3 text-callout text-accent-text disabled:text-label-tertiary"
+          disabled={Boolean(projection) || rows >= 500}
+          onClick={() => settings.set("rows", Math.min(500, rows + 10))}
+        >
+          <PlusIcon size={16} />
+          {t("spreadsheet.addRows")}
+        </button>
+      )}
     </section>
   );
 }
@@ -410,6 +430,7 @@ function CellInput({
   onChange,
   ...props
 }: {
+  readOnly?: boolean;
   address: string;
   raw: string;
   display: string;

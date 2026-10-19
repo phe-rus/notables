@@ -10,3 +10,16 @@ export async function withWalletAuthentication<T>(work: () => Promise<T>): Promi
     pending--;
   }
 }
+
+let systemPrompts = 0;
+export const walletSystemPromptPending = () => systemPrompts > 0;
+
+/** NFC and camera permission sheets may blur the WebView without backgrounding it. */
+export async function withWalletSystemPrompt<T>(work: () => Promise<T>): Promise<T> {
+  systemPrompts++;
+  try {
+    return await work();
+  } finally {
+    systemPrompts--;
+  }
+}

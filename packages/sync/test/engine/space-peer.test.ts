@@ -108,6 +108,53 @@ describe("syncing two devices of a space", () => {
     disconnect();
   });
 
+  it("catches up after switching from relay to a direct link", async () => {
+    const a = device();
+    const b = device();
+    note(a.docs, "1", "Before switching");
+    const { peerA, peerB, connect, disconnect } = pair(a, b);
+    connect();
+    await settle();
+    // An update can be in flight on the old transport when the new one opens.
+    peerA.attach({ send: () => {} });
+    a.docs.library?.getMap("notes").set("1", { title: "After switching" });
+    a.docs["note:1"]?.getText("body").insert(0, "New: ");
+    peerA.attach({ send: (data) => peerB.receive(data) });
+    peerB.attach({ send: (data) => peerA.receive(data) });
+    await settle();
+    expect(library(b.docs).get("1")?.title).toBe("After switching");
+    expect(text(b.docs, "1")).toBe(text(a.docs, "1"));
+    disconnect();
+  });
+
+  it("sends the body of a note created after the initial catch-up", async () => {
+    const a = device();
+    const b = device();
+    const { connect, disconnect } = pair(a, b);
+    connect();
+    await settle();
+    note(a.docs, "later", "Created while connected");
+    await settle();
+    expect(library(b.docs).has("later")).toBe(true);
+    expect(text(b.docs, "later")).toBe("Created while connected");
+    disconnect();
+  });
+
+  it("syncs text removed offline even when no new characters were inserted", async () => {
+    const a = device();
+    const b = device();
+    note(a.docs, "1", "Keep remove");
+    const { connect, disconnect } = pair(a, b);
+    connect();
+    await settle();
+    disconnect();
+    a.docs["note:1"]?.getText("body").delete(4, 7);
+    connect();
+    await settle();
+    expect(text(b.docs, "1")).toBe("Keep");
+    disconnect();
+  });
+
   it("never brings back a note this device erased", async () => {
     const a = device();
     const b = device();

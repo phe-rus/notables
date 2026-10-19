@@ -37,12 +37,15 @@ import { DocumentScanner } from "../../capture/components/document-scanner";
 import { currencyOptions } from "../../invoices/lib/currencies";
 import { getIssuerDefaults } from "../../invoices/lib/issuer-profile";
 import { getInvoiceStore } from "../../invoices/store/invoice-store";
+import { getLibrary, useLibraryReady } from "../../library/store/library-store";
 import { financeLedger, ledgerCsv, suggestTransaction } from "../lib/ledger";
 import {
   type MobileMoneySuggestion,
   parseMobileMoneyMessages,
   sameImportedTransaction,
 } from "../lib/mobile-money";
+import { copyPickedReceipts } from "../lib/picked-receipts";
+import { ensureFinanceSheets } from "../lib/year-sheets";
 import type { FinanceTransaction } from "../model/transaction";
 import { getFinanceStore, useTransactions } from "../store/finance-store";
 
@@ -66,6 +69,10 @@ const draftFor = (source: FinanceTransaction["source"] = "manual"): Draft => ({
 export function FinanceLedger({ documents }: { documents: InvoiceDocument[] }) {
   const transactions = useTransactions();
   const rows = useMemo(() => financeLedger(transactions, documents), [transactions, documents]);
+  const ready = useLibraryReady();
+  useEffect(() => {
+    if (ready) ensureFinanceSheets(getLibrary(), rows);
+  }, [ready, rows]);
   const [open, setOpen] = useState(false);
   const [draft, setDraft] = useState<Draft | null>(null);
   const [files, setFiles] = useState<File[]>([]);
@@ -87,18 +94,22 @@ export function FinanceLedger({ documents }: { documents: InvoiceDocument[] }) {
     setQueue([]);
     setFiles(images);
     try {
-      const { prepareCardImage, recognizeCard } = await import("../../wallet/lib/card-recognition");
+      const { prepareCardImage } = await import("../../wallet/lib/card-recognition");
+      const { createCardReader } = await import("../../wallet/lib/card-reader");
+      const reader = createCardReader(currentLanguage());
       const texts: string[] = [];
-      for (const image of images.slice(0, 10)) {
-        const canvas = await prepareCardImage(image);
-        try {
-          texts.push(
-            (await recognizeCard(canvas, currentLanguage(), () => {}, "document").result).text,
-          );
-        } finally {
-          canvas.width = 0;
-          canvas.height = 0;
+      try {
+        for (const image of images.slice(0, 10)) {
+          const canvas = await prepareCardImage(image);
+          try {
+            texts.push((await reader.read(canvas)).text);
+          } finally {
+            canvas.width = 0;
+            canvas.height = 0;
+          }
         }
+      } finally {
+        reader.stop();
       }
       const text = texts.join("\n");
       const suggestion = suggestTransaction(text);
@@ -230,15 +241,19 @@ export function FinanceLedger({ documents }: { documents: InvoiceDocument[] }) {
       <input
         ref={input}
         type="file"
-        accept="image/*"
+        accept="image/png,image/jpeg,image/webp"
         multiple
         hidden
-        onChange={(event) => {
-          const images = [...(event.target.files ?? [])]
-            .filter((file) => file.type.startsWith("image/"))
-            .slice(0, 10);
-          event.target.value = "";
-          if (images.length) void scan(images);
+        onChange={async (event) => {
+          const picker = event.currentTarget;
+          try {
+            const images = await copyPickedReceipts([...(picker.files ?? [])], () => {
+              picker.value = "";
+            });
+            if (images.length) await scan(images);
+          } catch {
+            toast.error(t("capture.scanFailed"));
+          }
         }}
       />
       <DocumentScanner

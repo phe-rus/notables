@@ -17,7 +17,7 @@ interface Seat {
  * which socket belongs to which device, kept on the sockets themselves so
  * the room can hibernate between messages.
  */
-export class SpaceRoom extends DurableObject {
+export class Space extends DurableObject {
   override async fetch(request: Request): Promise<Response> {
     if (request.headers.get("Upgrade") !== "websocket") {
       return new Response("Expected a WebSocket", { status: 426 });

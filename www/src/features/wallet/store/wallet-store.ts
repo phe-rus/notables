@@ -10,7 +10,12 @@ import {
   recognizeCard,
   suggestCardFields,
 } from "../lib/card-recognition";
-import { walletAuthenticationPending, withWalletAuthentication } from "../lib/wallet-auth";
+import {
+  walletAuthenticationPending,
+  walletSystemPromptPending,
+  withWalletAuthentication,
+  withWalletSystemPrompt,
+} from "../lib/wallet-auth";
 import { resumedWalletStatus, WalletFailure, walletService } from "../lib/wallet-service";
 import { redactCard } from "../model/card-secrets";
 import type {
@@ -172,6 +177,13 @@ async function applyStatus(status: WalletStatus, token: number) {
   }
 }
 
+export async function resumeWalletCapture() {
+  if (!wallet.get().status?.initialized) return;
+  const token = epoch;
+  await applyStatus(await resumedWalletStatus(), token);
+  if (token !== epoch || wallet.get().status?.locked) throw new WalletFailure("locked");
+}
+
 export const refreshWallet = () =>
   run(async (token) => applyStatus(await walletService.status(), token));
 export const initializeWallet = () =>
@@ -321,7 +333,7 @@ export function mountWallet() {
   let unlisten: (() => void) | undefined;
   void walletService
     .onLocked((generation) => {
-      if (walletAuthenticationPending()) return;
+      if (walletAuthenticationPending() || walletSystemPromptPending()) return;
       const status = wallet.get().status;
       if (status && generation <= status.generation) return;
       clearWallet();
@@ -333,16 +345,25 @@ export function mountWallet() {
     })
     .catch(() => {});
   const blur = () => {
-    if (!walletAuthenticationPending()) clearWallet();
+    if (!walletAuthenticationPending() && !walletSystemPromptPending()) clearWallet();
   };
   const focus = () => {
-    if (document.visibilityState === "visible" && !walletAuthenticationPending())
+    if (
+      document.visibilityState === "visible" &&
+      !walletAuthenticationPending() &&
+      !walletSystemPromptPending()
+    )
       void refreshWallet();
   };
-  const visibility = () => (document.visibilityState === "hidden" ? blur() : focus());
+  const visibility = () => {
+    if (document.visibilityState !== "hidden") focus();
+    else if (walletSystemPromptPending() && !walletAuthenticationPending()) clearWallet();
+    else blur();
+  };
   let lastActivity = 0;
   const activity = () => {
     if (
+      walletSystemPromptPending() ||
       !wallet.get().status?.protected ||
       wallet.get().status?.locked ||
       Date.now() - lastActivity < 10_000
@@ -351,7 +372,7 @@ export function mountWallet() {
     lastActivity = Date.now();
     const token = epoch;
     void walletService.activity().catch((error) => {
-      if (token === epoch) fail(error);
+      if (token === epoch && !walletSystemPromptPending()) fail(error);
     });
   };
   document.addEventListener("keydown", activity);
@@ -364,7 +385,8 @@ export function mountWallet() {
       document.visibilityState === "visible" &&
       document.hasFocus() &&
       !wallet.get().busy &&
-      !walletAuthenticationPending()
+      !walletAuthenticationPending() &&
+      !walletSystemPromptPending()
     ) {
       const token = epoch;
       void walletService
@@ -424,7 +446,13 @@ export async function scanWalletNfc() {
     captureNfcUnsupported: false,
   });
   try {
-    const text = await readWalletNfc();
+    const text = await withWalletSystemPrompt(async () => {
+      try {
+        return await readWalletNfc();
+      } finally {
+        if (token === epoch) await applyStatus(await resumedWalletStatus(), token);
+      }
+    });
     if (token === epoch)
       update({
         captureReview: {

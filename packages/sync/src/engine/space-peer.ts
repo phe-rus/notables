@@ -31,7 +31,7 @@ type Control =
 /**
  * Keeps one other device of the space in step, both ways (spec 0005,
  * AC-5 to AC-7). The library and settings sync first; then each side sends
- * a digest of its notes (a hash of each state vector) and offers the ones
+ * a digest of its notes (a hash of each CRDT state) and offers the ones
  * that differ, so meeting again costs only what changed. Notes open on
  * either device stay live while open; the rest are let go once caught up.
  */
@@ -42,6 +42,7 @@ export class SpacePeer {
   readonly #pinned = new Set<string>();
   readonly #idle = new Map<string, ReturnType<typeof setTimeout>>();
   #digestSent = false;
+  #unwatchLibrary: (() => void) | null = null;
 
   constructor(
     key: Uint8Array,
@@ -56,6 +57,15 @@ export class SpacePeer {
         open: async (name) => {
           const opened = await docs.open(name);
           this.#touch(name);
+          if (name === "library" && !this.#unwatchLibrary) {
+            const notes = opened.doc.getMap("notes");
+            const changed = (event: Y.YMapEvent<unknown>) => {
+              for (const [id, change] of event.changes.keys)
+                if (change.action === "add") this.#host.offer(`note:${id}`);
+            };
+            notes.observe(changed);
+            this.#unwatchLibrary = () => notes.unobserve(changed);
+          }
           return opened;
         },
         remove: (name) => docs.remove(name),
@@ -81,6 +91,8 @@ export class SpacePeer {
   }
 
   detach() {
+    this.#unwatchLibrary?.();
+    this.#unwatchLibrary = null;
     for (const timer of this.#idle.values()) clearTimeout(timer);
     this.#idle.clear();
     this.#host.detach();
@@ -126,13 +138,13 @@ export class SpacePeer {
     this.#host.sendControl({ type: "digest", docs: await this.#digest() } satisfies Control);
   }
 
-  /** A hash of each note's state vector: equal hashes mean nothing to send. */
+  /** Include the delete set: removing text does not advance a Yjs state vector. */
   async #digest(): Promise<Record<string, string>> {
     const digest: Record<string, string> = {};
     for (const name of await this.#docs.notes()) {
       const { doc, release } = await this.#docs.open(name);
       try {
-        digest[name] = bytesToHex(sha256(Y.encodeStateVector(doc))).slice(0, 32);
+        digest[name] = bytesToHex(sha256(Y.encodeStateAsUpdate(doc))).slice(0, 32);
       } finally {
         release();
       }
