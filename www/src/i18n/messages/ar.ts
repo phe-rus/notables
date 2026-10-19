@@ -151,7 +151,7 @@ export const ar: Messages = {
     saving: "جارٍ الحفظ…",
     locked: "المحفظة مقفلة",
     setupTitle: "مكان لبطاقاتك",
-    unlockHint: "أدخل كلمة مرور المحفظة لفتح بطاقاتك.",
+    unlockHint: "افتح القفل باستخدام مصادقة الجهاز لعرض بطاقاتك.",
     setupHint: "تبقى بطاقاتك مشفرة على هذا الجهاز. لا يلزم إدخال بيانات اعتماد للمحفظة.",
     createWallet: "إنشاء المحفظة",
     secureStoreHint:

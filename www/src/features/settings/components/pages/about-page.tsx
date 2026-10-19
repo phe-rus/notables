@@ -10,7 +10,7 @@ import { useInvoices } from "../../../invoices/store/invoice-store";
 import { isListedNote, useLibrary } from "../../../library/store/library-store";
 
 const links = [
-  { key: "settings.aboutWebsite", href: "https://notables.pherus.org" },
+  { key: "settings.aboutWebsite", href: "https://pherus.org/showcase/notables" },
   { key: "settings.aboutPrivacy", href: "https://pherus.org/legal/privacy-policy" },
   { key: "settings.aboutSource", href: "https://github.com/phe-rus/notables" },
   { key: "settings.aboutSupport", href: "mailto:support@pherus.org" },

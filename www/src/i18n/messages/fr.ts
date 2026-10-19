@@ -159,7 +159,7 @@ export const fr: Messages = {
     saving: "Enregistrement…",
     locked: "Portefeuille verrouillé",
     setupTitle: "Une place pour vos cartes",
-    unlockHint: "Saisissez le mot de passe du portefeuille pour ouvrir vos cartes.",
+    unlockHint: "Déverrouillez avec l’authentification de l’appareil pour ouvrir vos cartes.",
     setupHint:
       "Vos cartes restent chiffrées sur cet appareil. Aucun identifiant de portefeuille n’est requis.",
     createWallet: "Créer le portefeuille",

@@ -534,3 +534,49 @@ fn wallet_timeout_is_local_persistent_and_bounded() {
     let restarted = Wallet::with_keys(&dir.0, Box::new(keys));
     assert_eq!(restarted.status().unwrap().unlock_minutes, 15);
 }
+
+#[test]
+fn ios_face_id_return_resumes_wallet_without_entering_foreground_again() {
+    use crate::wallet::lifecycle::{Platform, focus_changed};
+    let dir = Directory::new();
+    let mut wallet = Wallet::with_keys(&dir.0, Box::new(Arc::new(MemoryKeys::default())));
+    wallet.authentication_required = true;
+    wallet
+        .initialize(InitializeMode::Device, None, None)
+        .unwrap();
+    wallet.lock().unwrap();
+    // Tao sends Suspended on resign-active, then Focused(true) on become-active.
+    // A Face ID overlay does not require a Resumed (enter-foreground) event.
+    wallet.background();
+    focus_changed(&wallet, true, Platform::Ios);
+    assert!(wallet.status().unwrap().locked);
+    let status = wallet
+        .unlock_device(true)
+        .expect("Face ID success must open Wallet");
+    assert!(!status.locked);
+    assert!(status.unlock_until.is_some());
+    assert!(!wallet.sensitive_unlocked().unwrap());
+    wallet.background();
+    focus_changed(&wallet, true, Platform::Ios);
+    assert!(!wallet.status().unwrap().locked);
+    assert!(
+        status
+            .unlock_until
+            .unwrap()
+            .abs_diff(wallet.status().unwrap().unlock_until.unwrap())
+            < 100
+    );
+}
+
+#[test]
+fn android_focus_does_not_replace_activity_resume() {
+    use crate::wallet::lifecycle::{Platform, focus_changed};
+    let dir = Directory::new();
+    let wallet = Wallet::with_keys(&dir.0, Box::new(Arc::new(MemoryKeys::default())));
+    wallet.background();
+    focus_changed(&wallet, true, Platform::Android);
+    assert!(!wallet.is_foreground());
+    wallet.foreground();
+    assert!(!focus_changed(&wallet, false, Platform::Android));
+    assert!(wallet.is_foreground());
+}

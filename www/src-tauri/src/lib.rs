@@ -41,13 +41,15 @@ pub fn run() {
                     tauri::WindowEvent::Destroyed => {
                         let _ = wallet.lock();
                     }
-                    #[cfg(desktop)]
-                    tauri::WindowEvent::Focused(false) => {
-                        wallet.background();
+                    tauri::WindowEvent::Focused(focused)
+                        if wallet::lifecycle::focus_changed(
+                            &wallet,
+                            *focused,
+                            wallet::lifecycle::Platform::current(),
+                        ) =>
+                    {
                         let _ = window.emit("wallet-locked", wallet.generation());
                     }
-                    #[cfg(desktop)]
-                    tauri::WindowEvent::Focused(true) => wallet.foreground(),
                     #[cfg(mobile)]
                     tauri::WindowEvent::Suspended => {
                         wallet.background();

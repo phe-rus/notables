@@ -154,7 +154,7 @@ export const es: Messages = {
     saving: "Guardando…",
     locked: "Cartera bloqueada",
     setupTitle: "Un lugar para tus tarjetas",
-    unlockHint: "Introduce la contraseña de la cartera para abrir tus tarjetas.",
+    unlockHint: "Desbloquea con la autenticación del dispositivo para abrir tus tarjetas.",
     setupHint:
       "Tus tarjetas permanecen cifradas en este dispositivo. No se requiere una credencial del monedero.",
     createWallet: "Crear cartera",

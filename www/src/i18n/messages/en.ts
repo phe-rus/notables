@@ -156,7 +156,7 @@ export const en = {
     saving: "Saving…",
     locked: "Wallet locked",
     setupTitle: "Make room for your cards",
-    unlockHint: "Enter your wallet password to open your cards.",
+    unlockHint: "Unlock with device authentication to open your cards.",
     setupHint: "Your cards stay encrypted on this device. No wallet credential is required.",
     createWallet: "Create wallet",
     secureStoreHint:

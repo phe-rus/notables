@@ -6,5 +6,6 @@ pub mod commands;
 pub mod crypto;
 pub mod error;
 pub mod keys;
+pub(crate) mod lifecycle;
 pub mod session;
 pub mod vault;

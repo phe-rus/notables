@@ -1,6 +1,18 @@
 <!-- Latest release repair: see docs/reviews/2026-10-18-release-startup.md. -->
 # Wallet context and resume checkpoint
 
+## iOS Face ID repair, 19 October 2026
+
+The owner confirms Face ID appears, then Wallet stays locked. Tao 0.37.1 sends
+Suspended when iOS resigns active, but Focused(true) when Face ID closes; it
+need not emit Resumed because the app never entered the background. The shared
+native focus handler now restores iOS foreground state on Focused(true).
+Android still uses Activity resume/JNI, and desktop focus behavior is preserved.
+A native regression reproduces Locked before the repair and passes afterward.
+Focus alone does not grant authentication, extend grants or reveal secret fields.
+Physical iPhone verification remains owed after the next TestFlight build.
+The misleading legacy password hint is replaced in all seven catalogs.
+
 ## Current work, 18 October 2026, not yet complete
 
 The owner's latest security requirements supersede the historical optional

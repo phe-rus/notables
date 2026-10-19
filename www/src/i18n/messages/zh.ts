@@ -145,7 +145,7 @@ export const zh: Messages = {
     saving: "正在保存…",
     locked: "钱包已锁定",
     setupTitle: "为你的卡片腾出位置",
-    unlockHint: "输入钱包密码以打开你的卡片。",
+    unlockHint: "使用设备身份验证解锁以查看卡片。",
     setupHint: "你的卡片在此设备上保持加密。无需钱包凭证。",
     createWallet: "创建钱包",
     secureStoreHint: "安全的设备存储不可用或已锁定。请解锁或设置系统密钥存储后重试。",

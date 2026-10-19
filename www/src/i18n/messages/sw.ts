@@ -154,7 +154,7 @@ export const sw: Messages = {
     saving: "Inahifadhi…",
     locked: "Pochi imefungwa",
     setupTitle: "Mahali pa kadi zako",
-    unlockHint: "Weka nenosiri la pochi ili kufungua kadi zako.",
+    unlockHint: "Fungua kwa uthibitishaji wa kifaa ili kuona kadi zako.",
     setupHint:
       "Kadi zako zinabaki zimesimbwa kwenye kifaa hiki. Hakuna kitambulisho cha kufungua pochi kinachohitajika.",
     createWallet: "Unda pochi",

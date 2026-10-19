@@ -8,9 +8,9 @@ in step with this file. Limits are in brackets.
 - **Tagline:** Anything notable, always with you.
 
 - **Category:** Productivity (secondary on the App Store: Books)
-- **Privacy policy:** https://pherus.org/legal/privacy-policy (section 4 covers Notables; [docs/PRIVACY.md](../PRIVACY.md) is the long form)
-- **Support / website:** https://github.com/phe-rus/notables
-- **Marketing URL:** https://notables.pherus.org
+- **Privacy policy:** https://pherus.org/legal/privacy-policy (section 4 covers Notables; this is the authoritative public policy)
+- **Support / website:** https://pherus.org
+- **Marketing URL:** https://pherus.org/showcase/notables
 - **Support email:** support@pherus.org (company and privacy: pherus@pherus.org)
 - **Phone:** +256772769734
 - **Price:** free, no ads, no in-app purchases
@@ -23,8 +23,7 @@ in step with this file. Limits are in brackets.
 **Subtitle** [30]: Anything notable, with you
 
 **Promotional text** [170]:
-Notes, books, plans and invoices in one beautifully made app. Write, draw,
-record, read and publish, all on your device, offline, with no account.
+A thought. A plan. Your next chapter. Bring writing, books and everyday plans together, with no account needed to start.
 
 **Keywords** [100]:
 notes,journal,diary,writing,books,reader,audiobook,comics,invoice,calendar,planner,handwriting
@@ -70,12 +69,12 @@ Available in English, French, Spanish, Portuguese, Swahili, Arabic and Chinese.
 
 Voice features may need a model download. Linking, sharing and online services need a connection. Available features depend on your device.
 
-Made by Pherus. Open source at github.com/phe-rus/notables
+Made by Pherus. Discover Notables at https://pherus.org/showcase/notables
 
 ## Questionnaires
 
-Reviewed 18 October 2026. The marketing copy above is saved in the Play
-Console draft. The questionnaire entries below remain a release checklist,
+Reviewed 19 October 2026. The marketing copy above is saved in the Play
+Console and App Store Connect drafts. The questionnaire entries below remain a release checklist,
 not evidence that the current console answers have been corrected.
 
 Published notes can include text, photos and audio. Device introductions

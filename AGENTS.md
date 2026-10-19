@@ -131,7 +131,8 @@ Gotchas learned the hard way:
   to 5.5 for its iOS 15 manifest. CI now compiles iOS and verifies the real
   Android AAB, but first-attempt distribution failed: Apple profile lookup
   and Google service unavailable. Run 39133139435 attempt 2 uploaded Android successfully to Play internal;
-  iOS is still running. Evidence:
+  iOS attempt 3 exported and uploaded successfully after NFC_TAG_READING was
+  enabled on the App ID through the existing CI Apple API key. Evidence:
   docs/reviews/2026-10-18-release-startup.md. Current TECNO is
   192.168.1.2:5555; ChromeOS is 100.115.92.2:5555. Verify model before use.
 
@@ -572,12 +573,20 @@ TestFlight refuse the upload; each build asks in TestFlight instead.
 
 ## Next
 
-- Owner’s latest priority, 18 Oct: finish v0.2.7 distribution. Run
-  39133139435 attempt 2 uploaded Android to Play internal successfully.
-  iOS attempt 1 compiled but automatic signing could not
-  update the bundle ID or find a profile. New iOS NFC entitlement may need
-  enabling on the App ID; Apple Developer Account Holder sign-in is requested
-  in the browser. Then finish disclosures, ChromeOS screenshots and public beta.
+- Owner’s latest priority, 19 Oct: iPhone Wallet shows Face ID, then stays locked.
+  Tao 0.37.1 emits Suspended on resign-active but only Focused(true) when
+  Face ID closes. Wallet now restores iOS foreground access on that event;
+  authentication still must succeed to grant access. Regression failed before
+  the fix with Locked and passes afterward. Physical TestFlight verification
+  remains owed. See docs/reviews/2026-10-19-ios-wallet-resume.md.
+- Official product, showcase and legal authority: https://pherus.org, with
+  Notables at /showcase/notables. Legal content belongs in ~/pherus/pherus/www,
+  not Notables-hosted legal pages. GitHub is the source repository, not the
+  authoritative public product or legal website. Continue central legal
+  deployment, crawler verification and external beta setup after Wallet.
+- v0.2.7 uploaded to Play internal and TestFlight. Apple NFC capability is
+  enabled. Play open testing has 30 regions selected and a 10020 release
+  draft; it is not public. Mainland China awaits its separate filing review.
 - Previous checkpoint: commit/push the Wallet checkpoint and deploy
   the web, tag v0.2.6 for both store builds, then review Google Play Console
   drafts, disclosures, feature graphic and phone/tablet screenshots. The beta
