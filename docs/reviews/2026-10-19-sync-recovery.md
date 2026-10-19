@@ -72,3 +72,18 @@ The same release also carries the previously pending finance year sheets,
 receipt picker/native OCR fixes, date grouping/scroll space and README images.
 Wallet adds live masked detection feedback and rejects empty manual reviews;
 its system-prompt lifecycle guards still require iPhone hardware verification.
+
+## Deployment and follow-up
+
+Commit 78b2850 is pushed. Web Worker b7a1c6c8-186f-47ea-9b61-7084cf9b096e
+is deployed: the homepage returns 200, and two synthetic WebSocket peers passed
+presence and addressed-message routing through SPACE. The old namespace class
+was renamed through migration v2, not replaced by an empty newly created class.
+Wrangler authentication was renewed without exposing credentials.
+
+The v0.2.10 native build was cancelled before completion to supersede it with
+v0.2.11, adding a newly reproduced Vision parser bug: card-number groups emitted
+on separate lines were ignored, and a labeled number could keep only the first
+four digits. Three synthetic tests now cover Visa/Amex wrapping, expiry and
+label truncation. The updated app suite passes 238 tests. Physical iPhone
+recognition and cross-device acceptance remain pending the new build.

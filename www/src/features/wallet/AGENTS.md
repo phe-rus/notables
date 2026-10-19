@@ -320,3 +320,10 @@ manual capture stays scanning when neither OCR nor barcode text yields usable
 card fields, instead of opening an empty form. Automatic capture still requires
 two clear agreeing frames. Generic document captures keep accepting plain text.
 The engine's accuracy on the owner's iPhone bank card remains unverified.
+
+Vision-specific bank parser follow-up: its native reader joins individual text
+observations with newlines. Printed PAN groups on separate lines were ignored;
+a labeled number could also keep only the first four-digit group. The parser
+now recognises wrapped groups in bank context and prefers the complete printed
+PAN. Synthetic Visa and Amex tests cover group wrapping, expiry separation and
+labeled truncation. This is not yet a physical iPhone accuracy confirmation.

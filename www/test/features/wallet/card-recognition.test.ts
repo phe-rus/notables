@@ -141,3 +141,22 @@ describe("imperfect bank scans", () => {
     expect(suggestCardFields("VISA\n4111 1111 1111 1111\n12/29").numberUncertain).toBe(false);
   });
 });
+
+it("reads bank number groups emitted as separate Vision text observations", () => {
+  const fields = suggestCardFields("VISA\n4111\n1111\n1111\n1111\n12/29\nJANE EXAMPLE");
+  expect(fields.kind).toBe("bank");
+  expect(fields.number.replace(/\D/g, "")).toBe("4111111111111111");
+  expect(fields.numberUncertain).toBe(false);
+});
+
+it("keeps expiry separate from a bank number split across lines", () => {
+  const fields = suggestCardFields("AMERICAN EXPRESS\n3782\n822463\n10005\n12/29");
+  expect(fields.number.replace(/\D/g, "")).toBe("378282246310005");
+  expect(fields.expiry).toBe("12/29");
+  expect(fields.numberUncertain).toBe(false);
+});
+
+it("does not replace a complete wrapped bank number with its first labeled group", () => {
+  const fields = suggestCardFields("VISA\nCard No\n4111\n1111\n1111\n1111\n12/29");
+  expect(fields.number.replace(/\D/g, "")).toBe("4111111111111111");
+});

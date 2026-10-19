@@ -122,7 +122,11 @@ Gotchas learned the hard way:
   after offline metadata edits. All required repository checks pass. Native apps now try the
   local link before relay and retain open local links if the room disconnects.
   `SPACE` replaces `SPACE_ROOMS`; the `space` export has a rename migration from
-  `SpaceRoom`, intended namespace `notables_space`. Do not remove migration v1.
+  `SpaceRoom`, namespace `notables_space`. Deployed and verified with two
+  synthetic peers (Worker b7a1c6c8-186f-47ea-9b61-7084cf9b096e). Do not remove
+  migration v1. Commit 78b2850 is pushed; the in-flight v0.2.10 native build
+  was cancelled to include a further Vision wrapped-number parsing fix in
+  v0.2.11. See the wallet handover for that regression.
 
 - 19 October: updated Play listing had remained a draft while the older
   submission published. Saved and submitted the seven updated listing changes

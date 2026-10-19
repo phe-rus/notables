@@ -106,8 +106,10 @@ export function suggestCardFields(text: string): CardSuggestions {
           line.replace(/\D/g, "").length <= 19,
       ) ?? "")
     : "";
+  // Vision may put each printed number group in a separate text observation.
+  const numberText = bankBrand ? text.replace(/(?<=\d)[\t\r\n]+(?=\d)/g, " ") : text;
   const printedNumber =
-    text
+    numberText
       .match(
         /(?<!\d)(?:\d{4}[ -]){3}\d{4}(?!\d)|(?<!\d)\d{4}[ -]\d{6}[ -]\d{5}(?!\d)|(?<!\d)\d{12,19}(?!\d)/,
       )?.[0]
@@ -144,7 +146,9 @@ export function suggestCardFields(text: string): CardSuggestions {
                 ? "bank"
                 : "other";
   const number =
-    labeled("passport|document|nin|id|card|member|membership|num[eé]ro|namba") || printedNumber;
+    (kind === "bank" && printedNumber) ||
+    labeled("passport|document|nin|id|card|member|membership|num[eé]ro|namba") ||
+    printedNumber;
   const labeledHolder = labeled("cardholder|holder|full name|name|titulaire|titular|jina", false);
   const surname = labeled("surname|family name|nom", false);
   const given = labeled("given names?|first names?|pr[eé]noms?", false);
