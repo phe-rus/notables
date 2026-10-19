@@ -31,3 +31,13 @@ pub(crate) fn focus_changed(wallet: &Wallet, focused: bool, platform: Platform) 
     }
     false
 }
+
+/// Reconcile UIKit's current activity state before accessing Wallet.
+#[cfg(any(target_os = "ios", test))]
+pub(crate) fn refresh_activity(wallet: &Wallet, active: bool) {
+    if active {
+        wallet.foreground();
+    } else if wallet.is_foreground() {
+        wallet.background();
+    }
+}

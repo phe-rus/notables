@@ -2711,6 +2711,8 @@ dependencies = [
  "libc",
  "log",
  "ndk-context",
+ "objc2",
+ "objc2-ui-kit",
  "ort",
  "rand 0.9.5",
  "reqwest 0.12.28",

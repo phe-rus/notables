@@ -175,13 +175,15 @@ async function applyStatus(status: WalletStatus, token: number) {
 export const refreshWallet = () =>
   run(async (token) => applyStatus(await walletService.status(), token));
 export const initializeWallet = () =>
-  run(async (token) =>
-    applyStatus(await withWalletAuthentication(() => walletService.initialize()), token),
+  run((token) =>
+    withWalletAuthentication(async () => applyStatus(await walletService.initialize(), token)),
   );
 
 export const unlockWallet = () =>
-  run(async (token) =>
-    applyStatus(await withWalletAuthentication(() => walletService.unlock("passcode")), token),
+  run((token) =>
+    withWalletAuthentication(async () =>
+      applyStatus(await walletService.unlock("passcode"), token),
+    ),
   );
 
 export function cancelWalletCapture() {

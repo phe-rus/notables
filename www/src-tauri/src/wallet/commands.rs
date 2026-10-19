@@ -37,6 +37,14 @@ fn check_window(window: &WebviewWindow, lock_only: bool) -> Result<()> {
             return Err(WalletError::Locked);
         }
     }
+    #[cfg(target_os = "ios")]
+    {
+        let wallet = window.app_handle().state::<Wallet>();
+        wallet.refresh_ios_foreground(window.app_handle())?;
+        if !lock_only && !wallet.is_foreground() {
+            return Err(WalletError::Locked);
+        }
+    }
     // Android does not implement the desktop focus getter. Native mobile
     // Suspended/Resumed events fence the session instead.
     #[cfg(desktop)]
@@ -90,10 +98,14 @@ async fn authenticate(
     })
     .await
     .map_err(|_| WalletError::Unavailable)??;
-    // Android's system authentication activity returns before MainActivity resumes.
-    for _ in 0..40 {
+    // The OS callback may precede the dismissal animation. On iOS the
+    // legacy app delegate may never send a matching resume/focus event.
+    let attempts = if cfg!(target_os = "ios") { 120 } else { 40 };
+    for _ in 0..attempts {
         #[cfg(target_os = "android")]
         app.state::<Wallet>().refresh_foreground()?;
+        #[cfg(target_os = "ios")]
+        app.state::<Wallet>().refresh_ios_foreground(app)?;
         if app.state::<Wallet>().is_foreground() {
             check_window(window, settings)?;
             return Ok(());

@@ -80,3 +80,46 @@ security write scope; a targeted edge configuration exception is still owed.
 Both store description drafts now use the official Pherus showcase. Apple
 metadata persistence was verified after reload. The beta release draft is saved
 in Publishing overview; nothing was sent for public review.
+
+## Cloudflare access resolved, 19 October
+
+The owner approved activating the prepared public-page exception. Configuration
+rule 9b1e54df555f4faeb634437abfaba76f is active. Its expression requires apex
+pherus.org, GET or HEAD, and public legal paths in the three site languages,
+robots.txt or sitemap.xml. Only Browser Integrity Check is set to off.
+Play's actual Next/Checking URLs step now advances to Data types without the
+403 warning. The saved deletion URL remains pherus.org/legal/data-deletion.
+A matching Python client reads all six probed public URLs with HTTP 200;
+the homepage still returns 403. No account, API or other subdomain is included.
+
+v0.2.8 CI run 39223134018 completed successfully for both stores. Apple API
+confirms 0.2.8 build 10021 is VALID, not expired, with export compliance
+unanswered. Apple browser session expired; sign-in requested. No public beta
+review submission or production rollout was performed.
+
+## Apple internal testing available, 19 October
+
+With explicit owner confirmation, submitted standard encryption beyond Apple OS
+and no France distribution for v0.2.8 (10021). Missing Compliance cleared.
+The existing Pherus developers group lists 0.2.8 (10021) as Testing. No new
+testers were added and no external group was created. Physical Wallet unlock
+verification is now possible through TestFlight and remains owed.
+
+Play Publishing overview now reports 0.2.7 Beta (10020), its 30-region rollout,
+listing and declarations in review. This is a later observed state, not a
+review submission made by this session. The open-testing track was shown
+paused. No track was resumed or release replaced during this follow-up.
+
+## iOS Face ID follow-up, 19 October
+
+v0.2.8 still failed on the owner's iPhone. Two reproduced paths are repaired:
+legacy Tao iOS lifecycle has no become-active notification after Face ID, so
+Wallet now queries UIApplication state on the main thread; the frontend also
+keeps its authentication guard through status application and first card load,
+so a late authentication blur cannot erase that result. Subsequent blur still
+clears cards. Foreground activity never grants authentication by itself.
+
+All required workspace and native Linux checks passed: 220 app tests and
+56 Rust tests, with two expected ignored tests. The UIKit adapter requires
+macOS CI compilation and physical Face ID verification in ios-v0.2.9.
+Do not describe the physical iPhone issue as resolved before that check.

@@ -30,6 +30,10 @@ mod tests;
 #[path = "lifecycle_android.rs"]
 mod lifecycle_android;
 
+#[cfg(target_os = "ios")]
+#[path = "lifecycle_ios.rs"]
+mod lifecycle_ios;
+
 fn publish_vault(staging: &Path, destination: &Path) -> Result<()> {
     #[cfg(target_os = "android")]
     {
@@ -380,6 +384,12 @@ impl Wallet {
         } else if self.is_foreground() {
             self.background();
         }
+        Ok(())
+    }
+
+    #[cfg(target_os = "ios")]
+    pub fn refresh_ios_foreground(&self, app: &tauri::AppHandle) -> Result<()> {
+        super::lifecycle::refresh_activity(self, lifecycle_ios::is_active(app)?);
         Ok(())
     }
 

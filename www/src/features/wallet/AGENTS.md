@@ -278,3 +278,17 @@ TECNO with data preserved. Real taps exercised opening a synthetic bank card
 and opening/closing presentation. Eight QA cards were removed by exact tracked
 IDs. The owner now has two saved cards, bank and electricity; both were
 preserved. Wallet was left locked. No private photo or values were logged.
+
+## iOS Face ID follow-up, 19 October
+
+v0.2.8 still failed on the owner's iPhone. Two reproduced paths are repaired:
+legacy Tao iOS lifecycle has no become-active notification after Face ID, so
+Wallet now queries UIApplication state on the main thread; the frontend also
+keeps its authentication guard through status application and first card load,
+so a late authentication blur cannot erase that result. Subsequent blur still
+clears cards. Foreground activity never grants authentication by itself.
+
+All required workspace and native Linux checks passed: 220 app tests and
+56 Rust tests, with two expected ignored tests. The UIKit adapter requires
+macOS CI compilation and physical Face ID verification in ios-v0.2.9.
+Do not describe the physical iPhone issue as resolved before that check.

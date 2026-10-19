@@ -115,6 +115,25 @@ Gotchas learned the hard way:
 
 ## Status (October 2026)
 
+- 19 October: v0.2.8 Wallet Face ID still failed physically. The follow-up
+  queries real UIKit activity for legacy lifecycle recovery and guards the
+  frontend first card load against late Face ID blur. Regression tests and
+  all required checks passed. Release target ios-v0.2.9; CI UIKit compilation
+  and physical iPhone verification remain required. See the wallet handover.
+
+
+- 19 Oct follow-up: v0.2.8 (10021), commit 516a6c9, uploaded successfully to
+  Play and TestFlight. Export compliance was submitted with the owner’s
+  confirmation: standard encryption beyond Apple OS, France excluded. Build
+  10021 shows Testing in Pherus developers. iPhone Face ID repair still needs
+  physical confirmation. Pherus
+  legal deployment and Notables web deployment are live. The owner approved
+  Cloudflare configuration rule 9b1e54df555f4faeb634437abfaba76f; it disables
+  Browser Integrity Check only for GET/HEAD on pherus.org public legal routes
+  (en, fr, zh), robots.txt and sitemap.xml. Rule is active. Play's deletion URL
+  checker now passes. The same Python client reads all those URLs as HTTP 200,
+  while the homepage remains 403, confirming the exception is scoped.
+
 - Store refresh (18 Oct): Play draft has Notables by Pherus, revised copy,
   a fresh feature graphic and six current screenshots in each phone, 7-inch
   and 10-inch tablet slot. Nothing submitted for public review. Source copy
@@ -573,6 +592,11 @@ TestFlight refuse the upload; each build asks in TestFlight instead.
 
 ## Next
 
+- Finish ios-v0.2.9 upload and physical Wallet Face ID check. Then repair
+  Finance ledger receipt preview/removal and MTN message imports, including
+  amount order, dates, fees, approvals and shared transaction IDs for payment,
+  MoMoAdvance and overdraft repayments. Use anonymised fixtures only.
+
 - Owner’s latest priority, 19 Oct: iPhone Wallet shows Face ID, then stays locked.
   Tao 0.37.1 emits Suspended on resign-active but only Focused(true) when
   Face ID closes. Wallet now restores iOS foreground access on that event;
@@ -583,7 +607,11 @@ TestFlight refuse the upload; each build asks in TestFlight instead.
   Notables at /showcase/notables. Legal content belongs in ~/pherus/pherus/www,
   not Notables-hosted legal pages. GitHub is the source repository, not the
   authoritative public product or legal website. Continue central legal
-  deployment, crawler verification and external beta setup after Wallet.
+  external beta setup after Wallet. Central legal deployment and Play crawler
+  verification are complete. v0.2.8 (10021) is Testing in the existing internal
+  TestFlight group. Next verify Wallet Face ID on the owner’s iPhone before
+  external beta. Play Publishing overview now shows 0.2.7/10020 and 30 regions
+  in review; this review submission was observed, not made by this session.
 - v0.2.7 uploaded to Play internal and TestFlight. Apple NFC capability is
   enabled. Play open testing has 30 regions selected and a 10020 release
   draft; it is not public. Mainland China awaits its separate filing review.

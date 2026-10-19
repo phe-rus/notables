@@ -580,3 +580,47 @@ fn android_focus_does_not_replace_activity_resume() {
     assert!(!focus_changed(&wallet, false, Platform::Android));
     assert!(wallet.is_foreground());
 }
+
+#[test]
+fn ios_native_activity_recovers_face_id_without_any_resume_callback() {
+    use crate::wallet::lifecycle::refresh_activity;
+    let dir = Directory::new();
+    let mut wallet = Wallet::with_keys(&dir.0, Box::new(Arc::new(MemoryKeys::default())));
+    wallet.authentication_required = true;
+    wallet
+        .initialize(InitializeMode::Device, None, None)
+        .unwrap();
+    wallet.lock().unwrap();
+    wallet.background();
+    // Legacy UIApplicationDelegate sends Suspended for Face ID, but no
+    // Focused(true) or Resumed when the authentication overlay closes.
+    refresh_activity(&wallet, true);
+    assert!(
+        wallet.is_foreground(),
+        "UIKit active snapshot must replace the stale suspended state"
+    );
+    assert!(
+        wallet.status().unwrap().locked,
+        "Activity alone must not authenticate"
+    );
+    let granted = wallet
+        .unlock_device(true)
+        .expect("Successful Face ID must open Wallet");
+    assert!(!granted.locked);
+    assert!(!wallet.sensitive_unlocked().unwrap());
+    refresh_activity(&wallet, false);
+    assert!(matches!(
+        wallet.unlock_device(true),
+        Err(WalletError::Locked)
+    ));
+    refresh_activity(&wallet, true);
+    let resumed = wallet.status().unwrap();
+    assert!(!resumed.locked);
+    assert!(
+        granted
+            .unlock_until
+            .unwrap()
+            .abs_diff(resumed.unlock_until.unwrap())
+            < 100
+    );
+}

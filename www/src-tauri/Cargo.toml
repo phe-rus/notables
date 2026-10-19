@@ -79,3 +79,7 @@ webkit2gtk = "2.0.2"
 libc = "=0.2.189"
 jni = "=0.21.1"
 ndk-context = "=0.1.1"
+
+[target.'cfg(target_os = "ios")'.dependencies]
+objc2 = "0.6.4"
+objc2-ui-kit = { version = "0.3.2", default-features = false, features = ["std", "UIApplication", "UIResponder"] }

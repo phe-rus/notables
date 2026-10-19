@@ -14,8 +14,10 @@ import {
 } from "../../../src/features/wallet/model/wallet-model";
 import {
   clearWallet,
+  mountWallet,
   openWalletCard,
   refreshWallet,
+  unlockWallet,
   useWallet,
 } from "../../../src/features/wallet/store/wallet-store";
 
@@ -123,5 +125,67 @@ describe("wallet boundary", () => {
     expect(
       walletPreviewSchema.safeParse({ ...preview, number: "0012345678905678", cvv: "987" }).success,
     ).toBe(false);
+  });
+});
+
+describe("authentication lifecycle", () => {
+  it("keeps the successful unlock visible through a late Face ID blur while cards load", async () => {
+    const previousWindow = Object.getOwnPropertyDescriptor(globalThis, "window");
+    const previousDocument = Object.getOwnPropertyDescriptor(globalThis, "document");
+    const nativeWindow = Object.assign(new EventTarget(), {
+      __TAURI_INTERNALS__: {},
+      setInterval,
+      clearInterval,
+    });
+    Object.defineProperty(globalThis, "window", { configurable: true, value: nativeWindow });
+    Object.defineProperty(globalThis, "document", {
+      configurable: true,
+      value: Object.assign(new EventTarget(), {
+        visibilityState: "visible",
+        hasFocus: () => true,
+      }),
+    });
+    const statusSpy = spyOn(walletService, "status").mockResolvedValue({ ...status, locked: true });
+    const listenerSpy = spyOn(walletService, "onLocked").mockResolvedValue(() => {});
+    const unlockSpy = spyOn(walletService, "unlock").mockResolvedValue(status);
+    const listSpy = spyOn(walletService, "list").mockImplementation(async () => {
+      nativeWindow.dispatchEvent(new Event("blur"));
+      return {
+        cards: [
+          {
+            id,
+            revision: 1,
+            kind: "bank",
+            displayName: "Synthetic fixture",
+            issuer: null,
+            appearance: { formFactor: "landscape", palette: "honey" },
+            lastFour: "5678",
+            updatedAt: 1,
+          },
+        ],
+        nextCursor: null,
+      };
+    });
+    let release: (() => void) | undefined;
+    try {
+      release = mountWallet();
+      await new Promise<void>((resolve) => setImmediate(resolve));
+      await unlockWallet();
+      const html = renderToStaticMarkup(<Snapshot />);
+      expect(html).toContain("Synthetic fixture");
+      expect(html).toContain("&quot;locked&quot;:false");
+      nativeWindow.dispatchEvent(new Event("blur"));
+      expect(renderToStaticMarkup(<Snapshot />)).not.toContain("Synthetic fixture");
+    } finally {
+      release?.();
+      statusSpy.mockRestore();
+      listenerSpy.mockRestore();
+      unlockSpy.mockRestore();
+      listSpy.mockRestore();
+      if (previousWindow) Object.defineProperty(globalThis, "window", previousWindow);
+      else Reflect.deleteProperty(globalThis, "window");
+      if (previousDocument) Object.defineProperty(globalThis, "document", previousDocument);
+      else Reflect.deleteProperty(globalThis, "document");
+    }
   });
 });
