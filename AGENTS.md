@@ -115,6 +115,12 @@ Gotchas learned the hard way:
 
 ## Status (October 2026)
 
+- 19 October: updated Play listing had remained a draft while the older
+  submission published. Saved and submitted the seven updated listing changes
+  (copy, feature graphic, phone and both tablet screenshot sets). Console now
+  says Changes in review; the public listing still has the older assets until
+  Google publishes the update.
+
 - 19 October: v0.2.8 Wallet Face ID still failed physically. The follow-up
   queries real UIKit activity for legacy lifecycle recovery and guards the
   frontend first card load against late Face ID blur. Regression tests and
@@ -592,10 +598,11 @@ TestFlight refuse the upload; each build asks in TestFlight instead.
 
 ## Next
 
-- Finish ios-v0.2.9 upload and physical Wallet Face ID check. Then repair
-  Finance ledger receipt preview/removal and MTN message imports, including
-  amount order, dates, fees, approvals and shared transaction IDs for payment,
-  MoMoAdvance and overdraft repayments. Use anonymised fixtures only.
+- Finish ios-v0.2.9 upload and physical Wallet Face ID check. Finance receipt
+  previews/removal and MTN conversation imports are implemented; confirm the
+  controls physically on the TECNO before calling that verification complete.
+  Parser fixtures are anonymised. Payments, borrowing, repayments, transfers
+  and fees remain distinct even when they share a reference.
 
 - Owner’s latest priority, 19 Oct: iPhone Wallet shows Face ID, then stays locked.
   Tao 0.37.1 emits Suspended on resign-active but only Focused(true) when

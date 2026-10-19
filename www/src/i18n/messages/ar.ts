@@ -2,6 +2,17 @@ import type { Messages } from "./en";
 
 export const ar: Messages = {
   finances: {
+    borrowing: "اقتراض",
+    repayment: "سداد قرض",
+    transfer: "تحويل",
+    fee: "رسوم",
+    previewReceipt: "معاينة الإيصال",
+    removeReceipt: "إزالة الإيصال",
+    removeTitle: "إزالة هذا القيد؟",
+    removeHint: "يزيل هذا القيد وروابط إيصالاته من السجل.",
+    noPayments: "لم يتم العثور على معاملات مكتملة. طلبات الموافقة وإشعارات الرصيد ليست مدفوعات.",
+    remaining: "{count} قيود أخرى للمراجعة",
+
     all: "الكل",
     ledger: "السجل",
     ledgerHint:

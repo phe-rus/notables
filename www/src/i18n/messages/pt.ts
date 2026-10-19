@@ -2,6 +2,18 @@ import type { Messages } from "./en";
 
 export const pt: Messages = {
   finances: {
+    borrowing: "Empréstimo recebido",
+    repayment: "Reembolso",
+    transfer: "Transferência",
+    fee: "Taxa",
+    previewReceipt: "Ver recibo",
+    removeReceipt: "Remover recibo",
+    removeTitle: "Remover este registo?",
+    removeHint: "Remove o registo e os seus links de recibos do livro.",
+    noPayments:
+      "Nenhuma transação concluída encontrada. Pedidos de aprovação e saldos não são pagamentos.",
+    remaining: "Mais {count} registos para rever",
+
     all: "Todos",
     ledger: "Registro",
     ledgerHint:

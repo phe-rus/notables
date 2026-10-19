@@ -4,6 +4,18 @@
  */
 export const en = {
   finances: {
+    borrowing: "Borrowing",
+    repayment: "Loan repayment",
+    transfer: "Transfer",
+    fee: "Fee",
+    previewReceipt: "Preview receipt",
+    removeReceipt: "Remove receipt",
+    removeTitle: "Remove this entry?",
+    removeHint: "This removes the saved entry and its receipt links from your ledger.",
+    noPayments:
+      "No completed transactions found. Approval requests and balance notifications are not payments.",
+    remaining: "{count} more entries to review",
+
     all: "All",
     ledger: "Ledger",
     ledgerHint:

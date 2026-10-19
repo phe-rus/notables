@@ -7,6 +7,9 @@ export interface FinanceTransaction {
   /** Integer minor units, matching the invoice engine. */
   amount: number;
   reference: string;
+  category?: "payment" | "borrowing" | "repayment" | "transfer";
+  /** Fee in minor units, kept separate from the principal. */
+  fee?: number;
   source: "manual" | "receipt" | "sms";
   sourceText: string;
   attachments: string[];

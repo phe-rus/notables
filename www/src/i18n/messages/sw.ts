@@ -2,6 +2,17 @@ import type { Messages } from "./en";
 
 export const sw: Messages = {
   finances: {
+    borrowing: "Mkopo uliopokelewa",
+    repayment: "Malipo ya mkopo",
+    transfer: "Uhamisho",
+    fee: "Ada",
+    previewReceipt: "Hakiki risiti",
+    removeReceipt: "Ondoa risiti",
+    removeTitle: "Ondoa ingizo hili?",
+    removeHint: "Hii inaondoa ingizo na viungo vya risiti zake kwenye leja.",
+    noPayments: "Hakuna miamala iliyokamilika. Maombi ya idhini na taarifa za salio si malipo.",
+    remaining: "Maingizo {count} zaidi ya kukagua",
+
     all: "Zote",
     ledger: "Daftari la fedha",
     ledgerHint:

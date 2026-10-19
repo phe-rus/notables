@@ -2,6 +2,18 @@ import type { Messages } from "./en";
 
 export const fr: Messages = {
   finances: {
+    borrowing: "Emprunt",
+    repayment: "Remboursement",
+    transfer: "Virement",
+    fee: "Frais",
+    previewReceipt: "Aperçu du reçu",
+    removeReceipt: "Retirer le reçu",
+    removeTitle: "Supprimer cette écriture ?",
+    removeHint: "Cette action supprime cette écriture et les liens vers ses reçus du registre.",
+    noPayments:
+      "Aucune transaction terminée trouvée. Les demandes de validation et les soldes ne sont pas des paiements.",
+    remaining: "Encore {count} écritures à vérifier",
+
     all: "Tous",
     ledger: "Registre",
     ledgerHint:

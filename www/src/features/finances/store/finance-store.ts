@@ -2,6 +2,7 @@ import { createId } from "@notables/core";
 import { useSyncExternalStore } from "react";
 import type * as Y from "yjs";
 import { getLibrary } from "../../library/store/library-store";
+import { sameImportedTransaction } from "../lib/mobile-money";
 import type { FinanceTransaction } from "../model/transaction";
 
 export class FinanceStore {
@@ -24,6 +25,9 @@ export class FinanceStore {
     };
   };
   getSnapshot = () => this.#snapshot;
+  remove(id: string) {
+    this.transactions.delete(id);
+  }
   save(
     draft: Omit<FinanceTransaction, "id" | "createdAt" | "updatedAt">,
     id?: string,
@@ -31,6 +35,7 @@ export class FinanceStore {
     if (
       !Number.isSafeInteger(draft.amount) ||
       draft.amount <= 0 ||
+      (draft.fee !== undefined && (!Number.isSafeInteger(draft.fee) || draft.fee < 0)) ||
       !/^[A-Z]{3}$/.test(draft.currency) ||
       !/^\d{4}-\d{2}-\d{2}$/.test(draft.date) ||
       !draft.description.trim() ||
@@ -42,14 +47,7 @@ export class FinanceStore {
     const duplicate =
       !id &&
       draft.source === "sms" &&
-      this.#snapshot.find(
-        (item) =>
-          item.source === "sms" &&
-          ((draft.reference &&
-            item.reference === draft.reference &&
-            item.currency === draft.currency) ||
-            item.sourceText.trim() === draft.sourceText.trim()),
-      );
+      this.#snapshot.find((item) => sameImportedTransaction(item, draft));
     if (duplicate) throw new Error("duplicate-transaction");
     const now = Date.now();
     const current = id ? this.transactions.get(id) : undefined;

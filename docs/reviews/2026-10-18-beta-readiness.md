@@ -123,3 +123,27 @@ All required workspace and native Linux checks passed: 220 app tests and
 56 Rust tests, with two expected ignored tests. The UIKit adapter requires
 macOS CI compilation and physical Face ID verification in ios-v0.2.9.
 Do not describe the physical iPhone issue as resolved before that check.
+
+## Listing submission and Finance ledger, 19 October
+
+The previous Play submission has published. The newer listing assets and copy
+were still a saved draft, confirmed by comparing Console with the public Play
+page. Completed listing Review/Save and sent all seven listing changes for
+review. Console shows Changes in review with automated quick checks running.
+No app binary, track or country selection was changed by this submission.
+
+Finance now has receipt image enlargement, removal from a draft before saving,
+and ledger entry deletion with a destructive confirmation. Generated invoice,
+receipt and quotation rows retain their document links. Imported SMS text stays
+with its reviewed entry. Conversation pastes produce a save-or-skip review queue.
+MTN parsing handles currency before or after amount, fees, dates and references;
+ignores approvals, balances and URL previews; distinguishes borrowing, repayment
+and transfer from ordinary income/expense; and avoids discarding different
+components with the same reference. A missing financing reference is inferred
+only from one payment with the exact same timestamp. Original gallery photos
+are not deleted. No pasted private message data is stored in test fixtures.
+
+All required checks passed: 223 app tests, workspace type checks/tests/build,
+native frontend prerender, Cargo format/Clippy and 56 Rust tests with two ignored.
+Physical Finance control verification remains pending. The new TECNO address
+192.168.1.4 identifies TECNO CI6; the previous 192.168.1.2 identifies ChromeOS.

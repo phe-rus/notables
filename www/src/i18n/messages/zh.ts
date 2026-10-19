@@ -3,6 +3,17 @@ import type { Messages } from "./en";
 /** Simplified Chinese. Chinese has one plural form, so plurals carry only `other`. */
 export const zh: Messages = {
   finances: {
+    borrowing: "借款",
+    repayment: "还款",
+    transfer: "转账",
+    fee: "手续费",
+    previewReceipt: "预览收据",
+    removeReceipt: "移除收据",
+    removeTitle: "移除此记录？",
+    removeHint: "这会从账本中移除此记录及其收据链接。",
+    noPayments: "未找到已完成的交易。付款批准请求和余额通知不是付款。",
+    remaining: "还有 {count} 条记录待审核",
+
     all: "全部",
     ledger: "账簿",
     ledgerHint: "自动更新。发票表示请求付款，收据记录付款，报价单是估价。不同币种分开记录。",

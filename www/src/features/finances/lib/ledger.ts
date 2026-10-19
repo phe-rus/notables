@@ -1,5 +1,6 @@
 import { computeTotals, type InvoiceDocument, minorToInput, parseMoney } from "@notables/core";
 import type { FinanceTransaction } from "../model/transaction";
+import { parseMobileMoneyMessages } from "./mobile-money";
 
 export interface LedgerRow {
   id: string;
@@ -7,7 +8,16 @@ export interface LedgerRow {
   description: string;
   currency: string;
   amount: number;
-  type: "income" | "expense" | "invoice" | "receipt" | "quote";
+  type:
+    | "income"
+    | "expense"
+    | "invoice"
+    | "receipt"
+    | "quote"
+    | "borrowing"
+    | "repayment"
+    | "transfer"
+    | "fee";
   reference: string;
 }
 
@@ -17,7 +27,15 @@ export function financeLedger(
   documents: readonly InvoiceDocument[],
 ): LedgerRow[] {
   return [
-    ...transactions.map((item) => ({ ...item, type: item.direction })),
+    ...transactions.flatMap((item): LedgerRow[] => [
+      {
+        ...item,
+        type: item.category && item.category !== "payment" ? item.category : item.direction,
+      },
+      ...(item.fee
+        ? [{ ...item, id: `${item.id}:fee`, type: "fee" as const, amount: item.fee }]
+        : []),
+    ]),
     ...documents.map((item) => ({
       id: item.id,
       date: item.issuedOn,
@@ -32,6 +50,8 @@ export function financeLedger(
 
 /** Only suggest explicit currency amounts, never an account balance or phone number. */
 export function suggestTransaction(text: string) {
+  const messageSuggestion = parseMobileMoneyMessages(text)[0];
+  if (messageSuggestion) return messageSuggestion;
   const lines = text
     .split(/\r?\n/)
     .map((line) => line.trim())
