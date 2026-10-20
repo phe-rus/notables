@@ -43,7 +43,10 @@ in [the 20 October audit](reviews/2026-10-20-maintainability-audit.md).
 
 - [x] Separate camera presentation, session ownership and runtime binding; validate
       native OCR payloads and reject late permission/OCR/barcode results.
-- [ ] Complete Wallet import/store and native vault contract restructuring.
+- [x] Separate capture actions/state contracts from the Wallet store and preserve
+      cancellation identity across image-import status checks.
+- [x] Split vault types, schema, audit and tests from Rust storage implementation.
+- [ ] Finish Wallet service/lifecycle contracts and Rust session/command structure.
 - [ ] Finances import/review UI, ledger operations and receipt handling.
 - [ ] Books list, shelves, imports and reader controls.
 - [ ] Notes editor and capture toolbar, using Hino and owned props types.

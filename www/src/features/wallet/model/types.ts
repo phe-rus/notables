@@ -1,5 +1,11 @@
 import type { AccentId } from "@phe-rus/hino/tokens";
-import type { CardKind, WalletCard } from "./wallet-model";
+import type {
+  CardKind,
+  ListRequest,
+  WalletCard,
+  WalletPreview,
+  WalletStatus,
+} from "./wallet-model";
 
 export type CardSuggestions = {
   kind: CardKind;
@@ -93,4 +99,34 @@ export type CardCameraServices = {
   systemPrompt: (work: () => Promise<void>) => Promise<void>;
   readCodes: (canvas: HTMLCanvasElement) => Promise<string[]>;
   schedule: (work: () => Promise<void>, delay: number) => () => void;
+};
+
+export type WalletState = {
+  status: WalletStatus | null;
+  captureReview: {
+    suggestions: CardSuggestions;
+    confidence: number;
+    text: string;
+    source?: "nfc";
+  } | null;
+  captureProgress: number | null;
+  captureError: boolean;
+  captureMethod: "image" | "nfc" | null;
+  captureNfcUnsupported: boolean;
+  cards: WalletPreview[];
+  selected: WalletCard | null;
+  view: "home" | "add" | "detail" | "edit" | "present";
+  busy: boolean;
+  error: string | null;
+  nextCursor: string | null;
+  query: ListRequest;
+};
+
+export type WalletCaptureContext = {
+  state: () => WalletState;
+  update: (patch: Partial<WalletState>) => void;
+  epoch: () => number;
+  invalidate: () => void;
+  applyStatus: (status: WalletStatus, token: number) => Promise<void>;
+  fail: (error: unknown) => void;
 };

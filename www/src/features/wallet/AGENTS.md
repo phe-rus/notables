@@ -357,3 +357,21 @@ are export type declarations in model/types.ts. Details, stability and strength
 rules have separate named modules. Continue import/store and Rust vault contract
 cleanup, then physical iPhone scanning/NFC verification. No biometric bypass or
 new authentication grant is introduced by this refactor.
+
+## 20 October: capture store and native vault
+
+The public wallet-store.ts API is preserved. create-wallet-capture.ts owns image,
+manual review and NFC actions through a typed WalletCaptureContext. The state
+shape and initial values live in model/types.ts and create-wallet-state.ts.
+Cancellation identity is captured before import status reconciliation so a late
+status result cannot revive cancelled/cleared Wallet state or report a stale
+error. The import regressions cover cancellation, clearing, late errors, discarded
+decoded-image cleanup and fresh-selection recovery after picker backgrounding;
+existing NFC/Face ID tests remain required.
+
+Rust vault.rs owns storage operations. vault/types.rs owns persisted structs,
+vault/schema.rs the unchanged schema/limits, vault/audit.rs encrypted audit
+retention and vault/tests.rs the existing persistence tests. Public vault type
+paths remain unchanged. No format, keys, authenticated context, quota or atomic
+transaction behavior changes. Continue service/lifecycle contracts and native
+session/command separation, with physical mobile verification before release.

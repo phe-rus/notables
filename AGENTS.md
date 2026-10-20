@@ -122,6 +122,15 @@ Gotchas learned the hard way:
 
 ## Status (October 2026)
 
+- 20 October Wallet store/vault maintenance: capture actions live in
+  store/create-wallet-capture.ts with state/contracts in model/. The public store
+  API is unchanged. Image imports now capture cancellation identity before native
+  status reconciliation; three regressions failed against the previous source
+  and pass after the fix. Rust vault types, schema, audit and tests live under
+  wallet/vault/; schema bytes, audit implementation and cryptographic context are
+  unchanged. Continue Wallet service/lifecycle and Rust session/commands in
+  docs/MAINTENANCE.md. Physical iPhone OCR/NFC remains unverified.
+
 - 20 October scanner maintenance: CardCamera delegates to useCardCamera and
   createCardCameraSession. The session owns its stream, one frame and retry timer;
   late camera grants and OCR/barcode results cannot reopen cancelled review.
