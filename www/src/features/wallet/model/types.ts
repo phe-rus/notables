@@ -1,4 +1,5 @@
 import type { AccentId } from "@phe-rus/hino/tokens";
+import type { walletErrorCodes } from "./wallet-error-codes";
 import type {
   CardKind,
   ListRequest,
@@ -128,5 +129,16 @@ export type WalletCaptureContext = {
   epoch: () => number;
   invalidate: () => void;
   applyStatus: (status: WalletStatus, token: number) => Promise<void>;
+  fail: (error: unknown) => void;
+};
+
+export type WalletErrorCode = (typeof walletErrorCodes)[number];
+
+export type WalletLifecycleContext = {
+  state: () => WalletState;
+  update: (patch: Partial<WalletState>) => void;
+  epoch: () => number;
+  clear: () => void;
+  refresh: () => Promise<void>;
   fail: (error: unknown) => void;
 };

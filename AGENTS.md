@@ -122,33 +122,14 @@ Gotchas learned the hard way:
 
 ## Status (October 2026)
 
-- 20 October Wallet store/vault maintenance: capture actions live in
-  store/create-wallet-capture.ts with state/contracts in model/. The public store
-  API is unchanged. Image imports now capture cancellation identity before native
-  status reconciliation; three regressions failed against the previous source
-  and pass after the fix. Rust vault types, schema, audit and tests live under
-  wallet/vault/; schema bytes, audit implementation and cryptographic context are
-  unchanged. Continue Wallet service/lifecycle and Rust session/commands in
-  docs/MAINTENANCE.md. Physical iPhone OCR/NFC remains unverified.
-
-- 20 October scanner maintenance: CardCamera delegates to useCardCamera and
-  createCardCameraSession. The session owns its stream, one frame and retry timer;
-  late camera grants and OCR/barcode results cannot reopen cancelled review.
-  Cleanup is idempotent and detaches only its own stream. Native OCR responses
-  are validated at the IPC adapter. CardReading and scanner contracts live in
-  wallet/model/types.ts; acceptance/stability/strength rules have focused files.
-  Physical iPhone OCR/NFC accuracy still requires verification. Continue Wallet
-  import/store and native vault contracts in docs/MAINTENANCE.md.
-
-- 20 October: Hino UI 0.1.6 published through its trusted npm workflow and
-  docs deployed (Worker a52da79d-5e8d-4eea-bea4-1f5d7ef9e284). Notables and
-  Pluraliti now pin that same version. It supplies accent-tinted grounds,
-  matte glass, slimmer focus rings and safer popup placement. Wallet form
-  contracts, defaults, draft assembly and appearance sheet are separate modules;
-  draft tests protect redacted fields and security-code removal. Continue
-  scanner lifecycle/native contracts in docs/MAINTENANCE.md. These source
-  changes are deployed on the web (Worker 173e39e3-037d-4641-a464-4c439370e90d)
-  and require the next native app build to reach installed devices.
+- 20 October maintenance: Hino UI 0.1.6 is published, its docs are deployed,
+  and Notables/Pluraliti pin the same version. The web includes the Hino/form
+  checkpoint; later native changes need the next build. Wallet forms, scanner,
+  capture actions, service validation and lifecycle subscriptions have focused
+  owners; Rust vault/session types, audit, schema, publication and tests are
+  separate modules. Image-import cancellation/status races have regressions.
+  See www/src/features/wallet/AGENTS.md and docs/MAINTENANCE.md for ownership and evidence. Next:
+  native access-policy/card-operation separation and physical iPhone OCR/NFC.
 
 - Pairing regression (20 Oct): reproduced on TECNO 0.2.12, which reports success
   but lists no peer, including after restart. Regression tests also reproduce

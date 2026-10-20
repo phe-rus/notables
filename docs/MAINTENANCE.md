@@ -46,7 +46,10 @@ in [the 20 October audit](reviews/2026-10-20-maintainability-audit.md).
 - [x] Separate capture actions/state contracts from the Wallet store and preserve
       cancellation identity across image-import status checks.
 - [x] Split vault types, schema, audit and tests from Rust storage implementation.
-- [ ] Finish Wallet service/lifecycle contracts and Rust session/command structure.
+- [x] Separate Wallet command validation, typed failures, resume handling and
+      lifecycle ownership; split Rust session wire types/publication helper.
+- [ ] Finish Rust access-policy/card-operation separation within Wallet session.
+- [ ] Verify the refactored Wallet on native devices before its next release.
 - [ ] Finances import/review UI, ledger operations and receipt handling.
 - [ ] Books list, shelves, imports and reader controls.
 - [ ] Notes editor and capture toolbar, using Hino and owned props types.
@@ -73,3 +76,5 @@ Physical evidence: [0.2.13 pairing and sync](reviews/2026-10-20-pairing-membersh
 Scanner maintenance: [ownership and native OCR contract](reviews/2026-10-20-wallet-scanner-maintenance.md).
 Release run 39399850328 built Android, iOS, Linux, Windows and Apple Silicon Mac.
 Intel Mac failed before packaging, so the installer collection job was skipped.
+
+Latest Wallet boundary checkpoint: [service and lifecycle](reviews/2026-10-20-wallet-service-lifecycle.md).

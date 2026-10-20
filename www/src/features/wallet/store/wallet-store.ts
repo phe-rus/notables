@@ -2,17 +2,16 @@ import { createStore, useSelector } from "@tanstack/react-store";
 import { isTauri } from "@/platform/runtime";
 import { cancelWalletNfc } from "../lib/card-nfc";
 import { cancelCardRecognition } from "../lib/card-recognition";
-import {
-  walletAuthenticationPending,
-  walletSystemPromptPending,
-  withWalletAuthentication,
-} from "../lib/wallet-auth";
-import { resumedWalletStatus, WalletFailure, walletService } from "../lib/wallet-service";
+import { resumedWalletStatus } from "../lib/resumed-wallet-status";
+import { withWalletAuthentication } from "../lib/wallet-auth";
+import { WalletFailure } from "../lib/wallet-failure";
+import { walletService } from "../lib/wallet-service";
 import { redactCard } from "../model/card-secrets";
 import { createWalletState } from "../model/create-wallet-state";
 import type { WalletState } from "../model/types";
 import type { ListRequest, SaveRequest, WalletStatus } from "../model/wallet-model";
 import { createWalletCapture } from "./create-wallet-capture";
+import { mountWalletLifecycle } from "./mount-wallet-lifecycle";
 
 const wallet = createStore<WalletState>(createWalletState());
 let epoch = 0;
@@ -179,114 +178,15 @@ export function lockWallet() {
   if (isTauri()) pendingLock = pendingLock.then(() => walletService.lock()).catch(() => {});
 }
 
-export function mountWallet() {
-  if (!isTauri()) return () => clearWallet();
-  void refreshWallet();
-  let disposed = false;
-  let unlisten: (() => void) | undefined;
-  void walletService
-    .onLocked((generation) => {
-      if (walletAuthenticationPending() || walletSystemPromptPending()) return;
-      const status = wallet.get().status;
-      if (status && generation <= status.generation) return;
-      clearWallet();
-      if (status) update({ status: { ...status, locked: true, generation } });
-    })
-    .then((release) => {
-      if (disposed) release();
-      else unlisten = release;
-    })
-    .catch(() => {});
-  const blur = () => {
-    if (!walletAuthenticationPending() && !walletSystemPromptPending()) clearWallet();
-  };
-  const focus = () => {
-    if (
-      document.visibilityState === "visible" &&
-      !walletAuthenticationPending() &&
-      !walletSystemPromptPending()
-    )
-      void refreshWallet();
-  };
-  const visibility = () => {
-    if (document.visibilityState !== "hidden") focus();
-    else if (walletSystemPromptPending() && !walletAuthenticationPending()) clearWallet();
-    else blur();
-  };
-  let lastActivity = 0;
-  const activity = () => {
-    if (
-      walletSystemPromptPending() ||
-      !wallet.get().status?.protected ||
-      wallet.get().status?.locked ||
-      Date.now() - lastActivity < 10_000
-    )
-      return;
-    lastActivity = Date.now();
-    const token = epoch;
-    void walletService.activity().catch((error) => {
-      if (token === epoch && !walletSystemPromptPending()) fail(error);
-    });
-  };
-  document.addEventListener("keydown", activity);
-  document.addEventListener("pointerdown", activity);
-  window.addEventListener("blur", blur);
-  window.addEventListener("focus", focus);
-  document.addEventListener("visibilitychange", visibility);
-  const timer = window.setInterval(() => {
-    if (
-      document.visibilityState === "visible" &&
-      document.hasFocus() &&
-      !wallet.get().busy &&
-      !walletAuthenticationPending() &&
-      !walletSystemPromptPending()
-    ) {
-      const token = epoch;
-      void walletService
-        .status()
-        .then((status) => {
-          if (token !== epoch) return;
-          if (status.locked) {
-            clearWallet();
-            update({ status });
-          } else {
-            update({ status });
-            const selected = wallet.get().selected;
-            if (
-              selected &&
-              !status.sensitiveUntil &&
-              selected.draft.fields.some(
-                (field) =>
-                  (field.sensitive || field.key === "cvv" || field.key === "puk") &&
-                  !field.redacted,
-              )
-            ) {
-              void walletService
-                .read(selected.draft.id)
-                .then((card) => {
-                  if (token === epoch) update({ selected: card });
-                })
-                .catch(() => {});
-            }
-          }
-        })
-        .catch((error) => {
-          if (token === epoch) fail(error);
-        });
-    }
-  }, 10_000);
-  return () => {
-    disposed = true;
-    unlisten?.();
-    window.clearInterval(timer);
-    window.removeEventListener("blur", blur);
-    window.removeEventListener("focus", focus);
-    document.removeEventListener("visibilitychange", visibility);
-    document.removeEventListener("keydown", activity);
-    document.removeEventListener("pointerdown", activity);
-    clearWallet();
-  };
-}
+export const mountWallet = () =>
+  mountWalletLifecycle({
+    state: () => wallet.get(),
+    update,
+    epoch: () => epoch,
+    clear: clearWallet,
+    refresh: refreshWallet,
+    fail,
+  });
 
 const capture = createWalletCapture({
   state: () => wallet.get(),

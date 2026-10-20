@@ -375,3 +375,22 @@ retention and vault/tests.rs the existing persistence tests. Public vault type
 paths remain unchanged. No format, keys, authenticated context, quota or atomic
 transaction behavior changes. Continue service/lifecycle contracts and native
 session/command separation, with physical mobile verification before release.
+
+## 20 October: service and lifecycle boundaries
+
+wallet-service.ts describes the native command map. call-wallet-command.ts owns
+runtime response validation and known-error normalization; wallet-failure.ts
+owns the typed exception; wallet-error-codes.ts owns native error codes; and
+resumed-wallet-status.ts owns foreground reconciliation. Import these owners
+directly. mount-wallet-lifecycle.ts owns subscriptions, blur/focus/visibility,
+activity and status polling through WalletLifecycleContext. Existing Face ID,
+NFC and grant timers must keep their guards. A late lock subscription releases
+itself after disposal. Unknown native errors remain unavailable, with no raw
+message exposed; list payloads containing full fields remain invalid.
+
+Rust session/types.rs owns public IPC shapes and private state/cursor fields.
+Parent public type paths remain stable. session/publication.rs retains the
+existing Android renameat2 NOREPLACE and other-platform publication code,
+compared unchanged with its previous implementation. Session tests import
+CardDraft from its owner instead of relying on a parent's incidental import.
+Continue native session policy/card operations and physical verification.

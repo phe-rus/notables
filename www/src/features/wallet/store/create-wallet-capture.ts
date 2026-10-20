@@ -6,8 +6,8 @@ import {
   recognizeCard,
   suggestCardFields,
 } from "../lib/card-recognition";
+import { resumedWalletStatus } from "../lib/resumed-wallet-status";
 import { withWalletSystemPrompt } from "../lib/wallet-auth";
-import { resumedWalletStatus } from "../lib/wallet-service";
 import type { CardReading, WalletCaptureContext } from "../model/types";
 
 export function createWalletCapture(context: WalletCaptureContext) {

@@ -2,7 +2,7 @@ use std::{collections::HashMap, sync::Arc};
 
 use super::*;
 use crate::wallet::{
-    card::{Appearance, Field, Side, SideAvailability, SideState},
+    card::{Appearance, CardDraft, Field, Side, SideAvailability, SideState},
     crypto::DataKey,
 };
 

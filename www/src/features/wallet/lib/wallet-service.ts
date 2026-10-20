@@ -1,4 +1,3 @@
-import type { z } from "zod";
 import { t } from "@/i18n/i18n";
 import { isTauri } from "@/platform/runtime";
 import {
@@ -12,50 +11,7 @@ import {
   walletStatusSchema,
 } from "../model/wallet-model";
 
-const errorCodes = new Set([
-  "invalid-input",
-  "invalid-operation",
-  "corrupt-vault",
-  "unsupported-format",
-  "write-failure",
-  "invalid-credential",
-  "conflict",
-  "missing",
-  "quota",
-  "unavailable",
-  "secure-store-unavailable",
-  "locked",
-  "denied",
-  "already-initialized",
-  "throttled",
-  "invalid-cursor",
-]);
-
-export class WalletFailure extends Error {
-  constructor(readonly code: string) {
-    super(code);
-  }
-}
-
-async function call<T>(
-  command: string,
-  args: Record<string, unknown>,
-  schema: z.ZodType<T>,
-): Promise<T> {
-  if (!isTauri()) throw new WalletFailure("unavailable");
-  try {
-    const { invoke } = await import("@tauri-apps/api/core");
-    const raw = await invoke<unknown>(command, args);
-    const result = schema.safeParse(raw);
-    if (!result.success) throw new WalletFailure("corrupt-vault");
-    return result.data;
-  } catch (error) {
-    if (error instanceof WalletFailure) throw error;
-    throw new WalletFailure(
-      typeof error === "string" && errorCodes.has(error) ? error : "unavailable",
-    );
-  }
-}
+import { callWalletCommand } from "./call-wallet-command";
 
 export const walletService = {
   async onLocked(callback: (generation: number) => void) {
@@ -65,46 +21,43 @@ export const walletService = {
       if (generation.success) callback(generation.data);
     });
   },
-  activity: () => call("wallet_activity", {}, walletGenerationSchema),
-  status: () => call("wallet_status", {}, walletStatusSchema),
+  activity: () => callWalletCommand("wallet_activity", {}, walletGenerationSchema),
+  status: () => callWalletCommand("wallet_status", {}, walletStatusSchema),
   initialize: () =>
-    call(
+    callWalletCommand(
       "wallet_initialize",
       { mode: "device", reason: t("wallet.authReason") },
       walletStatusSchema,
     ),
   unlock: (method: "passcode" | "faceId" | "fingerprint") =>
-    call("wallet_unlock", { method, reason: t("wallet.authReason") }, walletStatusSchema),
+    callWalletCommand(
+      "wallet_unlock",
+      { method, reason: t("wallet.authReason") },
+      walletStatusSchema,
+    ),
   authorize: () =>
-    call("wallet_authorize", { reason: t("wallet.secretReason") }, walletStatusSchema),
+    callWalletCommand("wallet_authorize", { reason: t("wallet.secretReason") }, walletStatusSchema),
   configure: (minutes: number) =>
-    call("wallet_configure", { minutes, reason: t("wallet.authReason") }, walletStatusSchema),
+    callWalletCommand(
+      "wallet_configure",
+      { minutes, reason: t("wallet.authReason") },
+      walletStatusSchema,
+    ),
   reveal: (id: string, fieldId: string) =>
-    call(
+    callWalletCommand(
       "wallet_reveal_field",
       { id, fieldId, reason: t("wallet.secretReason") },
       walletCardSchema,
     ),
-  list: (request: ListRequest) => call("wallet_list", { request }, walletPageSchema),
-  read: (id: string) => call("wallet_read", { id }, walletCardSchema),
-  save: (request: SaveRequest) => call("wallet_save", { request }, walletSaveResultSchema),
+  list: (request: ListRequest) => callWalletCommand("wallet_list", { request }, walletPageSchema),
+  read: (id: string) => callWalletCommand("wallet_read", { id }, walletCardSchema),
+  save: (request: SaveRequest) =>
+    callWalletCommand("wallet_save", { request }, walletSaveResultSchema),
   delete: (id: string, operationId: string, expectedRevision: number) =>
-    call("wallet_delete", { id, operationId, expectedRevision }, walletReceiptSchema),
+    callWalletCommand("wallet_delete", { id, operationId, expectedRevision }, walletReceiptSchema),
   async lock() {
     if (!isTauri()) return;
     const { invoke } = await import("@tauri-apps/api/core");
     await invoke<void>("wallet_lock");
   },
 };
-
-/** Native pickers can return a file before the activity has finished resuming. */
-export async function resumedWalletStatus() {
-  for (let attempt = 0; attempt < 80; attempt++) {
-    if (document.visibilityState === "visible" && document.hasFocus()) {
-      const status = await walletService.status();
-      if (!status.locked || !status.unlockUntil || status.unlockUntil <= Date.now()) return status;
-    }
-    await new Promise<void>((resolve) => window.setTimeout(resolve, 25));
-  }
-  throw new WalletFailure("locked");
-}

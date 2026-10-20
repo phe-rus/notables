@@ -1,3 +1,10 @@
+mod publication;
+mod types;
+
+use publication::publish_vault;
+pub use types::{CardPage, InitializeMode, ListRequest, SaveRequest, SaveResult, Status};
+use types::{Cursor, Session};
+
 use std::{
     path::{Path, PathBuf},
     sync::{
@@ -7,12 +14,11 @@ use std::{
     time::{Duration, Instant, SystemTime, UNIX_EPOCH},
 };
 
-use serde::{Deserialize, Serialize};
 use uuid::Uuid;
 use zeroize::Zeroizing;
 
 use super::{
-    card::{Card, CardDraft, CardPreview},
+    card::Card,
     crypto,
     error::{Result, WalletError},
     keys::{DeviceKeyStore, KeyStore},
@@ -34,119 +40,11 @@ mod lifecycle_android;
 #[path = "lifecycle_ios.rs"]
 mod lifecycle_ios;
 
-fn publish_vault(staging: &Path, destination: &Path) -> Result<()> {
-    #[cfg(target_os = "android")]
-    {
-        use std::{ffi::CString, os::unix::ffi::OsStrExt};
-        let source =
-            CString::new(staging.as_os_str().as_bytes()).map_err(|_| WalletError::WriteFailure)?;
-        let target = CString::new(destination.as_os_str().as_bytes())
-            .map_err(|_| WalletError::WriteFailure)?;
-        // Android SELinux denies hard links. Use the kernel syscall so this
-        // also works before the renameat2 libc symbol became available.
-        // Both C strings live for the call; NOREPLACE preserves existing vaults.
-        let result = unsafe {
-            libc::syscall(
-                libc::SYS_renameat2,
-                libc::AT_FDCWD,
-                source.as_ptr(),
-                libc::AT_FDCWD,
-                target.as_ptr(),
-                libc::RENAME_NOREPLACE,
-            )
-        };
-        if result != 0 {
-            return Err(WalletError::WriteFailure);
-        }
-    }
-    #[cfg(not(target_os = "android"))]
-    {
-        std::fs::hard_link(staging, destination).map_err(|_| WalletError::WriteFailure)?;
-        std::fs::remove_file(staging).map_err(|_| WalletError::WriteFailure)?;
-    }
-    Ok(())
-}
-
 pub fn now() -> Result<u64> {
     SystemTime::now()
         .duration_since(UNIX_EPOCH)
         .map(|d| d.as_millis() as u64)
         .map_err(|_| WalletError::Unavailable)
-}
-
-#[derive(Serialize)]
-#[serde(rename_all = "camelCase")]
-pub struct Status {
-    pub initialized: bool,
-    pub secure_store_available: bool,
-    pub protected: bool,
-    pub locked: bool,
-    pub system_auth_available: bool,
-    pub unlock_minutes: u64,
-    pub unlock_until: Option<u64>,
-    pub sensitive_until: Option<u64>,
-    pub generation: u64,
-    pub format_version: u32,
-}
-
-#[derive(Deserialize)]
-#[serde(rename_all = "kebab-case")]
-pub enum InitializeMode {
-    Device,
-    Password,
-}
-
-#[derive(Deserialize)]
-#[serde(rename_all = "camelCase", deny_unknown_fields)]
-pub struct SaveRequest {
-    pub operation_id: Uuid,
-    pub draft: CardDraft,
-    pub expected_revision: Option<i64>,
-}
-
-#[derive(Serialize)]
-#[serde(rename_all = "camelCase")]
-pub struct SaveResult {
-    pub id: Uuid,
-    pub revision: i64,
-}
-
-#[derive(Deserialize, Serialize, Clone, PartialEq, Eq)]
-#[serde(rename_all = "camelCase", deny_unknown_fields)]
-pub struct ListRequest {
-    pub cursor: Option<String>,
-    pub limit: Option<usize>,
-    pub sort: String,
-    pub search: String,
-    pub kind: Option<String>,
-}
-
-#[derive(Serialize)]
-#[serde(rename_all = "camelCase")]
-pub struct CardPage {
-    pub cards: Vec<CardPreview>,
-    pub next_cursor: Option<String>,
-}
-
-#[derive(Serialize, Deserialize)]
-#[serde(rename_all = "camelCase", deny_unknown_fields)]
-struct Cursor {
-    generation: u64,
-    revision: i64,
-    offset: usize,
-    query: ListRequest,
-}
-
-struct Session {
-    vault: Option<Vault>,
-    epoch: u64,
-    last_activity: Instant,
-    failures: u32,
-    backoff_until: Option<Instant>,
-    secure_store_available: Option<bool>,
-    pending_audits: Vec<AuditEvent>,
-    authorized_at: Option<Instant>,
-    sensitive_at: Option<Instant>,
 }
 
 /// One native mutex serializes credentials, content and revisions. The epoch
