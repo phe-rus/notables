@@ -130,7 +130,10 @@ Gotchas learned the hard way:
   Android 17 LAN permission is requested from pairing, with reconnection after
   grant. Existing loopback media service stays private. See
   [the pairing checkpoint](docs/reviews/2026-10-20-pairing-membership.md).
-  Physical acceptance of this new build remains pending.
+  Physical 0.2.13 acceptance: fresh iPhone/TECNO approval lists both peers;
+  notes, return edits and trash changes sync. ChromeOS 0.2.13 reconnects after
+  TECNO restart and exchanges note changes with both phones. Fresh ChromeOS
+  approval, offline conflicts and direct-only LAN transport remain unverified.
 
 - Maintainability cleanup (20 Oct): audit and staged plan are in
   [docs/MAINTENANCE.md](docs/MAINTENANCE.md). Deep app imports now use `@/`.
@@ -138,9 +141,17 @@ Gotchas learned the hard way:
   under `features/updates`; contracts are in `model/types.ts`. Shared toolbar
   buttons use Hino IconButton. Sharing announcements no longer prolong fast
   mailbox polling, foreground events cannot overlap polls, and the runner owns
-  session cleanup. Drizzle, broader Hino adoption and Rust domain splits remain
-  queued. Release CI uses one vX.Y.Z tag for mobile and desktop packages; desktop
-  installers collect in one draft release. No desktop functional testing today.
+  session cleanup. Drizzle schemas and typed D1 repositories now separate public
+  storage from services; ratings and reaction totals update atomically. Existing
+  migrations remain unchanged. Setup has separate pages and owned props, Hino
+  fields and choices, compact spacing and reduced-motion transitions. Broader
+  Hino adoption and Rust domain splits remain queued. Release CI uses one vX.Y.Z
+  tag for mobile and desktop packages; desktop
+  installers collect in one draft release. The 0.2.13 Linux, Windows and Apple
+  Silicon builds passed; Intel Mac lacks an ONNX Runtime prebuilt and failed, so
+  collection was skipped. No desktop functional testing today.
+  The Drizzle and setup verification record is in
+  [the 20 October review](docs/reviews/2026-10-20-drizzle-and-setup.md).
 
 - Update awareness (20 Oct): packaged release apps check public release policy,
   warn before a seven day deadline, then replace the app with an update screen.

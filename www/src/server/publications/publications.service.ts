@@ -1,98 +1,24 @@
-import { createId, type NoteKind, type Reaction } from "@notables/core";
+import { createId, type Reaction } from "@notables/core";
+import { PublicationError } from "./publication-error";
 import {
   decodeBase64,
   MAX_MEDIA_BYTES,
   mediaKey,
   mediaPrefix,
-  type PublicationMediaUpload,
   rewriteMediaSources,
 } from "./publication-media";
+import { createPublicationRepository } from "./publication-repository";
+import { toPublication } from "./to-publication";
+import type {
+  Publication,
+  PublicationMediaBytes,
+  PublicationRecord,
+  PublicationStats,
+  PublishInput,
+} from "./types";
 
 /** Largest serialized document accepted for publishing (inline photos included). */
 export const MAX_DOCUMENT_BYTES = 8 * 1024 * 1024;
-
-export class PublicationError extends Error {
-  constructor(
-    readonly status: 400 | 403 | 404 | 413,
-    message: string,
-  ) {
-    super(message);
-    this.name = "PublicationError";
-  }
-}
-
-export interface PublicationStats {
-  views: number;
-  reads: number;
-  likes: number;
-  hearts: number;
-  rating: number | null;
-  ratings: number;
-}
-
-export interface Publication {
-  id: string;
-  kind: NoteKind;
-  title: string;
-  excerpt: string;
-  authorName: string;
-  readingMinutes: number;
-  publishedAt: number;
-  updatedAt: number;
-  stats: PublicationStats;
-}
-
-export interface PublishInput {
-  noteId: string;
-  kind: NoteKind;
-  title: string;
-  excerpt: string;
-  authorName: string;
-  readingMinutes: number;
-  document: unknown;
-  /** Device media the document references, uploaded with it. */
-  media?: PublicationMediaUpload[];
-  /** The key from a previous publish of this note, to update it. */
-  key?: string;
-}
-
-interface Row {
-  id: string;
-  note_id: string;
-  key_hash: string;
-  kind: NoteKind;
-  title: string;
-  excerpt: string;
-  author_name: string;
-  reading_minutes: number;
-  published_at: number;
-  updated_at: number;
-  view_count: number;
-  read_count: number;
-  like_count: number;
-  heart_count: number;
-  rating_sum: number;
-  rating_count: number;
-}
-
-const toPublication = (row: Row): Publication => ({
-  id: row.id,
-  kind: row.kind,
-  title: row.title,
-  excerpt: row.excerpt,
-  authorName: row.author_name,
-  readingMinutes: row.reading_minutes,
-  publishedAt: row.published_at,
-  updatedAt: row.updated_at,
-  stats: {
-    views: row.view_count,
-    reads: row.read_count,
-    likes: row.like_count,
-    hearts: row.heart_count,
-    rating: row.rating_count ? Math.round((row.rating_sum / row.rating_count) * 10) / 10 : null,
-    ratings: row.rating_count,
-  },
-});
 
 const contentKey = (id: string) => `publications/${id}.json`;
 
@@ -122,13 +48,14 @@ function sameHash(a: string, b: string): boolean {
  * runs unchanged in the Worker and in tests.
  */
 export function createPublications(db: D1Database, storage: R2Bucket) {
-  async function find(id: string): Promise<Row> {
-    const row = await db.prepare("SELECT * FROM publications WHERE id = ?").bind(id).first<Row>();
+  const repository = createPublicationRepository(db);
+  async function find(id: string): Promise<PublicationRecord> {
+    const row = await repository.find(id);
     if (!row) throw new PublicationError(404, "Publication not found");
     return row;
   }
 
-  async function authorize(row: Row, key: string | undefined): Promise<void> {
+  async function authorize(row: PublicationRecord, key: string | undefined): Promise<void> {
     if (!key || !sameHash(await sha256(key), row.key_hash)) {
       throw new PublicationError(403, "This device can't change that publication");
     }
@@ -137,7 +64,7 @@ export function createPublications(db: D1Database, storage: R2Bucket) {
   /** Makes the publication's media exactly `uploads`, removing files no longer used. */
   async function replaceMedia(
     publicationId: string,
-    uploads: Array<{ id: string; contentType: string; bytes: Uint8Array }>,
+    uploads: PublicationMediaBytes[],
   ): Promise<void> {
     const keep = new Set(uploads.map((file) => mediaKey(publicationId, file.id)));
     const existing = await storage.list({ prefix: mediaPrefix(publicationId) });
@@ -174,10 +101,7 @@ export function createPublications(db: D1Database, storage: R2Bucket) {
         );
       }
 
-      const existing = await db
-        .prepare("SELECT * FROM publications WHERE note_id = ?")
-        .bind(input.noteId)
-        .first<Row>();
+      const existing = await repository.findByNote(input.noteId);
       if (existing) await authorize(existing, input.key);
 
       const id = existing?.id ?? createId();
@@ -188,28 +112,18 @@ export function createPublications(db: D1Database, storage: R2Bucket) {
       await storage.put(contentKey(id), JSON.stringify(rewriteMediaSources(input.document, id)), {
         httpMetadata: { contentType: "application/json" },
       });
-      await db
-        .prepare(
-          `INSERT INTO publications
-             (id, note_id, key_hash, kind, title, excerpt, author_name, reading_minutes, published_at, updated_at)
-           VALUES (?1, ?2, ?3, ?4, ?5, ?6, ?7, ?8, ?9, ?9)
-           ON CONFLICT (note_id) DO UPDATE SET
-             kind = excluded.kind, title = excluded.title, excerpt = excluded.excerpt,
-             author_name = excluded.author_name, reading_minutes = excluded.reading_minutes,
-             updated_at = excluded.updated_at`,
-        )
-        .bind(
-          id,
-          input.noteId,
-          await sha256(key),
-          input.kind,
-          input.title,
-          input.excerpt,
-          input.authorName,
-          input.readingMinutes,
-          now,
-        )
-        .run();
+      await repository.save({
+        id,
+        note_id: input.noteId,
+        key_hash: await sha256(key),
+        kind: input.kind,
+        title: input.title,
+        excerpt: input.excerpt,
+        author_name: input.authorName,
+        reading_minutes: input.readingMinutes,
+        published_at: now,
+        updated_at: now,
+      });
 
       return { publication: toPublication(await find(id)), key };
     },
@@ -218,11 +132,7 @@ export function createPublications(db: D1Database, storage: R2Bucket) {
     async unpublish(id: string, key: string): Promise<void> {
       const row = await find(id);
       await authorize(row, key);
-      await db.batch([
-        db.prepare("DELETE FROM reactions WHERE publication_id = ?").bind(id),
-        db.prepare("DELETE FROM ratings WHERE publication_id = ?").bind(id),
-        db.prepare("DELETE FROM publications WHERE id = ?").bind(id),
-      ]);
+      await repository.remove(id);
       await storage.delete(contentKey(id));
       await replaceMedia(id, []);
     },
@@ -235,33 +145,12 @@ export function createPublications(db: D1Database, storage: R2Bucket) {
       return { publication: toPublication(row), document: await object.text() };
     },
 
-    async viewerState(id: string, viewerId: string) {
-      const [reactions, rating] = await db.batch<{ reaction?: Reaction; stars?: number }>([
-        db
-          .prepare("SELECT reaction FROM reactions WHERE publication_id = ? AND viewer_id = ?")
-          .bind(id, viewerId),
-        db
-          .prepare("SELECT stars FROM ratings WHERE publication_id = ? AND viewer_id = ?")
-          .bind(id, viewerId),
-      ]);
-      return {
-        reactions: (reactions?.results ?? []).map((r) => r.reaction as Reaction),
-        rating: rating?.results[0]?.stars ?? null,
-      };
-    },
-
+    viewerState: repository.viewerState,
     async recordView(id: string): Promise<void> {
-      await db
-        .prepare("UPDATE publications SET view_count = view_count + 1 WHERE id = ?")
-        .bind(id)
-        .run();
+      await repository.recordView(id);
     },
-
     async recordRead(id: string): Promise<void> {
-      await db
-        .prepare("UPDATE publications SET read_count = read_count + 1 WHERE id = ?")
-        .bind(id)
-        .run();
+      await repository.recordRead(id);
     },
 
     /** Adds or removes a like/heart; idempotent per viewer. */
@@ -272,52 +161,15 @@ export function createPublications(db: D1Database, storage: R2Bucket) {
       on: boolean,
     ): Promise<PublicationStats> {
       await find(id);
-      const column = reaction === "heart" ? "heart_count" : "like_count";
-      const change = on
-        ? await db
-            .prepare(
-              "INSERT OR IGNORE INTO reactions (publication_id, viewer_id, reaction, created_at) VALUES (?, ?, ?, ?)",
-            )
-            .bind(id, viewerId, reaction, Date.now())
-            .run()
-        : await db
-            .prepare(
-              "DELETE FROM reactions WHERE publication_id = ? AND viewer_id = ? AND reaction = ?",
-            )
-            .bind(id, viewerId, reaction)
-            .run();
-      if (change.meta.changes > 0) {
-        await db
-          .prepare(`UPDATE publications SET ${column} = ${column} + ? WHERE id = ?`)
-          .bind(on ? 1 : -1, id)
-          .run();
-      }
+      await repository.react(id, viewerId, reaction, on);
       return toPublication(await find(id)).stats;
     },
 
     /** Rates 1–5 stars; rating again replaces the viewer's previous rating. */
     async rate(id: string, viewerId: string, stars: number): Promise<PublicationStats> {
       await find(id);
-      const previous = await db
-        .prepare("SELECT stars FROM ratings WHERE publication_id = ? AND viewer_id = ?")
-        .bind(id, viewerId)
-        .first<{ stars: number }>();
-      await db.batch([
-        db
-          .prepare(
-            `INSERT INTO ratings (publication_id, viewer_id, stars, created_at) VALUES (?, ?, ?, ?)
-             ON CONFLICT (publication_id, viewer_id) DO UPDATE SET stars = excluded.stars`,
-          )
-          .bind(id, viewerId, stars, Date.now()),
-        db
-          .prepare(
-            "UPDATE publications SET rating_sum = rating_sum + ?, rating_count = rating_count + ? WHERE id = ?",
-          )
-          .bind(stars - (previous?.stars ?? 0), previous ? 0 : 1, id),
-      ]);
+      await repository.rate(id, viewerId, stars);
       return toPublication(await find(id)).stats;
     },
   };
 }
-
-export type Publications = ReturnType<typeof createPublications>;

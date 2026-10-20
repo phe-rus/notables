@@ -49,4 +49,23 @@ describe("signalling mailbox", () => {
     }>();
     expect(results.map((row) => row.payload)).toEqual(["fresh"]);
   });
+
+  it("paginates a full mailbox without skipping messages or crossing rooms", async () => {
+    const busyRoom = "b".repeat(64);
+    await Promise.all(
+      Array.from({ length: 105 }, (_, index) =>
+        signals.post(busyRoom, "peer-source", null, `message-${index}`),
+      ),
+    );
+    await signals.post("c".repeat(64), "peer-source", null, "different room");
+    const first = await signals.poll(busyRoom, "peer-reader", 0);
+    expect(first.signals).toHaveLength(100);
+    expect(first.cursor).toBe(first.signals.at(-1)?.id ?? 0);
+    const second = await signals.poll(busyRoom, "peer-reader", first.cursor);
+    expect(second.signals).toHaveLength(5);
+    expect(
+      new Set([...first.signals, ...second.signals].map((message) => message.payload)).size,
+    ).toBe(105);
+    expect((await signals.poll(busyRoom, "peer-reader", second.cursor)).signals).toEqual([]);
+  });
 });

@@ -3,11 +3,9 @@ import { readdirSync, readFileSync } from "node:fs";
 import { createId } from "@notables/core";
 import { getPlatformProxy } from "wrangler";
 import { mediaKey } from "@/server/publications/publication-media";
-import {
-  createPublications,
-  type Publications,
-  type PublishInput,
-} from "@/server/publications/publications.service";
+import { createPublications } from "@/server/publications/publications.service";
+
+import type { Publications, PublishInput } from "@/server/publications/types";
 
 let proxy: Awaited<ReturnType<typeof getPlatformProxy<Cloudflare.Env>>>;
 let pubs: Publications;
@@ -93,6 +91,37 @@ describe("publications", () => {
     await pubs.rate(publication.id, b, 2);
     const stats = await pubs.rate(publication.id, b, 4);
     expect(stats).toMatchObject({ rating: 4.5, ratings: 2 });
+  });
+
+  it("keeps rating totals consistent when one viewer updates concurrently", async () => {
+    const { publication } = await pubs.publish(input());
+    const viewer = createId();
+    await Promise.all(
+      Array.from({ length: 12 }, (_, index) => pubs.rate(publication.id, viewer, (index % 5) + 1)),
+    );
+    const state = await pubs.viewerState(publication.id, viewer);
+    const { stats } = (await pubs.get(publication.id)).publication;
+    expect(stats).toMatchObject({ ratings: 1, rating: state.rating });
+    await Promise.all([pubs.rate(publication.id, viewer, 5), pubs.rate(publication.id, viewer, 1)]);
+    const revised = await pubs.viewerState(publication.id, viewer);
+    expect((await pubs.get(publication.id)).publication.stats).toMatchObject({
+      ratings: 1,
+      rating: revised.rating,
+    });
+  });
+
+  it("keeps reactions idempotent across concurrent requests", async () => {
+    const { publication } = await pubs.publish(input());
+    const viewers = [createId(), createId(), createId()];
+    await Promise.all(
+      viewers.flatMap((viewer) => [
+        pubs.react(publication.id, viewer, "like", true),
+        pubs.react(publication.id, viewer, "like", true),
+      ]),
+    );
+    expect((await pubs.get(publication.id)).publication.stats.likes).toBe(3);
+    await Promise.all(viewers.map((viewer) => pubs.react(publication.id, viewer, "like", false)));
+    expect((await pubs.get(publication.id)).publication.stats.likes).toBe(0);
   });
 
   it("counts views and reads", async () => {

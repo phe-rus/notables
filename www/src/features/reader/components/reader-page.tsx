@@ -5,7 +5,7 @@ import { useMemo, useRef } from "react";
 import { AppMark } from "@/components/brand/app-mark";
 import { noteKindLabels } from "@/features/library/model/note-kind-labels";
 import { stripLeadingTitle } from "@/lib/documents/strip-leading-title";
-import type { Publication } from "@/server/publications/publications.service";
+import type { Publication } from "@/server/publications/types";
 import { usePublicationEngagement } from "../hooks/use-publication-engagement";
 import { ReactionsBar } from "./reactions-bar";
 

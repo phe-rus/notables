@@ -2,7 +2,7 @@ import { Id, NoteKind, Rating, Reaction } from "@notables/core";
 import { createServerFn } from "@tanstack/react-start";
 import { setResponseStatus } from "@tanstack/react-start/server";
 import { z } from "zod";
-import { PublicationError } from "./publications.service";
+import { PublicationError } from "./publication-error";
 
 /** Server-only: loads the service with this request's bindings. */
 async function service() {

@@ -1,14 +1,5 @@
 import { localMediaId } from "@notables/core";
 
-/** Media files uploaded with a publication (recordings and photos). */
-export interface PublicationMediaUpload {
-  /** The id the private note uses (`media:<id>`). */
-  id: string;
-  contentType: string;
-  /** Base64-encoded file. */
-  data: string;
-}
-
 export const MAX_MEDIA_BYTES = 25 * 1024 * 1024;
 
 export const mediaPrefix = (publicationId: string) => `publications/${publicationId}/media/`;

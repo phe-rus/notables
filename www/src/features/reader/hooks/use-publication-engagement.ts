@@ -8,7 +8,7 @@ import {
   recordRead,
   recordView,
 } from "@/server/publications/publications.functions";
-import type { PublicationStats } from "@/server/publications/publications.service";
+import type { PublicationStats } from "@/server/publications/types";
 import { oncePerSession } from "../lib/once-per-session";
 
 interface ViewerState {

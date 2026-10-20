@@ -1,7 +1,7 @@
 import type { Reaction } from "@notables/core";
 import { cn, HeartIcon, riseMotion, StarIcon, ThumbsUpIcon } from "@phe-rus/hino";
 import { motion } from "motion/react";
-import type { PublicationStats } from "@/server/publications/publications.service";
+import type { PublicationStats } from "@/server/publications/types";
 
 const STARS = [1, 2, 3, 4, 5] as const;
 

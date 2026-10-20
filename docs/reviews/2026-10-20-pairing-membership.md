@@ -49,3 +49,33 @@ without internet remains unfinished; do not advertise it as implemented.
 
 Sources: [Android local network permission](https://developer.android.com/privacy-and-security/local-network-permission),
 [Apple local network privacy](https://developer.apple.com/documentation/technotes/tn3179-understanding-local-network-privacy).
+
+## Physical acceptance on 0.2.13 (10026)
+
+- TECNO updated to 0.2.13. Pairing from iPhone 0.2.11 saved an iPhone row on
+  TECNO, retained after restarting TECNO; the old iPhone still had no TECNO row.
+- After Apple processed 10026 and the owner completed export compliance, the
+  owner updated the iPhone to 0.2.13 and approved a fresh TECNO code. The owner
+  confirmed TECNO appeared on iPhone; Android UI evidence showed iPhone Online.
+- The owner's temporary iPhone note arrived on TECNO with its folder and title.
+  A TECNO edit appeared on iPhone, confirmed by the owner. Moving the note to
+  Recently Deleted on TECNO also appeared on iPhone.
+- ChromeOS updated through Google Play to 0.2.13 with its data retained. A local
+  upload-key-signed APK was rejected as incompatible with Play's signing key.
+  A Play-generated APK installed, but Play's protection required the Play update
+  before use. The final installation is Play-managed, version 10026.
+- After TECNO restarted, ChromeOS reconnected automatically and appeared Online.
+  The owner's ChromeOS test note arrived on TECNO. A TECNO edit to that note then
+  appeared on both ChromeOS and iPhone, confirmed by the owner.
+- Both test notes were removed from active notes. TECNO's Recently Deleted was
+  empty after erasing the remaining ChromeOS test entry. No personal notes were
+  edited or removed. This does not prove permanent erasure propagation while a
+  peer is offline, which still needs a separate conflict/reconnect case.
+
+ChromeOS displayed Workspace normally to the owner, although Android's screenshot
+and accessibility capture were blank in this environment. Its creation and return
+edit checks therefore used the owner's UI confirmation and TECNO observations.
+
+This verifies actual three-device content transfer and fresh iPhone/TECNO pairing.
+Fresh ChromeOS pairing in each direction, offline deletion conflicts, media,
+Android 17 permission prompts and proof of direct-only LAN transport remain open.
