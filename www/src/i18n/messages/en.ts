@@ -3,6 +3,23 @@
  * are objects keyed by plural category; `{name}` is filled in by `t`.
  */
 export const en = {
+  updates: {
+    title: "Updates",
+    check: "Check for updates",
+    hint: "Notables checks for updates when you open the app and return to it.",
+    current: "You’re up to date.",
+    available: "An update is available",
+    availableHint: "Notables {version} is ready. Update by {date} to keep using the app.",
+    required: "Update Notables",
+    requiredHint: "Notables {version} is required to continue.",
+    kept: "Your notes, cards and other saved work remain on this device.",
+    update: "Update",
+    later: "Later",
+    checkAgain: "Check again",
+    checkFailed: "Couldn’t check for updates. Connect to the internet and try again.",
+    openFailed: "Couldn’t open the store. Try again or contact support.",
+    unavailable: "Update checks are unavailable for this installation.",
+  },
   finances: {
     folderName: "FINANCES",
     yearSheetHint:

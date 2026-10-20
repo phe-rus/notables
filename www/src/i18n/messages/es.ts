@@ -1,6 +1,25 @@
 import type { Messages } from "./en";
 
 export const es: Messages = {
+  updates: {
+    title: "Actualizaciones",
+    check: "Buscar actualizaciones",
+    hint: "Notables busca actualizaciones al abrir la app y al volver a ella.",
+    current: "Estás al día.",
+    available: "Hay una actualización disponible",
+    availableHint:
+      "Notables {version} está disponible. Actualiza antes del {date} para seguir usando la app.",
+    required: "Actualizar Notables",
+    requiredHint: "Se necesita Notables {version} para continuar.",
+    kept: "Tus notas, tarjetas y demás contenido guardado permanecen en este dispositivo.",
+    update: "Actualizar",
+    later: "Más tarde",
+    checkAgain: "Volver a comprobar",
+    checkFailed:
+      "No se pudieron buscar actualizaciones. Conéctate a Internet e inténtalo de nuevo.",
+    openFailed: "No se pudo abrir la tienda. Reinténtalo o contacta con soporte.",
+    unavailable: "Esta instalación no admite la búsqueda de actualizaciones.",
+  },
   finances: {
     folderName: "FINANZAS",
     yearSheetHint:

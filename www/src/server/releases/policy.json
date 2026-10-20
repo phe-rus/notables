@@ -1,0 +1,9 @@
+{
+  "schema": 1,
+  "channels": {
+    "android-play": null,
+    "ios-testflight": null,
+    "ios-app-store": null,
+    "desktop": null
+  }
+}

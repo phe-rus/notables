@@ -1,6 +1,23 @@
 import type { Messages } from "./en";
 
 export const ar: Messages = {
+  updates: {
+    title: "التحديثات",
+    check: "البحث عن تحديثات",
+    hint: "يتحقق Notables من التحديثات عند فتح التطبيق والعودة إليه.",
+    current: "لديك أحدث إصدار.",
+    available: "يتوفر تحديث",
+    availableHint: "إصدار Notables {version} جاهز. حدّث قبل {date} لمواصلة استخدام التطبيق.",
+    required: "تحديث Notables",
+    requiredHint: "يلزم إصدار Notables {version} للمتابعة.",
+    kept: "تبقى ملاحظاتك وبطاقاتك وأعمالك المحفوظة على هذا الجهاز.",
+    update: "تحديث",
+    later: "لاحقًا",
+    checkAgain: "التحقق مجددًا",
+    checkFailed: "تعذر البحث عن تحديثات. اتصل بالإنترنت وحاول مجددًا.",
+    openFailed: "تعذر فتح المتجر. حاول مجددًا أو تواصل مع الدعم.",
+    unavailable: "التحقق من التحديثات غير متاح لهذا التثبيت.",
+  },
   finances: {
     folderName: "المالية",
     yearSheetHint: "يُحدّث تلقائيًا من سجلك. عدّل الإيصالات والمعاملات في المالية.",

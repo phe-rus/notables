@@ -1,6 +1,24 @@
 import type { Messages } from "./en";
 
 export const sw: Messages = {
+  updates: {
+    title: "Masasisho",
+    check: "Angalia masasisho",
+    hint: "Notables huangalia masasisho unapofungua programu na unaporudi ndani yake.",
+    current: "Programu yako ni ya sasa.",
+    available: "Sasisho linapatikana",
+    availableHint:
+      "Notables {version} iko tayari. Sasisha kabla ya {date} ili kuendelea kutumia programu.",
+    required: "Sasisha Notables",
+    requiredHint: "Notables {version} inahitajika ili kuendelea.",
+    kept: "Madokezo, kadi na kazi zako zilizohifadhiwa zinabaki kwenye kifaa hiki.",
+    update: "Sasisha",
+    later: "Baadaye",
+    checkAgain: "Angalia tena",
+    checkFailed: "Imeshindikana kuangalia masasisho. Unganisha intaneti na ujaribu tena.",
+    openFailed: "Imeshindikana kufungua duka. Jaribu tena au wasiliana na usaidizi.",
+    unavailable: "Usakinishaji huu hauwezi kuangalia masasisho.",
+  },
   finances: {
     folderName: "FEDHA",
     yearSheetHint:

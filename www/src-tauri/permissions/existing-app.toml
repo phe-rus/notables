@@ -2,6 +2,7 @@
 identifier = "existing-app-commands"
 description = "Preserves existing app command permissions while wallet access is restricted separately."
 commands.allow = [
+  "app_release_channel",
   "export_save_file",
   "export_print",
   "open_microphone_settings",

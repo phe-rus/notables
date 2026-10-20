@@ -17,7 +17,10 @@ import { useWarmRoutes } from "../components/layout/use-warm-routes";
 import { BooksList } from "../features/books/components/books-list";
 import { ReminderRunner } from "../features/calendar/components/reminder-runner";
 import { PhoneStatusBanner } from "../features/devices/components/phone-status-banner";
-import { startBrowserSessions } from "../features/devices/lib/browser-sessions";
+import {
+  pauseBrowserSessions,
+  startBrowserSessions,
+} from "../features/devices/lib/browser-sessions";
 import { InvoicesList } from "../features/invoices/components/invoices-list";
 import { Sidebar, type SidebarLocation } from "../features/library/components/library-sidebar";
 import { NotesList } from "../features/library/components/notes-list";
@@ -47,7 +50,7 @@ import { isTauri } from "../platform/runtime";
 import { inBrowserSession } from "../platform/session/browser-session-store";
 import { startSpace } from "../platform/space/space-identity";
 import { startSpaceRemoval } from "../platform/space/space-removal";
-import { startSpaceSync } from "../platform/space/space-sync";
+import { startSpaceSync, stopSpaceSync } from "../platform/space/space-sync";
 
 /** iOS sheet motion: quick to start, long gentle settle. */
 const drawerEase = [0.32, 0.72, 0, 1] as const;
@@ -172,8 +175,10 @@ function WorkspaceShell() {
   // A phone serves the browsers it approved while it runs.
   useEffect(() => {
     if (!isTauri()) return;
+    let active = true;
     // The space first: the browsers it serves are told which one they show.
     void startSpace().finally(() => {
+      if (!active) return;
       startBrowserSessions();
       // Removal first, so the sync below already skips removed devices.
       startSpaceRemoval();
@@ -184,6 +189,11 @@ function WorkspaceShell() {
         return [...library.entries.keys()];
       });
     });
+    return () => {
+      active = false;
+      stopSpaceSync();
+      pauseBrowserSessions();
+    };
   }, []);
   useEffect(() => {
     if (libraryReady) markAppReady();

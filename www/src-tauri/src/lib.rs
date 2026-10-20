@@ -12,6 +12,7 @@ mod space;
 mod storage;
 mod system_settings;
 mod transcription;
+mod updates;
 mod voice;
 pub mod wallet;
 mod widgets;
@@ -74,6 +75,7 @@ pub fn run() {
             storage::protocol::handle,
         )
         .invoke_handler(tauri::generate_handler![
+            updates::app_release_channel,
             space::space_root_read,
             space::space_root_write,
             space::space_device_secret,

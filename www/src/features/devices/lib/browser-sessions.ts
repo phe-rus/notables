@@ -82,6 +82,7 @@ class ServedBrowser {
   readonly #host: SessionHost;
   readonly #key: Uint8Array;
   #link: LocalLink | null = null;
+  #stopped = false;
 
   constructor(private readonly record: BrowserSessionRecord) {
     this.#key = hexToBytes(record.key);
@@ -116,6 +117,7 @@ class ServedBrowser {
   }
 
   #answer(sdp: string) {
+    if (this.#stopped) return;
     this.#link?.close();
     const link = new LocalLink((signal) =>
       this.#room.send(this.record.id, sealSignal(this.#key, signal)),
@@ -142,6 +144,7 @@ class ServedBrowser {
   }
 
   stop() {
+    this.#stopped = true;
     this.#link?.close();
     this.#host.detach();
     // Let the goodbye go out before the seat closes.
@@ -173,6 +176,12 @@ export function startBrowserSessions() {
   for (const record of records) {
     if (!served.has(record.id)) served.set(record.id, new ServedBrowser(record));
   }
+}
+
+/** Pause serving without forgetting approval, including during a required update. */
+export function pauseBrowserSessions() {
+  for (const browser of served.values()) browser.stop();
+  served.clear();
 }
 
 /** A browser the person just approved. */

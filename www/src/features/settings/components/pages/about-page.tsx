@@ -8,6 +8,7 @@ import { useBooks } from "../../../books/store/book-store";
 import { useCalendarEvents } from "../../../calendar/store/calendar-store";
 import { useInvoices } from "../../../invoices/store/invoice-store";
 import { isListedNote, useLibrary } from "../../../library/store/library-store";
+import { UpdateSettings } from "../../../updates/components/update-settings";
 
 const links = [
   { key: "settings.aboutWebsite", href: "https://pherus.org/showcase/notables" },
@@ -41,6 +42,7 @@ export function AboutPage() {
         )}
       </div>
 
+      <UpdateSettings />
       <Section title={t("settings.aboutDevice")}>
         {device?.device && <Row label={t("settings.aboutDeviceName")}>{device.device}</Row>}
         {device?.system && <Row label={t("settings.aboutSystem")}>{device.system}</Row>}

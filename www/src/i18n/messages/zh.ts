@@ -2,6 +2,23 @@ import type { Messages } from "./en";
 
 /** Simplified Chinese. Chinese has one plural form, so plurals carry only `other`. */
 export const zh: Messages = {
+  updates: {
+    title: "更新",
+    check: "检查更新",
+    hint: "Notables 会在打开应用和返回应用时检查更新。",
+    current: "已是最新版本。",
+    available: "有可用更新",
+    availableHint: "Notables {version} 已可用。请在 {date} 前更新，以继续使用应用。",
+    required: "更新 Notables",
+    requiredHint: "需要更新至 Notables {version} 才能继续。",
+    kept: "你的笔记、卡片和其他已保存内容仍保留在此设备上。",
+    update: "更新",
+    later: "稍后",
+    checkAgain: "重新检查",
+    checkFailed: "无法检查更新。请连接互联网后重试。",
+    openFailed: "无法打开商店。请重试或联系支持。",
+    unavailable: "此安装版本无法检查更新。",
+  },
   finances: {
     folderName: "财务",
     yearSheetHint: "从账本自动更新。请在财务中编辑收据和交易。",

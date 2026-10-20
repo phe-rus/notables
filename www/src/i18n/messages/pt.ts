@@ -1,6 +1,24 @@
 import type { Messages } from "./en";
 
 export const pt: Messages = {
+  updates: {
+    title: "Atualizações",
+    check: "Procurar atualizações",
+    hint: "O Notables procura atualizações ao abrir a app e ao voltar a ela.",
+    current: "A app está atualizada.",
+    available: "Está disponível uma atualização",
+    availableHint:
+      "O Notables {version} está disponível. Atualize até {date} para continuar a usar a app.",
+    required: "Atualizar o Notables",
+    requiredHint: "É necessário o Notables {version} para continuar.",
+    kept: "As suas notas, cartões e outros conteúdos guardados permanecem neste dispositivo.",
+    update: "Atualizar",
+    later: "Mais tarde",
+    checkAgain: "Verificar novamente",
+    checkFailed: "Não foi possível procurar atualizações. Ligue-se à Internet e tente novamente.",
+    openFailed: "Não foi possível abrir a loja. Tente novamente ou contacte o suporte.",
+    unavailable: "Esta instalação não permite procurar atualizações.",
+  },
   finances: {
     folderName: "FINANÇAS",
     yearSheetHint: "Atualizado automaticamente pelo livro. Edite recibos e transações em Finanças.",

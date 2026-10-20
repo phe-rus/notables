@@ -115,6 +115,24 @@ Gotchas learned the hard way:
 
 ## Status (October 2026)
 
+- Update awareness (20 Oct): packaged release apps check public release policy,
+  warn before a seven day deadline, then replace the app with an update screen.
+  Known deadlines survive offline restarts; withdrawal clears them. Browser
+  serving and document sync pause without forgetting approval. All channels
+  start disabled pending verified store availability. See
+  [the update handover](docs/reviews/2026-10-19-app-updates.md) before publishing
+  a required version. Physical native store navigation remains to be checked.
+
+- Public beta preparation (19 Oct): v0.2.11 (10024) built successfully for
+  Android and iOS. Android 0.2.11 is public in Open testing as of 20 Oct,
+  with unlimited testers in 30 countries;
+  Apple export compliance is saved and external beta is Waiting for Review. Fresh six-image
+  iPhone and iPad sets and updated Pherus metadata are saved in Apple's listing
+  draft. External group Notables Public Beta and its public invitation exist,
+  with build 10024 awaiting Beta App Review. Google's legal URL check passes
+  after the owner approved disabling zone-wide Bot Fight Mode. See
+  [the beta checkpoint](docs/reviews/2026-10-19-public-beta.md) before resuming stores.
+
 - Sync regression checkpoint (19 Oct): see
   [the sync recovery review](docs/reviews/2026-10-19-sync-recovery.md).
   Regression tests reproduced missing catch-up after transport changes, missing
@@ -610,6 +628,11 @@ and France: "No" until the French declaration is filed. Never set
 TestFlight refuse the upload; each build asks in TestFlight instead.
 
 ## Next
+
+- Publish the update-aware native build after local verification, then test
+  its store links and iOS receipt detection. Leave release policies disabled
+  until an update is available to the relevant users. Continue the pending
+  store reviews and physical sync/Wallet acceptance below.
 
 - Current priority (19 Oct): verify the sync recovery changes on iPhone,
   TECNO and ChromeOS after releasing a shared build. Both Android production
