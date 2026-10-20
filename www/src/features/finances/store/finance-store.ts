@@ -1,9 +1,9 @@
 import { createId } from "@notables/core";
 import { useSyncExternalStore } from "react";
 import type * as Y from "yjs";
+import { sameImportedTransaction } from "@/features/finances/lib/mobile-money";
+import type { FinanceTransaction } from "@/features/finances/model/types";
 import { getLibrary } from "@/features/library/store/library-store";
-import { sameImportedTransaction } from "../lib/mobile-money";
-import type { FinanceTransaction } from "../model/transaction";
 
 export class FinanceStore {
   readonly transactions: Y.Map<FinanceTransaction>;

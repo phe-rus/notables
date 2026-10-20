@@ -130,7 +130,10 @@ Gotchas learned the hard way:
   separate modules. Image-import cancellation/status races have regressions.
   Read [Wallet ownership](www/src/features/wallet/AGENTS.md) and the
   [maintenance plan](docs/MAINTENANCE.md) for evidence. Next: physical native
-  acceptance and Finances cleanup. Rust access, credential and
+  acceptance and Finances device checks. Finances now separates its workflow hook,
+  ledger and transaction sheets, receipt views and model types. Hino owns the
+  table and text controls. See [Finances cleanup](docs/reviews/2026-10-20-finances-ownership.md).
+  Rust access, credential and
   card-operation methods are now separate modules with the same shared mutex
   and epoch policy. The 29 moved method bodies match the preceding source.
 

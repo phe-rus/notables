@@ -1,21 +1,9 @@
 import { minorToInput, parseMoney } from "@notables/core";
-import type { FinanceTransaction } from "../model/transaction";
+import type { FinanceTransaction, MobileMoneySuggestion } from "@/features/finances/model/types";
 
 const currencyPattern = "UGX|USD|EUR|GBP|KES|TZS|RWF|NGN|ZAR|GHS";
 const numberPattern = "[\\d,]+(?:\\.\\d{1,2})?";
 const moneyPattern = `(?:(?<currency>${currencyPattern})\\s*(?<amount>${numberPattern})|(?<afterAmount>${numberPattern})\\s*(?<afterCurrency>${currencyPattern}))`;
-
-export interface MobileMoneySuggestion {
-  currency: string;
-  amount: string;
-  direction: FinanceTransaction["direction"];
-  category: NonNullable<FinanceTransaction["category"]>;
-  description: string;
-  reference: string;
-  date?: string;
-  fee: number;
-  sourceText: string;
-}
 
 function parseMessage(text: string): MobileMoneySuggestion | null {
   // An approval invitation is not evidence that money moved.

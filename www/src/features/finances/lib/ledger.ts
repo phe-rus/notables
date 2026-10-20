@@ -1,25 +1,6 @@
 import { computeTotals, type InvoiceDocument, minorToInput, parseMoney } from "@notables/core";
-import type { FinanceTransaction } from "../model/transaction";
+import type { FinanceTransaction, LedgerRow } from "@/features/finances/model/types";
 import { parseMobileMoneyMessages } from "./mobile-money";
-
-export interface LedgerRow {
-  id: string;
-  date: string;
-  description: string;
-  currency: string;
-  amount: number;
-  type:
-    | "income"
-    | "expense"
-    | "invoice"
-    | "receipt"
-    | "quote"
-    | "borrowing"
-    | "repayment"
-    | "transfer"
-    | "fee";
-  reference: string;
-}
 
 /** Documents remain documents: an invoice or quote is never assumed to be paid. */
 export function financeLedger(
