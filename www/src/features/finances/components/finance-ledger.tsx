@@ -1,10 +1,9 @@
-import { CameraIcon, LayoutIcon, openMenu, PhotoIcon, PlusIcon, toast } from "@phe-rus/hino";
+import { CameraIcon, LayoutIcon, openMenu, PhotoIcon, PlusIcon } from "@phe-rus/hino";
 import { Button } from "@phe-rus/hino/button";
 import { IconButton } from "@phe-rus/hino/icon-button";
 import { useRef } from "react";
 import { DocumentScanner } from "@/features/capture/components/document-scanner";
 import { useFinanceLedger } from "@/features/finances/hooks/use-finance-ledger";
-import { copyPickedReceipts } from "@/features/finances/lib/picked-receipts";
 import type { FinanceLedgerProps } from "@/features/finances/model/types";
 import { t } from "@/i18n/i18n";
 import { LedgerSheet } from "./ledger-sheet";
@@ -29,6 +28,8 @@ export function FinanceLedger({ documents }: FinanceLedgerProps) {
     set,
     start,
     scan,
+    pick,
+    closeScanner,
     save,
     exportLedger,
     edit,
@@ -99,21 +100,16 @@ export function FinanceLedger({ documents }: FinanceLedgerProps) {
         accept="image/png,image/jpeg,image/webp"
         multiple
         hidden
-        onChange={async (event) => {
+        onChange={(event) => {
           const picker = event.currentTarget;
-          try {
-            const images = await copyPickedReceipts([...(picker.files ?? [])], () => {
-              picker.value = "";
-            });
-            if (images.length) await scan(images);
-          } catch {
-            toast.error(t("capture.scanFailed"));
-          }
+          void pick([...(picker.files ?? [])], () => {
+            picker.value = "";
+          });
         }}
       />
       <DocumentScanner
         mode={scanning ? "document" : null}
-        onClose={() => setScanning(false)}
+        onClose={closeScanner}
         onCapture={scan}
       />
       <LedgerSheet

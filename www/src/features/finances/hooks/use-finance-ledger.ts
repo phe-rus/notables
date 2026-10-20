@@ -1,18 +1,16 @@
-import {
-  type InvoiceDocument,
-  localDay,
-  localMediaSrc,
-  minorToInput,
-  parseMoney,
-} from "@notables/core";
+import { type InvoiceDocument, localDay, minorToInput } from "@notables/core";
 import { confirmDialog, toast } from "@phe-rus/hino";
 import { useNavigate } from "@tanstack/react-router";
 import { useEffect, useMemo, useState } from "react";
+import { createReceiptCapture } from "@/features/finances/lib/create-receipt-capture";
 import { financeLedger, ledgerCsv, suggestTransaction } from "@/features/finances/lib/ledger";
+import { loadReceiptReader } from "@/features/finances/lib/load-receipt-reader";
 import {
   parseMobileMoneyMessages,
   sameImportedTransaction,
 } from "@/features/finances/lib/mobile-money";
+import { copyPickedReceipts } from "@/features/finances/lib/picked-receipts";
+import { saveFinanceDraft } from "@/features/finances/lib/save-finance-draft";
 import { ensureFinanceSheets } from "@/features/finances/lib/year-sheets";
 import { createFinanceDraft } from "@/features/finances/model/create-finance-draft";
 import type {
@@ -25,7 +23,7 @@ import { getFinanceStore, useTransactions } from "@/features/finances/store/fina
 import { getIssuerDefaults } from "@/features/invoices/lib/issuer-profile";
 import { getInvoiceStore } from "@/features/invoices/store/invoice-store";
 import { getLibrary, useLibraryReady } from "@/features/library/store/library-store";
-import { currentLanguage, t } from "@/i18n/i18n";
+import { t } from "@/i18n/i18n";
 import { saveFile } from "@/platform/save-file";
 import { saveMedia } from "@/platform/storage/media-store";
 
@@ -46,69 +44,63 @@ export function useFinanceLedger(documents: InvoiceDocument[]) {
   const navigate = useNavigate();
   const set = (patch: Partial<FinanceDraft>) =>
     setDraft((value) => (value ? { ...value, ...patch } : value));
+  const capture = useMemo(
+    () =>
+      createReceiptCapture(
+        { load: loadReceiptReader, copy: copyPickedReceipts },
+        {
+          onStart: () => {
+            setBusy(true);
+            setQueue([]);
+            setFiles([]);
+          },
+          onFiles: setFiles,
+          onRead: (text) => {
+            const suggestion = suggestTransaction(text);
+            setDraft({
+              ...createFinanceDraft("receipt"),
+              ...suggestion,
+              currency: suggestion.currency || getIssuerDefaults().currency,
+              sourceText: text,
+            });
+            if (!text.trim()) toast.error(t("capture.scanFailed"));
+          },
+          onFailure: (stage) => {
+            if (stage === "read") setDraft(createFinanceDraft("receipt"));
+            toast.error(t("capture.scanFailed"));
+          },
+          onFinish: () => {
+            setBusy(false);
+            setScanning(false);
+          },
+        },
+      ),
+    [],
+  );
+  useEffect(
+    () => () => {
+      capture.cancel();
+    },
+    [capture],
+  );
   const start = (source: FinanceTransaction["source"]) => {
+    capture.cancel();
+    setBusy(false);
+    setScanning(false);
     setFiles([]);
     setQueue([]);
     setDraft(createFinanceDraft(source));
   };
-  const scan = async (images: File[]) => {
-    setBusy(true);
-    setQueue([]);
-    setFiles(images);
-    try {
-      const { prepareCardImage } = await import("@/features/wallet/lib/card-recognition");
-      const { createCardReader } = await import("@/features/wallet/lib/card-reader");
-      const reader = createCardReader(currentLanguage());
-      const texts: string[] = [];
-      try {
-        for (const image of images.slice(0, 10)) {
-          const canvas = await prepareCardImage(image);
-          try {
-            texts.push((await reader.read(canvas)).text);
-          } finally {
-            canvas.width = 0;
-            canvas.height = 0;
-          }
-        }
-      } finally {
-        reader.stop();
-      }
-      const text = texts.join("\n");
-      const suggestion = suggestTransaction(text);
-      setDraft({
-        ...createFinanceDraft("receipt"),
-        ...suggestion,
-        currency: suggestion.currency || getIssuerDefaults().currency,
-        sourceText: text,
-      });
-      if (!text.trim()) toast.error(t("capture.scanFailed"));
-    } catch {
-      setDraft(createFinanceDraft("receipt"));
-      toast.error(t("capture.scanFailed"));
-    } finally {
-      setBusy(false);
-      setScanning(false);
-    }
+  const closeScanner = () => {
+    if (capture.cancel()) setFiles([]);
+    setBusy(false);
+    setScanning(false);
   };
   const save = async () => {
     if (!draft || busy) return;
-    const amount = parseMoney(draft.amount, draft.currency);
-    if (!amount || !Number.isSafeInteger(amount) || !draft.description.trim()) {
-      toast.error(t("finances.invalid"));
-      return;
-    }
     setBusy(true);
     try {
-      // Check imported message identity before writing files or changing the ledger.
-      if (
-        !draft.id &&
-        draft.source === "sms" &&
-        transactions.some((item) => sameImportedTransaction(item, draft))
-      )
-        throw new Error("duplicate-transaction");
-      const attachments = [...draft.attachments];
-      for (const file of files) attachments.push(localMediaSrc(await saveMedia(file)));
-      getFinanceStore().save({ ...draft, amount, attachments }, draft.id);
+      await saveFinanceDraft(draft, files, { store: getFinanceStore(), writeMedia: saveMedia });
       const next = queue[0];
       setQueue(queue.slice(1));
       setDraft(
@@ -118,9 +110,11 @@ export function useFinanceLedger(documents: InvoiceDocument[]) {
     } catch (error) {
       toast.error(
         t(
-          error instanceof Error && error.message === "duplicate-transaction"
-            ? "finances.duplicate"
-            : "finances.saveFailed",
+          error instanceof Error && error.message === "invalid-transaction"
+            ? "finances.invalid"
+            : error instanceof Error && error.message === "duplicate-transaction"
+              ? "finances.duplicate"
+              : "finances.saveFailed",
         ),
       );
     } finally {
@@ -151,6 +145,8 @@ export function useFinanceLedger(documents: InvoiceDocument[]) {
     const transaction = transactions.find((item) => item.id === row.id.replace(/:fee$/, ""));
     setOpen(false);
     if (transaction) {
+      capture.cancel();
+      setBusy(false);
       setQueue([]);
       setFiles([]);
       setDraft({
@@ -221,7 +217,9 @@ export function useFinanceLedger(documents: InvoiceDocument[]) {
     setPreview,
     set,
     start,
-    scan,
+    scan: capture.scan,
+    pick: capture.pick,
+    closeScanner,
     save,
     exportLedger,
     edit,

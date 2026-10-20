@@ -133,6 +133,11 @@ Gotchas learned the hard way:
   acceptance and Finances device checks. Finances now separates its workflow hook,
   ledger and transaction sheets, receipt views and model types. Hino owns the
   table and text controls. See [Finances cleanup](docs/reviews/2026-10-20-finances-ownership.md).
+  Finances capture cancellation and validation before receipt writes are covered
+  by [the 21 October safeguards](docs/reviews/2026-10-21-finances-capture-save.md).
+  The current Android debug build passed TECNO synthetic image import, preview,
+  pending receipt removal and invalid fee rejection with no media writes. Play
+  remains 0.2.13; live camera, CSV and iPhone acceptance remain pending.
   Rust access, credential and
   card-operation methods are now separate modules with the same shared mutex
   and epoch policy. The 29 moved method bodies match the preceding source.

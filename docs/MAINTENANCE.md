@@ -52,9 +52,12 @@ in [the 20 October audit](reviews/2026-10-20-maintainability-audit.md).
 - [ ] Verify the refactored Wallet on native devices before its next release.
 - [x] Separate Finances workflow hook, ledger/transaction sheets, receipt views
       and model contracts; use Hino table, text controls and action buttons.
-- [ ] Verify Finances camera/image import, receipt preview/removal and export on
-      the next native build. Audit stale OCR work and save validation before media
-      writes separately; preserve duplicate detection and yearly FINANCES sheets.
+- [x] Guard Finances OCR and picker copying against cancellation and late results;
+      share store validation before media writes and cover the failure cases.
+- [x] Check current-source image import, receipt preview/removal and invalid fee
+      rejection on TECNO's separate debug app, without saving a transaction.
+- [ ] Verify Finances live camera, CSV export and iPhone import/review; preserve
+      duplicate detection and yearly FINANCES sheets.
 - [ ] Books list, shelves, imports and reader controls.
 - [ ] Notes editor and capture toolbar, using Hino and owned props types.
 - [ ] Calendar views, event form and gesture ownership.

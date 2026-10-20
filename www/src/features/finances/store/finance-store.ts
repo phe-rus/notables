@@ -2,7 +2,7 @@ import { createId } from "@notables/core";
 import { useSyncExternalStore } from "react";
 import type * as Y from "yjs";
 import { sameImportedTransaction } from "@/features/finances/lib/mobile-money";
-import type { FinanceTransaction } from "@/features/finances/model/types";
+import type { FinanceTransaction, FinanceTransactionDraft } from "@/features/finances/model/types";
 import { getLibrary } from "@/features/library/store/library-store";
 
 export class FinanceStore {
@@ -28,10 +28,7 @@ export class FinanceStore {
   remove(id: string) {
     this.transactions.delete(id);
   }
-  save(
-    draft: Omit<FinanceTransaction, "id" | "createdAt" | "updatedAt">,
-    id?: string,
-  ): FinanceTransaction {
+  validate(draft: FinanceTransactionDraft, id?: string): void {
     if (
       !Number.isSafeInteger(draft.amount) ||
       draft.amount <= 0 ||
@@ -49,6 +46,9 @@ export class FinanceStore {
       draft.source === "sms" &&
       this.#snapshot.find((item) => sameImportedTransaction(item, draft));
     if (duplicate) throw new Error("duplicate-transaction");
+  }
+  save(draft: FinanceTransactionDraft, id?: string): FinanceTransaction {
+    this.validate(draft, id);
     const now = Date.now();
     const current = id ? this.transactions.get(id) : undefined;
     const value = {

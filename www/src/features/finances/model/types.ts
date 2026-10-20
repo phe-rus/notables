@@ -84,3 +84,37 @@ export type TransactionSheetProps = {
   onPreview: (src: string) => void;
   onRemoveFile: (index: number) => void;
 };
+
+export type FinanceTransactionDraft = Omit<FinanceTransaction, "id" | "createdAt" | "updatedAt">;
+export type FinanceSaveServices = {
+  store: {
+    validate: (draft: FinanceTransactionDraft, id?: string) => void;
+    save: (draft: FinanceTransactionDraft, id?: string) => FinanceTransaction;
+  };
+  writeMedia: (file: File) => Promise<string>;
+};
+
+export type ReceiptFrame = { width: number; height: number };
+export type ReceiptTextReader<Frame> = {
+  read: (frame: Frame) => Promise<{ text: string }>;
+  stop: () => void;
+};
+export type ReceiptReaderTools<Frame> = {
+  prepare: (file: File) => Promise<Frame>;
+  createReader: () => ReceiptTextReader<Frame>;
+};
+export type ReceiptCaptureServices<Frame> = {
+  load: () => Promise<ReceiptReaderTools<Frame>>;
+  copy: (files: readonly File[], release: () => void) => Promise<File[]>;
+};
+export type ReceiptCaptureObserver = {
+  onStart: () => void;
+  onFiles: (files: File[]) => void;
+  onRead: (text: string) => void;
+  onFailure: (stage: "copy" | "read") => void;
+  onFinish: () => void;
+};
+export type ReceiptCaptureOperation<Frame> = {
+  reader?: ReceiptTextReader<Frame>;
+  frame?: Frame;
+};
