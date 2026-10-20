@@ -327,3 +327,15 @@ a labeled number could also keep only the first four-digit group. The parser
 now recognises wrapped groups in bank context and prefers the complete printed
 PAN. Synthetic Visa and Amex tests cover group wrapping, expiry separation and
 labeled truncation. This is not yet a physical iPhone accuracy confirmation.
+
+## 20 October: form maintenance
+
+ManualCardForm owns form state and submission. model/types.ts owns its props,
+form values and draft context; card-form-defaults.ts owns initial values and
+kind fields; build-card-draft.ts assembles preview/save payloads with stable
+field IDs. CardAppearanceSheet owns the Hino swatch presentation. New draft
+regressions preserve masked fields/custom details on public edits and remove
+CVV when retention is disabled. Compact inline inputs remain intentionally
+unchanged until Hino supplies an appropriate inline field control. Continue
+scanner lifecycle and native contract cleanup; this structural pass does not
+establish physical OCR/NFC accuracy.

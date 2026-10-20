@@ -1,49 +1,36 @@
 import {
   BrushIcon,
-  Button,
   CameraIcon,
   ChevronRightIcon,
   LabeledContent,
   Section,
   SegmentedControl,
-  Sheet,
-  SwatchPicker,
 } from "@phe-rus/hino";
+import { Button } from "@phe-rus/hino/button";
 import { Toggle } from "@phe-rus/hino/toggle";
-import { type AccentId, accents } from "@phe-rus/hino/tokens";
+import { accents } from "@phe-rus/hino/tokens";
 import { useForm } from "@tanstack/react-form";
 import { useRef, useState } from "react";
 import { PickerInput } from "@/components/form/form-fields";
 import { t } from "@/i18n/i18n";
 import type { CardReading } from "../lib/card-reader";
-import type { CardSuggestions } from "../lib/card-recognition";
+import { buildCardDraft } from "../model/build-card-draft";
 import { backMatchesCard } from "../model/card-back";
+import { cardFormDefaults, cardFormKeys } from "../model/card-form-defaults";
 import { fieldLabels } from "../model/card-layout";
 import { isSecretField } from "../model/card-secrets";
-import {
-  type CardDraft,
-  type CardKind,
-  cardKinds,
-  kindMessageKeys,
-  type WalletCard,
-} from "../model/wallet-model";
+import type { CardFormValues, ManualCardFormProps } from "../model/types";
+import { type CardDraft, type CardKind, cardKinds, kindMessageKeys } from "../model/wallet-model";
 import { saveWalletCard, showWallet, useWallet } from "../store/wallet-store";
+import { CardAppearanceSheet } from "./card-appearance-sheet";
 import { CardBackCapture } from "./card-back-capture";
 import { CardFace } from "./card-face";
 
-export function ManualCardForm({
-  card,
-  suggestions,
-}: {
-  card: WalletCard | null;
-  suggestions?: CardSuggestions;
-}) {
+export function ManualCardForm({ card, suggestions }: ManualCardFormProps) {
   const { busy } = useWallet();
   const id = useRef(card?.draft.id ?? crypto.randomUUID());
   const operation = useRef(crypto.randomUUID());
   const fieldIds = useRef(new Map(card?.draft.fields.map((field) => [field.key, field.id]) ?? []));
-  const existing = (key: Exclude<keyof CardSuggestions, "numberUncertain">) =>
-    card?.draft.fields.find((field) => field.key === key)?.value ?? suggestions?.[key] ?? "";
   const [backOpen, setBackOpen] = useState(false);
   const [backMismatch, setBackMismatch] = useState(false);
   const [backEmpty, setBackEmpty] = useState(false);
@@ -70,104 +57,17 @@ export function ManualCardForm({
   const [appearanceOpen, setAppearanceOpen] = useState(false);
   const [previewSide, setPreviewSide] = useState<"front" | "back">("front");
   const [kind, setKind] = useState<CardKind>(card?.draft.kind ?? suggestions?.kind ?? "other");
-  const kindKeys = {
-    bank: ["holder", "number", "expiry", "cvv"],
-    "national-id": ["holder", "number", "expiry"],
-    passport: ["holder", "number", "expiry"],
-    electricity: ["meter", "account", "holder"],
-    television: ["account", "number", "holder"],
-    sim: ["number", "account", "puk", "holder"],
-    membership: ["holder", "number", "expiry"],
-    other: ["holder", "number", "account"],
-  } as const;
-  const defaultValues = {
-    meter: existing("meter"),
-    account: existing("account"),
-    displayName: card?.draft.displayName ?? suggestions?.displayName ?? "",
-    holder: existing("holder"),
-    number: existing("number"),
-    expiry: existing("expiry"),
-    issuer: card?.draft.issuer ?? suggestions?.issuer ?? "",
-    cvv: existing("cvv"),
-    puk: existing("puk"),
-    retainSecurityCode: card?.draft.retainSecurityCode ?? false,
-    backAvailable: card?.draft.sideState.back === "available",
-    palette:
-      card?.draft.appearance.palette ??
-      suggestions?.palette ??
-      (
-        {
-          bank: "ocean",
-          "national-id": "sage",
-          passport: "rose",
-          electricity: "honey",
-          television: "graphite",
-          sim: "honey",
-          membership: "lavender",
-          other: "blush",
-        } satisfies Record<CardKind, AccentId>
-      )[kind],
-  };
-  const draftFor = (value: typeof defaultValues): CardDraft => {
-    const labels = { ...fieldLabels(kind), cvv: t("wallet.securityCode") };
-    const keys = kindKeys[kind];
-    const fields = keys
-      .filter(
-        (key) =>
-          key !== "cvv" ||
-          (value.retainSecurityCode &&
-            (value.cvv !== "" ||
-              card?.draft.fields.some((field) => field.key === "cvv" && field.redacted))),
-      )
-      .map((key, order) => {
-        let fieldId = fieldIds.current.get(key);
-        if (!fieldId) {
-          fieldId = crypto.randomUUID();
-          fieldIds.current.set(key, fieldId);
-        }
-        return {
-          id: fieldId,
-          cardId: id.current,
-          key,
-          label: labels[key],
-          value: value[key],
-          order,
-          side: key === "cvv" || backKeys.has(key) ? ("back" as const) : ("front" as const),
-          sensitive: protectedKeys.has(key),
-          redacted:
-            card?.draft.fields.some((field) => field.key === key && field.redacted) &&
-            value[key] === "",
-          source:
-            suggestions?.[key as keyof CardSuggestions] === value[key] && value[key] !== ""
-              ? ("recognition" as const)
-              : (card?.draft.fields.find((field) => field.key === key && field.value === value[key])
-                  ?.source ?? ("manual" as const)),
-        };
-      });
-    const draft: CardDraft = {
+  const defaultValues = cardFormDefaults({ card, suggestions });
+  const draftFor = (value: CardFormValues): CardDraft =>
+    buildCardDraft(value, {
+      card,
+      suggestions,
       id: id.current,
       kind,
-      displayName: value.displayName,
-      issuer: value.issuer || null,
-      templateId: `${kind}-landscape`,
-      templateVersion: 1,
-      sideState: {
-        front: "available",
-        back:
-          value.backAvailable || (value.retainSecurityCode && value.cvv !== "")
-            ? "available"
-            : "missing",
-      },
-      fields: [
-        ...fields,
-        ...(card?.draft.fields.filter((field) => field.key.startsWith("custom:")) ?? []),
-      ],
-      appearance: { formFactor: "landscape", palette: value.palette },
-      retainSecurityCode: kind === "bank" && value.retainSecurityCode,
-    };
-
-    return draft;
-  };
+      fieldIds: fieldIds.current,
+      backKeys,
+      protectedKeys,
+    });
   const form = useForm({
     defaultValues,
     onSubmit: async ({ value }) => {
@@ -198,7 +98,7 @@ export function ManualCardForm({
     }
     const merged = new Set(backKeys);
     let added = false;
-    for (const key of kindKeys[kind]) {
+    for (const key of cardFormKeys[kind]) {
       const value = back[key];
       if (
         value &&
@@ -294,7 +194,7 @@ export function ManualCardForm({
               ({ name }) =>
                 name === "displayName" ||
                 name === "issuer" ||
-                kindKeys[kind].some((key) => key === name),
+                cardFormKeys[kind].some((key) => key === name),
             )
             .map(({ name, label, max }) => (
               <form.Field key={name} name={name}>
@@ -335,7 +235,7 @@ export function ManualCardForm({
         </Section>
       </fieldset>
       <Section title={t("wallet.security")} footer={t("wallet.securityHint")}>
-        {kindKeys[kind]
+        {cardFormKeys[kind]
           .filter((key) => key !== "cvv" && key !== "puk")
           .map((key) => (
             <LabeledContent key={key} label={labels[key]}>
@@ -359,21 +259,23 @@ export function ManualCardForm({
           ))}
       </Section>
       <Section>
-        <button
-          type="button"
+        <Button
+          variant="ghost"
+          size="sm"
           onClick={() => setBackOpen(true)}
-          className="flex w-full items-center gap-3 px-4 py-3 text-start text-subheadline hover:bg-fill/50"
+          className="h-auto w-full justify-start rounded-none px-4 py-3 text-start text-subheadline font-normal [&>span]:w-full [&>span]:justify-start [&>span]:gap-3"
         >
           <CameraIcon size={18} className="text-accent-text" />
           <span className="grow">{t("wallet.scanBack")}</span>
           <ChevronRightIcon size={16} className="text-label-tertiary rtl:-scale-x-100" />
-        </button>
-        <button
-          type="button"
+        </Button>
+        <Button
+          variant="ghost"
+          size="sm"
           aria-haspopup="dialog"
           aria-expanded={appearanceOpen}
           onClick={() => setAppearanceOpen(true)}
-          className="flex w-full items-center gap-3 px-4 py-3 text-start text-subheadline hover:bg-fill/50"
+          className="h-auto w-full justify-start rounded-none px-4 py-3 text-start text-subheadline font-normal [&>span]:w-full [&>span]:justify-start [&>span]:gap-3"
         >
           <BrushIcon size={18} className="text-accent-text" />
           <span className="grow">{t("wallet.appearance")}</span>
@@ -387,40 +289,21 @@ export function ManualCardForm({
             )}
           </form.Subscribe>
           <ChevronRightIcon size={16} className="text-label-tertiary rtl:-scale-x-100" />
-        </button>
+        </Button>
       </Section>
-      <Sheet
-        open={appearanceOpen}
-        onClose={() => setAppearanceOpen(false)}
-        label={t("wallet.appearance")}
-      >
-        <div className="flex flex-col gap-5 p-5">
-          <div className="flex items-center justify-between gap-3">
-            <h2 className="text-headline font-semibold">{t("wallet.appearance")}</h2>
-            <Button size="sm" variant="ghost" onClick={() => setAppearanceOpen(false)}>
-              {t("common.done")}
-            </Button>
-          </div>
-          <form.Field name="palette">
-            {(field) => (
-              <SwatchPicker
-                value={field.state.value}
-                label={t("setup.accentColour")}
-                options={Object.values(accents).map((accent) => ({
-                  value: accent.id,
-                  label: t(`wallet.palette.${accent.id}`),
-                  color: accent.swatch,
-                  ink: accent.light.onAccent,
-                }))}
-                onChange={(value) => {
-                  operation.current = crypto.randomUUID();
-                  field.handleChange(value);
-                }}
-              />
-            )}
-          </form.Field>
-        </div>
-      </Sheet>
+      <form.Field name="palette">
+        {(field) => (
+          <CardAppearanceSheet
+            open={appearanceOpen}
+            palette={field.state.value}
+            onClose={() => setAppearanceOpen(false)}
+            onChange={(value) => {
+              operation.current = crypto.randomUUID();
+              field.handleChange(value);
+            }}
+          />
+        )}
+      </form.Field>
       <CardBackCapture open={backOpen} onClose={() => setBackOpen(false)} onRead={readBack} />
       {backEmpty && (
         <p role="status" className="text-footnote text-label-secondary">

@@ -37,6 +37,10 @@ in [the 20 October audit](reviews/2026-10-20-maintainability-audit.md).
 
 ## 4. Feature cleanup, one domain at a time
 
+- [x] Publish/deploy Hino 0.1.6 and align the app and editor dependencies.
+- [x] Extract Wallet form contracts, defaults, draft assembly and appearance sheet;
+      cover masked-field preservation, security-code removal and stable field IDs.
+
 - [ ] Wallet forms, scanner lifecycle and native contracts.
 - [ ] Finances import/review UI, ledger operations and receipt handling.
 - [ ] Books list, shelves, imports and reader controls.
