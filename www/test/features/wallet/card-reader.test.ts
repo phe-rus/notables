@@ -1,10 +1,8 @@
 import { describe, expect, it } from "bun:test";
-import {
-  type CardReading,
-  createCardStability,
-  hasCardDetails,
-} from "@/features/wallet/lib/card-reader";
 import { suggestCardFields } from "@/features/wallet/lib/card-recognition";
+import { createCardStability } from "@/features/wallet/lib/create-card-stability";
+import { hasCardDetails } from "@/features/wallet/model/has-card-details";
+import type { CardReading } from "@/features/wallet/model/types";
 
 const reading = (text: string, confidence = 95): CardReading => ({
   text,
@@ -47,7 +45,7 @@ describe("automatic wallet capture", () => {
 });
 
 it("prefers a useful rotated reading over confident unrelated text", async () => {
-  const { cardReadingStrength } = await import("@/features/wallet/lib/card-reader");
+  const { cardReadingStrength } = await import("@/features/wallet/model/card-reading-strength");
   const { suggestCardFields } = await import("@/features/wallet/lib/card-fields");
   const reading = (text: string, confidence: number) => ({
     text,

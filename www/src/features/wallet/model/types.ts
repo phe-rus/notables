@@ -1,6 +1,20 @@
 import type { AccentId } from "@phe-rus/hino/tokens";
-import type { CardSuggestions } from "../lib/card-fields";
 import type { CardKind, WalletCard } from "./wallet-model";
+
+export type CardSuggestions = {
+  kind: CardKind;
+  palette?: AccentId;
+  cvv?: string;
+  numberUncertain?: boolean;
+  meter: string;
+  account: string;
+  displayName: string;
+  holder: string;
+  number: string;
+  expiry: string;
+  issuer: string;
+  puk: string;
+};
 
 export type ManualCardFormProps = {
   card: WalletCard | null;
@@ -35,4 +49,48 @@ export type CardAppearanceSheetProps = {
   palette: AccentId;
   onClose: () => void;
   onChange: (palette: AccentId) => void;
+};
+
+export type CardText = {
+  text: string;
+  confidence: number;
+};
+
+export type CardReading = CardText & {
+  suggestions: CardSuggestions;
+};
+
+export type CardReader = {
+  read: (canvas: HTMLCanvasElement) => Promise<CardReading>;
+  stop: () => void;
+};
+
+export type CardCameraPhase = "opening" | "scanning" | "detected" | "error";
+
+export type CardCameraProps = {
+  onClose: () => void;
+  onRead?: (reading: CardReading) => void;
+};
+
+export type CardCameraSource = {
+  ready: () => boolean;
+  capture: () => HTMLCanvasElement;
+  attach: (stream: MediaStream) => Promise<void>;
+  clear: (stream: MediaStream | undefined) => void;
+};
+
+export type CardCameraObserver = {
+  back: boolean;
+  onDetected: (reading: CardReading | null) => void;
+  onPhase: (phase: CardCameraPhase) => void;
+  onRead: (reading: CardReading) => void;
+};
+
+export type CardCameraServices = {
+  reader: CardReader;
+  openCamera: () => Promise<MediaStream>;
+  resumeAccess: () => Promise<void>;
+  systemPrompt: (work: () => Promise<void>) => Promise<void>;
+  readCodes: (canvas: HTMLCanvasElement) => Promise<string[]>;
+  schedule: (work: () => Promise<void>, delay: number) => () => void;
 };

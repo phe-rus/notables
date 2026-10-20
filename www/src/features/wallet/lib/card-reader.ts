@@ -1,48 +1,13 @@
-import { invoke } from "@tauri-apps/api/core";
 import type { Worker } from "tesseract.js";
 import { devicePlatform } from "@/platform/device-platform";
 import { isTauri } from "@/platform/runtime";
+import type { CardReader, CardReading, CardText } from "../model/types";
 import { readCardPalette } from "./card-colors";
 import { suggestCardFields } from "./card-fields";
-
-export interface CardReading {
-  text: string;
-  confidence: number;
-  suggestions: ReturnType<typeof suggestCardFields>;
-}
-
-/** Logos alone must not open an empty Wallet review. Document scanning accepts any text. */
-export function hasCardDetails(reading: CardReading) {
-  const fields = reading.suggestions;
-  return [
-    fields.number,
-    fields.meter,
-    fields.account,
-    fields.holder,
-    fields.expiry,
-    fields.puk,
-    fields.cvv,
-  ].some((value) => !!value?.trim());
-}
-
-/** Useful identifiers outweigh a confident reading of unrelated background words. */
-export function cardReadingStrength(reading: CardReading) {
-  const fields = reading.suggestions;
-  const identifiers = [fields.number, fields.meter, fields.account, fields.puk, fields.cvv].filter(
-    Boolean,
-  ).length;
-  const details = [fields.holder, fields.expiry].filter(Boolean).length;
-  return (
-    ((identifiers * (fields.numberUncertain ? 60 : 150) +
-      details * 15 +
-      (fields.kind === "other" ? 0 : 30)) *
-      Math.max(0, Math.min(100, reading.confidence))) /
-    100
-  );
-}
+import { cancelNativeCardReading, readNativeCardText } from "./native-card-reader";
 
 /** A session owns one engine, one frame at a time, and no persistent images. */
-export function createCardReader(locale: string) {
+export function createCardReader(locale: string): CardReader {
   let stopped = false;
   let worker: Promise<Worker> | null = null;
   let native =
@@ -80,12 +45,10 @@ export function createCardReader(locale: string) {
   return {
     async read(canvas: HTMLCanvasElement): Promise<CardReading> {
       if (stopped) throw new Error("cancelled");
-      let reading: { text: string; confidence: number } | undefined;
+      let reading: CardText | undefined;
       if (native) {
         try {
-          reading = await invoke("plugin:card-reader|recognize", {
-            image: canvas.toDataURL("image/jpeg", 0.9).split(",")[1],
-          });
+          reading = await readNativeCardText(canvas);
         } catch (error) {
           if (stopped) throw new Error("cancelled");
           // Older installed shells do not expose the native reader yet.
@@ -108,37 +71,10 @@ export function createCardReader(locale: string) {
       };
     },
     stop() {
+      if (stopped) return;
       stopped = true;
-      if (native) void invoke("plugin:card-reader|cancel").catch(() => {});
+      if (native) void cancelNativeCardReading().catch(() => {});
       void worker?.then((engine) => engine.terminate()).catch(() => {});
     },
-  };
-}
-
-/** Do not accept a card until independent frames agree on its useful details. */
-export function createCardStability(back = false) {
-  let previous = "";
-  return (reading: CardReading) => {
-    const fields = reading.suggestions;
-    const identifier =
-      fields.meter || fields.account || fields.number || (back ? fields.cvv || fields.puk : "");
-    if (
-      reading.confidence < 65 ||
-      !identifier ||
-      fields.numberUncertain ||
-      (!back && fields.kind === "other")
-    ) {
-      previous = "";
-      return false;
-    }
-    const fingerprint = JSON.stringify([
-      fields.kind,
-      identifier.replace(/[ -]/g, ""),
-      fields.expiry,
-      fields.holder,
-    ]);
-    const stable = previous === fingerprint;
-    previous = fingerprint;
-    return stable;
   };
 }

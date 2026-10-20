@@ -2,9 +2,7 @@ import { createStore, useSelector } from "@tanstack/react-store";
 import { currentLanguage } from "@/i18n/i18n";
 import { isTauri } from "@/platform/runtime";
 import { cancelWalletNfc, readWalletNfc } from "../lib/card-nfc";
-import type { CardReading } from "../lib/card-reader";
 import {
-  type CardSuggestions,
   cancelCardRecognition,
   prepareCardImage,
   recognizeCard,
@@ -18,6 +16,7 @@ import {
 } from "../lib/wallet-auth";
 import { resumedWalletStatus, WalletFailure, walletService } from "../lib/wallet-service";
 import { redactCard } from "../model/card-secrets";
+import type { CardReading, CardSuggestions } from "../model/types";
 import type {
   ListRequest,
   SaveRequest,

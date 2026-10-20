@@ -1,4 +1,4 @@
-import type { CardSuggestions } from "../lib/card-fields";
+import type { CardSuggestions } from "./types";
 import type { CardKind } from "./wallet-model";
 
 export function backMatchesCard(

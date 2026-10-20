@@ -339,3 +339,21 @@ CVV when retention is disabled. Compact inline inputs remain intentionally
 unchanged until Hino supplies an appropriate inline field control. Continue
 scanner lifecycle and native contract cleanup; this structural pass does not
 establish physical OCR/NFC accuracy.
+
+## 20 October: scanner ownership
+
+CardCamera renders only the preview and controls. useCardCamera binds the video,
+visibility and Wallet access checks to createCardCameraSession. That session owns
+one stream, frame and timer. Stop is idempotent; late camera grants release their
+tracks without resuming access or stopping the reader again. OCR/barcode results
+after stop are discarded. Frame-capture exceptions enter the normal retry path.
+Source clearing checks stream identity so an older session cannot detach a newer
+preview. Back captures retain their existing manual/plain-text acceptance rules.
+
+Native OCR calls live in lib/native-card-reader.ts and validate through
+model/card-reader-contract.ts before parsing card details. Wire commands and
+mobile plugin implementations are unchanged. Scanner contracts and suggestions
+are export type declarations in model/types.ts. Details, stability and strength
+rules have separate named modules. Continue import/store and Rust vault contract
+cleanup, then physical iPhone scanning/NFC verification. No biometric bypass or
+new authentication grant is introduced by this refactor.

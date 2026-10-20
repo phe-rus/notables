@@ -1,9 +1,11 @@
 import type { Worker } from "tesseract.js";
+import { cardReadingStrength } from "../model/card-reading-strength";
+import type { CardReading } from "../model/types";
 import { readCardCodes } from "./card-codes";
 
-export { type CardSuggestions, suggestCardFields } from "./card-fields";
+export { suggestCardFields } from "./card-fields";
 
-import { type CardSuggestions, suggestCardFields } from "./card-fields";
+import { suggestCardFields } from "./card-fields";
 
 // Chinese reads with the English model for now: card numbers, dates and
 // Latin names come through, and chi_sim would add about 20 MB to the app.
@@ -40,106 +42,104 @@ export function recognizeCard(
   };
   active = cancel;
   const timer = window.setTimeout(cancel, 60_000);
-  const result = new Promise<{ text: string; confidence: number; suggestions: CardSuggestions }>(
-    (resolve, reject) => {
-      rejectJob = reject;
-      void (async () => {
-        try {
-          if (mode === "card") {
-            const { createCardReader, cardReadingStrength } = await import("./card-reader");
-            if (cancelled || !image) return;
-            const reader = createCardReader(locale);
-            stopReader = () => reader.stop();
-            let reading = await reader.read(image);
-            const fields = reading.suggestions;
-            if (
-              fields.kind === "other" ||
-              fields.numberUncertain ||
-              (!fields.number && !fields.meter && !fields.account)
-            ) {
-              for (const angle of [90, 180, 270]) {
-                if (cancelled || !image) return;
-                const rotated = document.createElement("canvas");
-                rotated.width = angle % 180 ? image.height : image.width;
-                rotated.height = angle % 180 ? image.width : image.height;
-                try {
-                  const context = rotated.getContext("2d");
-                  if (!context) continue;
-                  context.translate(rotated.width / 2, rotated.height / 2);
-                  context.rotate((angle * Math.PI) / 180);
-                  context.drawImage(image, -image.width / 2, -image.height / 2);
-                  const candidate = await reader.read(rotated);
-                  if (cardReadingStrength(candidate) > cardReadingStrength(reading))
-                    reading = candidate;
-                  const found = reading.suggestions;
-                  if (
-                    reading.confidence >= 75 &&
-                    found.kind !== "other" &&
-                    !found.numberUncertain &&
-                    (found.number || found.meter || found.account)
-                  )
-                    break;
-                } finally {
-                  rotated.width = rotated.height = 0;
-                }
+  const result = new Promise<CardReading>((resolve, reject) => {
+    rejectJob = reject;
+    void (async () => {
+      try {
+        if (mode === "card") {
+          const { createCardReader } = await import("./card-reader");
+          if (cancelled || !image) return;
+          const reader = createCardReader(locale);
+          stopReader = () => reader.stop();
+          let reading = await reader.read(image);
+          const fields = reading.suggestions;
+          if (
+            fields.kind === "other" ||
+            fields.numberUncertain ||
+            (!fields.number && !fields.meter && !fields.account)
+          ) {
+            for (const angle of [90, 180, 270]) {
+              if (cancelled || !image) return;
+              const rotated = document.createElement("canvas");
+              rotated.width = angle % 180 ? image.height : image.width;
+              rotated.height = angle % 180 ? image.width : image.height;
+              try {
+                const context = rotated.getContext("2d");
+                if (!context) continue;
+                context.translate(rotated.width / 2, rotated.height / 2);
+                context.rotate((angle * Math.PI) / 180);
+                context.drawImage(image, -image.width / 2, -image.height / 2);
+                const candidate = await reader.read(rotated);
+                if (cardReadingStrength(candidate) > cardReadingStrength(reading))
+                  reading = candidate;
+                const found = reading.suggestions;
+                if (
+                  reading.confidence >= 75 &&
+                  found.kind !== "other" &&
+                  !found.numberUncertain &&
+                  (found.number || found.meter || found.account)
+                )
+                  break;
+              } finally {
+                rotated.width = rotated.height = 0;
               }
             }
-            if (cancelled || !image) return;
-            const codes = await readCardCodes(image).catch(() => []);
-            if (cancelled) return;
-            const text = [reading.text, ...codes].join("\n");
-            if (!text.trim()) throw new Error("no-readable-details");
-            progress(1);
-            resolve({
-              ...reading,
-              text,
-              suggestions: { ...suggestCardFields(text), palette: reading.suggestions.palette },
-            });
-            return;
           }
-          const { createWorker, PSM } = await import("tesseract.js");
-          if (cancelled) return;
-          const language = languages[locale];
-          const loaded = await createWorker(language === "eng" ? "eng" : `${language}+eng`, 1, {
-            workerPath: new URL("/wallet-ocr/worker.min.js", location.origin).href,
-            corePath: new URL("/wallet-ocr/core", location.origin).href,
-            langPath: new URL("/wallet-ocr/models", location.origin).href,
-            workerBlobURL: false,
-            cacheMethod: "none",
-            logger: (event) => {
-              if (!cancelled && event.status === "recognizing text") progress(event.progress);
-            },
-            errorHandler: () => reject(new Error("recognition-failed")),
-          });
-          worker = loaded;
-          if (cancelled || !image) {
-            await loaded.terminate();
-            return;
-          }
-          await loaded.setParameters({ tessedit_pageseg_mode: PSM.AUTO });
           if (cancelled || !image) return;
-          const { data } = await loaded.recognize(image);
-          const text = data.text;
-          if (!cancelled)
-            resolve({
-              text: text.slice(0, 20_000),
-              confidence: data.confidence,
-              suggestions: suggestCardFields(text),
-            });
-        } catch {
-          if (!cancelled) reject(new Error("recognition-failed"));
-        } finally {
-          if (image) {
-            image.width = 0;
-            image.height = 0;
-            image = null;
-          }
-          void worker?.terminate();
-          stopReader?.();
+          const codes = await readCardCodes(image).catch(() => []);
+          if (cancelled) return;
+          const text = [reading.text, ...codes].join("\n");
+          if (!text.trim()) throw new Error("no-readable-details");
+          progress(1);
+          resolve({
+            ...reading,
+            text,
+            suggestions: { ...suggestCardFields(text), palette: reading.suggestions.palette },
+          });
+          return;
         }
-      })();
-    },
-  ).finally(() => {
+        const { createWorker, PSM } = await import("tesseract.js");
+        if (cancelled) return;
+        const language = languages[locale];
+        const loaded = await createWorker(language === "eng" ? "eng" : `${language}+eng`, 1, {
+          workerPath: new URL("/wallet-ocr/worker.min.js", location.origin).href,
+          corePath: new URL("/wallet-ocr/core", location.origin).href,
+          langPath: new URL("/wallet-ocr/models", location.origin).href,
+          workerBlobURL: false,
+          cacheMethod: "none",
+          logger: (event) => {
+            if (!cancelled && event.status === "recognizing text") progress(event.progress);
+          },
+          errorHandler: () => reject(new Error("recognition-failed")),
+        });
+        worker = loaded;
+        if (cancelled || !image) {
+          await loaded.terminate();
+          return;
+        }
+        await loaded.setParameters({ tessedit_pageseg_mode: PSM.AUTO });
+        if (cancelled || !image) return;
+        const { data } = await loaded.recognize(image);
+        const text = data.text;
+        if (!cancelled)
+          resolve({
+            text: text.slice(0, 20_000),
+            confidence: data.confidence,
+            suggestions: suggestCardFields(text),
+          });
+      } catch {
+        if (!cancelled) reject(new Error("recognition-failed"));
+      } finally {
+        if (image) {
+          image.width = 0;
+          image.height = 0;
+          image = null;
+        }
+        void worker?.terminate();
+        stopReader?.();
+      }
+    })();
+  }).finally(() => {
     window.clearTimeout(timer);
     if (active === cancel) active = null;
   });

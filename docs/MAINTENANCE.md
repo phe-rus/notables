@@ -41,7 +41,9 @@ in [the 20 October audit](reviews/2026-10-20-maintainability-audit.md).
 - [x] Extract Wallet form contracts, defaults, draft assembly and appearance sheet;
       cover masked-field preservation, security-code removal and stable field IDs.
 
-- [ ] Wallet forms, scanner lifecycle and native contracts.
+- [x] Separate camera presentation, session ownership and runtime binding; validate
+      native OCR payloads and reject late permission/OCR/barcode results.
+- [ ] Complete Wallet import/store and native vault contract restructuring.
 - [ ] Finances import/review UI, ledger operations and receipt handling.
 - [ ] Books list, shelves, imports and reader controls.
 - [ ] Notes editor and capture toolbar, using Hino and owned props types.
@@ -65,5 +67,6 @@ push. Keep unrelated working edits separate. Store review and physical mobile
 verification remain tracked in AGENTS.md and the existing release reviews.
 
 Physical evidence: [0.2.13 pairing and sync](reviews/2026-10-20-pairing-membership.md).
+Scanner maintenance: [ownership and native OCR contract](reviews/2026-10-20-wallet-scanner-maintenance.md).
 Release run 39399850328 built Android, iOS, Linux, Windows and Apple Silicon Mac.
 Intel Mac failed before packaging, so the installer collection job was skipped.

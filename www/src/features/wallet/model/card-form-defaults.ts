@@ -1,6 +1,5 @@
 import type { AccentId } from "@phe-rus/hino/tokens";
-import type { CardSuggestions } from "../lib/card-fields";
-import type { CardFormValues, ManualCardFormProps } from "./types";
+import type { CardFormValues, CardSuggestions, ManualCardFormProps } from "./types";
 import type { CardKind } from "./wallet-model";
 
 export const cardFormKeys = {

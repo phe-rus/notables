@@ -122,6 +122,15 @@ Gotchas learned the hard way:
 
 ## Status (October 2026)
 
+- 20 October scanner maintenance: CardCamera delegates to useCardCamera and
+  createCardCameraSession. The session owns its stream, one frame and retry timer;
+  late camera grants and OCR/barcode results cannot reopen cancelled review.
+  Cleanup is idempotent and detaches only its own stream. Native OCR responses
+  are validated at the IPC adapter. CardReading and scanner contracts live in
+  wallet/model/types.ts; acceptance/stability/strength rules have focused files.
+  Physical iPhone OCR/NFC accuracy still requires verification. Continue Wallet
+  import/store and native vault contracts in docs/MAINTENANCE.md.
+
 - 20 October: Hino UI 0.1.6 published through its trusted npm workflow and
   docs deployed (Worker a52da79d-5e8d-4eea-bea4-1f5d7ef9e284). Notables and
   Pluraliti now pin that same version. It supplies accent-tinted grounds,

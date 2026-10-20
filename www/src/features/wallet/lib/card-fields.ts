@@ -1,21 +1,6 @@
-import type { AccentId } from "@phe-rus/hino/tokens";
+import type { CardSuggestions } from "../model/types";
 import type { CardKind } from "../model/wallet-model";
 import { readMrz } from "./mrz";
-
-export interface CardSuggestions {
-  kind: CardKind;
-  palette?: AccentId;
-  cvv?: string;
-  numberUncertain?: boolean;
-  meter: string;
-  account: string;
-  displayName: string;
-  holder: string;
-  number: string;
-  expiry: string;
-  issuer: string;
-  puk: string;
-}
 
 /** Conservative suggestions only. Confirmation in review is always required. */
 export function suggestCardFields(text: string): CardSuggestions {
