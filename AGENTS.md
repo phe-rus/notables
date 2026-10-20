@@ -129,7 +129,8 @@ Gotchas learned the hard way:
   contracts, defaults, draft assembly and appearance sheet are separate modules;
   draft tests protect redacted fields and security-code removal. Continue
   scanner lifecycle/native contracts in docs/MAINTENANCE.md. These source
-  changes require the next native app build to reach installed devices.
+  changes are deployed on the web (Worker 173e39e3-037d-4641-a464-4c439370e90d)
+  and require the next native app build to reach installed devices.
 
 - Pairing regression (20 Oct): reproduced on TECNO 0.2.12, which reports success
   but lists no peer, including after restart. Regression tests also reproduce

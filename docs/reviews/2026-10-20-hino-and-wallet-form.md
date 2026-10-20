@@ -37,6 +37,13 @@ and 56 Rust tests with two existing ignored tests. The first suite run hit a
 Miniflare proxy hydration assertion in the mailbox pagination test; that test
 passed alone and the full suite passed on retry without code changes.
 
+## Deployment
+
+Notables commit 0fb4217 is pushed to main and deployed to notables.pherus.org
+as Worker 173e39e3-037d-4641-a464-4c439370e90d. The live home and its new CSS
+asset returned 200; the served CSS includes Hino's sea-salt material token.
+No database migration or native store release was performed.
+
 ## Remaining
 
 Continue Wallet scanner lifecycle and native contracts, then the next unfinished
