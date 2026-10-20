@@ -48,9 +48,11 @@ in [the 20 October audit](reviews/2026-10-20-maintainability-audit.md).
 - [x] Split vault types, schema, audit and tests from Rust storage implementation.
 - [x] Separate Wallet command validation, typed failures, resume handling and
       lifecycle ownership; split Rust session wire types/publication helper.
-- [ ] Finish Rust access-policy/card-operation separation within Wallet session.
+- [x] Separate Rust access policy, credentials and card operations within Wallet session.
 - [ ] Verify the refactored Wallet on native devices before its next release.
-- [ ] Finances import/review UI, ledger operations and receipt handling.
+- [ ] Finances import/review UI, ledger operations and receipt handling. Start with
+      owned types, receipt components and import/review hooks; preserve duplicate
+      detection and automatic yearly FINANCES sheets.
 - [ ] Books list, shelves, imports and reader controls.
 - [ ] Notes editor and capture toolbar, using Hino and owned props types.
 - [ ] Calendar views, event form and gesture ownership.
@@ -77,4 +79,4 @@ Scanner maintenance: [ownership and native OCR contract](reviews/2026-10-20-wall
 Release run 39399850328 built Android, iOS, Linux, Windows and Apple Silicon Mac.
 Intel Mac failed before packaging, so the installer collection job was skipped.
 
-Latest Wallet boundary checkpoint: [service and lifecycle](reviews/2026-10-20-wallet-service-lifecycle.md).
+Latest Wallet checkpoint: [native session ownership](reviews/2026-10-20-wallet-native-policy.md).

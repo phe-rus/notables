@@ -1,9 +1,23 @@
-use std::{collections::HashMap, sync::Arc};
+use std::{
+    collections::HashMap,
+    path::PathBuf,
+    sync::{Arc, Mutex},
+    time::{Duration, Instant},
+};
 
-use super::*;
+use uuid::Uuid;
+use zeroize::Zeroizing;
+
+use super::{
+    InitializeMode, ListRequest, SaveRequest, Wallet, access::IDLE_LIMIT,
+    credentials::PASSWORD_CONTEXT, publication::publish_vault,
+};
 use crate::wallet::{
     card::{Appearance, CardDraft, Field, Side, SideAvailability, SideState},
-    crypto::DataKey,
+    crypto::{self, DataKey},
+    error::{Result, WalletError},
+    keys::KeyStore,
+    vault::{Category, KeyPolicy, Vault},
 };
 
 #[derive(Default)]

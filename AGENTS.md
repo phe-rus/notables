@@ -128,8 +128,11 @@ Gotchas learned the hard way:
   capture actions, service validation and lifecycle subscriptions have focused
   owners; Rust vault/session types, audit, schema, publication and tests are
   separate modules. Image-import cancellation/status races have regressions.
-  See www/src/features/wallet/AGENTS.md and docs/MAINTENANCE.md for ownership and evidence. Next:
-  native access-policy/card-operation separation and physical iPhone OCR/NFC.
+  Read [Wallet ownership](www/src/features/wallet/AGENTS.md) and the
+  [maintenance plan](docs/MAINTENANCE.md) for evidence. Next: physical native
+  acceptance and Finances cleanup. Rust access, credential and
+  card-operation methods are now separate modules with the same shared mutex
+  and epoch policy. The 29 moved method bodies match the preceding source.
 
 - Pairing regression (20 Oct): reproduced on TECNO 0.2.12, which reports success
   but lists no peer, including after restart. Regression tests also reproduce

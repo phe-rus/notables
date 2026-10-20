@@ -394,3 +394,21 @@ existing Android renameat2 NOREPLACE and other-platform publication code,
 compared unchanged with its previous implementation. Session tests import
 CardDraft from its owner instead of relying on a parent's incidental import.
 Continue native session policy/card operations and physical verification.
+
+## 20 October: native session policy and card operations
+
+session.rs owns Wallet construction and shared state. session/access.rs owns
+expiry, grants, foreground checks, locking, status and activity;
+session/credentials.rs owns initialization, unlock and prototype migration;
+session/cards.rs owns read/save/delete/list. Every method still uses the same
+Wallet mutex and epoch. All 29 moved method bodies were compared with their
+previous implementations, allowing only the nested lifecycle module path.
+Private cross-module helpers stay visible only within session; public command
+signatures, platform/debug gates and password context are unchanged. Tests
+import policy constants, persistence types and helpers from their actual owners.
+
+The structural session split is complete. Native builds and physical iPhone
+OCR/NFC, picker-return and authentication checks remain before release. Do not
+use debug authentication grants as physical biometric evidence. Continue the
+first unfinished applicable feature in docs/MAINTENANCE.md while device checks
+are pending.
