@@ -1,9 +1,9 @@
 import { LinkIcon, MoreIcon, PinIcon, TrashIcon } from "@phe-rus/hino";
 import type { ReactNode } from "react";
-import { t } from "../../../i18n/i18n";
-import { copyAppLink, togglePinned } from "../../notes/actions/note-menu";
-import type { SwipeAction } from "../../settings/model/preferences";
-import { moveNotesToBin } from "../../trash/lib/recycle-bin";
+import { copyAppLink, togglePinned } from "@/features/notes/actions/note-menu";
+import type { SwipeAction } from "@/features/settings/model/preferences";
+import { moveNotesToBin } from "@/features/trash/lib/recycle-bin";
+import { t } from "@/i18n/i18n";
 import type { LibraryEntry } from "../store/library-store";
 
 /** One button revealed by a swipe, as it looks and what it does. */

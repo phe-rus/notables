@@ -1,8 +1,8 @@
 import { mediaReferences } from "@notables/sync";
 import * as Y from "yjs";
-import { getPersistence, listDocuments } from "../../../platform/storage/document-storage";
-import { deleteMedia, listMedia, loadMedia } from "../../../platform/storage/media-store";
-import { getLibrary } from "../../library/store/library-store";
+import { getLibrary } from "@/features/library/store/library-store";
+import { getPersistence, listDocuments } from "@/platform/storage/document-storage";
+import { deleteMedia, listMedia, loadMedia } from "@/platform/storage/media-store";
 
 const STATE_KEY = "notables:media-sweep";
 const DAY = 24 * 60 * 60 * 1000;

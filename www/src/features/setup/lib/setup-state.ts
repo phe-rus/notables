@@ -27,4 +27,4 @@ export function markSetupDone() {
 }
 
 /** Where the chosen language is kept; see i18n. */
-export { LANGUAGE_KEY } from "../../../i18n/i18n";
+export { LANGUAGE_KEY } from "@/i18n/i18n";

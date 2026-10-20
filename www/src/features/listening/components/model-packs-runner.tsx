@@ -1,7 +1,7 @@
 import { toast } from "@phe-rus/hino";
 import { useEffect, useRef } from "react";
-import { t } from "../../../i18n/i18n";
-import { isTauri } from "../../../platform/runtime";
+import { t } from "@/i18n/i18n";
+import { isTauri } from "@/platform/runtime";
 import { runAutoDownloads, useModelPacks } from "../lib/model-packs";
 import { getNarrationSettings, setNarrationSettings } from "../lib/narration-settings";
 import { naturalVoiceInfo } from "../lib/natural-voice";

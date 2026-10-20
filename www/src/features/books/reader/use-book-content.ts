@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
-import { loadNoteContent } from "../../../platform/storage/note-content-cache";
-import { useLibrary } from "../../library/store/library-store";
+import { useLibrary } from "@/features/library/store/library-store";
+import { loadNoteContent } from "@/platform/storage/note-content-cache";
 import { partOpenings } from "../lib/chapter-outline";
 import type { BookEntry, Part } from "../store/book-store";
 

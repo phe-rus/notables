@@ -1,5 +1,5 @@
 import { useSyncExternalStore } from "react";
-import { syncedSetting } from "../../../platform/settings/synced-settings";
+import { syncedSetting } from "@/platform/settings/synced-settings";
 import { defaultPreferences, normalizePreferences, type Preferences } from "../model/preferences";
 
 /** Where preferences are saved; the pre-paint appearance script reads it too. */

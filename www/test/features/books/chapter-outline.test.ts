@@ -8,8 +8,8 @@ import {
   withChaptersInserted,
   withChaptersSwapped,
   withPartMoved,
-} from "../../../src/features/books/lib/chapter-outline";
-import type { Part } from "../../../src/features/books/store/book-store";
+} from "@/features/books/lib/chapter-outline";
+import type { Part } from "@/features/books/store/book-store";
 
 const part = (id: string, startsAt: string): Part => ({ id, title: id, startsAt });
 const all = () => true;

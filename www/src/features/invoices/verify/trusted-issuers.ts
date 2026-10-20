@@ -1,4 +1,4 @@
-import { syncedSetting } from "../../../platform/settings/synced-settings";
+import { syncedSetting } from "@/platform/settings/synced-settings";
 
 /**
  * Issuers the person has seen on any of their devices, by issuer ID.

@@ -1,10 +1,6 @@
 import { describe, expect, it } from "bun:test";
-import { gatherPeople, type ShareSnapshot } from "../../../src/features/connections/model/people";
-import {
-  OWNER,
-  type ShareCredentials,
-  type ShareMember,
-} from "../../../src/features/sharing/model/share";
+import { gatherPeople, type ShareSnapshot } from "@/features/connections/model/people";
+import { OWNER, type ShareCredentials, type ShareMember } from "@/features/sharing/model/share";
 
 const share = (noteId: string, role: "owner" | "member", extra: Partial<ShareCredentials> = {}) =>
   ({

@@ -1,7 +1,7 @@
 import { Button, confirmDialog, LabeledContent, Section } from "@phe-rus/hino";
-import { t } from "../../../i18n/i18n";
-import { browserSession } from "../../../platform/session/browser-session-store";
-import { phoneConnection, usePhoneStatus } from "../../../platform/session/phone-connection";
+import { t } from "@/i18n/i18n";
+import { browserSession } from "@/platform/session/browser-session-store";
+import { phoneConnection, usePhoneStatus } from "@/platform/session/phone-connection";
 import { phoneStatusText } from "./phone-status-banner";
 import { SpaceIdSection } from "./space-id-section";
 

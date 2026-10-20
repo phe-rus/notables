@@ -12,32 +12,32 @@ import {
 import { useNavigate } from "@tanstack/react-router";
 import { AnimatePresence, motion } from "motion/react";
 import { useCallback, useRef, useState } from "react";
-import { t } from "../../../../i18n/i18n";
-import { IMPORT_ACCEPT, withPath } from "../../../imports/lib/picked-files";
-import { appendToBook } from "../../../imports/lib/run-import";
-import { noteKindPlural } from "../../../library/model/note-kind-labels";
-import type { LibraryEntry } from "../../../library/store/library-store";
-import { queueRecording } from "../../../recording/lib/pending-recording";
-import { queueDrawing } from "../../../studio/lib/pending-drawing";
-import { moveNotesToBin } from "../../../trash/lib/recycle-bin";
 import {
   addPart,
   moveChapterToPart,
   movePart,
   placeNewChapters,
   removePart,
-} from "../../actions/parts";
-import { chapterKind, startChapter } from "../../actions/start-chapter";
-import { switchComicKind } from "../../actions/switch-kind";
-import { useBookKind } from "../../lib/book-kind";
+} from "@/features/books/actions/parts";
+import { chapterKind, startChapter } from "@/features/books/actions/start-chapter";
+import { switchComicKind } from "@/features/books/actions/switch-kind";
+import { useBookKind } from "@/features/books/lib/book-kind";
 import {
   chapterOutline,
   type OutlineSection,
   withChaptersSwapped,
-} from "../../lib/chapter-outline";
-import { hasAction, otherDrawnKind, switchKindLabel } from "../../lib/kind-actions";
-import { numberedName, structureOf, unitName } from "../../model/structure-labels";
-import { type BookEntry, getBookStore, type Part } from "../../store/book-store";
+} from "@/features/books/lib/chapter-outline";
+import { hasAction, otherDrawnKind, switchKindLabel } from "@/features/books/lib/kind-actions";
+import { numberedName, structureOf, unitName } from "@/features/books/model/structure-labels";
+import { type BookEntry, getBookStore, type Part } from "@/features/books/store/book-store";
+import { IMPORT_ACCEPT, withPath } from "@/features/imports/lib/picked-files";
+import { appendToBook } from "@/features/imports/lib/run-import";
+import { noteKindPlural } from "@/features/library/model/note-kind-labels";
+import type { LibraryEntry } from "@/features/library/store/library-store";
+import { queueRecording } from "@/features/recording/lib/pending-recording";
+import { queueDrawing } from "@/features/studio/lib/pending-drawing";
+import { moveNotesToBin } from "@/features/trash/lib/recycle-bin";
+import { t } from "@/i18n/i18n";
 import { ChapterPicker } from "./chapter-picker";
 import { EntryRow } from "./entry-row";
 import { GroupBlock } from "./group-block";

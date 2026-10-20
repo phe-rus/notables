@@ -1,8 +1,8 @@
 import { describe, expect, it } from "bun:test";
-import { arrangeShelf, titleInSeries } from "../../../src/features/books/lib/arrange-shelf";
-import type { MediaKind } from "../../../src/features/books/model/media-kind";
-import type { BookEntry } from "../../../src/features/books/store/book-store";
-import type { SeriesEntry } from "../../../src/features/books/store/series-store";
+import { arrangeShelf, titleInSeries } from "@/features/books/lib/arrange-shelf";
+import type { MediaKind } from "@/features/books/model/media-kind";
+import type { BookEntry } from "@/features/books/store/book-store";
+import type { SeriesEntry } from "@/features/books/store/series-store";
 
 const book = (id: string, extra: Partial<BookEntry> = {}): BookEntry => ({
   id,

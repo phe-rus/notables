@@ -1,6 +1,6 @@
 import { useEffect } from "react";
-import { useCalendarEvents } from "../../calendar/store/calendar-store";
-import { useLibrary } from "../../library/store/library-store";
+import { useCalendarEvents } from "@/features/calendar/store/calendar-store";
+import { useLibrary } from "@/features/library/store/library-store";
 import {
   desktopWidgetWanted,
   publishWidgetSnapshot,

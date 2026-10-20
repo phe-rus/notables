@@ -1,4 +1,4 @@
-import { locale } from "../../i18n/i18n";
+import { locale } from "@/i18n/i18n";
 
 const relative = () => new Intl.RelativeTimeFormat(locale(), { numeric: "auto" });
 

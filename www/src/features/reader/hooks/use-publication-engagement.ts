@@ -1,14 +1,14 @@
 import type { Reaction } from "@notables/core";
 import { type RefObject, useCallback, useEffect, useState } from "react";
-import { getDeviceId } from "../../../platform/device-identity";
+import { getDeviceId } from "@/platform/device-identity";
 import {
   getViewerState,
   ratePublication,
   reactToPublication,
   recordRead,
   recordView,
-} from "../../../server/publications/publications.functions";
-import type { PublicationStats } from "../../../server/publications/publications.service";
+} from "@/server/publications/publications.functions";
+import type { PublicationStats } from "@/server/publications/publications.service";
 import { oncePerSession } from "../lib/once-per-session";
 
 interface ViewerState {

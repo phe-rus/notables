@@ -1,4 +1,4 @@
-import { t } from "../../../i18n/i18n";
+import { t } from "@/i18n/i18n";
 
 /**
  * Sidebar places people can reorder or hide. All notables, Calendar,

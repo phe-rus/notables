@@ -1,10 +1,10 @@
 import { ChevronRightIcon, cn } from "@phe-rus/hino";
 import { Link } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
-import { t } from "../../../i18n/i18n";
-import { useAuthorName } from "../../../platform/author-preferences";
-import { useSpace } from "../../../platform/space/space-identity";
-import { useSpaceDevices } from "../../../platform/space/space-sync";
+import { t } from "@/i18n/i18n";
+import { useAuthorName } from "@/platform/author-preferences";
+import { useSpace } from "@/platform/space/space-identity";
+import { useSpaceDevices } from "@/platform/space/use-space-devices";
 import { type SettingsPageId, settingsGroups, settingsPages } from "./settings-catalog";
 
 const row =

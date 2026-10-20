@@ -8,7 +8,7 @@ import {
 } from "@notables/core";
 import { cn } from "@phe-rus/hino";
 import { useLayoutEffect, useMemo, useRef, useState } from "react";
-import { locale } from "../../../i18n/i18n";
+import { locale } from "@/i18n/i18n";
 import { useHolidays } from "../lib/holidays";
 import { monthGrid, weekdayNames } from "../lib/month-grid";
 

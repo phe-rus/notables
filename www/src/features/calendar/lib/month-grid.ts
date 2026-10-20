@@ -1,5 +1,5 @@
 import { addDaysTo, type Day, dayInMonth, weekday } from "@notables/core";
-import { locale } from "../../../i18n/i18n";
+import { locale } from "@/i18n/i18n";
 
 /** 0 for Sunday through 6 for Saturday, following the person's region. */
 export function firstWeekday(): number {

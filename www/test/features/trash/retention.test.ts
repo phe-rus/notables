@@ -1,5 +1,5 @@
 import { describe, expect, it } from "bun:test";
-import { daysLeft, isExpired } from "../../../src/features/trash/lib/retention";
+import { daysLeft, isExpired } from "@/features/trash/lib/retention";
 
 const DAY = 24 * 60 * 60 * 1000;
 

@@ -1,6 +1,6 @@
 import { bridgePersistence, type Persistence } from "@notables/sync";
 import { useSyncExternalStore } from "react";
-import { getPersistence } from "../../../platform/storage/document-storage";
+import { getPersistence } from "@/platform/storage/document-storage";
 import { getShares } from "../store/share-store";
 import { ShareSession } from "./share-session";
 
@@ -29,6 +29,13 @@ export function syncShareSessions() {
     session.subscribe(emit);
     sessions.set(share.noteId, session);
   }
+  emit();
+}
+
+/** Release the runner's sessions without removing invitations or stored documents. */
+export function stopShareSessions() {
+  for (const session of sessions.values()) session.stop();
+  sessions.clear();
   emit();
 }
 

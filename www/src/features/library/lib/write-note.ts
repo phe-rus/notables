@@ -1,9 +1,9 @@
 import type { NoteKind } from "@notables/core";
 import type { DocumentSnapshot } from "@notables/pluraliti";
 import * as Y from "yjs";
-import { getPersistence } from "../../../platform/storage/document-storage";
-import { saveNoteContent } from "../../../platform/storage/note-content-cache";
-import { documentText } from "../../search/lib/document-text";
+import { documentText } from "@/features/search/lib/document-text";
+import { getPersistence } from "@/platform/storage/document-storage";
+import { saveNoteContent } from "@/platform/storage/note-content-cache";
 import { summarize } from "../model/library-views";
 import { getLibrary, type LibraryEntry } from "../store/library-store";
 import { notePreview } from "./note-preview";

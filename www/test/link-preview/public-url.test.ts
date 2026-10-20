@@ -1,5 +1,5 @@
 import { expect, test } from "bun:test";
-import { previewUrl, publicAddress } from "../../src/server/link-preview/public-url";
+import { previewUrl, publicAddress } from "@/server/link-preview/public-url";
 
 test("previews refuse local services, credentials and non-web protocols, including redirects", () => {
   for (const value of [

@@ -1,30 +1,17 @@
-import { cn } from "@phe-rus/hino";
-import type { ReactNode } from "react";
+import { IconButton } from "@phe-rus/hino/icon-button";
+import type { ToolbarButtonProps } from "./types";
 
-/** A small, quiet icon button for window and pane toolbars. */
-export function ToolbarButton({
-  label,
-  onClick,
-  className,
-  children,
-}: {
-  label: string;
-  onClick: () => void;
-  className?: string;
-  children: ReactNode;
-}) {
+/** Shared pane toolbars use the same Hino control as the rest of the app. */
+export function ToolbarButton({ label, onClick, className, children }: ToolbarButtonProps) {
   return (
-    <button
-      type="button"
-      aria-label={label}
-      data-tooltip={label}
+    <IconButton
+      label={label}
+      size="icon-sm"
+      variant="ghost"
       onClick={onClick}
-      className={cn(
-        "flex size-7 items-center justify-center rounded-lg text-label-tertiary transition-colors duration-fast hover:bg-fill/80 hover:text-label active:scale-95",
-        className,
-      )}
+      className={className}
     >
       {children}
-    </button>
+    </IconButton>
   );
 }

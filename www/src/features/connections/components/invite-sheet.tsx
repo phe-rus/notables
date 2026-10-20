@@ -1,12 +1,12 @@
 import { Button, CloseIcon, IconButton, ShareIcon, Sheet, toast } from "@phe-rus/hino";
 import { useState } from "react";
-import { Field, PickerInput, TextInput } from "../../../components/form/form-fields";
-import { t } from "../../../i18n/i18n";
-import { useAuthorName } from "../../../platform/author-preferences";
-import { isListedNote, useLibrary } from "../../library/store/library-store";
-import { handOver } from "../../sharing/lib/hand-over";
-import { invitePerson, startSharing } from "../../sharing/lib/share-actions";
-import { useShares } from "../../sharing/store/share-store";
+import { Field, PickerInput, TextInput } from "@/components/form/form-fields";
+import { isListedNote, useLibrary } from "@/features/library/store/library-store";
+import { handOver } from "@/features/sharing/lib/hand-over";
+import { invitePerson, startSharing } from "@/features/sharing/lib/share-actions";
+import { useShares } from "@/features/sharing/store/share-store";
+import { t } from "@/i18n/i18n";
+import { useAuthorName } from "@/platform/author-preferences";
 
 /**
  * Invites someone from Connections: pick a note, name them, and hand the

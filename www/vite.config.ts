@@ -19,13 +19,16 @@ export default defineConfig({
     // One copy of each, or Yjs’s constructor checks and Lexical’s node registry break.
     dedupe: ["yjs", "lexical"],
     // Server functions run on the deployed Worker, never inside the app.
-    alias: tauri
-      ? {
-          "cloudflare:workers": fileURLToPath(
-            new URL("./src/server/native-shell-env.ts", import.meta.url),
-          ),
-        }
-      : {},
+    alias: {
+      "@": fileURLToPath(new URL("./src", import.meta.url)),
+      ...(tauri
+        ? {
+            "cloudflare:workers": fileURLToPath(
+              new URL("./src/server/native-shell-env.ts", import.meta.url),
+            ),
+          }
+        : {}),
+    },
   },
   optimizeDeps: {
     // Pre-bundle the whole Lexical and Yjs family in one pass. Discovering

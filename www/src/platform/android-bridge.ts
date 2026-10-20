@@ -5,6 +5,7 @@ import type { HapticKind } from "@phe-rus/hino";
  * src-tauri/gen/android). Absent everywhere else.
  */
 interface AndroidBridge {
+  requestLocalNetworkAccess?(): void;
   hasHardwareKeyboard?(): boolean;
   canPinWidget(): boolean;
   pinWidget(): boolean;

@@ -1,5 +1,5 @@
 import { describe, expect, it } from "bun:test";
-import { isRecordingChapter } from "../../../src/features/books/lib/chapter-media";
+import { isRecordingChapter } from "@/features/books/lib/chapter-media";
 
 const heading = (text: string) => ({
   type: "heading",

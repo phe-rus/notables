@@ -1,6 +1,6 @@
 import { invoke } from "@tauri-apps/api/core";
-import { devicePlatform } from "../../../platform/device-platform";
-import { isTauri } from "../../../platform/runtime";
+import { devicePlatform } from "@/platform/device-platform";
+import { isTauri } from "@/platform/runtime";
 import { buildWidgetSnapshot } from "./widget-snapshot";
 
 const DESKTOP_KEY = "notables:desktop-widget";

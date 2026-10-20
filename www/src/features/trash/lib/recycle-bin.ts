@@ -1,12 +1,12 @@
 import { createId } from "@notables/core";
 import { toast } from "@phe-rus/hino";
-import { locale, t } from "../../../i18n/i18n";
-import { eraseBook, ownChapters } from "../../books/actions/erase-book";
-import { syncBookFormat } from "../../books/actions/sync-book-format";
-import { type BookEntry, getBookStore } from "../../books/store/book-store";
-import { getSeriesStore, type SeriesEntry } from "../../books/store/series-store";
-import { getLibrary, type LibraryEntry } from "../../library/store/library-store";
-import { deleteNote } from "../../notes/actions/delete-note";
+import { eraseBook, ownChapters } from "@/features/books/actions/erase-book";
+import { syncBookFormat } from "@/features/books/actions/sync-book-format";
+import { type BookEntry, getBookStore } from "@/features/books/store/book-store";
+import { getSeriesStore, type SeriesEntry } from "@/features/books/store/series-store";
+import { getLibrary, type LibraryEntry } from "@/features/library/store/library-store";
+import { deleteNote } from "@/features/notes/actions/delete-note";
+import { locale, t } from "@/i18n/i18n";
 
 import { binNotes, binSeriesAndBooks } from "./bin-groups";
 import { isExpired, RETENTION_DAYS } from "./retention";

@@ -1,8 +1,8 @@
 import { addDaysTo, localDay, occurrencesBetween } from "@notables/core";
-import { t } from "../../../i18n/i18n";
-import { describeWhen } from "../../calendar/lib/describe-alert";
-import { getCalendarStore } from "../../calendar/store/calendar-store";
-import { getLibrary, isListedNote } from "../../library/store/library-store";
+import { describeWhen } from "@/features/calendar/lib/describe-alert";
+import { getCalendarStore } from "@/features/calendar/store/calendar-store";
+import { getLibrary, isListedNote } from "@/features/library/store/library-store";
+import { t } from "@/i18n/i18n";
 
 /**
  * What home-screen and desktop widgets show, in a small, stable shape the

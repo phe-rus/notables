@@ -6,9 +6,9 @@ import {
   kindFromFormat,
   seriesKind,
   storedKind,
-} from "../../../src/features/books/model/media-kind";
-import type { BookEntry } from "../../../src/features/books/store/book-store";
-import type { SeriesEntry } from "../../../src/features/books/store/series-store";
+} from "@/features/books/model/media-kind";
+import type { BookEntry } from "@/features/books/store/book-store";
+import type { SeriesEntry } from "@/features/books/store/series-store";
 
 const book = (fields: Partial<BookEntry> = {}): BookEntry => ({
   id: "b1",

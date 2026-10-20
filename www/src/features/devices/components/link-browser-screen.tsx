@@ -8,12 +8,12 @@ import {
 import { spring } from "@phe-rus/hino";
 import { AnimatePresence, motion } from "motion/react";
 import { useEffect, useState } from "react";
-import { AppMark } from "../../../components/brand/app-mark";
-import { t } from "../../../i18n/i18n";
-import { markAppReady } from "../../../platform/app-ready";
-import { saveBrowserSession } from "../../../platform/session/browser-session-store";
-import { roomEndpoint } from "../../../platform/session/room-endpoint";
-import { SealCode } from "../../invoices/components/seal-code";
+import { AppMark } from "@/components/brand/app-mark";
+import { SealCode } from "@/features/invoices/components/seal-code";
+import { t } from "@/i18n/i18n";
+import { markAppReady } from "@/platform/app-ready";
+import { saveBrowserSession } from "@/platform/session/browser-session-store";
+import { roomEndpoint } from "@/platform/session/room-endpoint";
 import { linkUrl } from "../lib/link-url";
 
 /** A code lasts this long before a new one replaces it (AC-3). */

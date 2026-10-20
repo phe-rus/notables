@@ -11,10 +11,10 @@ import {
   useRef,
   useState,
 } from "react";
-import { useBookKind } from "../../lib/book-kind";
-import { chapterPages } from "../../lib/chapter-media";
-import { directionOf } from "../../model/media-kind";
-import type { BookEntry } from "../../store/book-store";
+import { useBookKind } from "@/features/books/lib/book-kind";
+import { chapterPages } from "@/features/books/lib/chapter-media";
+import { directionOf } from "@/features/books/model/media-kind";
+import type { BookEntry } from "@/features/books/store/book-store";
 import { useBookContent } from "../use-book-content";
 import { useReadingPosition } from "../use-reading-position";
 

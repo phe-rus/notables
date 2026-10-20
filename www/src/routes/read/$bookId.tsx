@@ -1,12 +1,12 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useEffect } from "react";
-import { useBookKind } from "../../features/books/lib/book-kind";
-import { AudiobookPlayer } from "../../features/books/reader/audio/audiobook-player";
-import { BookReader } from "../../features/books/reader/book-reader";
-import { ComicReader } from "../../features/books/reader/comic/comic-reader";
-import { type BookEntry, useBook } from "../../features/books/store/book-store";
-import { useLibraryReady } from "../../features/library/store/library-store";
-import { markAppReady } from "../../platform/app-ready";
+import { useBookKind } from "@/features/books/lib/book-kind";
+import { AudiobookPlayer } from "@/features/books/reader/audio/audiobook-player";
+import { BookReader } from "@/features/books/reader/book-reader";
+import { ComicReader } from "@/features/books/reader/comic/comic-reader";
+import { type BookEntry, useBook } from "@/features/books/store/book-store";
+import { useLibraryReady } from "@/features/library/store/library-store";
+import { markAppReady } from "@/platform/app-ready";
 
 export const Route = createFileRoute("/read/$bookId")({
   // Books are assembled from notes stored on this device.

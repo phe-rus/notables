@@ -1,11 +1,7 @@
 import { LabeledContent, Section, Toggle } from "@phe-rus/hino";
 import { useEffect, useState } from "react";
-import { t } from "../../../i18n/i18n";
-import {
-  type PermissionState,
-  permissionState,
-  requestPermission,
-} from "../../../platform/permissions";
+import { t } from "@/i18n/i18n";
+import { type PermissionState, permissionState, requestPermission } from "@/platform/permissions";
 import { alertFeedback } from "../lib/alert-feedback";
 import { setAlertSettings, useAlertSettings } from "../lib/alert-settings";
 

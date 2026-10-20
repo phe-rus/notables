@@ -1,7 +1,7 @@
 import { Button, CloseIcon, IconButton, Picker, Sheet, toast } from "@phe-rus/hino";
 import { useState } from "react";
-import { Field, FormSection, TextArea, TextInput } from "../../../components/form/form-fields";
-import { t } from "../../../i18n/i18n";
+import { Field, FormSection, TextArea, TextInput } from "@/components/form/form-fields";
+import { t } from "@/i18n/i18n";
 import { PartyFields } from "../components/party-fields";
 import { StylePanel } from "../components/style-panel";
 import {

@@ -2,11 +2,11 @@ import { noteDoc } from "@notables/core";
 import { IconButton, MoreIcon, openMenu, PlusIcon, toast } from "@phe-rus/hino";
 import { useEffect, useMemo, useRef, useState } from "react";
 import type * as Y from "yjs";
-import { locale, t } from "../../../i18n/i18n";
-import { fileNameFor, saveFile } from "../../../platform/save-file";
-import { saveNoteContent } from "../../../platform/storage/note-content-cache";
-import { previewContent } from "../../library/lib/note-preview";
-import { getLibrary, type LibraryEntry } from "../../library/store/library-store";
+import { previewContent } from "@/features/library/lib/note-preview";
+import { getLibrary, type LibraryEntry } from "@/features/library/store/library-store";
+import { locale, t } from "@/i18n/i18n";
+import { fileNameFor, saveFile } from "@/platform/save-file";
+import { saveNoteContent } from "@/platform/storage/note-content-cache";
 import { calculateCell, columnName } from "../lib/formulas";
 
 const COLUMN = { size: 112, min: 48, max: 480 };

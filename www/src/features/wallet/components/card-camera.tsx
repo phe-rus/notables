@@ -1,6 +1,6 @@
 import { Button, CameraIcon, IconButton } from "@phe-rus/hino";
 import { useEffect, useRef, useState } from "react";
-import { currentLanguage, t } from "../../../i18n/i18n";
+import { currentLanguage, t } from "@/i18n/i18n";
 import { readCardCodes } from "../lib/card-codes";
 import { captureCardFrame, openCardCamera } from "../lib/card-image";
 import {

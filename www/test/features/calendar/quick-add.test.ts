@@ -1,5 +1,5 @@
 import { describe, expect, it } from "bun:test";
-import { parseQuickEvent } from "../../../src/features/calendar/lib/quick-add";
+import { parseQuickEvent } from "@/features/calendar/lib/quick-add";
 
 // A Friday.
 const today = "2026-10-02";

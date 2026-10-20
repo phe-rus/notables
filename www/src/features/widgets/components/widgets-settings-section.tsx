@@ -1,10 +1,10 @@
 import { LabeledContent, Section, Toggle } from "@phe-rus/hino";
 import { Link } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
-import { t } from "../../../i18n/i18n";
-import { androidBridge } from "../../../platform/android-bridge";
-import { devicePlatform } from "../../../platform/device-platform";
-import { isTauri } from "../../../platform/runtime";
+import { t } from "@/i18n/i18n";
+import { androidBridge } from "@/platform/android-bridge";
+import { devicePlatform } from "@/platform/device-platform";
+import { isTauri } from "@/platform/runtime";
 import { desktopWidgetWanted, setDesktopWidget, supportsDesktopWidget } from "../lib/widget-bridge";
 
 /** The desktop widget switch, the home-screen widget, or where to find widgets. */

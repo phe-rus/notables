@@ -1,6 +1,6 @@
 import { useSyncExternalStore } from "react";
-import { isTauri } from "../../../platform/runtime";
-import { nativeStorage } from "../../../platform/storage/backends/native/native-commands";
+import { isTauri } from "@/platform/runtime";
+import { nativeStorage } from "@/platform/storage/backends/native/native-commands";
 import { type AiProvider, aiProviders, providerInfo } from "../model/providers";
 
 /**

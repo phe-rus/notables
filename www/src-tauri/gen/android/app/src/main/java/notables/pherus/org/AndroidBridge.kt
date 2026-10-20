@@ -1,6 +1,5 @@
 package notables.pherus.org
 
-import android.app.Activity
 import android.app.ActivityManager
 import android.graphics.Color
 import android.appwidget.AppWidgetManager
@@ -20,7 +19,12 @@ import notables.pherus.org.widgets.TodayWidgetProvider
  * navigation bar icons that match the app's appearance, adding the
  * Today widget to the home screen.
  */
-class AndroidBridge(private val activity: Activity, private val webView: WebView) {
+class AndroidBridge(private val activity: MainActivity, private val webView: WebView) {
+  private val localNetwork = LocalNetworkAccess(activity, webView)
+
+  @JavascriptInterface
+  fun requestLocalNetworkAccess() = localNetwork.request()
+
   @JavascriptInterface
   fun hasHardwareKeyboard(): Boolean =
     activity.resources.configuration.keyboard == Configuration.KEYBOARD_QWERTY

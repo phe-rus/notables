@@ -1,10 +1,10 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { BookScreen } from "../../../features/books/components/book-screen";
-import { ExportBookButton } from "../../../features/books/export/export-book-button";
-import { useBookKind } from "../../../features/books/lib/book-kind";
-import { NarrateChapterButton } from "../../../features/books/narration/components/narrate-chapter-button";
-import { type BookEntry, useBook } from "../../../features/books/store/book-store";
-import { t } from "../../../i18n/i18n";
+import { BookScreen } from "@/features/books/components/book-screen";
+import { ExportBookButton } from "@/features/books/export/export-book-button";
+import { useBookKind } from "@/features/books/lib/book-kind";
+import { NarrateChapterButton } from "@/features/books/narration/components/narrate-chapter-button";
+import { type BookEntry, useBook } from "@/features/books/store/book-store";
+import { t } from "@/i18n/i18n";
 
 export const Route = createFileRoute("/_app/books/$bookId")({
   component: BookRoute,

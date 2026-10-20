@@ -1,8 +1,8 @@
 import { LabeledContent, Section } from "@phe-rus/hino";
 import { useEffect, useState } from "react";
-import { PickerInput } from "../../../components/form/form-fields";
-import { t } from "../../../i18n/i18n";
-import { isTauri } from "../../../platform/runtime";
+import { PickerInput } from "@/components/form/form-fields";
+import { t } from "@/i18n/i18n";
+import { isTauri } from "@/platform/runtime";
 import { useModelPacks } from "../lib/model-packs";
 import {
   NARRATION_RATES,

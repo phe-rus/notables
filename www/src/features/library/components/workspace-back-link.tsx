@@ -1,6 +1,6 @@
 import { ChevronLeftIcon } from "@phe-rus/hino";
 import { Link } from "@tanstack/react-router";
-import { t } from "../../../i18n/i18n";
+import { t } from "@/i18n/i18n";
 
 /** Workspace destinations return home directly, regardless of how they were opened. */
 export function WorkspaceBackLink() {

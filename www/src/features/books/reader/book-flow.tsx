@@ -1,6 +1,6 @@
 import { DocumentView } from "@notables/pluraliti";
 import { type CSSProperties, memo } from "react";
-import { stripLeadingTitle } from "../../../lib/documents/strip-leading-title";
+import { stripLeadingTitle } from "@/lib/documents/strip-leading-title";
 import type { BookEntry } from "../store/book-store";
 import type { PageGeometry } from "./page-geometry";
 import type { BookChapter } from "./use-book-content";

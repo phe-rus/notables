@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useRef, useState } from "react";
-import { type MessageKey, t } from "../../../i18n/i18n";
-import { getAiSettings, readAiKey } from "../../ai/store/ai-settings";
+import { getAiSettings, readAiKey } from "@/features/ai/store/ai-settings";
+import { type MessageKey, t } from "@/i18n/i18n";
 import {
   getNarrationSettings,
   type NarrationSettings,

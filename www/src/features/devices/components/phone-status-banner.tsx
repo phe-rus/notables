@@ -1,7 +1,7 @@
 import { spring } from "@phe-rus/hino";
 import { AnimatePresence, motion } from "motion/react";
-import { t } from "../../../i18n/i18n";
-import { type PhoneStatus, usePhoneStatus } from "../../../platform/session/phone-connection";
+import { t } from "@/i18n/i18n";
+import { type PhoneStatus, usePhoneStatus } from "@/platform/session/phone-connection";
 
 export function phoneStatusText(status: PhoneStatus): string {
   switch (status) {

@@ -1,4 +1,4 @@
-import { loadNoteContent } from "../../../platform/storage/note-content-cache";
+import { loadNoteContent } from "@/platform/storage/note-content-cache";
 import { getLibrary, isListedNote } from "../store/library-store";
 import { notePreview } from "./note-preview";
 

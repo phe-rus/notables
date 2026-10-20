@@ -3,8 +3,8 @@ import {
   buildImportPlan,
   type ImportFile,
   plannedBookTitle,
-} from "../../../src/features/imports/lib/import-plan";
-import { parseName } from "../../../src/features/imports/lib/part-names";
+} from "@/features/imports/lib/import-plan";
+import { parseName } from "@/features/imports/lib/part-names";
 
 const file = (path: string, type = ""): ImportFile => ({
   path,

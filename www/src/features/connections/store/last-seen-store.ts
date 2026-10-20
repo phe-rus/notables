@@ -1,5 +1,5 @@
 import { useSyncExternalStore } from "react";
-import { inBrowserSession } from "../../../platform/session/browser-session-store";
+import { inBrowserSession } from "@/platform/session/browser-session-store";
 
 const KEY = "notables:last-seen";
 

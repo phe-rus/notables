@@ -2,7 +2,7 @@ import type { InvoiceFont, InvoiceLayout, InvoiceStyle } from "@notables/core";
 import { useMediaSource } from "@notables/pluraliti";
 import { PhotoIcon, SegmentedControl, SwatchPicker } from "@phe-rus/hino";
 import { useRef } from "react";
-import { deleteMedia, saveMedia } from "../../../platform/storage/media-store";
+import { deleteMedia, saveMedia } from "@/platform/storage/media-store";
 
 const accents = [
   { value: "#E39A2E", label: "Honey" },

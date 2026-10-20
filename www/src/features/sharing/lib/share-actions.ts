@@ -1,9 +1,9 @@
-import { getAuthorName } from "../../../platform/author-preferences";
-import { getDeviceId } from "../../../platform/device-identity";
-import { inBrowserSession } from "../../../platform/session/browser-session-store";
-import { phoneConnection } from "../../../platform/session/phone-connection";
-import type { LibraryEntry } from "../../library/store/library-store";
-import { getLibrary } from "../../library/store/library-store";
+import type { LibraryEntry } from "@/features/library/store/library-store";
+import { getLibrary } from "@/features/library/store/library-store";
+import { getAuthorName } from "@/platform/author-preferences";
+import { getDeviceId } from "@/platform/device-identity";
+import { inBrowserSession } from "@/platform/session/browser-session-store";
+import { phoneConnection } from "@/platform/session/phone-connection";
 import { type Invitation, OWNER, type ShareCredentials } from "../model/share";
 import { forgetShare, saveShare, shareFor } from "../store/share-store";
 import { invitationLink } from "./invite-link";

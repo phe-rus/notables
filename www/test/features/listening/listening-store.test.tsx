@@ -5,7 +5,7 @@ import {
   openAudiobook,
   useListening,
   useListeningBookId,
-} from "../../../src/features/listening/store/listening-store";
+} from "@/features/listening/store/listening-store";
 
 function Session() {
   const session = useListening();

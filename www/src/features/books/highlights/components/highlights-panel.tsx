@@ -1,6 +1,6 @@
 import { CloseIcon, cn, IconButton, spring } from "@phe-rus/hino";
 import { AnimatePresence, motion } from "motion/react";
-import type { BookChapter } from "../../reader/use-book-content";
+import type { BookChapter } from "@/features/books/reader/use-book-content";
 import type { HighlightEntry } from "../store/highlight-store";
 import { swatchClass } from "./highlight-palette";
 

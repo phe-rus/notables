@@ -1,9 +1,9 @@
 import { ChevronLeftIcon, IconButton, SidebarIcon, useMediaQuery } from "@phe-rus/hino";
 import { useNavigate } from "@tanstack/react-router";
 import { useState } from "react";
-import { CollapsedSidebarControls } from "../../../components/window/collapsed-sidebar-controls";
-import { t } from "../../../i18n/i18n";
-import { isTauri } from "../../../platform/runtime";
+import { CollapsedSidebarControls } from "@/components/window/collapsed-sidebar-controls";
+import { t } from "@/i18n/i18n";
+import { isTauri } from "@/platform/runtime";
 import { usePreferences } from "../store/preferences-store";
 import { type SettingsPageId, settingsPages } from "./settings-catalog";
 import { SettingsList } from "./settings-list";

@@ -1,10 +1,10 @@
 import { Button, ShareIcon } from "@phe-rus/hino";
 import { useNavigate } from "@tanstack/react-router";
 import { useEffect, useMemo, useState } from "react";
-import { AppMark } from "../../../components/brand/app-mark";
-import { t } from "../../../i18n/i18n";
-import { markAppReady } from "../../../platform/app-ready";
-import { useLibraryReady } from "../../library/store/library-store";
+import { AppMark } from "@/components/brand/app-mark";
+import { useLibraryReady } from "@/features/library/store/library-store";
+import { t } from "@/i18n/i18n";
+import { markAppReady } from "@/platform/app-ready";
 import { readInvitation } from "../lib/invite-link";
 import { acceptInvitation } from "../lib/share-actions";
 

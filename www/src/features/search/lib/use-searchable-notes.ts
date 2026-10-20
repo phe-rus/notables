@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useState } from "react";
-import { loadNoteContent } from "../../../platform/storage/note-content-cache";
-import { type LibraryEntry, useLibrary } from "../../library/store/library-store";
+import { type LibraryEntry, useLibrary } from "@/features/library/store/library-store";
+import { loadNoteContent } from "@/platform/storage/note-content-cache";
 import { documentText } from "./document-text";
 import type { Searchable } from "./rank";
 

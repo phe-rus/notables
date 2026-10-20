@@ -34,39 +34,39 @@ import {
 import { Link, useNavigate } from "@tanstack/react-router";
 import { motion } from "motion/react";
 import { useCallback, useEffect, useRef, useState } from "react";
-import { t } from "../../../i18n/i18n";
-import { androidBridge } from "../../../platform/android-bridge";
-import { getDeviceId } from "../../../platform/device-identity";
-import { saveFile } from "../../../platform/save-file";
-import { inBrowserSession } from "../../../platform/session/browser-session-store";
-import { loadMedia, saveMedia } from "../../../platform/storage/media-store";
-import { saveNoteContent } from "../../../platform/storage/note-content-cache";
-import { AiAssist } from "../../ai/components/ai-assist";
-import { PendingNarration } from "../../books/narration/components/pending-narration";
-import { useBook } from "../../books/store/book-store";
-import { FinanceYearSheet } from "../../finances/components/finance-year-sheet";
-import { formatFull } from "../../library/lib/date-format";
-import { notePreview } from "../../library/lib/note-preview";
-import { rememberNoteTransition } from "../../library/lib/note-transition";
-import { summarize } from "../../library/model/library-views";
+import { AiAssist } from "@/features/ai/components/ai-assist";
+import { PendingNarration } from "@/features/books/narration/components/pending-narration";
+import { useBook } from "@/features/books/store/book-store";
+import { FinanceYearSheet } from "@/features/finances/components/finance-year-sheet";
+import { formatFull } from "@/features/library/lib/date-format";
+import { notePreview } from "@/features/library/lib/note-preview";
+import { rememberNoteTransition } from "@/features/library/lib/note-transition";
+import { summarize } from "@/features/library/model/library-views";
 import {
   getLibrary,
   type LibraryEntry,
   useEntry,
   useFolders,
   useLibraryReady,
-} from "../../library/store/library-store";
-import { recordOpened } from "../../library/store/recents-store";
-import { ReadAloudButton } from "../../listening/components/read-aloud-button";
-import { PublishControl } from "../../publishing/components/publish-control";
-import { NoteRecorder } from "../../recording/components/note-recorder";
-import { takeRecording } from "../../recording/lib/pending-recording";
-import { usePreferences } from "../../settings/store/preferences-store";
-import { ShareSheet } from "../../sharing/components/share-sheet";
-import { useShareSession } from "../../sharing/lib/share-sessions";
-import { SpreadsheetEditor } from "../../spreadsheets/components/spreadsheet-editor";
-import { PendingDrawing } from "../../studio/components/pending-drawing";
-import { moveNotesToBin } from "../../trash/lib/recycle-bin";
+} from "@/features/library/store/library-store";
+import { recordOpened } from "@/features/library/store/recents-store";
+import { ReadAloudButton } from "@/features/listening/components/read-aloud-button";
+import { PublishControl } from "@/features/publishing/components/publish-control";
+import { NoteRecorder } from "@/features/recording/components/note-recorder";
+import { takeRecording } from "@/features/recording/lib/pending-recording";
+import { usePreferences } from "@/features/settings/store/preferences-store";
+import { ShareSheet } from "@/features/sharing/components/share-sheet";
+import { useShareSession } from "@/features/sharing/lib/share-sessions";
+import { SpreadsheetEditor } from "@/features/spreadsheets/components/spreadsheet-editor";
+import { PendingDrawing } from "@/features/studio/components/pending-drawing";
+import { moveNotesToBin } from "@/features/trash/lib/recycle-bin";
+import { t } from "@/i18n/i18n";
+import { androidBridge } from "@/platform/android-bridge";
+import { getDeviceId } from "@/platform/device-identity";
+import { saveFile } from "@/platform/save-file";
+import { inBrowserSession } from "@/platform/session/browser-session-store";
+import { loadMedia, saveMedia } from "@/platform/storage/media-store";
+import { saveNoteContent } from "@/platform/storage/note-content-cache";
 import { noteFolderItems, noteFontItems, noteFormatItems } from "../actions/note-menu";
 import { NoteCaptureToolbar } from "../capture/note-capture-toolbar";
 import { useKeyboardInset } from "../hooks/use-keyboard-inset";

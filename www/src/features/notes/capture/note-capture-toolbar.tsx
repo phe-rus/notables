@@ -2,12 +2,12 @@ import { localDay, localMediaSrc } from "@notables/core";
 import { BlockToolbar, useEditorCommands } from "@notables/pluraliti";
 import { Button, Sheet, toast } from "@phe-rus/hino";
 import { useRef, useState } from "react";
-import { t } from "../../../i18n/i18n";
-import { saveMedia } from "../../../platform/storage/media-store";
-import type { EventTarget } from "../../calendar/components/event-form";
-import { EventSheet } from "../../calendar/components/event-sheet";
-import { getCalendarStore } from "../../calendar/store/calendar-store";
-import { DocumentScanner } from "../../capture/components/document-scanner";
+import type { EventTarget } from "@/features/calendar/components/event-form";
+import { EventSheet } from "@/features/calendar/components/event-sheet";
+import { getCalendarStore } from "@/features/calendar/store/calendar-store";
+import { DocumentScanner } from "@/features/capture/components/document-scanner";
+import { t } from "@/i18n/i18n";
+import { saveMedia } from "@/platform/storage/media-store";
 import { editorLabels } from "../lib/editor-labels";
 import { fetchLinkPreview } from "./link-preview";
 
@@ -67,7 +67,9 @@ export function NoteCaptureToolbar({
     if (!files.length || busy) return;
     setBusy(true);
     try {
-      const { prepareCardImage, recognizeCard } = await import("../../wallet/lib/card-recognition");
+      const { prepareCardImage, recognizeCard } = await import(
+        "@/features/wallet/lib/card-recognition"
+      );
       if (scanMode === "document") {
         const { PDFDocument } = await import("pdf-lib");
         const pdf = await PDFDocument.create();
@@ -106,7 +108,7 @@ export function NoteCaptureToolbar({
           size: blob.size,
         });
       } else {
-        const { currentLanguage } = await import("../../../i18n/i18n");
+        const { currentLanguage } = await import("@/i18n/i18n");
         const first = files[0];
         if (!first) return;
         const canvas = await prepareCardImage(first);

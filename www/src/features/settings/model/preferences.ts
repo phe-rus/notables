@@ -1,12 +1,12 @@
 import { type AccentId, defaultAccent, isAccentId } from "@phe-rus/hino/tokens";
-import { t } from "../../../i18n/i18n";
-import { isMediaKind, type MediaKind } from "../../books/model/media-kind";
-import { type NoteFont, noteFonts } from "../../library/model/note-fonts";
+import { isMediaKind, type MediaKind } from "@/features/books/model/media-kind";
+import { type NoteFont, noteFonts } from "@/features/library/model/note-fonts";
 import {
   isSidebarItemId,
   type SidebarItemId,
   sidebarItemIds,
-} from "../../library/model/sidebar-items";
+} from "@/features/library/model/sidebar-items";
+import { t } from "@/i18n/i18n";
 
 /** How this device looks and arranges things. Stored on the device. */
 export interface Preferences {

@@ -1,6 +1,6 @@
 import { AnimatePresence, motion } from "motion/react";
 import { useEffect, useState } from "react";
-import { onAppReady } from "../../platform/app-ready";
+import { onAppReady } from "@/platform/app-ready";
 import { AppMark } from "../brand/app-mark";
 
 /** Long enough to read as intentional, short enough to never feel slow. */

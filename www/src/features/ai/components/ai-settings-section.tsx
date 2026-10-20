@@ -1,7 +1,7 @@
 import { cn, LabeledContent, Section, SegmentedControl, Toggle, toast } from "@phe-rus/hino";
 import { useCallback, useEffect, useState } from "react";
-import { PickerInput } from "../../../components/form/form-fields";
-import { t } from "../../../i18n/i18n";
+import { PickerInput } from "@/components/form/form-fields";
+import { t } from "@/i18n/i18n";
 import { type ModelOption, recommendedModels, tierLabels } from "../lib/model-choices";
 import { AiError, listModels, streamText } from "../lib/stream-text";
 import { type AiProvider, aiProviders, providerInfo } from "../model/providers";

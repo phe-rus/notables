@@ -1,12 +1,8 @@
-import { describe, expect, test } from "bun:test";
-import { changeReleasePolicy } from "../../../scripts/releases/app-policy";
-import {
-  compareVersions,
-  GRACE_MS,
-  releaseFor,
-} from "../../src/features/updates/lib/release-policy";
-import { createUpdateMonitor } from "../../src/features/updates/lib/update-monitor";
-import { appReleaseRequest } from "../../src/server/releases/release-policy.http";
+import { compareVersions } from "@/features/updates/lib/compare-versions";
+import { createUpdateMonitor } from "@/features/updates/lib/create-update-monitor";
+import { readReleasePolicy } from "@/features/updates/lib/read-release-policy";
+import { GRACE_MS } from "@/features/updates/model/constants";
+import { appReleaseRequest } from "@/server/releases/release-policy.http";
 
 const availableAt = "2026-10-19T12:00:00.000Z";
 const start = Date.parse(availableAt);
@@ -56,11 +52,11 @@ describe("release policy", () => {
     expect(compareVersions("garbage", "0.2.12")).toBeNull();
   });
   test("does not borrow another distribution's release", () => {
-    expect(releaseFor(manifest, "ios-testflight")).toBeNull();
-    expect(() => releaseFor(manifest, "ios-app-store")).toThrow();
-    expect(() => releaseFor({ ...manifest, schema: 2 }, "android-play")).toThrow();
+    expect(readReleasePolicy(manifest, "ios-testflight")).toBeNull();
+    expect(() => readReleasePolicy(manifest, "ios-app-store")).toThrow();
+    expect(() => readReleasePolicy({ ...manifest, schema: 2 }, "android-play")).toThrow();
     expect(() =>
-      releaseFor(
+      readReleasePolicy(
         { schema: 1, channels: { "android-play": { ...release, availableAt: "bad" } } },
         "android-play",
       ),
@@ -183,8 +179,8 @@ describe("release policy", () => {
     expect(response.status).toBe(200);
     expect(response.headers.get("Access-Control-Allow-Origin")).toBe("*");
     const value = await response.json();
-    expect(() => releaseFor(value, "android-play")).not.toThrow();
-    expect(() => releaseFor(value, "ios-testflight")).not.toThrow();
+    expect(() => readReleasePolicy(value, "android-play")).not.toThrow();
+    expect(() => readReleasePolicy(value, "ios-testflight")).not.toThrow();
     expect(appReleaseRequest(new Request("https://example.test", { method: "POST" })).status).toBe(
       405,
     );
@@ -221,3 +217,6 @@ describe("release policy", () => {
     ).toBeNull();
   });
 });
+
+import { describe, expect, test } from "bun:test";
+import { changeReleasePolicy } from "../../../scripts/releases/app-policy";

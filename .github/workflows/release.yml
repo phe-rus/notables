@@ -1,24 +1,23 @@
 name: Release
 
-# Builds signed store packages and sends them to testers:
-# Android to the Google Play internal track, iOS to TestFlight.
-# Only a release tag starts it, never a commit:
-#   v0.2.0          both stores
-#   android-v0.2.0  Google Play only
-#   ios-v0.2.0      TestFlight only
-# or run it by hand from the Actions tab and pick the stores.
-# A run takes about 15 minutes per store; free on this public repository.
+# One vX.Y.Z tag builds all platforms. Desktop installers share one draft
+# GitHub release; mobile packages go to their existing testing channels.
+# Manual runs require an explicit version and can select a platform group.
 
 on:
   push:
-    tags: ["v*", "android-v*", "ios-v*"]
+    tags: ["v*"]
   workflow_dispatch:
     inputs:
-      stores:
-        description: Which stores to build for
+      platforms:
+        description: Platforms to build
         type: choice
-        options: [both, android, ios]
-        default: both
+        options: [all, mobile, desktop, android, ios]
+        default: all
+      version:
+        description: Release version, for example 0.2.13
+        type: string
+        required: true
       track:
         description: Google Play track
         type: choice
@@ -45,9 +44,19 @@ jobs:
       - id: version
         # The tag gives the version people see; the run number gives every
         # upload a higher build number, as both stores require.
+        env:
+          REQUESTED_VERSION: ${{ inputs.version }}
         run: |
-          if [[ "$GITHUB_REF_TYPE" == "tag" ]]; then name="${GITHUB_REF_NAME##*v}"
-          else name="$(jq -r .version www/src-tauri/tauri.conf.json)"; fi
+          if [[ "$GITHUB_REF_TYPE" == "tag" ]]; then name="${GITHUB_REF_NAME#v}"
+          else name="$REQUESTED_VERSION"; fi
+          [[ "$name" =~ ^[0-9]+\.[0-9]+\.[0-9]+$ ]] || { echo "Expected an X.Y.Z version" >&2; exit 1; }
+          if [[ "$GITHUB_REF_TYPE" != "tag" ]]; then
+            existing="$(git ls-remote --tags origin "refs/tags/v$name" "refs/tags/v$name^{}" | tail -1 | cut -f1)"
+            if [[ -n "$existing" && "$existing" != "$GITHUB_SHA" ]]; then
+              echo "This version already identifies another commit. Use a new release version." >&2
+              exit 1
+            fi
+          fi
           echo "name=$name" >> "$GITHUB_OUTPUT"
           echo "code=$((10000 + GITHUB_RUN_NUMBER))" >> "$GITHUB_OUTPUT"
 
@@ -55,8 +64,8 @@ jobs:
     name: Android (Google Play)
     needs: version
     if: >-
-      (github.event_name == 'workflow_dispatch' && inputs.stores != 'ios') ||
-      (github.event_name == 'push' && !startsWith(github.ref_name, 'ios-'))
+      github.event_name == 'push' ||
+      contains(fromJSON('["all","mobile","android"]'), inputs.platforms)
     runs-on: ubuntu-24.04
     steps:
       - uses: actions/checkout@v7
@@ -127,8 +136,8 @@ jobs:
     # then set the repository variable IOS_RELEASE to true.
     if: >-
       vars.IOS_RELEASE == 'true' && (
-      (github.event_name == 'workflow_dispatch' && inputs.stores != 'android') ||
-      (github.event_name == 'push' && !startsWith(github.ref_name, 'android-')))
+      github.event_name == 'push' ||
+      contains(fromJSON('["all","mobile","ios"]'), inputs.platforms))
     runs-on: macos-latest
     env:
       APPLE_API_KEY: ${{ secrets.APPLE_API_KEY_ID }}
@@ -188,3 +197,118 @@ jobs:
           xcrun altool --upload-app --type ios \
             --file "$(find www/src-tauri/gen/apple/build -name '*.ipa' | head -1)" \
             --apiKey "$APPLE_API_KEY" --apiIssuer "$APPLE_API_ISSUER"
+
+  desktop:
+    name: Desktop (${{ matrix.name }})
+    needs: version
+    if: github.event_name == 'push' || inputs.platforms == 'all' || inputs.platforms == 'desktop'
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - name: linux-x64
+            runner: ubuntu-24.04
+            target: x86_64-unknown-linux-gnu
+            bundles: deb,appimage
+          - name: windows-x64
+            runner: windows-2025
+            target: x86_64-pc-windows-msvc
+            bundles: nsis,msi
+          - name: macos-arm64
+            runner: macos-15
+            target: aarch64-apple-darwin
+            bundles: dmg
+          - name: macos-x64
+            runner: macos-15-intel
+            target: x86_64-apple-darwin
+            bundles: dmg
+    runs-on: ${{ matrix.runner }}
+    defaults:
+      run:
+        shell: bash
+    steps:
+      - uses: actions/checkout@v7
+      - uses: oven-sh/setup-bun@v2
+        with:
+          bun-version: ${{ env.BUN_VERSION }}
+      - uses: actions/setup-node@v7
+        with:
+          node-version: 22
+      - uses: dtolnay/rust-toolchain@stable
+        with:
+          targets: ${{ matrix.target }}
+      - uses: swatinem/rust-cache@v2
+        with:
+          workspaces: www/src-tauri -> target
+          key: desktop-${{ matrix.name }}
+      - name: Install Linux packaging dependencies
+        if: runner.os == 'Linux'
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y libwebkit2gtk-4.1-dev libappindicator3-dev librsvg2-dev patchelf xdg-utils
+      - name: Configure Windows libclang
+        if: runner.os == 'Windows'
+        run: echo "LIBCLANG_PATH=C:/Program Files/LLVM/bin" >> "$GITHUB_ENV"
+      - name: Configure macOS ad hoc signing
+        if: runner.os == 'macOS'
+        run: echo 'APPLE_SIGNING_IDENTITY=-' >> "$GITHUB_ENV"
+      - run: bun install --frozen-lockfile
+      - name: Build installers
+        working-directory: www
+        env:
+          RELEASE_VERSION: ${{ needs.version.outputs.name }}
+          VITE_BUILD_NUMBER: ${{ needs.version.outputs.code }}
+          DESKTOP_TARGET: ${{ matrix.target }}
+          DESKTOP_BUNDLES: ${{ matrix.bundles }}
+        run: |
+          bun run tauri build --target "$DESKTOP_TARGET" --bundles "$DESKTOP_BUNDLES" --config "{\"version\":\"$RELEASE_VERSION\"}"
+      - uses: actions/upload-artifact@v7
+        with:
+          name: desktop-${{ needs.version.outputs.name }}-${{ matrix.name }}
+          if-no-files-found: error
+          path: |
+            www/src-tauri/target/${{ matrix.target }}/release/bundle/deb/*.deb
+            www/src-tauri/target/${{ matrix.target }}/release/bundle/appimage/*.AppImage
+            www/src-tauri/target/${{ matrix.target }}/release/bundle/nsis/*.exe
+            www/src-tauri/target/${{ matrix.target }}/release/bundle/msi/*.msi
+            www/src-tauri/target/${{ matrix.target }}/release/bundle/dmg/*.dmg
+
+  desktop-release:
+    name: Collect desktop installers
+    needs: [version, desktop]
+    runs-on: ubuntu-24.04
+    permissions:
+      actions: read
+      contents: write
+    steps:
+      - uses: actions/checkout@v7
+      - name: Collect assets in one draft release
+        env:
+          GH_TOKEN: ${{ github.token }}
+          RELEASE_VERSION: ${{ needs.version.outputs.name }}
+          GH_REPO: ${{ github.repository }}
+          RUN_ID: ${{ github.run_id }}
+          RELEASE_COMMIT: ${{ github.sha }}
+        run: |
+          gh run download "$RUN_ID" --pattern "desktop-$RELEASE_VERSION-*" --dir installers
+          mkdir release-assets
+          while IFS= read -r -d '' file; do
+            artifact="${file#installers/}"
+            artifact="${artifact%%/*}"
+            cp "$file" "release-assets/$artifact-$(basename "$file")"
+          done < <(find installers -type f -print0)
+          (cd release-assets && sha256sum * > SHA256SUMS)
+          cat > "$RUNNER_TEMP/desktop-release.md" <<'NOTES'
+          Desktop build preview for Linux, Windows and macOS.
+
+          These installers have not received desktop functional acceptance testing.
+          macOS uses ad hoc signing and is not notarised. Windows is not code signed.
+          Keep this release in draft until platform testing and signing are complete.
+          Android and iOS use the same release version through their testing stores.
+          NOTES
+          if ! gh release view "v$RELEASE_VERSION" > /dev/null 2>&1; then
+            gh release create "v$RELEASE_VERSION" --target "$RELEASE_COMMIT" \
+              --title "Notables v$RELEASE_VERSION" --draft --prerelease \
+              --notes-file "$RUNNER_TEMP/desktop-release.md"
+          fi
+          gh release upload "v$RELEASE_VERSION" release-assets/* --clobber

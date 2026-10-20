@@ -1,5 +1,5 @@
 import type { NoteKind } from "@notables/core";
-import { t } from "../../../i18n/i18n";
+import { t } from "@/i18n/i18n";
 
 const kinds: NoteKind[] = [
   "note",

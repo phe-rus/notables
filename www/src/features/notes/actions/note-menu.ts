@@ -14,14 +14,14 @@ import {
 } from "@phe-rus/hino";
 import type { useNavigate } from "@tanstack/react-router";
 import { createElement } from "react";
-import { t } from "../../../i18n/i18n";
-import { appLinkFor } from "../../../platform/app-links";
-import { publicUrl } from "../../../platform/public-url";
-import { noteFontLabels, noteFonts } from "../../library/model/note-fonts";
-import { noteKindIcons } from "../../library/model/note-kind-icons";
-import { noteKindLabels } from "../../library/model/note-kind-labels";
-import { getLibrary, type LibraryEntry } from "../../library/store/library-store";
-import { moveNotesToBin } from "../../trash/lib/recycle-bin";
+import { noteFontLabels, noteFonts } from "@/features/library/model/note-fonts";
+import { noteKindIcons } from "@/features/library/model/note-kind-icons";
+import { noteKindLabels } from "@/features/library/model/note-kind-labels";
+import { getLibrary, type LibraryEntry } from "@/features/library/store/library-store";
+import { moveNotesToBin } from "@/features/trash/lib/recycle-bin";
+import { t } from "@/i18n/i18n";
+import { appLinkFor } from "@/platform/app-links";
+import { publicUrl } from "@/platform/public-url";
 
 type Navigate = ReturnType<typeof useNavigate>;
 

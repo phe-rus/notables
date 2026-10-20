@@ -1,6 +1,6 @@
 import { toast } from "@phe-rus/hino";
-import { t } from "../../../i18n/i18n";
-import { androidBridge } from "../../../platform/android-bridge";
+import { t } from "@/i18n/i18n";
+import { androidBridge } from "@/platform/android-bridge";
 
 /** Hands a link over the system share sheet where there is one, or copies it. */
 export async function handOver(link: string, title: string) {

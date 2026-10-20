@@ -12,18 +12,19 @@ import {
 import { Button } from "@phe-rus/hino/button";
 import { Link } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
-import { t } from "../../../i18n/i18n";
-import { ago } from "../../../lib/time/relative-time";
-import { thisDeviceName } from "../../../platform/session/this-device";
-import { useSpace } from "../../../platform/space/space-identity";
+import { SettingsToolbarAction } from "@/features/settings/components/settings-toolbar";
+import { t } from "@/i18n/i18n";
+import { ago } from "@/lib/time/relative-time";
+import { thisDeviceName } from "@/platform/session/this-device";
+import { useSpace } from "@/platform/space/space-identity";
 import {
   devicesWithoutKey,
   dismissRemovedNotice,
   removeDevice,
   useRemovedNotice,
-} from "../../../platform/space/space-removal";
-import { type SpaceDevice, useSpaceDevices } from "../../../platform/space/space-sync";
-import { SettingsToolbarAction } from "../../settings/components/settings-toolbar";
+} from "@/platform/space/space-removal";
+import type { SpaceDevice } from "@/platform/space/types";
+import { useSpaceDevices } from "@/platform/space/use-space-devices";
 import { useBrowserSessions, useLiveBrowsers } from "../lib/browser-sessions";
 import { readLinkUrl } from "../lib/link-url";
 import { LinkBrowserSheet, type LinkTarget } from "./link-browser-sheet";

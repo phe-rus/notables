@@ -1,4 +1,4 @@
-import { locale, t } from "../../../i18n/i18n";
+import { locale, t } from "@/i18n/i18n";
 
 const DAY = 24 * 60 * 60 * 1000;
 

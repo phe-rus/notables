@@ -1,5 +1,5 @@
-import { fileNameFor, saveFile } from "../../../platform/save-file";
-import { loadMedia } from "../../../platform/storage/media-store";
+import { fileNameFor, saveFile } from "@/platform/save-file";
+import { loadMedia } from "@/platform/storage/media-store";
 import { kindOfBook } from "../lib/book-kind";
 import type { MediaKind } from "../model/media-kind";
 import type { BookEntry } from "../store/book-store";

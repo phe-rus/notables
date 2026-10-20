@@ -11,7 +11,7 @@ import {
 } from "@phe-rus/hino";
 import { AnimatePresence, motion, useReducedMotion } from "motion/react";
 import { useState } from "react";
-import { t } from "../../../i18n/i18n";
+import { t } from "@/i18n/i18n";
 import { withWalletAuthentication } from "../lib/wallet-auth";
 import { walletService } from "../lib/wallet-service";
 import { ltrFieldKeys } from "../model/card-layout";

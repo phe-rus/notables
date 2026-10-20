@@ -1,7 +1,7 @@
 import { DocumentView } from "@notables/pluraliti";
 import { strToU8, type Zippable, zipSync } from "fflate";
 import { renderToStaticMarkup } from "react-dom/server";
-import { stripLeadingTitle } from "../../../lib/documents/strip-leading-title";
+import { stripLeadingTitle } from "@/lib/documents/strip-leading-title";
 import type { BookChapter } from "../reader/use-book-content";
 import type { BookEntry, Part } from "../store/book-store";
 import { contentsList } from "./contents-list";

@@ -1,6 +1,6 @@
-import { getBookStore } from "../../books/store/book-store";
-import { getFranchiseStore } from "../../books/store/franchise-store";
-import { getSeriesStore } from "../../books/store/series-store";
+import { getBookStore } from "@/features/books/store/book-store";
+import { getFranchiseStore } from "@/features/books/store/franchise-store";
+import { getSeriesStore } from "@/features/books/store/series-store";
 import type { LibrarySnapshot } from "./import-targets";
 
 /** The live series an import can join, read from the library right now. */

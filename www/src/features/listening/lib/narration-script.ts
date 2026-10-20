@@ -1,4 +1,4 @@
-import { offsetsFromRange, textOf } from "../../books/highlights/lib/text-ranges";
+import { offsetsFromRange, textOf } from "@/features/books/highlights/lib/text-ranges";
 
 /** One sentence to read, located by character offsets within its section. */
 export interface ScriptLine {

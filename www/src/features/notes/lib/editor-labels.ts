@@ -1,5 +1,5 @@
 import { defaultToolbarLabels, type ToolbarLabels } from "@notables/pluraliti";
-import { t } from "../../../i18n/i18n";
+import { t } from "@/i18n/i18n";
 
 export function editorLabels(): ToolbarLabels {
   return Object.fromEntries(

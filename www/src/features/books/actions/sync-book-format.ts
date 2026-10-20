@@ -1,5 +1,5 @@
-import { loadNoteContent } from "../../../platform/storage/note-content-cache";
-import { getLibrary } from "../../library/store/library-store";
+import { getLibrary } from "@/features/library/store/library-store";
+import { loadNoteContent } from "@/platform/storage/note-content-cache";
 import { isRecordingChapter } from "../lib/chapter-media";
 import { type BookEntry, getBookStore } from "../store/book-store";
 import { getSeriesStore } from "../store/series-store";

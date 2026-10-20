@@ -1,7 +1,7 @@
 import { z } from "zod";
-import { getAuthorName } from "../../../platform/author-preferences";
-import { gatherPeople } from "../../connections/model/people";
-import { getLibrary } from "../../library/store/library-store";
+import { gatherPeople } from "@/features/connections/model/people";
+import { getLibrary } from "@/features/library/store/library-store";
+import { getAuthorName } from "@/platform/author-preferences";
 import { getShares, shareFor } from "../store/share-store";
 import { invitePerson, linkFor, removePerson, startSharing, stopSharing } from "./share-actions";
 import { activeMembers, membersOf } from "./share-members";

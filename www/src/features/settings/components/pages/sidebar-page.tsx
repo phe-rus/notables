@@ -1,7 +1,7 @@
 import { LabeledContent, Section, Toggle, useMediaQuery } from "@phe-rus/hino";
-import { t } from "../../../../i18n/i18n";
-import { type Preferences, sidebarWidth } from "../../model/preferences";
-import { updatePreferences, usePreferences } from "../../store/preferences-store";
+import { type Preferences, sidebarWidth } from "@/features/settings/model/preferences";
+import { updatePreferences, usePreferences } from "@/features/settings/store/preferences-store";
+import { t } from "@/i18n/i18n";
 
 const setSidebar = (change: Partial<Preferences["sidebar"]>) =>
   updatePreferences((p) => ({ ...p, sidebar: { ...p.sidebar, ...change } }));

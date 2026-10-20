@@ -6,12 +6,9 @@ import {
   RouterContextProvider,
 } from "@tanstack/react-router";
 import { renderToStaticMarkup } from "react-dom/server";
-import { WalletScreen } from "../../../src/features/wallet/components/wallet-screen";
-import { walletService } from "../../../src/features/wallet/lib/wallet-service";
-import {
-  type WalletCard,
-  walletPreviewSchema,
-} from "../../../src/features/wallet/model/wallet-model";
+import { WalletScreen } from "@/features/wallet/components/wallet-screen";
+import { walletService } from "@/features/wallet/lib/wallet-service";
+import { type WalletCard, walletPreviewSchema } from "@/features/wallet/model/wallet-model";
 import {
   clearWallet,
   mountWallet,
@@ -19,7 +16,7 @@ import {
   refreshWallet,
   unlockWallet,
   useWallet,
-} from "../../../src/features/wallet/store/wallet-store";
+} from "@/features/wallet/store/wallet-store";
 
 const status = {
   initialized: true,

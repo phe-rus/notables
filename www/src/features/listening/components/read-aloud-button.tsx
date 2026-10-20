@@ -2,7 +2,7 @@ import { cn, HeadphonesIcon, IconButton, toast } from "@phe-rus/hino";
 import { AnimatePresence } from "motion/react";
 import { type RefObject, useEffect, useRef } from "react";
 import { createPortal } from "react-dom";
-import { t } from "../../../i18n/i18n";
+import { t } from "@/i18n/i18n";
 import { buildScript, type ScriptLine } from "../lib/narration-script";
 import { clearReading, paintReading, rangesForLine } from "../lib/reading-highlight";
 import { useNarration } from "../lib/use-narration";

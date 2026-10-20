@@ -1,6 +1,6 @@
 import { createStore, useSelector } from "@tanstack/react-store";
-import { currentLanguage } from "../../../i18n/i18n";
-import { isTauri } from "../../../platform/runtime";
+import { currentLanguage } from "@/i18n/i18n";
+import { isTauri } from "@/platform/runtime";
 import { cancelWalletNfc, readWalletNfc } from "../lib/card-nfc";
 import type { CardReading } from "../lib/card-reader";
 import {

@@ -8,9 +8,9 @@ import {
   TrashIcon,
 } from "@phe-rus/hino";
 import { motion } from "motion/react";
-import { t } from "../../../i18n/i18n";
-import { noteFolderItems, togglePinned } from "../../notes/actions/note-menu";
-import { moveNotesToBin } from "../../trash/lib/recycle-bin";
+import { noteFolderItems, togglePinned } from "@/features/notes/actions/note-menu";
+import { moveNotesToBin } from "@/features/trash/lib/recycle-bin";
+import { t } from "@/i18n/i18n";
 import type { LibraryEntry } from "../store/library-store";
 
 /** What can be done to every chosen note at once, floating over the list. */

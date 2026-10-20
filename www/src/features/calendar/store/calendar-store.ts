@@ -9,7 +9,7 @@ import {
 } from "@notables/core";
 import { useSyncExternalStore } from "react";
 import type * as Y from "yjs";
-import { getLibrary } from "../../library/store/library-store";
+import { getLibrary } from "@/features/library/store/library-store";
 
 export const eventColors: Record<CalendarEventKind, string> = {
   plan: "#2C6193",

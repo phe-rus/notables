@@ -2,7 +2,7 @@ import { CloseIcon, IconButton, SegmentedControl } from "@phe-rus/hino";
 import { motion, useReducedMotion } from "motion/react";
 import { useEffect, useId, useRef, useState } from "react";
 import { createPortal } from "react-dom";
-import { t } from "../../../i18n/i18n";
+import { t } from "@/i18n/i18n";
 import type { WalletCard } from "../model/wallet-model";
 import { showWallet, useWallet } from "../store/wallet-store";
 import { CardFace } from "./card-face";

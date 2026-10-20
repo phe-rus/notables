@@ -1,6 +1,6 @@
 import type { DueAlert } from "@notables/core";
-import { devicePlatform } from "../../../platform/device-platform";
-import { isTauri } from "../../../platform/runtime";
+import { devicePlatform } from "@/platform/device-platform";
+import { isTauri } from "@/platform/runtime";
 import { describeAlert } from "./describe-alert";
 
 /** Phones deliver scheduled notifications even when the app is closed. */

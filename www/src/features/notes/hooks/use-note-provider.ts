@@ -1,8 +1,8 @@
 import { NoteProvider, type SyncStatus } from "@notables/sync";
 import { useEffect, useState } from "react";
 import * as Y from "yjs";
-import { getRemoteSync } from "../../../platform/storage/document-storage";
-import { persistenceFor } from "../../sharing/lib/share-sessions";
+import { persistenceFor } from "@/features/sharing/lib/share-sessions";
+import { getRemoteSync } from "@/platform/storage/document-storage";
 
 /** One provider per mounted editor; created in an effect so StrictMode remounts stay clean. */
 export function useNoteProvider(noteId: string) {

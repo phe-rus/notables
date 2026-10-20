@@ -3,7 +3,7 @@ import { PhotoIcon, ScanCodeIcon, spring } from "@phe-rus/hino";
 import { Link } from "@tanstack/react-router";
 import { AnimatePresence, motion } from "motion/react";
 import { useCallback, useEffect, useRef, useState } from "react";
-import { AppMark } from "../../../components/brand/app-mark";
+import { AppMark } from "@/components/brand/app-mark";
 import { sealFromPdf } from "../export/invoice-pdf";
 import { checkByNumber } from "./check-by-number";
 import { HiddenMarkCheck, type MarkSource } from "./hidden-mark-check";

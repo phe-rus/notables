@@ -1,5 +1,5 @@
 import { invoke } from "@tauri-apps/api/core";
-import { isTauri } from "../../../platform/runtime";
+import { isTauri } from "@/platform/runtime";
 
 /** The installed natural voice pack, as `voice_info` reports it. */
 export interface NaturalVoiceInfo {

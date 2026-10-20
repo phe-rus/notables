@@ -1,4 +1,4 @@
-import { moveAllToBin } from "../../trash/lib/recycle-bin";
+import { moveAllToBin } from "@/features/trash/lib/recycle-bin";
 import { folderView } from "../model/library-views";
 import { type Folder, getLibrary } from "../store/library-store";
 

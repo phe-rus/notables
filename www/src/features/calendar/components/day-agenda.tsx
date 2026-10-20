@@ -11,7 +11,7 @@ import {
 } from "@notables/core";
 import { BellIcon, CheckIcon, cn, RepeatIcon, toast, useContextMenu } from "@phe-rus/hino";
 import type { ReactNode } from "react";
-import { locale, t } from "../../../i18n/i18n";
+import { locale, t } from "@/i18n/i18n";
 import { describeDay, formatClock } from "../lib/describe-alert";
 import { eventTitle, kindIcons } from "../lib/event-display";
 import type { Holiday } from "../lib/holidays";

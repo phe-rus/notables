@@ -2,7 +2,7 @@ import { CameraIcon, CloseIcon, IconButton, PhotoIcon, PlusIcon, TrashIcon } fro
 import { Button } from "@phe-rus/hino/button";
 import { Sheet } from "@phe-rus/hino/sheet";
 import { useEffect, useRef, useState } from "react";
-import { t } from "../../../i18n/i18n";
+import { t } from "@/i18n/i18n";
 
 interface Page {
   file: File;

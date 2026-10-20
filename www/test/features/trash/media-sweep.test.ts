@@ -1,5 +1,5 @@
 import { describe, expect, it } from "bun:test";
-import { planSweep } from "../../../src/features/trash/lib/media-sweep";
+import { planSweep } from "@/features/trash/lib/media-sweep";
 
 const DAY = 24 * 60 * 60 * 1000;
 

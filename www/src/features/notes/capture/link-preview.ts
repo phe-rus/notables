@@ -1,4 +1,4 @@
-import { publicUrl } from "../../../platform/public-url";
+import { publicUrl } from "@/platform/public-url";
 
 export async function fetchLinkPreview(url: string) {
   const response = await fetch(publicUrl("/api/link-preview"), {

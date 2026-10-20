@@ -1,6 +1,6 @@
 import { emptyParty } from "@notables/core";
 import { useSyncExternalStore } from "react";
-import { syncedSetting } from "../../../platform/settings/synced-settings";
+import { syncedSetting } from "@/platform/settings/synced-settings";
 import { fallbackDefaults, getIssuerDefaults, type IssuerDefaults } from "./issuer-profile";
 
 /**

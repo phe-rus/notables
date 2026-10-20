@@ -1,5 +1,5 @@
 import { describe, expect, it } from "bun:test";
-import { transcriptParagraphs } from "../../src/features/books/narration/lib/transcript-paragraphs";
+import { transcriptParagraphs } from "@/features/books/narration/lib/transcript-paragraphs";
 
 const seg = (startMs: number, endMs: number, text: string) => ({ startMs, endMs, text });
 

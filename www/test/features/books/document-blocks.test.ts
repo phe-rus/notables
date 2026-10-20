@@ -1,9 +1,6 @@
 import { describe, expect, it } from "bun:test";
-import { documentBlocks } from "../../../src/features/books/export/document-blocks";
-import {
-  blocksToMarkdown,
-  blocksToText,
-} from "../../../src/features/books/export/formats/to-markdown";
+import { documentBlocks } from "@/features/books/export/document-blocks";
+import { blocksToMarkdown, blocksToText } from "@/features/books/export/formats/to-markdown";
 
 const text = (value: string, format = 0) => ({ type: "text", text: value, format });
 

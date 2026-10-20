@@ -1,5 +1,5 @@
 import { describe, expect, it } from "bun:test";
-import { layoutDay } from "../../../src/features/calendar/lib/day-layout";
+import { layoutDay } from "@/features/calendar/lib/day-layout";
 
 const at = (key: string, start: number, end: number) => ({ key, start, end });
 const columns = (blocks: ReturnType<typeof layoutDay>) =>

@@ -1,10 +1,10 @@
 import { cn, PinIcon } from "@phe-rus/hino";
 import { useEffect, useMemo, useState } from "react";
-import { AppMark } from "../../../components/brand/app-mark";
-import { locale, t } from "../../../i18n/i18n";
-import { markAppReady } from "../../../platform/app-ready";
-import { useCalendarEvents } from "../../calendar/store/calendar-store";
-import { useLibrary, useLibraryReady } from "../../library/store/library-store";
+import { AppMark } from "@/components/brand/app-mark";
+import { useCalendarEvents } from "@/features/calendar/store/calendar-store";
+import { useLibrary, useLibraryReady } from "@/features/library/store/library-store";
+import { locale, t } from "@/i18n/i18n";
+import { markAppReady } from "@/platform/app-ready";
 import { openFromWidget } from "../lib/widget-bridge";
 import { buildWidgetSnapshot } from "../lib/widget-snapshot";
 

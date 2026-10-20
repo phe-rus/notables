@@ -2,12 +2,12 @@ import { afterAll, beforeAll, describe, expect, it } from "bun:test";
 import { readdirSync, readFileSync } from "node:fs";
 import { createId } from "@notables/core";
 import { getPlatformProxy } from "wrangler";
-import { mediaKey } from "../../src/server/publications/publication-media";
+import { mediaKey } from "@/server/publications/publication-media";
 import {
   createPublications,
   type Publications,
   type PublishInput,
-} from "../../src/server/publications/publications.service";
+} from "@/server/publications/publications.service";
 
 let proxy: Awaited<ReturnType<typeof getPlatformProxy<Cloudflare.Env>>>;
 let pubs: Publications;

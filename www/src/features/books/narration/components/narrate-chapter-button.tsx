@@ -2,13 +2,13 @@ import { localMediaSrc } from "@notables/core";
 import { Button, MicIcon } from "@phe-rus/hino";
 import { useNavigate } from "@tanstack/react-router";
 import { useState } from "react";
-import { saveMedia } from "../../../../platform/storage/media-store";
-import { getLibrary } from "../../../library/store/library-store";
+import { type BookEntry, getBookStore } from "@/features/books/store/book-store";
+import { getLibrary } from "@/features/library/store/library-store";
 import {
   type FinishedRecording,
   RecorderSheet,
-} from "../../../recording/components/recorder-sheet";
-import { type BookEntry, getBookStore } from "../../store/book-store";
+} from "@/features/recording/components/recorder-sheet";
+import { saveMedia } from "@/platform/storage/media-store";
 import { queueNarration } from "../lib/pending-narrations";
 import { transcriptParagraphs } from "../lib/transcript-paragraphs";
 

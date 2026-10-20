@@ -18,7 +18,7 @@ import {
 } from "@phe-rus/hino";
 import { motion } from "motion/react";
 import { type ReactNode, useEffect, useRef, useState } from "react";
-import { saveMedia } from "../../../platform/storage/media-store";
+import { saveMedia } from "@/platform/storage/media-store";
 import { useSceneHistory } from "../lib/use-scene-history";
 import {
   type BubbleStyle,

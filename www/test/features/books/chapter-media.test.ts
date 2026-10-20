@@ -1,5 +1,5 @@
 import { describe, expect, it } from "bun:test";
-import { chapterPages, chapterRecordings } from "../../../src/features/books/lib/chapter-media";
+import { chapterPages, chapterRecordings } from "@/features/books/lib/chapter-media";
 
 const document = {
   root: {

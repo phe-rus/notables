@@ -1,16 +1,16 @@
 import { LabeledContent, Section, Toggle } from "@phe-rus/hino";
-import { PickerInput } from "../../../../components/form/form-fields";
-import { t } from "../../../../i18n/i18n";
-import { type NoteFont, noteFontLabels, noteFonts } from "../../../library/model/note-fonts";
-import { ExamplesSettingsSection } from "../../../onboarding/components/examples-settings-section";
+import { PickerInput } from "@/components/form/form-fields";
+import { type NoteFont, noteFontLabels, noteFonts } from "@/features/library/model/note-fonts";
+import { ExamplesSettingsSection } from "@/features/onboarding/components/examples-settings-section";
 import {
   type ListPreferences,
   type PreviewLines,
   previewLineCounts,
   type SwipeAction,
   swipeActions,
-} from "../../model/preferences";
-import { updatePreferences, usePreferences } from "../../store/preferences-store";
+} from "@/features/settings/model/preferences";
+import { updatePreferences, usePreferences } from "@/features/settings/store/preferences-store";
+import { t } from "@/i18n/i18n";
 
 const setList = (change: Partial<ListPreferences>) =>
   updatePreferences((p) => ({ ...p, list: { ...p.list, ...change } }));

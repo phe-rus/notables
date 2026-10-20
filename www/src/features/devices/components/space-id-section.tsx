@@ -8,10 +8,10 @@ import {
   toast,
 } from "@phe-rus/hino";
 import { useEffect, useState } from "react";
-import { t } from "../../../i18n/i18n";
-import { isTauri } from "../../../platform/runtime";
-import { thisDeviceId } from "../../../platform/session/this-device";
-import { useSpace } from "../../../platform/space/space-identity";
+import { t } from "@/i18n/i18n";
+import { isTauri } from "@/platform/runtime";
+import { thisDeviceId } from "@/platform/session/this-device";
+import { useSpace } from "@/platform/space/space-identity";
 
 /** The space's ID, the same on every device of it, so the person can tell their devices apart from anyone else's. */
 export function SpaceIdSection() {

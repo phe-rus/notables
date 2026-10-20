@@ -1,5 +1,5 @@
 import { expect, test } from "bun:test";
-import { previewContent } from "../../src/features/library/lib/note-preview";
+import { previewContent } from "@/features/library/lib/note-preview";
 
 const text = (value: string) => ({ type: "text", text: value });
 test("gallery keeps the opening writing, checklist, table and adjacent photos", () => {

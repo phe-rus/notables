@@ -87,14 +87,17 @@ describe("pairing a browser with a phone", () => {
       "iPhone",
     );
     let confirmed = false;
-    phone.on("approved", () => {
+    const received: Record<string, unknown>[] = [];
+    phone.on("approved", ({ extra }) => {
       confirmed = true;
+      received.push(extra);
     });
     phone.begin("android", () => {});
     phone.approve({ root: "ab".repeat(32) });
     expect(confirmed).toBe(false);
-    waiting.complete(true);
+    waiting.complete(true, { device: { name: "TECNO", platform: "android" }, saved: false });
     expect(confirmed).toBe(true);
+    expect(received).toEqual([{ device: { name: "TECNO", platform: "android" } }]);
   });
 
   it("reports a failed device save to the approving phone", () => {

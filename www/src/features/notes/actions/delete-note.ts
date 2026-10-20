@@ -1,8 +1,8 @@
-import { collectLocalMedia } from "../../../lib/documents/collect-local-media";
-import { deleteMedia } from "../../../platform/storage/media-store";
-import { deleteNoteContent, loadNoteContent } from "../../../platform/storage/note-content-cache";
-import { getBookStore } from "../../books/store/book-store";
-import { getLibrary } from "../../library/store/library-store";
+import { getBookStore } from "@/features/books/store/book-store";
+import { getLibrary } from "@/features/library/store/library-store";
+import { collectLocalMedia } from "@/lib/documents/collect-local-media";
+import { deleteMedia } from "@/platform/storage/media-store";
+import { deleteNoteContent, loadNoteContent } from "@/platform/storage/note-content-cache";
 
 /**
  * Deletes a note from this device: its document, cached content,

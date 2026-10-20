@@ -1,4 +1,4 @@
-import { getLibrary } from "../../library/store/library-store";
+import { getLibrary } from "@/features/library/store/library-store";
 import { isDrawnKind } from "../model/media-kind";
 import { type BookEntry, getBookStore } from "../store/book-store";
 import { getSeriesStore } from "../store/series-store";

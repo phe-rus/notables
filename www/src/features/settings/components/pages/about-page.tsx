@@ -1,14 +1,14 @@
 import { LabeledContent, Section } from "@phe-rus/hino";
 import { type ReactNode, useEffect, useState } from "react";
-import { AppMark } from "../../../../components/brand/app-mark";
-import { t } from "../../../../i18n/i18n";
-import { browserNames, type DeviceInfo, deviceInfo } from "../../../../platform/device-info";
-import { isTauri } from "../../../../platform/runtime";
-import { useBooks } from "../../../books/store/book-store";
-import { useCalendarEvents } from "../../../calendar/store/calendar-store";
-import { useInvoices } from "../../../invoices/store/invoice-store";
-import { isListedNote, useLibrary } from "../../../library/store/library-store";
-import { UpdateSettings } from "../../../updates/components/update-settings";
+import { AppMark } from "@/components/brand/app-mark";
+import { useBooks } from "@/features/books/store/book-store";
+import { useCalendarEvents } from "@/features/calendar/store/calendar-store";
+import { useInvoices } from "@/features/invoices/store/invoice-store";
+import { isListedNote, useLibrary } from "@/features/library/store/library-store";
+import { UpdateSettingsSection } from "@/features/updates/components/update-settings-section";
+import { t } from "@/i18n/i18n";
+import { browserNames, type DeviceInfo, deviceInfo } from "@/platform/device-info";
+import { isTauri } from "@/platform/runtime";
 
 const links = [
   { key: "settings.aboutWebsite", href: "https://pherus.org/showcase/notables" },
@@ -42,7 +42,7 @@ export function AboutPage() {
         )}
       </div>
 
-      <UpdateSettings />
+      <UpdateSettingsSection />
       <Section title={t("settings.aboutDevice")}>
         {device?.device && <Row label={t("settings.aboutDeviceName")}>{device.device}</Row>}
         {device?.system && <Row label={t("settings.aboutSystem")}>{device.system}</Row>}

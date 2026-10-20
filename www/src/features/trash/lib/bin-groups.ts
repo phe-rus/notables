@@ -1,6 +1,6 @@
-import type { BookEntry } from "../../books/store/book-store";
-import type { SeriesEntry } from "../../books/store/series-store";
-import type { LibraryEntry } from "../../library/store/library-store";
+import type { BookEntry } from "@/features/books/store/book-store";
+import type { SeriesEntry } from "@/features/books/store/series-store";
+import type { LibraryEntry } from "@/features/library/store/library-store";
 
 /**
  * Deleted notes shown on their own: everything trashed except the

@@ -1,6 +1,6 @@
 import { checkCodeFor, createSeal, normalizeCheckCode } from "@notables/core";
-import { getSigningKey } from "../../../platform/signing-key";
-import { getLibrary } from "../../library/store/library-store";
+import { getLibrary } from "@/features/library/store/library-store";
+import { getSigningKey } from "@/platform/signing-key";
 import { getInvoiceStore } from "../store/invoice-store";
 
 export type NumberCheck =

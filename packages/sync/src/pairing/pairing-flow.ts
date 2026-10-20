@@ -2,34 +2,9 @@ import { randomBytes } from "@noble/hashes/utils.js";
 import { Emitter } from "../lib/typed-emitter";
 import { fromBase64, open, seal, toBase64 } from "../space/space-keys";
 import { CPace, type PairingKeys } from "./cpace";
+import type { BrowserEvents, Message, PhoneEvents, Send, WaitingKind } from "./types";
 
-/*
- * Pairing a browser with a phone, in the room the code points to:
- *
- *   phone   → hello                       (to the browser, or to everyone for a typed code)
- *   browser → start   { sid, share, kind } (its half, and whether it is a browser or a device)
- *   phone   → share   { share, tag }      (its half, and proof it used the same code)
- *   browser → confirm { tag } | wrong     (its proof; both now show four words)
- *   phone   → approved { sealed name } | rejected   (after the person checks the words)
- *
- * The code never crosses the wire; a wrong one fails the tags, and the
- * browser allows a few of those before it gives up on the code.
- */
-
-type Message =
-  | { t: "hello" }
-  | { t: "start"; sid: string; share: string; kind?: WaitingKind; receipt?: boolean }
-  | { t: "share"; share: string; tag: string }
-  | { t: "confirm"; tag: string }
-  | { t: "wrong" }
-  | { t: "approved"; info: string }
-  | { t: "complete"; info: string }
-  | { t: "rejected" };
-
-export type Send = (to: string, body: string) => void;
-
-/** What is waiting to be linked: a browser (a window onto a phone) or a device of the space. */
-export type WaitingKind = "browser" | "device";
+export type { PairedPhone, Send, WaitingKind } from "./types";
 
 const encode = (message: Message) => JSON.stringify(message);
 
@@ -45,28 +20,8 @@ function decode(body: string): Message | null {
 const text = new TextEncoder();
 const read = new TextDecoder();
 
-/** What the browser keeps once a phone approves it. */
-export interface PairedPhone {
-  phoneId: string;
-  phoneName: string;
-  sessionKey: Uint8Array;
-  /** Whatever else the approving device sent, sealed: a space's secret when linking a device. */
-  extra: Record<string, unknown>;
-}
-
 /** The most wrong codes a browser accepts before it needs a new one. */
 export const PAIRING_ATTEMPTS = 5;
-
-type BrowserEvents = {
-  /** A phone used the right code: show these words until it decides. */
-  words: (words: string[]) => void;
-  /** A phone tried a wrong code. */
-  wrong: (attemptsLeft: number) => void;
-  approved: (phone: PairedPhone) => void;
-  rejected: () => void;
-  /** Too many wrong codes: make a new one. */
-  exhausted: () => void;
-};
 
 /** The browser's side: waits with its code for a phone to approve it. */
 export class BrowserPairing extends Emitter<BrowserEvents> {
@@ -144,7 +99,7 @@ export class BrowserPairing extends Emitter<BrowserEvents> {
   }
 
   /** A native device acknowledges only after the received space is safely kept. */
-  complete(saved: boolean) {
+  complete(saved: boolean, extra: Record<string, unknown> = {}) {
     const receipt = this.#receipt;
     if (!receipt) return;
     this.#receipt = null;
@@ -152,19 +107,11 @@ export class BrowserPairing extends Emitter<BrowserEvents> {
       receipt.to,
       encode({
         t: "complete",
-        info: toBase64(seal(receipt.key, text.encode(JSON.stringify({ saved })))),
+        info: toBase64(seal(receipt.key, text.encode(JSON.stringify({ ...extra, saved })))),
       }),
     );
   }
 }
-
-type PhoneEvents = {
-  words: (words: string[]) => void;
-  /** The code did not match this browser. */
-  wrong: () => void;
-  approved: (browser: { browserId: string; sessionKey: Uint8Array }) => void;
-  failed: () => void;
-};
 
 /** The phone's side: knows the code, and approves once the person checks the words. */
 export class PhonePairing extends Emitter<PhoneEvents> {
@@ -220,11 +167,11 @@ export class PhonePairing extends Emitter<PhoneEvents> {
     } else if (message.t === "complete" && from === this.#browser && this.#keys && this.#awaiting) {
       const info = open(this.#keys.sessionKey(), fromBase64(message.info));
       if (!info) return;
-      const result = JSON.parse(read.decode(info)) as { saved?: unknown };
-      if (typeof result.saved !== "boolean") return;
+      const { saved, ...extra } = JSON.parse(read.decode(info)) as Record<string, unknown>;
+      if (typeof saved !== "boolean") return;
       this.#awaiting = false;
-      if (result.saved)
-        this.emit("approved", { browserId: from, sessionKey: this.#keys.sessionKey() });
+      if (saved)
+        this.emit("approved", { browserId: from, sessionKey: this.#keys.sessionKey(), extra });
       else this.emit("failed");
     }
   }
@@ -241,7 +188,7 @@ export class PhonePairing extends Emitter<PhoneEvents> {
     const info = seal(sessionKey, text.encode(JSON.stringify({ ...extra, name: this.name })));
     this.#awaiting = this.#receipt;
     this.send(browser, encode({ t: "approved", info: toBase64(info) }));
-    if (!this.#receipt) this.emit("approved", { browserId: browser, sessionKey });
+    if (!this.#receipt) this.emit("approved", { browserId: browser, sessionKey, extra: {} });
   }
 
   reject() {

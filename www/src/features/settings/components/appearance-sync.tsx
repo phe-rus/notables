@@ -1,7 +1,7 @@
 import { defaultAccent } from "@phe-rus/hino/tokens";
 import { useEffect } from "react";
-import { androidBridge } from "../../../platform/android-bridge";
-import { devicePlatform } from "../../../platform/device-platform";
+import { androidBridge } from "@/platform/android-bridge";
+import { devicePlatform } from "@/platform/device-platform";
 import { textSizes } from "../model/preferences";
 import { usePreferences } from "../store/preferences-store";
 

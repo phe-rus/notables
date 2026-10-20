@@ -1,7 +1,7 @@
 import { invoke } from "@tauri-apps/api/core";
 import { isAvailable, scan, type Tag } from "@tauri-apps/plugin-nfc";
-import { t } from "../../../i18n/i18n";
-import { isTauri } from "../../../platform/runtime";
+import { t } from "@/i18n/i18n";
+import { isTauri } from "@/platform/runtime";
 
 let pending = false;
 export async function walletNfcAvailable() {

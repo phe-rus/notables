@@ -7,7 +7,7 @@ import {
 } from "@notables/core";
 import { useSyncExternalStore } from "react";
 import type * as Y from "yjs";
-import { getLibrary } from "../../library/store/library-store";
+import { getLibrary } from "@/features/library/store/library-store";
 import { getBusinessProfile } from "../lib/business-profile";
 import { addDays, nextDocumentNumber, today } from "../lib/document-number";
 import { getIssuerDefaults, rememberIssuerDefaults } from "../lib/issuer-profile";

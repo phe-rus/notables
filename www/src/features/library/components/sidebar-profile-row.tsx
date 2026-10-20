@@ -1,8 +1,8 @@
 import { cn, SettingsIcon } from "@phe-rus/hino";
 import { Link } from "@tanstack/react-router";
-import { setDrawerOpen } from "../../../components/layout/drawer-store";
-import { t } from "../../../i18n/i18n";
-import { useAuthorName } from "../../../platform/author-preferences";
+import { setDrawerOpen } from "@/components/layout/drawer-store";
+import { t } from "@/i18n/i18n";
+import { useAuthorName } from "@/platform/author-preferences";
 
 export function SidebarProfileRow({ active }: { active: boolean }) {
   const name = useAuthorName();

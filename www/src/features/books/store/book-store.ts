@@ -1,7 +1,7 @@
 import { createId } from "@notables/core";
 import { useSyncExternalStore } from "react";
 import type * as Y from "yjs";
-import { getLibrary } from "../../library/store/library-store";
+import { getLibrary } from "@/features/library/store/library-store";
 import { partsWithout, validParts } from "../lib/chapter-outline";
 import { itemKind, kindFields, type MediaKind } from "../model/media-kind";
 import type { SeriesEntry } from "./series-store";

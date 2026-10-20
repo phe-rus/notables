@@ -8,9 +8,9 @@ import {
 } from "@phe-rus/hino";
 import { Link } from "@tanstack/react-router";
 import { motion } from "motion/react";
-import { t } from "../../../../i18n/i18n";
-import type { LibraryEntry } from "../../../library/store/library-store";
-import type { BookEntry } from "../../store/book-store";
+import type { BookEntry } from "@/features/books/store/book-store";
+import type { LibraryEntry } from "@/features/library/store/library-store";
+import { t } from "@/i18n/i18n";
 import { RowButton } from "./row-button";
 
 export function EntryRow({

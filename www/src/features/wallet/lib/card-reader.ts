@@ -1,7 +1,7 @@
 import { invoke } from "@tauri-apps/api/core";
 import type { Worker } from "tesseract.js";
-import { devicePlatform } from "../../../platform/device-platform";
-import { isTauri } from "../../../platform/runtime";
+import { devicePlatform } from "@/platform/device-platform";
+import { isTauri } from "@/platform/runtime";
 import { readCardPalette } from "./card-colors";
 import { suggestCardFields } from "./card-fields";
 

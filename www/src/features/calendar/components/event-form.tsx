@@ -20,9 +20,9 @@ import {
   TextArea,
   TextInput,
   TimeField,
-} from "../../../components/form/form-fields";
-import { locale, t } from "../../../i18n/i18n";
-import { permissionState, requestPermission } from "../../../platform/permissions";
+} from "@/components/form/form-fields";
+import { locale, t } from "@/i18n/i18n";
+import { permissionState, requestPermission } from "@/platform/permissions";
 import { alertLabel, allDayAlerts, timedAlerts } from "../lib/alert-choices";
 import { describeDay } from "../lib/describe-alert";
 import { kindIcons, minutesOf, timeOf } from "../lib/event-display";

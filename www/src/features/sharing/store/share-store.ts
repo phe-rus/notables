@@ -1,5 +1,5 @@
 import { useSyncExternalStore } from "react";
-import { inBrowserSession } from "../../../platform/session/browser-session-store";
+import { inBrowserSession } from "@/platform/session/browser-session-store";
 import type { ShareCredentials } from "../model/share";
 
 const KEY = "notables:shares";

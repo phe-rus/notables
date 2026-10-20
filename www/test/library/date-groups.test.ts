@@ -1,6 +1,6 @@
 import { expect, test } from "bun:test";
-import { bucket } from "../../src/features/library/lib/date-format";
-import { t } from "../../src/i18n/i18n";
+import { bucket } from "@/features/library/lib/date-format";
+import { t } from "@/i18n/i18n";
 
 test("previous seven days precede thirty days across a week boundary", () => {
   const now = new Date(2026, 9, 19, 12).getTime();

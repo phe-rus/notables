@@ -16,29 +16,29 @@ import { accents } from "@phe-rus/hino/tokens";
 import { useNavigate } from "@tanstack/react-router";
 import { AnimatePresence, motion } from "motion/react";
 import { type ReactNode, useEffect, useState } from "react";
-import { AppMark } from "../../../components/brand/app-mark";
-import { currentLanguage, setLanguageChoice, t, useLanguageChoice } from "../../../i18n/i18n";
-import { languages } from "../../../i18n/languages";
-import { markAppReady } from "../../../platform/app-ready";
-import { setAuthorName, useAuthorName } from "../../../platform/author-preferences";
-import { type DevicePlatform, devicePlatform } from "../../../platform/device-platform";
-import {
-  type PermissionKind,
-  type PermissionState,
-  permissionState,
-  requestPermission,
-} from "../../../platform/permissions";
-import { AiSettingsSection } from "../../ai/components/ai-settings-section";
+import { AppMark } from "@/components/brand/app-mark";
+import { AiSettingsSection } from "@/features/ai/components/ai-settings-section";
 import {
   type NoteFont,
   noteFontFamilies,
   noteFontLabels,
   noteFonts,
-} from "../../library/model/note-fonts";
-import { skipWelcomeExamples } from "../../onboarding/lib/seed-welcome-library";
-import { AppearanceSync } from "../../settings/components/appearance-sync";
-import type { Preferences, ThemePreference } from "../../settings/model/preferences";
-import { updatePreferences, usePreferences } from "../../settings/store/preferences-store";
+} from "@/features/library/model/note-fonts";
+import { skipWelcomeExamples } from "@/features/onboarding/lib/seed-welcome-library";
+import { AppearanceSync } from "@/features/settings/components/appearance-sync";
+import type { Preferences, ThemePreference } from "@/features/settings/model/preferences";
+import { updatePreferences, usePreferences } from "@/features/settings/store/preferences-store";
+import { currentLanguage, setLanguageChoice, t, useLanguageChoice } from "@/i18n/i18n";
+import { languages } from "@/i18n/languages";
+import { markAppReady } from "@/platform/app-ready";
+import { setAuthorName, useAuthorName } from "@/platform/author-preferences";
+import { type DevicePlatform, devicePlatform } from "@/platform/device-platform";
+import {
+  type PermissionKind,
+  type PermissionState,
+  permissionState,
+  requestPermission,
+} from "@/platform/permissions";
 import { markSetupDone } from "../lib/setup-state";
 
 type StepId = "intro" | "licence" | "name" | "look" | "language" | "permissions" | "ai" | "done";

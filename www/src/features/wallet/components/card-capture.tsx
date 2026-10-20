@@ -1,6 +1,6 @@
 import { Button, CameraIcon, ChevronRightIcon, NfcReadIcon, PhotoIcon } from "@phe-rus/hino";
 import { useEffect, useState } from "react";
-import { t } from "../../../i18n/i18n";
+import { t } from "@/i18n/i18n";
 import { walletNfcAvailable } from "../lib/card-nfc";
 import {
   cancelWalletCapture,

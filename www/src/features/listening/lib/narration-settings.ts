@@ -1,6 +1,6 @@
 import { useSyncExternalStore } from "react";
-import { t } from "../../../i18n/i18n";
-import { syncedSetting } from "../../../platform/settings/synced-settings";
+import { t } from "@/i18n/i18n";
+import { syncedSetting } from "@/platform/settings/synced-settings";
 
 /** The voice and pace for reading aloud, remembered on this device. */
 export interface NarrationSettings {

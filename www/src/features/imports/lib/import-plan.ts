@@ -1,5 +1,5 @@
-import { kindFromFormat, type MediaKind } from "../../books/model/media-kind";
-import type { BookFormat } from "../../books/store/book-store";
+import { kindFromFormat, type MediaKind } from "@/features/books/model/media-kind";
+import type { BookFormat } from "@/features/books/store/book-store";
 import type { KindHint } from "../importers/kind-hints";
 import {
   EMPTY_LIBRARY,

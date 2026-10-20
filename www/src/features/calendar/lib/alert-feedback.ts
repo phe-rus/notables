@@ -1,4 +1,4 @@
-import { playHaptic } from "../../../platform/haptics";
+import { playHaptic } from "@/platform/haptics";
 import { getAlertSettings } from "./alert-settings";
 
 let context: AudioContext | undefined;

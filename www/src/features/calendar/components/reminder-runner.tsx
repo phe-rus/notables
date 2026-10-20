@@ -2,7 +2,7 @@ import { addDaysTo, alertsBetween, type DueAlert, localDay } from "@notables/cor
 import { toast } from "@phe-rus/hino";
 import { useNavigate } from "@tanstack/react-router";
 import { useEffect, useRef } from "react";
-import { t } from "../../../i18n/i18n";
+import { t } from "@/i18n/i18n";
 import { alertFeedback } from "../lib/alert-feedback";
 import { describeAlert } from "../lib/describe-alert";
 import { notifyNow, scheduleNatively, schedulesNatively } from "../lib/system-notifications";

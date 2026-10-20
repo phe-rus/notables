@@ -1,5 +1,5 @@
 import { describe, expect, it } from "bun:test";
-import { locateQuote, quoteFor } from "../../../src/features/books/highlights/lib/text-quote";
+import { locateQuote, quoteFor } from "@/features/books/highlights/lib/text-quote";
 
 const text = "The sea was calm. The sea was calm again at dawn, and the sea was loud by noon.";
 

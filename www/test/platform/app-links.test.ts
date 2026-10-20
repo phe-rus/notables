@@ -1,5 +1,5 @@
 import { describe, expect, it } from "bun:test";
-import { appLinkFor, routeForAppLink } from "../../src/platform/app-links";
+import { appLinkFor, routeForAppLink } from "@/platform/app-links";
 
 describe("app links", () => {
   it("makes links for places in the app", () => {

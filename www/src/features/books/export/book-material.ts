@@ -1,6 +1,6 @@
-import { stripLeadingTitle } from "../../../lib/documents/strip-leading-title";
-import { loadNoteContent } from "../../../platform/storage/note-content-cache";
-import { getLibrary } from "../../library/store/library-store";
+import { getLibrary } from "@/features/library/store/library-store";
+import { stripLeadingTitle } from "@/lib/documents/strip-leading-title";
+import { loadNoteContent } from "@/platform/storage/note-content-cache";
 import { kindOfBook } from "../lib/book-kind";
 import { partOpenings } from "../lib/chapter-outline";
 import { isDrawnKind, type MediaKind } from "../model/media-kind";

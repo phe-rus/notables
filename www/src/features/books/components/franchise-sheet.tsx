@@ -1,6 +1,6 @@
 import { CloseIcon, IconButton, Sheet } from "@phe-rus/hino";
 import { useState } from "react";
-import { t } from "../../../i18n/i18n";
+import { t } from "@/i18n/i18n";
 import { setSeriesFranchise, startFranchise } from "../actions/franchise";
 import {
   FRANCHISE_TITLE_MAX,

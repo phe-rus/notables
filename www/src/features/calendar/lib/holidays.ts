@@ -1,8 +1,8 @@
 import type { Day } from "@notables/core";
 import type HolidaysClass from "date-holidays";
 import { useEffect, useState, useSyncExternalStore } from "react";
-import { currentLanguage } from "../../../i18n/i18n";
-import { syncedSetting } from "../../../platform/settings/synced-settings";
+import { currentLanguage } from "@/i18n/i18n";
+import { syncedSetting } from "@/platform/settings/synced-settings";
 
 /** A public holiday or observance on one day, named in the app's language. */
 export interface Holiday {

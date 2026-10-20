@@ -1,5 +1,5 @@
 import { expect, it } from "bun:test";
-import { closestCardPalette } from "../../../src/features/wallet/lib/card-colors";
+import { closestCardPalette } from "@/features/wallet/lib/card-colors";
 
 it("ignores paper, glare and grayscale instead of guessing a color", () => {
   expect(

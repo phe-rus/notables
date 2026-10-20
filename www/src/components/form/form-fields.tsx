@@ -2,7 +2,7 @@ import { cn, Picker } from "@phe-rus/hino";
 import { CompactDatePicker } from "@phe-rus/hino/compact-date-picker";
 import { CompactTimePicker } from "@phe-rus/hino/compact-time-picker";
 import type { ComponentProps, InputHTMLAttributes, ReactNode, TextareaHTMLAttributes } from "react";
-import { locale, t } from "../../i18n/i18n";
+import { locale, t } from "@/i18n/i18n";
 
 export const fieldClass =
   "w-full min-w-0 rounded-lg control-field px-3 py-2 text-subheadline text-label placeholder:text-label-tertiary";

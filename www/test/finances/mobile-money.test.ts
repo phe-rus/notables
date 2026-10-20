@@ -1,8 +1,8 @@
 import { expect, test } from "bun:test";
 import * as Y from "yjs";
-import { financeLedger } from "../../src/features/finances/lib/ledger";
-import { parseMobileMoneyMessages } from "../../src/features/finances/lib/mobile-money";
-import { FinanceStore } from "../../src/features/finances/store/finance-store";
+import { financeLedger } from "@/features/finances/lib/ledger";
+import { parseMobileMoneyMessages } from "@/features/finances/lib/mobile-money";
+import { FinanceStore } from "@/features/finances/store/finance-store";
 
 const messages = [
   "Dial *165# and select My Approvals to allow payment of UGX 1,000 to EXAMPLE SHOP.",

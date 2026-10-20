@@ -1,5 +1,5 @@
 import { describe, expect, it } from "bun:test";
-import { recommendedModels } from "../../src/features/ai/lib/model-choices";
+import { recommendedModels } from "@/features/ai/lib/model-choices";
 
 const option = (id: string, free = false) => ({ id, name: id, free });
 

@@ -1,6 +1,6 @@
 import type { NoteKind } from "@notables/core";
-import { t } from "../../../i18n/i18n";
-import type { Messages } from "../../../i18n/messages/en";
+import { t } from "@/i18n/i18n";
+import type { Messages } from "@/i18n/messages/en";
 import type { Folder, LibraryEntry } from "../store/library-store";
 
 export type GroupId = "writing" | "books" | "planning";

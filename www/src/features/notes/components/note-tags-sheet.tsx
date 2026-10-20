@@ -1,7 +1,7 @@
 import { Button, Sheet } from "@phe-rus/hino";
 import { useEffect, useState } from "react";
-import { t } from "../../../i18n/i18n";
-import { getLibrary, type LibraryEntry, useLibrary } from "../../library/store/library-store";
+import { getLibrary, type LibraryEntry, useLibrary } from "@/features/library/store/library-store";
+import { t } from "@/i18n/i18n";
 
 export function NoteTagsSheet({
   entry,

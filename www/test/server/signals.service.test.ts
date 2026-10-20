@@ -1,7 +1,7 @@
 import { afterAll, beforeAll, describe, expect, it } from "bun:test";
 import { readdirSync, readFileSync } from "node:fs";
 import { getPlatformProxy } from "wrangler";
-import { createSignals, SIGNAL_TTL_MS } from "../../src/server/signals/signals.service";
+import { createSignals, SIGNAL_TTL_MS } from "@/server/signals/signals.service";
 
 let proxy: Awaited<ReturnType<typeof getPlatformProxy<Cloudflare.Env>>>;
 let clock = 1_000_000;

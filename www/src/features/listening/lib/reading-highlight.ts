@@ -1,5 +1,5 @@
-import { highlightsSupported } from "../../books/highlights/lib/paint-highlights";
-import { rangeFromOffsets } from "../../books/highlights/lib/text-ranges";
+import { highlightsSupported } from "@/features/books/highlights/lib/paint-highlights";
+import { rangeFromOffsets } from "@/features/books/highlights/lib/text-ranges";
 import type { ScriptLine } from "./narration-script";
 
 const NAME = "nt-reading";

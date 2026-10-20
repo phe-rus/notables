@@ -1,5 +1,5 @@
 import { expect, it } from "bun:test";
-import { cardNfcText } from "../../../src/features/wallet/lib/card-nfc";
+import { cardNfcText } from "@/features/wallet/lib/card-nfc";
 
 it("decodes NDEF text without using the chip identifier as an account", () => {
   const payload = [2, 101, 110, ...new TextEncoder().encode("UMEME\nMETER NUMBER: 00123456789")];

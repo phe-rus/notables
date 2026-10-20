@@ -8,8 +8,8 @@ import {
   toast,
 } from "@phe-rus/hino";
 import { useState } from "react";
-import { type MessageKey, t } from "../../../i18n/i18n";
-import { openExternalUrl } from "../../../platform/external-links";
+import { type MessageKey, t } from "@/i18n/i18n";
+import { openExternalUrl } from "@/platform/external-links";
 import {
   deletePack,
   downloadPack,

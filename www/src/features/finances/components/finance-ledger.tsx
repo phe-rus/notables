@@ -23,21 +23,15 @@ import {
 } from "@phe-rus/hino";
 import { useNavigate } from "@tanstack/react-router";
 import { useEffect, useMemo, useRef, useState } from "react";
-import {
-  DateField,
-  Field,
-  PickerInput,
-  TextArea,
-  TextInput,
-} from "../../../components/form/form-fields";
-import { currentLanguage, t } from "../../../i18n/i18n";
-import { saveFile } from "../../../platform/save-file";
-import { saveMedia } from "../../../platform/storage/media-store";
-import { DocumentScanner } from "../../capture/components/document-scanner";
-import { currencyOptions } from "../../invoices/lib/currencies";
-import { getIssuerDefaults } from "../../invoices/lib/issuer-profile";
-import { getInvoiceStore } from "../../invoices/store/invoice-store";
-import { getLibrary, useLibraryReady } from "../../library/store/library-store";
+import { DateField, Field, PickerInput, TextArea, TextInput } from "@/components/form/form-fields";
+import { DocumentScanner } from "@/features/capture/components/document-scanner";
+import { currencyOptions } from "@/features/invoices/lib/currencies";
+import { getIssuerDefaults } from "@/features/invoices/lib/issuer-profile";
+import { getInvoiceStore } from "@/features/invoices/store/invoice-store";
+import { getLibrary, useLibraryReady } from "@/features/library/store/library-store";
+import { currentLanguage, t } from "@/i18n/i18n";
+import { saveFile } from "@/platform/save-file";
+import { saveMedia } from "@/platform/storage/media-store";
 import { financeLedger, ledgerCsv, suggestTransaction } from "../lib/ledger";
 import {
   type MobileMoneySuggestion,
@@ -94,8 +88,8 @@ export function FinanceLedger({ documents }: { documents: InvoiceDocument[] }) {
     setQueue([]);
     setFiles(images);
     try {
-      const { prepareCardImage } = await import("../../wallet/lib/card-recognition");
-      const { createCardReader } = await import("../../wallet/lib/card-reader");
+      const { prepareCardImage } = await import("@/features/wallet/lib/card-recognition");
+      const { createCardReader } = await import("@/features/wallet/lib/card-reader");
       const reader = createCardReader(currentLanguage());
       const texts: string[] = [];
       try {

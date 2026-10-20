@@ -1,35 +1,11 @@
-import {
-  type AppRelease,
-  newerRelease,
-  parseRelease,
-  type ReleaseChannel,
-  releaseDeadline,
-  releaseFor,
-} from "./release-policy";
-
-export interface InstalledRelease {
-  version: string;
-  build: number;
-  channel: ReleaseChannel;
-}
-export interface UpdateState {
-  installed: InstalledRelease | null;
-  release: AppRelease | null;
-  required: boolean;
-  deadline: number | null;
-  checking: boolean;
-  failed: boolean;
-}
-interface UpdateDependencies {
-  installed: InstalledRelease;
-  load: () => Promise<unknown>;
-  read: () => string | null;
-  write: (value: string) => void;
-  now: () => number;
-}
+import type { AppRelease, UpdateDependencies, UpdateMonitor, UpdateState } from "../model/types";
+import { isUpdateAvailable } from "./is-update-available";
+import { parseRelease } from "./parse-release";
+import { readReleasePolicy } from "./read-release-policy";
+import { updateDeadline } from "./update-deadline";
 
 /** A cached deadline survives offline launches; a valid revocation clears it. */
-export function createUpdateMonitor(deps: UpdateDependencies) {
+export function createUpdateMonitor(deps: UpdateDependencies): UpdateMonitor {
   let release: AppRelease | null = null;
   let deadline: number | null = null;
   let latestTime = deps.now();
@@ -58,10 +34,10 @@ export function createUpdateMonitor(deps: UpdateDependencies) {
     const available =
       release &&
       Date.parse(release.availableAt) <= latestTime &&
-      newerRelease(release, deps.installed)
+      isUpdateAvailable(release, deps.installed)
         ? release
         : null;
-    deadline = available ? Math.min(deadline ?? Infinity, releaseDeadline(available)) : null;
+    deadline = available ? Math.min(deadline ?? Infinity, updateDeadline(available)) : null;
     state = {
       ...state,
       release: available,
@@ -84,7 +60,7 @@ export function createUpdateMonitor(deps: UpdateDependencies) {
     publish();
     pending = (async () => {
       try {
-        const next = releaseFor(await deps.load(), deps.installed.channel);
+        const next = readReleasePolicy(await deps.load(), deps.installed.channel);
         if (next && Date.parse(next.availableAt) > deps.now())
           throw new Error("release-not-available");
         release = next;

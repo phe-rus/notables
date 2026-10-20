@@ -1,6 +1,6 @@
 import { NfcReadIcon, ScanCodeIcon } from "@phe-rus/hino";
 import { motion, useReducedMotion } from "motion/react";
-import { t } from "../../../i18n/i18n";
+import { t } from "@/i18n/i18n";
 
 /** Recognition has no measurable upload percentage: show activity, not invented progress. */
 export function CardProcessing({ nfc = false }: { nfc?: boolean }) {

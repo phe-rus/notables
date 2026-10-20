@@ -1,10 +1,10 @@
 import lettering from "@fontsource/patrick-hand/files/patrick-hand-latin-400-normal.woff2?url";
 import { createId, type NoteKind } from "@notables/core";
 import { composeDocumentFromHtml, composeDocumentFromMarkdown } from "@notables/pluraliti";
-import { saveMedia } from "../../../platform/storage/media-store";
-import { type BookEntry, getBookStore } from "../../books/store/book-store";
-import { getInvoiceStore } from "../../invoices/store/invoice-store";
-import { writeNote } from "../../library/lib/write-note";
+import { type BookEntry, getBookStore } from "@/features/books/store/book-store";
+import { getInvoiceStore } from "@/features/invoices/store/invoice-store";
+import { writeNote } from "@/features/library/lib/write-note";
+import { saveMedia } from "@/platform/storage/media-store";
 import { coverArt, mangaPages } from "../content/welcome-art";
 import { pipComicCover, pipComicPage } from "../content/welcome-comic";
 import { smallHours, welcomeArticle, welcomeInvoice } from "../content/welcome-shelf";

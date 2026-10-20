@@ -14,7 +14,7 @@ import {
   useRef,
   useState,
 } from "react";
-import { locale, t } from "../../../i18n/i18n";
+import { locale, t } from "@/i18n/i18n";
 import { layoutDay } from "../lib/day-layout";
 import { formatClock } from "../lib/describe-alert";
 import { eventTitle, kindIcons, minutesOf, timeOf } from "../lib/event-display";

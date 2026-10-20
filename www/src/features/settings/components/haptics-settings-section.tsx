@@ -1,7 +1,7 @@
 import { LabeledContent, Section, Toggle } from "@phe-rus/hino";
 import { useEffect, useState } from "react";
-import { t } from "../../../i18n/i18n";
-import { hapticsAvailable, playHaptic } from "../../../platform/haptics";
+import { t } from "@/i18n/i18n";
+import { hapticsAvailable, playHaptic } from "@/platform/haptics";
 import { updatePreferences, usePreferences } from "../store/preferences-store";
 
 /** Touch feedback across the app, on devices that can give it. */

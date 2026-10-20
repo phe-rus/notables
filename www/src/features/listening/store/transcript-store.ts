@@ -1,6 +1,6 @@
 import { useSyncExternalStore } from "react";
 import type * as Y from "yjs";
-import { getLibrary } from "../../library/store/library-store";
+import { getLibrary } from "@/features/library/store/library-store";
 
 /** A phrase and when it's spoken: [start ms, end ms, text]. */
 export type TimedPhrase = [number, number, string];

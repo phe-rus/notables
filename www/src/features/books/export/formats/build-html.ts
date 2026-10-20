@@ -1,4 +1,4 @@
-import { directionOf } from "../../model/media-kind";
+import { directionOf } from "@/features/books/model/media-kind";
 import { type BookMaterial, isDrawnBook } from "../book-material";
 import { renderChapterBody } from "../build-epub";
 import { contentsList } from "../contents-list";

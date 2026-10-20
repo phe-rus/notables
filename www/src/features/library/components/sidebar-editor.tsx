@@ -1,7 +1,7 @@
 import { cn, DragHandleIcon, HiddenIcon, VisibleIcon } from "@phe-rus/hino";
 import { Reorder, useDragControls } from "motion/react";
 import type { ReactNode } from "react";
-import { updatePreferences, usePreferences } from "../../settings/store/preferences-store";
+import { updatePreferences, usePreferences } from "@/features/settings/store/preferences-store";
 import { type SidebarItemId, sidebarItemTitles } from "../model/sidebar-items";
 
 /**

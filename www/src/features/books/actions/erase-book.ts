@@ -1,7 +1,7 @@
 import { localMediaId } from "@notables/core";
-import { deleteMedia } from "../../../platform/storage/media-store";
-import { getLibrary } from "../../library/store/library-store";
-import { deleteNote } from "../../notes/actions/delete-note";
+import { getLibrary } from "@/features/library/store/library-store";
+import { deleteNote } from "@/features/notes/actions/delete-note";
+import { deleteMedia } from "@/platform/storage/media-store";
 import { getHighlightStore } from "../highlights/store/highlight-store";
 import { type BookEntry, getBookStore } from "../store/book-store";
 import { getSeriesStore } from "../store/series-store";

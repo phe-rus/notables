@@ -1,8 +1,7 @@
 import { Popover, SelectorIcon, useDismiss } from "@phe-rus/hino";
 import { useCallback, useEffect, useId, useRef, useState } from "react";
-import { Field, PickerInput, TextInput } from "../../../../components/form/form-fields";
-import { t } from "../../../../i18n/i18n";
-import { setStructure } from "../../actions/parts";
+import { Field, PickerInput, TextInput } from "@/components/form/form-fields";
+import { setStructure } from "@/features/books/actions/parts";
 import {
   entryUnits,
   groupUnits,
@@ -10,8 +9,9 @@ import {
   LABEL_MAX,
   type Structure,
   unitName,
-} from "../../model/structure-labels";
-import type { BookEntry } from "../../store/book-store";
+} from "@/features/books/model/structure-labels";
+import type { BookEntry } from "@/features/books/store/book-store";
+import { t } from "@/i18n/i18n";
 
 const CUSTOM = "custom";
 

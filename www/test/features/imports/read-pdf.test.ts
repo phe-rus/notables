@@ -1,5 +1,5 @@
 import { describe, expect, it } from "bun:test";
-import { headingStarts, paragraphsFrom } from "../../../src/features/imports/importers/read-pdf";
+import { headingStarts, paragraphsFrom } from "@/features/imports/importers/read-pdf";
 
 /** A line of text at (x, y), as wide as its characters. */
 const line = (str: string, x: number, y: number) => ({

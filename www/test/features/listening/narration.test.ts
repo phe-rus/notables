@@ -1,16 +1,9 @@
 import { describe, expect, it } from "bun:test";
-import { storyStart } from "../../../src/features/listening/lib/narration-script";
-import { Narrator } from "../../../src/features/listening/lib/narrator";
-import {
-  normalizePeak,
-  type SpeechEngine,
-} from "../../../src/features/listening/lib/speech-engines";
-import {
-  geminiVoices,
-  naturalVoices,
-  rankVoices,
-} from "../../../src/features/listening/lib/voices";
-import { phraseAt, type TimedPhrase } from "../../../src/features/listening/store/transcript-store";
+import { storyStart } from "@/features/listening/lib/narration-script";
+import { Narrator } from "@/features/listening/lib/narrator";
+import { normalizePeak, type SpeechEngine } from "@/features/listening/lib/speech-engines";
+import { geminiVoices, naturalVoices, rankVoices } from "@/features/listening/lib/voices";
+import { phraseAt, type TimedPhrase } from "@/features/listening/store/transcript-store";
 
 /** Speaks instantly, remembering what it said. */
 function fakeEngine() {

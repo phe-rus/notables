@@ -1,6 +1,6 @@
 import { describe, expect, it } from "bun:test";
-import { suggestCardFields } from "../../../src/features/wallet/lib/card-fields";
-import { backMatchesCard } from "../../../src/features/wallet/model/card-back";
+import { suggestCardFields } from "@/features/wallet/lib/card-fields";
+import { backMatchesCard } from "@/features/wallet/model/card-back";
 
 describe("back capture identity", () => {
   it("rejects a different utility meter even when the kind matches", () => {

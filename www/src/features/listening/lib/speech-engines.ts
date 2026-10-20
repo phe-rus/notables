@@ -1,4 +1,4 @@
-import { readAiKey } from "../../ai/store/ai-settings";
+import { readAiKey } from "@/features/ai/store/ai-settings";
 import { clampPace, synthesizeNatural, voiceSteps } from "./natural-voice";
 
 export interface SpeechOptions {

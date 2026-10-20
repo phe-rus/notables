@@ -1,5 +1,5 @@
 import { z } from "zod";
-import { OWNER, type ShareCredentials, type ShareMember } from "../../sharing/model/share";
+import { OWNER, type ShareCredentials, type ShareMember } from "@/features/sharing/model/share";
 
 /** One note shared with a person, and how. */
 export interface SharedNote {

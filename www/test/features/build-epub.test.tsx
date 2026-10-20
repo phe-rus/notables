@@ -1,8 +1,8 @@
 import { describe, expect, it } from "bun:test";
 import { XMLValidator } from "fast-xml-parser";
 import { strFromU8, unzipSync } from "fflate";
-import { buildEpub } from "../../src/features/books/export/build-epub";
-import type { BookEntry } from "../../src/features/books/store/book-store";
+import { buildEpub } from "@/features/books/export/build-epub";
+import type { BookEntry } from "@/features/books/store/book-store";
 
 const book: BookEntry = {
   id: "0199b4a2-0000-7000-8000-000000000001",

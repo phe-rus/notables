@@ -2,9 +2,9 @@ import { announceMediaArrived } from "@notables/pluraliti";
 import { Awareness, type ConnectedPeer, PeerMesh, type PersistenceBinding } from "@notables/sync";
 
 import * as Y from "yjs";
-import { getDeviceId } from "../../../platform/device-identity";
-import { getPersistence } from "../../../platform/storage/document-storage";
-import { hasMedia, loadMedia, saveMediaAs } from "../../../platform/storage/media-store";
+import { getDeviceId } from "@/platform/device-identity";
+import { getPersistence } from "@/platform/storage/document-storage";
+import { hasMedia, loadMedia, saveMediaAs } from "@/platform/storage/media-store";
 import { OWNER, type ShareCredentials } from "../model/share";
 import { forgetShare } from "../store/share-store";
 import { MailboxSignaling } from "./mailbox-signaling";

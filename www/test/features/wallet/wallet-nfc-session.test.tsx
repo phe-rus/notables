@@ -1,13 +1,13 @@
 import { expect, spyOn, test } from "bun:test";
 import { renderToStaticMarkup } from "react-dom/server";
-import * as nfc from "../../../src/features/wallet/lib/card-nfc";
-import { walletService } from "../../../src/features/wallet/lib/wallet-service";
+import * as nfc from "@/features/wallet/lib/card-nfc";
+import { walletService } from "@/features/wallet/lib/wallet-service";
 import {
   mountWallet,
   scanWalletNfc,
   showWallet,
   useWallet,
-} from "../../../src/features/wallet/store/wallet-store";
+} from "@/features/wallet/store/wallet-store";
 
 function Snapshot() {
   return <pre>{JSON.stringify(useWallet())}</pre>;

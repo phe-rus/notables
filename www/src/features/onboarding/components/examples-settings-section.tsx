@@ -1,6 +1,6 @@
 import { Button, confirmDialog, LabeledContent, Section, toast } from "@phe-rus/hino";
 import { useState } from "react";
-import { t } from "../../../i18n/i18n";
+import { t } from "@/i18n/i18n";
 import { removeExamples, useExampleCount } from "../lib/examples";
 import { seedExamplesAgain } from "../lib/seed-welcome-library";
 

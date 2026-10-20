@@ -1,5 +1,5 @@
 import type { NoteKind } from "@notables/core";
-import { publicUrl } from "../../../platform/public-url";
+import { publicUrl } from "@/platform/public-url";
 import type { Invitation } from "../model/share";
 
 const FIELDS = {

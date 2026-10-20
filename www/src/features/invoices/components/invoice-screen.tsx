@@ -18,18 +18,12 @@ import {
 import { Link, useNavigate } from "@tanstack/react-router";
 import { useCallback, useId, useRef, useState } from "react";
 import { createPortal } from "react-dom";
-import {
-  DateField,
-  Field,
-  FormSection,
-  TextArea,
-  TextInput,
-} from "../../../components/form/form-fields";
-import { t } from "../../../i18n/i18n";
-import { printPage } from "../../../platform/print-page";
-import type { EventTarget } from "../../calendar/components/event-form";
-import { EventSheet } from "../../calendar/components/event-sheet";
-import { getCalendarStore } from "../../calendar/store/calendar-store";
+import { DateField, Field, FormSection, TextArea, TextInput } from "@/components/form/form-fields";
+import type { EventTarget } from "@/features/calendar/components/event-form";
+import { EventSheet } from "@/features/calendar/components/event-sheet";
+import { getCalendarStore } from "@/features/calendar/store/calendar-store";
+import { t } from "@/i18n/i18n";
+import { printPage } from "@/platform/print-page";
 import { RecentClientPicker } from "../business/recent-client-picker";
 import { exportInvoicePdf } from "../export/export-invoice";
 import {

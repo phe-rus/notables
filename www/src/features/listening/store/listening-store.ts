@@ -1,6 +1,6 @@
 import { createStore, useSelector } from "@tanstack/react-store";
 import { useEffect } from "react";
-import type { AudiobookPlayback } from "../../books/reader/audio/use-audiobook";
+import type { AudiobookPlayback } from "@/features/books/reader/audio/use-audiobook";
 
 /**
  * The audiobook playing right now, wherever the listener is in the app.

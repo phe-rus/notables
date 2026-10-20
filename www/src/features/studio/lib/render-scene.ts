@@ -1,4 +1,4 @@
-import { loadMedia } from "../../../platform/storage/media-store";
+import { loadMedia } from "@/platform/storage/media-store";
 import type { PageScene, Panel } from "../model/page-scene";
 import { bubbleShape, bubbleText, fontFamilies, fontFor, sceneStrokePath } from "./scene-geometry";
 

@@ -1,4 +1,4 @@
-import { locale } from "../../../i18n/i18n";
+import { locale } from "@/i18n/i18n";
 
 /** Currencies offered first; any other ISO code a document already uses is kept. */
 export const currencies = [

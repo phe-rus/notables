@@ -2,8 +2,8 @@ import { CheckIcon, cn, FolderIcon, haptic, openContextMenu, PinIcon, spring } f
 import { Link } from "@tanstack/react-router";
 import { animate, motion, useMotionValue, useTransform } from "motion/react";
 import { type MouseEvent, type PointerEvent, useEffect, useRef } from "react";
-import { t } from "../../../i18n/i18n";
-import type { ListPreferences } from "../../settings/model/preferences";
+import type { ListPreferences } from "@/features/settings/model/preferences";
+import { t } from "@/i18n/i18n";
 import { formatUpdated } from "../lib/date-format";
 import { isTransitionNote, prepareNoteTransition } from "../lib/note-transition";
 import { type LibraryEntry, useFolders } from "../store/library-store";

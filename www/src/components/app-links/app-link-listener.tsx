@@ -1,7 +1,7 @@
 import { useRouter } from "@tanstack/react-router";
 import { useEffect } from "react";
-import { routeForAppLink } from "../../platform/app-links";
-import { isTauri } from "../../platform/runtime";
+import { routeForAppLink } from "@/platform/app-links";
+import { isTauri } from "@/platform/runtime";
 
 /**
  * Opens `notables://` links in the installed app: the one that launched

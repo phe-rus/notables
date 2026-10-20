@@ -1,6 +1,6 @@
 import { describe, expect, it } from "bun:test";
-import { documentText } from "../../src/features/search/lib/document-text";
-import { search, terms } from "../../src/features/search/lib/rank";
+import { documentText } from "@/features/search/lib/document-text";
+import { search, terms } from "@/features/search/lib/rank";
 
 const now = Date.UTC(2026, 9, 2);
 const note = (id: string, title: string, body: string, daysAgo = 0) => ({

@@ -1,6 +1,6 @@
 import { toast } from "@phe-rus/hino";
-import { t } from "../../../i18n/i18n";
-import { isTauri } from "../../../platform/runtime";
+import { t } from "@/i18n/i18n";
+import { isTauri } from "@/platform/runtime";
 import { downloadPack, modelPacksStatus, packSize } from "./model-packs";
 import type { NaturalVoiceInfo } from "./natural-voice";
 

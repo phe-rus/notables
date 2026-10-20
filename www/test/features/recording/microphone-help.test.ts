@@ -1,8 +1,5 @@
 import { describe, expect, it } from "bun:test";
-import {
-  microphoneHelp,
-  microphoneProblem,
-} from "../../../src/features/recording/lib/microphone-help";
+import { microphoneHelp, microphoneProblem } from "@/features/recording/lib/microphone-help";
 
 describe("microphone help", () => {
   it("tells declined permission apart from missing or busy microphones", () => {

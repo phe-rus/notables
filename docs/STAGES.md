@@ -4,6 +4,14 @@ The plan from here, one stage at a time. Any session, human or AI, resumes
 from the first stage that isn't done. When a stage finishes, tick it here,
 update **Status** in `AGENTS.md`, and record lasting decisions in `docs/adr/`.
 
+## Current maintenance priority (20 October)
+
+The owner's code cleanup takes priority. Follow [MAINTENANCE.md](MAINTENANCE.md)
+and its linked source audit before resuming the older feature stages below.
+Desktop packaging runs on GitHub, with one version for every platform. Desktop
+functional acceptance is deferred. Remaining physical mobile and store checks
+stay tracked in AGENTS.md.
+
 ## Decisions so far (8 to 9 October 2026)
 
 - **UltraPeach** is the design language, Notables' answer to Liquid Glass or

@@ -28,11 +28,11 @@ import {
 import { useNavigate } from "@tanstack/react-router";
 import { motion } from "motion/react";
 import { useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState } from "react";
-import { Field, PickerInput } from "../../../components/form/form-fields";
-import { CollapsedSidebarControls } from "../../../components/window/collapsed-sidebar-controls";
-import { locale, t } from "../../../i18n/i18n";
-import { WorkspaceBackLink } from "../../library/components/workspace-back-link";
-import { usePreferences } from "../../settings/store/preferences-store";
+import { Field, PickerInput } from "@/components/form/form-fields";
+import { CollapsedSidebarControls } from "@/components/window/collapsed-sidebar-controls";
+import { WorkspaceBackLink } from "@/features/library/components/workspace-back-link";
+import { usePreferences } from "@/features/settings/store/preferences-store";
+import { locale, t } from "@/i18n/i18n";
 import {
   holidayCountries,
   setHolidaySettings,

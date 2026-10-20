@@ -16,13 +16,13 @@ import {
 import { Link } from "@tanstack/react-router";
 import { AnimatePresence, motion } from "motion/react";
 import { type CSSProperties, useEffect, useState } from "react";
-import { t } from "../../../../i18n/i18n";
-import { ReadAlong } from "../../../listening/components/read-along";
-import { rateName } from "../../../listening/lib/narration-settings";
-import { useAudiobookSession } from "../../../listening/store/listening-store";
-import { BookCover } from "../../components/book-cover";
-import { structureOf, unitName } from "../../model/structure-labels";
-import type { BookEntry } from "../../store/book-store";
+import { BookCover } from "@/features/books/components/book-cover";
+import { structureOf, unitName } from "@/features/books/model/structure-labels";
+import type { BookEntry } from "@/features/books/store/book-store";
+import { ReadAlong } from "@/features/listening/components/read-along";
+import { rateName } from "@/features/listening/lib/narration-settings";
+import { useAudiobookSession } from "@/features/listening/store/listening-store";
+import { t } from "@/i18n/i18n";
 import { type AudiobookPlayback, type SleepTimer, SPEEDS, type Track } from "./use-audiobook";
 
 const SLEEP_CHOICES: SleepTimer[] = [null, 15, 30, 60, "chapter"];

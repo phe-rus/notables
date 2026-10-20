@@ -1,7 +1,7 @@
 import type { Day } from "@notables/core";
 import { Button, CloseIcon, IconButton, Sheet, SparkleIcon, toast } from "@phe-rus/hino";
 import { useState } from "react";
-import { t } from "../../../i18n/i18n";
+import { t } from "@/i18n/i18n";
 import { describeDay, formatClock } from "../lib/describe-alert";
 import { kindIcons } from "../lib/event-display";
 import { parseQuickEvent } from "../lib/quick-add";

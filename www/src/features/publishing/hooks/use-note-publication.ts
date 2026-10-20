@@ -2,12 +2,12 @@ import { createPublicationSnapshot, readingMinutes } from "@notables/core";
 import { useDocumentSnapshot } from "@notables/pluraliti";
 import { useCallback, useState } from "react";
 import type * as Y from "yjs";
-import { collectLocalMedia } from "../../../lib/documents/collect-local-media";
-import { setAuthorName } from "../../../platform/author-preferences";
-import { publicUrl } from "../../../platform/public-url";
-import { loadMedia } from "../../../platform/storage/media-store";
-import { publishNote, unpublishNote } from "../../../server/publications/publications.functions";
-import { getLibrary, type LibraryEntry } from "../../library/store/library-store";
+import { getLibrary, type LibraryEntry } from "@/features/library/store/library-store";
+import { collectLocalMedia } from "@/lib/documents/collect-local-media";
+import { setAuthorName } from "@/platform/author-preferences";
+import { publicUrl } from "@/platform/public-url";
+import { loadMedia } from "@/platform/storage/media-store";
+import { publishNote, unpublishNote } from "@/server/publications/publications.functions";
 
 export type PublicationAction = "publish" | "unpublish";
 

@@ -12,10 +12,18 @@ import {
 } from "react";
 import { flushSync } from "react-dom";
 import { createRoot } from "react-dom/client";
-import { NarrationBar } from "../../listening/components/narration-bar";
-import { buildScript, type ScriptLine, storyStart } from "../../listening/lib/narration-script";
-import { clearReading, paintReading, rangesForLine } from "../../listening/lib/reading-highlight";
-import { useNarration } from "../../listening/lib/use-narration";
+import { NarrationBar } from "@/features/listening/components/narration-bar";
+import {
+  buildScript,
+  type ScriptLine,
+  storyStart,
+} from "@/features/listening/lib/narration-script";
+import {
+  clearReading,
+  paintReading,
+  rangesForLine,
+} from "@/features/listening/lib/reading-highlight";
+import { useNarration } from "@/features/listening/lib/use-narration";
 import { HighlightPalette } from "../highlights/components/highlight-palette";
 import { HighlightsPanel } from "../highlights/components/highlights-panel";
 import { highlightsSupported, rangesFor } from "../highlights/lib/paint-highlights";

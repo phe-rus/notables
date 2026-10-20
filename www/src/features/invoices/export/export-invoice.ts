@@ -1,6 +1,6 @@
 import { type InvoiceDocument, invoiceKindLabels, localMediaId } from "@notables/core";
-import { fileNameFor, type SaveOutcome, saveFile } from "../../../platform/save-file";
-import { loadMedia } from "../../../platform/storage/media-store";
+import { fileNameFor, type SaveOutcome, saveFile } from "@/platform/save-file";
+import { loadMedia } from "@/platform/storage/media-store";
 import { buildInvoicePdf } from "./invoice-pdf";
 
 /** Logos embed in PDFs as PNG or JPEG; other formats are left out. */

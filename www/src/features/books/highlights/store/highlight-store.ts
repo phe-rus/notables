@@ -1,7 +1,7 @@
 import { createId } from "@notables/core";
 import { useMemo, useSyncExternalStore } from "react";
 import type * as Y from "yjs";
-import { getLibrary } from "../../../library/store/library-store";
+import { getLibrary } from "@/features/library/store/library-store";
 import type { TextQuote } from "../lib/text-quote";
 
 export const HIGHLIGHT_COLORS = ["yellow", "green", "blue", "pink"] as const;

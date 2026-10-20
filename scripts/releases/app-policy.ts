@@ -1,10 +1,7 @@
 import { rename } from "node:fs/promises";
-import {
-  isReleaseChannel,
-  parseRelease,
-  type ReleaseChannel,
-  type ReleaseManifest,
-} from "../../www/src/features/updates/lib/release-policy";
+import { isReleaseChannel } from "../../www/src/features/updates/lib/is-release-channel";
+import { parseRelease } from "../../www/src/features/updates/lib/parse-release";
+import type { ReleaseChannel, ReleaseManifest } from "../../www/src/features/updates/model/types";
 
 /** Publication is deliberate: a successful upload alone does not make an update installable. */
 export function changeReleasePolicy(

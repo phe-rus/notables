@@ -1,8 +1,8 @@
 import { expect, test } from "bun:test";
 import { createMemoryPersistence } from "@notables/sync";
 import * as Y from "yjs";
-import { folderView } from "../../src/features/library/model/library-views";
-import { Library } from "../../src/features/library/store/library-store";
+import { folderView } from "@/features/library/model/library-views";
+import { Library } from "@/features/library/store/library-store";
 
 test("default folder migration runs once and removing a folder leaves its notes for the bin", async () => {
   const persistence = createMemoryPersistence();

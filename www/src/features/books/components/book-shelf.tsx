@@ -1,6 +1,6 @@
 import { Link } from "@tanstack/react-router";
 import { useMemo } from "react";
-import { t } from "../../../i18n/i18n";
+import { t } from "@/i18n/i18n";
 import { arrangeShelf, shelfBooks } from "../lib/arrange-shelf";
 import { kindOfBook } from "../lib/book-kind";
 import type { MediaKind } from "../model/media-kind";

@@ -1,9 +1,9 @@
 import { CloseIcon, cn, IconButton, PauseIcon, PlayIcon, spring } from "@phe-rus/hino";
 import { Link } from "@tanstack/react-router";
 import { AnimatePresence, motion } from "motion/react";
-import { t } from "../../../i18n/i18n";
-import { BookCover } from "../../books/components/book-cover";
-import { useBook } from "../../books/store/book-store";
+import { BookCover } from "@/features/books/components/book-cover";
+import { useBook } from "@/features/books/store/book-store";
+import { t } from "@/i18n/i18n";
 import { closeAudiobook, useListening } from "../store/listening-store";
 
 /**

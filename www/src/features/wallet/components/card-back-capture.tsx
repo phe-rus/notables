@@ -2,7 +2,7 @@ import { CameraIcon, PhotoIcon } from "@phe-rus/hino";
 import { Button } from "@phe-rus/hino/button";
 import { Sheet } from "@phe-rus/hino/sheet";
 import { useCallback, useEffect, useRef, useState } from "react";
-import { currentLanguage, t } from "../../../i18n/i18n";
+import { currentLanguage, t } from "@/i18n/i18n";
 import type { CardReading } from "../lib/card-reader";
 import { cancelCardRecognition, prepareCardImage, recognizeCard } from "../lib/card-recognition";
 import { withWalletAuthentication } from "../lib/wallet-auth";

@@ -1,5 +1,5 @@
 import { Sheet } from "@phe-rus/hino";
-import { t } from "../../../i18n/i18n";
+import { t } from "@/i18n/i18n";
 import { EventForm, type EventTarget } from "./event-form";
 
 /** The event editor as a sheet, on phones and narrow windows. */

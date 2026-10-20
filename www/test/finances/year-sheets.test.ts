@@ -5,8 +5,8 @@ import {
   ensureFinanceSheets,
   FINANCE_FOLDER,
   ledgerCells,
-} from "../../src/features/finances/lib/year-sheets";
-import { Library } from "../../src/features/library/store/library-store";
+} from "@/features/finances/lib/year-sheets";
+import { Library } from "@/features/library/store/library-store";
 
 const rows = [
   {

@@ -1,7 +1,7 @@
 import { Button, confirmDialog, LinkIcon, Section } from "@phe-rus/hino";
 import { useEffect, useState } from "react";
-import { t } from "../../../i18n/i18n";
-import { ago } from "../../../lib/time/relative-time";
+import { t } from "@/i18n/i18n";
+import { ago } from "@/lib/time/relative-time";
 import {
   type BrowserSessionRecord,
   endBrowserSession,

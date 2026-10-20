@@ -7,14 +7,17 @@ import {
 } from "@notables/sync";
 import { Button, CloseIcon, IconButton, Sheet, toast } from "@phe-rus/hino";
 import { useEffect, useEffectEvent, useState } from "react";
-import { t } from "../../../i18n/i18n";
-import { roomEndpoint } from "../../../platform/session/room-endpoint";
-import { thisDeviceId } from "../../../platform/session/this-device";
-import { adoptSpace } from "../../../platform/space/space-identity";
-import { rejoinSpaceSync, stopSpaceSync } from "../../../platform/space/space-sync";
-import { SealCode } from "../../invoices/components/seal-code";
-import { eraseUntouchedExamples } from "../../onboarding/lib/examples";
+import { SealCode } from "@/features/invoices/components/seal-code";
+import { eraseUntouchedExamples } from "@/features/onboarding/lib/examples";
+import { t } from "@/i18n/i18n";
+import { androidBridge } from "@/platform/android-bridge";
+import { roomEndpoint } from "@/platform/session/room-endpoint";
+import { thisDeviceId } from "@/platform/session/this-device";
+import { adoptSpace } from "@/platform/space/space-identity";
+import { rejoinSpaceSync, stopSpaceSync } from "@/platform/space/space-sync";
 import { linkUrl } from "../lib/link-url";
+import { pairingDevice } from "../lib/pairing-device";
+import { rememberPairing } from "../lib/remember-pairing";
 import { PairingWords } from "./link-browser-screen";
 
 /** A code lasts this long before a new one replaces it (AC-3). */
@@ -46,6 +49,7 @@ function LinkDeviceContent({ onClose }: { onClose: () => void }) {
 
   useEffect(() => {
     const me = thisDeviceId();
+    androidBridge()?.requestLocalNetworkAccess?.();
     const room = new RoomSocket(roomEndpoint(), pairingRoom(code), me);
     const pairing = new BrowserPairing(code, (to, body) => room.send(to, body), "device");
     const renew = (message?: string) => {
@@ -59,7 +63,7 @@ function LinkDeviceContent({ onClose }: { onClose: () => void }) {
     );
     pairing.on("rejected", () => renew(t("devices.webRejected")));
     pairing.on("exhausted", () => renew(t("devices.webNewCode")));
-    pairing.on("approved", ({ phoneName, extra }) => {
+    pairing.on("approved", ({ phoneId, phoneName, extra }) => {
       if (typeof extra.root !== "string" || !/^[a-f0-9]{64}$/i.test(extra.root)) {
         pairing.complete(false);
         renew(t("devices.joinFailed"));
@@ -77,7 +81,8 @@ function LinkDeviceContent({ onClose }: { onClose: () => void }) {
             // Example cleanup can wait; the new space is already safely kept.
           }
           rejoinSpaceSync();
-          pairing.complete(true);
+          rememberPairing(phoneId, phoneName, extra.device);
+          pairing.complete(true, { device: pairingDevice() });
           toast.success(t("devices.joined", { name: phoneName }));
           close();
         })

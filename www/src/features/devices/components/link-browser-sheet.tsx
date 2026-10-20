@@ -8,14 +8,18 @@ import {
 } from "@notables/sync";
 import { Button, CloseIcon, IconButton, Sheet, toast } from "@phe-rus/hino";
 import { useEffect, useEffectEvent, useState } from "react";
-import { TextInput } from "../../../components/form/form-fields";
-import { t } from "../../../i18n/i18n";
-import { roomEndpoint } from "../../../platform/session/room-endpoint";
-import { thisDeviceId, thisDeviceName } from "../../../platform/session/this-device";
-import { spaceRoot, startSpace } from "../../../platform/space/space-identity";
-import { QrScanner } from "../../invoices/verify/qr-scanner";
+import { TextInput } from "@/components/form/form-fields";
+import { QrScanner } from "@/features/invoices/verify/qr-scanner";
+import { t } from "@/i18n/i18n";
+import { androidBridge } from "@/platform/android-bridge";
+import { roomEndpoint } from "@/platform/session/room-endpoint";
+import { thisDeviceId, thisDeviceName } from "@/platform/session/this-device";
+import { spaceRoot, startSpace } from "@/platform/space/space-identity";
+import { rejoinSpaceSync } from "@/platform/space/space-sync";
 import { addBrowserSession } from "../lib/browser-sessions";
 import { readLinkUrl } from "../lib/link-url";
+import { pairingDevice } from "../lib/pairing-device";
+import { rememberPairing } from "../lib/remember-pairing";
 import { servesBrowsers } from "../lib/serves-browsers";
 import { PairingWords } from "./link-browser-screen";
 
@@ -79,6 +83,7 @@ function LinkBrowserContent({
 
   useEffect(() => {
     if (!target) return;
+    androidBridge()?.requestLocalNetworkAccess?.();
     const room = new RoomSocket(roomEndpoint(), pairingRoom(target.code), thisDeviceId());
     const flow = new PhonePairing(target.code, (to, body) => room.send(to, body), thisDeviceName());
     room.on("message", ({ from, body }) => flow.receive(from, body));
@@ -88,9 +93,12 @@ function LinkBrowserContent({
       setTarget(null);
       setStage({ name: "scan", typing: true, error: t("devices.wrongCode") });
     });
-    flow.on("approved", ({ browserId, sessionKey }) => {
-      if (flow.waitingKind === "device") toast.success(t("devices.deviceLinked"));
-      else {
+    flow.on("approved", ({ browserId, sessionKey, extra }) => {
+      if (flow.waitingKind === "device") {
+        rememberPairing(browserId, t("devices.syncedDevice"), extra.device);
+        rejoinSpaceSync();
+        toast.success(t("devices.deviceLinked"));
+      } else {
         addBrowserSession(browserId, sessionKey);
         toast.success(t("devices.linked"));
       }
@@ -152,7 +160,7 @@ function LinkBrowserContent({
       return;
     }
     setStage({ name: "saving" });
-    pairing.approve({ root: bytesToHex(root) });
+    pairing.approve({ root: bytesToHex(root), device: pairingDevice() });
   };
 
   const submitTyped = () => {

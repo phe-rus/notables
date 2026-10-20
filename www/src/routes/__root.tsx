@@ -9,11 +9,11 @@ import {
 } from "@tanstack/react-router";
 import { MotionConfig } from "motion/react";
 import { Fragment, type ReactNode, useEffect } from "react";
+import { AppUpdateBoundary } from "@/features/updates/components/app-update-boundary";
 import { AppLinkListener } from "../components/app-links/app-link-listener";
 import { SplashScreen } from "../components/splash/splash-screen";
 import { ListeningSession } from "../features/listening/components/listening-session";
 import { appearanceBootScript } from "../features/settings/lib/appearance-boot";
-import { AppUpdateGate } from "../features/updates/components/app-update-gate";
 import { useLanguage } from "../i18n/i18n";
 import { languages } from "../i18n/languages";
 import { startExternalLinks } from "../platform/external-links";
@@ -80,11 +80,11 @@ function RootDocument({ children }: { children: ReactNode }) {
           {/* Recordings and photos stored on this device play from local URLs. */}
           <MediaResolverProvider resolve={resolveMediaUrl}>
             {/* A new language redraws every screen in it. */}
-            <AppUpdateGate>
+            <AppUpdateBoundary>
               <Fragment key={language}>{children}</Fragment>
               {/* Audiobooks keep playing from page to page. */}
               {!widget && !pairing && canOpenLibrary() && <ListeningSession />}
-            </AppUpdateGate>
+            </AppUpdateBoundary>
           </MediaResolverProvider>
           <Toaster />
           <DialogHost />

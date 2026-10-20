@@ -1,5 +1,5 @@
 import { describe, expect, test } from "bun:test";
-import { calculateCell, columnName } from "../../src/features/spreadsheets/lib/formulas";
+import { calculateCell, columnName } from "@/features/spreadsheets/lib/formulas";
 
 describe("budget spreadsheet calculations", () => {
   test("totals ranges, references and nested arithmetic", () => {

@@ -2,10 +2,10 @@ import { DocumentView } from "@notables/pluraliti";
 import { Chip } from "@phe-rus/hino";
 import { Link } from "@tanstack/react-router";
 import { useMemo, useRef } from "react";
-import { AppMark } from "../../../components/brand/app-mark";
-import { stripLeadingTitle } from "../../../lib/documents/strip-leading-title";
-import type { Publication } from "../../../server/publications/publications.service";
-import { noteKindLabels } from "../../library/model/note-kind-labels";
+import { AppMark } from "@/components/brand/app-mark";
+import { noteKindLabels } from "@/features/library/model/note-kind-labels";
+import { stripLeadingTitle } from "@/lib/documents/strip-leading-title";
+import type { Publication } from "@/server/publications/publications.service";
 import { usePublicationEngagement } from "../hooks/use-publication-engagement";
 import { ReactionsBar } from "./reactions-bar";
 

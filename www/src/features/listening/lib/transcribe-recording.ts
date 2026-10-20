@@ -1,8 +1,8 @@
 import { localMediaId } from "@notables/core";
 import { Channel, invoke } from "@tauri-apps/api/core";
-import { ensureModel } from "../../../platform/native-transcription";
-import { isTauri } from "../../../platform/runtime";
-import { LANGUAGE_KEY } from "../../setup/lib/setup-state";
+import { LANGUAGE_KEY } from "@/features/setup/lib/setup-state";
+import { ensureModel } from "@/platform/native-transcription";
+import { isTauri } from "@/platform/runtime";
 import { getTranscriptStore, type TimedPhrase } from "../store/transcript-store";
 
 interface Segment {

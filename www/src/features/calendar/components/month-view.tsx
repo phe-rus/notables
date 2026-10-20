@@ -9,7 +9,7 @@ import {
 } from "@notables/core";
 import { cn } from "@phe-rus/hino";
 import { useLayoutEffect, useMemo, useRef, useState } from "react";
-import { locale, t } from "../../../i18n/i18n";
+import { locale, t } from "@/i18n/i18n";
 import { formatClock } from "../lib/describe-alert";
 import { eventTitle } from "../lib/event-display";
 import { type Holiday, useHolidays } from "../lib/holidays";

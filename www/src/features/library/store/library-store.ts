@@ -3,9 +3,9 @@ import type { Persistence } from "@notables/sync";
 import type { AccentId } from "@phe-rus/hino/tokens";
 import { useSyncExternalStore } from "react";
 import * as Y from "yjs";
-import { t } from "../../../i18n/i18n";
-import { getDeviceId } from "../../../platform/device-identity";
-import { getPersistence } from "../../../platform/storage/document-storage";
+import { t } from "@/i18n/i18n";
+import { getDeviceId } from "@/platform/device-identity";
+import { getPersistence } from "@/platform/storage/document-storage";
 import type { NoteFont } from "../model/note-fonts";
 import type { NotePreviewBlock } from "../model/note-preview";
 

@@ -1,7 +1,7 @@
 import { memo, useEffect, useState } from "react";
-import { useAudiobook } from "../../books/reader/audio/use-audiobook";
-import { useBookContent } from "../../books/reader/use-book-content";
-import { type BookEntry, useBook } from "../../books/store/book-store";
+import { useAudiobook } from "@/features/books/reader/audio/use-audiobook";
+import { useBookContent } from "@/features/books/reader/use-book-content";
+import { type BookEntry, useBook } from "@/features/books/store/book-store";
 import { publishPlayback, useListeningBookId } from "../store/listening-store";
 
 /**

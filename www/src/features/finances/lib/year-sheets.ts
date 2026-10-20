@@ -1,6 +1,6 @@
 import { minorToInput } from "@notables/core";
-import { t } from "../../../i18n/i18n";
-import type { Library } from "../../library/store/library-store";
+import type { Library } from "@/features/library/store/library-store";
+import { t } from "@/i18n/i18n";
 import type { LedgerRow } from "./ledger";
 
 export const FINANCE_FOLDER = "default-finances";

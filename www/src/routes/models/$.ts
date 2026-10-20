@@ -3,7 +3,7 @@ import { createFileRoute } from "@tanstack/react-router";
 async function serve(request: Request, path: string | undefined) {
   const [{ env }, { serveModelFile }] = await Promise.all([
     import("cloudflare:workers"),
-    import("../../server/models/model-files"),
+    import("@/server/models/model-files"),
   ]);
   return serveModelFile(request, env.MEDIA, path ?? "");
 }

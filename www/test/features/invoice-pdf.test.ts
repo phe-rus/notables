@@ -7,7 +7,7 @@ import {
   issuerIdFor,
   verifySeal,
 } from "@notables/core";
-import { buildInvoicePdf, sealFromPdf } from "../../src/features/invoices/export/invoice-pdf";
+import { buildInvoicePdf, sealFromPdf } from "@/features/invoices/export/invoice-pdf";
 
 const invoice: InvoiceDocument = {
   id: "inv",

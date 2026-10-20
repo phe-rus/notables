@@ -1,6 +1,6 @@
 import { Button, haptic, PlusIcon } from "@phe-rus/hino";
 import { motion, useReducedMotion } from "motion/react";
-import { t } from "../../../i18n/i18n";
+import { t } from "@/i18n/i18n";
 import { arrange, moveCardToFront, useCardOrder } from "../store/card-order";
 import { loadWalletPage, openWalletCard, showWallet, useWallet } from "../store/wallet-store";
 import { CardPreviewFace } from "./card-face";

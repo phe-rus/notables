@@ -11,17 +11,17 @@ import {
 } from "@phe-rus/hino";
 import { AnimatePresence, motion } from "motion/react";
 import { useMemo } from "react";
-import { CollapsedSidebarControls } from "../../../components/window/collapsed-sidebar-controls";
-import { t } from "../../../i18n/i18n";
-import { BookCover } from "../../books/components/book-cover";
-import { kindOfBook, kindOfSeries } from "../../books/lib/book-kind";
-import { kindLabel, partCountLabel } from "../../books/model/kind-labels";
-import { type BookEntry, useTrashedBooks } from "../../books/store/book-store";
-import { type SeriesEntry, useSeries } from "../../books/store/series-store";
-import { WorkspaceBackLink } from "../../library/components/workspace-back-link";
-import { noteKindLabels } from "../../library/model/note-kind-labels";
-import { type LibraryEntry, useLibrary } from "../../library/store/library-store";
-import { usePreferences } from "../../settings/store/preferences-store";
+import { CollapsedSidebarControls } from "@/components/window/collapsed-sidebar-controls";
+import { BookCover } from "@/features/books/components/book-cover";
+import { kindOfBook, kindOfSeries } from "@/features/books/lib/book-kind";
+import { kindLabel, partCountLabel } from "@/features/books/model/kind-labels";
+import { type BookEntry, useTrashedBooks } from "@/features/books/store/book-store";
+import { type SeriesEntry, useSeries } from "@/features/books/store/series-store";
+import { WorkspaceBackLink } from "@/features/library/components/workspace-back-link";
+import { noteKindLabels } from "@/features/library/model/note-kind-labels";
+import { type LibraryEntry, useLibrary } from "@/features/library/store/library-store";
+import { usePreferences } from "@/features/settings/store/preferences-store";
+import { t } from "@/i18n/i18n";
 import { binNotes, binSeriesAndBooks } from "../lib/bin-groups";
 import {
   batchItems,

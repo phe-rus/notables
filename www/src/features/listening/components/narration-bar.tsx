@@ -10,7 +10,7 @@ import {
   spring,
 } from "@phe-rus/hino";
 import { motion } from "motion/react";
-import { t } from "../../../i18n/i18n";
+import { t } from "@/i18n/i18n";
 import {
   NARRATION_RATES,
   rateName,

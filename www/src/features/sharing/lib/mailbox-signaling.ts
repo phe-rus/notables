@@ -1,5 +1,6 @@
 import type { Signal, SignalData, Signaling } from "@notables/sync";
-import { pollSignals, postSignal } from "../../../server/signals/signals.functions";
+import { pollSignals, postSignal } from "@/server/signals/signals.functions";
+import { isNegotiationSignal } from "./is-negotiation-signal";
 import { decryptJson, encryptJson, sha256Hex } from "./share-crypto";
 
 const IDLE_POLL = 3000;
@@ -25,7 +26,7 @@ export class MailboxSignaling implements Signaling {
   }
 
   async send(to: string | null, data: SignalData) {
-    this.#busyUntil = Date.now() + BUSY_FOR;
+    if (isNegotiationSignal(data)) this.#busyUntil = Date.now() + BUSY_FOR;
     await postSignal({
       data: {
         room: await this.#room,
@@ -38,31 +39,39 @@ export class MailboxSignaling implements Signaling {
 
   subscribe(onSignal: (signal: Signal) => void): () => void {
     let stopped = false;
+    let polling = false;
     let timer: ReturnType<typeof setTimeout> | undefined;
     const tick = async () => {
+      if (stopped || polling) return;
+      polling = true;
+      timer = undefined;
       try {
         const { signals, cursor } = await pollSignals({
           data: { room: await this.#room, me: this.selfId, after: this.#cursor },
         });
+        if (stopped) return;
         this.#cursor = cursor;
         for (const signal of signals) {
           const data = await decryptJson<SignalData>(this.key, signal.payload);
           // Anything not sealed with our key is noise; ignore it.
           if (data && !stopped) {
-            this.#busyUntil = Date.now() + BUSY_FOR;
+            if (isNegotiationSignal(data)) this.#busyUntil = Date.now() + BUSY_FOR;
             onSignal({ from: signal.sender, data });
           }
         }
       } catch {
         // Offline for now; try again shortly.
+      } finally {
+        polling = false;
+        if (!stopped)
+          timer = setTimeout(tick, Date.now() < this.#busyUntil ? BUSY_POLL : IDLE_POLL);
       }
-      if (!stopped) timer = setTimeout(tick, Date.now() < this.#busyUntil ? BUSY_POLL : IDLE_POLL);
     };
     void tick();
     // Look again straight away when the app comes back to the foreground.
     const onVisible = () => {
-      if (document.visibilityState === "visible" && timer) {
-        clearTimeout(timer);
+      if (document.visibilityState === "visible" && !stopped) {
+        if (timer) clearTimeout(timer);
         void tick();
       }
     };

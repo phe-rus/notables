@@ -18,15 +18,10 @@ import {
 import { useSyncExternalStore } from "react";
 import { roomEndpoint } from "../session/room-endpoint";
 import { thisDeviceId } from "../session/this-device";
+import { knownDevicesKey, spaceDeviceStore } from "./space-device-store";
 import { adoptSpace, deviceKey, spaceRoot } from "./space-identity";
-import {
-  HANDOVER_SUFFIX,
-  handleRoomNotices,
-  knownDevices,
-  knownDevicesKey,
-  markRemoved,
-  rejoinSpaceSync,
-} from "./space-sync";
+import { markRemoved } from "./space-membership";
+import { HANDOVER_SUFFIX, handleRoomNotices, rejoinSpaceSync } from "./space-sync";
 
 /**
  * Removing a device from the space (spec 0005, AC-12). The device that
@@ -150,7 +145,8 @@ async function move(oldRoot: Uint8Array, root: Uint8Array, notice: RotationNotic
 
 /** Other devices that can't receive the new secret, because they never sent a key. */
 export function devicesWithoutKey(removing: string): string[] {
-  return knownDevices()
+  return spaceDeviceStore
+    .getState()
     .filter((device) => device.id !== removing && !device.key)
     .map((device) => device.name);
 }
@@ -160,9 +156,11 @@ export async function removeDevice(id: string): Promise<void> {
   const root = spaceRoot();
   const own = deviceKey();
   if (!root || !own) throw new Error("No space");
-  const stay = knownDevices().flatMap((device) =>
-    device.key && device.id !== id ? [{ id: device.id, key: device.key }] : [],
-  );
+  const stay = spaceDeviceStore
+    .getState()
+    .flatMap((device) =>
+      device.key && device.id !== id ? [{ id: device.id, key: device.key }] : [],
+    );
   const rotation = rotateSpace(root, { id: thisDeviceId(), secret: own.secret }, stay, [id]);
   await move(root, rotation.root, rotation.notice);
 }
@@ -192,7 +190,7 @@ async function received(from: string, body: string) {
   if (!notice || !from.startsWith(notice.by)) return;
   // A device this one already removed can't move it anywhere.
   if (readHandovers().some((item) => item.notice.removed.includes(notice.by))) return;
-  const sender = knownDevices().find((device) => device.id === notice.by)?.key;
+  const sender = spaceDeviceStore.getState().find((device) => device.id === notice.by)?.key;
   const next = acceptRotation(
     notice,
     { id: thisDeviceId(), secret: own.secret },
@@ -210,7 +208,12 @@ export function startSpaceRemoval() {
   } catch {
     removedNotice = null;
   }
-  markRemoved(readHandovers().flatMap((item) => item.notice.removed));
+  const root = spaceRoot();
+  markRemoved(
+    readHandovers()
+      .filter((item) => root && item.notice.to === spaceIdOf(root))
+      .flatMap((item) => item.notice.removed),
+  );
   handleRoomNotices({
     message: (from, body) => void received(from, body).catch(() => {}),
     presence(online) {

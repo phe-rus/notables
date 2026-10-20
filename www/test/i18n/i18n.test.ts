@@ -1,13 +1,13 @@
 import { afterEach, describe, expect, it } from "bun:test";
-import { currentLanguage, setLanguageChoice, t } from "../../src/i18n/i18n";
-import { languages } from "../../src/i18n/languages";
-import { ar } from "../../src/i18n/messages/ar";
-import { en } from "../../src/i18n/messages/en";
-import { es } from "../../src/i18n/messages/es";
-import { fr } from "../../src/i18n/messages/fr";
-import { pt } from "../../src/i18n/messages/pt";
-import { sw } from "../../src/i18n/messages/sw";
-import { zh } from "../../src/i18n/messages/zh";
+import { currentLanguage, setLanguageChoice, t } from "@/i18n/i18n";
+import { languages } from "@/i18n/languages";
+import { ar } from "@/i18n/messages/ar";
+import { en } from "@/i18n/messages/en";
+import { es } from "@/i18n/messages/es";
+import { fr } from "@/i18n/messages/fr";
+import { pt } from "@/i18n/messages/pt";
+import { sw } from "@/i18n/messages/sw";
+import { zh } from "@/i18n/messages/zh";
 
 function keys(node: unknown, prefix = ""): string[] {
   if (typeof node === "string") return [prefix];

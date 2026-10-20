@@ -1,7 +1,7 @@
 import { afterAll, beforeAll, describe, expect, it } from "bun:test";
 import { getPlatformProxy } from "wrangler";
-import { parseRange, resolveRange } from "../../src/server/http/byte-range";
-import { modelKey, serveModelFile } from "../../src/server/models/model-files";
+import { parseRange, resolveRange } from "@/server/http/byte-range";
+import { modelKey, serveModelFile } from "@/server/models/model-files";
 
 describe("byte ranges", () => {
   it("parses the three single range forms", () => {

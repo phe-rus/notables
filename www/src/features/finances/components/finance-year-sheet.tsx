@@ -1,9 +1,9 @@
 import { useMemo } from "react";
 import type * as Y from "yjs";
-import { t } from "../../../i18n/i18n";
-import { useInvoices } from "../../invoices/store/invoice-store";
-import type { LibraryEntry } from "../../library/store/library-store";
-import { SpreadsheetEditor } from "../../spreadsheets/components/spreadsheet-editor";
+import { useInvoices } from "@/features/invoices/store/invoice-store";
+import type { LibraryEntry } from "@/features/library/store/library-store";
+import { SpreadsheetEditor } from "@/features/spreadsheets/components/spreadsheet-editor";
+import { t } from "@/i18n/i18n";
 import { financeLedger, ledgerCsv } from "../lib/ledger";
 import { ledgerCells } from "../lib/year-sheets";
 import { useTransactions } from "../store/finance-store";

@@ -1,7 +1,7 @@
 import { composeDocumentFromMarkdown } from "@notables/pluraliti";
-import { getBookStore } from "../../books/store/book-store";
-import { writeNote } from "../../library/lib/write-note";
-import { getLibrary } from "../../library/store/library-store";
+import { getBookStore } from "@/features/books/store/book-store";
+import { writeNote } from "@/features/library/lib/write-note";
+import { getLibrary } from "@/features/library/store/library-store";
 import { welcomeBook, welcomeNotes } from "../content/welcome-library";
 import { type Examples, recordExamples } from "./examples";
 import { seedWelcomeShelf } from "./seed-welcome-shelf";

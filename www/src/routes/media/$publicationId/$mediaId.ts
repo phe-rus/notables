@@ -11,8 +11,8 @@ export const Route = createFileRoute("/media/$publicationId/$mediaId")({
         }
         const [{ env }, { mediaKey }, { serveR2File }] = await Promise.all([
           import("cloudflare:workers"),
-          import("../../../server/publications/publication-media"),
-          import("../../../server/http/r2-file"),
+          import("@/server/publications/publication-media"),
+          import("@/server/http/r2-file"),
         ]);
         return serveR2File(request, env.MEDIA, mediaKey(params.publicationId, params.mediaId));
       },

@@ -1,5 +1,5 @@
 import { localMediaId } from "@notables/core";
-import { loadMedia } from "../../../platform/storage/media-store";
+import { loadMedia } from "@/platform/storage/media-store";
 
 const EXTENSIONS: Record<string, string> = {
   "image/png": "png",

@@ -30,15 +30,15 @@ import {
   useRef,
   useState,
 } from "react";
-import { CollapsedSidebarControls } from "../../../components/window/collapsed-sidebar-controls";
-import { t } from "../../../i18n/i18n";
-import { BookShelf, useShelfBooks } from "../../books/components/book-shelf";
-import { noteMenu } from "../../notes/actions/note-menu";
-import { ExamplesNotice } from "../../onboarding/components/examples-notice";
-import { search } from "../../search/lib/rank";
-import { useSearchableNotes } from "../../search/lib/use-searchable-notes";
-import type { ListPreferences } from "../../settings/model/preferences";
-import { updatePreferences, usePreferences } from "../../settings/store/preferences-store";
+import { CollapsedSidebarControls } from "@/components/window/collapsed-sidebar-controls";
+import { BookShelf, useShelfBooks } from "@/features/books/components/book-shelf";
+import { noteMenu } from "@/features/notes/actions/note-menu";
+import { ExamplesNotice } from "@/features/onboarding/components/examples-notice";
+import { search } from "@/features/search/lib/rank";
+import { useSearchableNotes } from "@/features/search/lib/use-searchable-notes";
+import type { ListPreferences } from "@/features/settings/model/preferences";
+import { updatePreferences, usePreferences } from "@/features/settings/store/preferences-store";
+import { t } from "@/i18n/i18n";
 import { bucket } from "../lib/date-format";
 import { useHoldToSelect } from "../lib/use-hold-to-select";
 import { type GroupId, groupOf, type View } from "../model/library-views";

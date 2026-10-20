@@ -1,7 +1,7 @@
 import { createId } from "@notables/core";
 import { useSyncExternalStore } from "react";
 import type * as Y from "yjs";
-import { getLibrary } from "../../library/store/library-store";
+import { getLibrary } from "@/features/library/store/library-store";
 import type { SeriesEntry } from "./series-store";
 
 /** Series of any kinds from one world: the One Piece manga, novels and audiobooks. */

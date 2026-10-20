@@ -1,5 +1,5 @@
-import { t } from "../../../i18n/i18n";
-import type { BooksShelf } from "../../settings/model/preferences";
+import type { BooksShelf } from "@/features/settings/model/preferences";
+import { t } from "@/i18n/i18n";
 import type { MediaKind } from "./media-kind";
 
 /** "Book", "Comic", "Manga" or "Audiobook". */

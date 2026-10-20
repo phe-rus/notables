@@ -1,12 +1,8 @@
 import { expect, test } from "bun:test";
 import { emptyParty, type InvoiceDocument } from "@notables/core";
 import * as Y from "yjs";
-import {
-  financeLedger,
-  ledgerCsv,
-  suggestTransaction,
-} from "../../src/features/finances/lib/ledger";
-import { FinanceStore } from "../../src/features/finances/store/finance-store";
+import { financeLedger, ledgerCsv, suggestTransaction } from "@/features/finances/lib/ledger";
+import { FinanceStore } from "@/features/finances/store/finance-store";
 
 const draft = {
   direction: "expense" as const,

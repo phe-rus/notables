@@ -1,4 +1,4 @@
-import type { DevicePlatform } from "../../../platform/device-platform";
+import type { DevicePlatform } from "@/platform/device-platform";
 
 /** Why the microphone couldn't be used. */
 export type MicrophoneProblem = "denied" | "missing" | "busy";

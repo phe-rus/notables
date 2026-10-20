@@ -1,10 +1,10 @@
 import { LabeledContent, Picker, Section, Toggle, toast } from "@phe-rus/hino";
 import { Link } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
-import { t } from "../../../../i18n/i18n";
-import { isTauri } from "../../../../platform/runtime";
-import { withWalletAuthentication } from "../../../wallet/lib/wallet-auth";
-import { walletService } from "../../../wallet/lib/wallet-service";
+import { withWalletAuthentication } from "@/features/wallet/lib/wallet-auth";
+import { walletService } from "@/features/wallet/lib/wallet-service";
+import { t } from "@/i18n/i18n";
+import { isTauri } from "@/platform/runtime";
 
 /**
  * The Lock (spec 0004) and the secret places it protects. Until its native

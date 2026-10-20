@@ -1,6 +1,6 @@
 import { Button, cn, toast } from "@phe-rus/hino";
 import { useEffect, useRef, useState } from "react";
-import { t } from "../../../i18n/i18n";
+import { t } from "@/i18n/i18n";
 import { canTranscribeRecordings, transcribeRecording } from "../lib/transcribe-recording";
 import { phraseAt, useTimedTranscript } from "../store/transcript-store";
 

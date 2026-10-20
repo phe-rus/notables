@@ -11,11 +11,11 @@ import {
 } from "@phe-rus/hino";
 import { AnimatePresence, LayoutGroup, motion, useReducedMotion } from "motion/react";
 import { useEffect } from "react";
-import { setDrawerOpen } from "../../../components/layout/drawer-store";
-import { CollapsedSidebarControls } from "../../../components/window/collapsed-sidebar-controls";
-import { t } from "../../../i18n/i18n";
-import { isTauri } from "../../../platform/runtime";
-import { usePreferences } from "../../settings/store/preferences-store";
+import { setDrawerOpen } from "@/components/layout/drawer-store";
+import { CollapsedSidebarControls } from "@/components/window/collapsed-sidebar-controls";
+import { usePreferences } from "@/features/settings/store/preferences-store";
+import { t } from "@/i18n/i18n";
+import { isTauri } from "@/platform/runtime";
 import {
   deleteWalletCard,
   lockWallet,

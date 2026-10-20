@@ -1,10 +1,10 @@
 import type { NoteKind } from "@notables/core";
 import { cn, PlusIcon, SearchField } from "@phe-rus/hino";
 import { useDeferredValue, useState } from "react";
-import { t } from "../../../../i18n/i18n";
-import { noteKindPlural } from "../../../library/model/note-kind-labels";
-import { isListedNote, useLibrary } from "../../../library/store/library-store";
-import { type BookEntry, getBookStore } from "../../store/book-store";
+import { type BookEntry, getBookStore } from "@/features/books/store/book-store";
+import { noteKindPlural } from "@/features/library/model/note-kind-labels";
+import { isListedNote, useLibrary } from "@/features/library/store/library-store";
+import { t } from "@/i18n/i18n";
 
 /** Notes of the item's kind that aren't in it yet, to add as entries. */
 export function ChapterPicker({ book, kind }: { book: BookEntry; kind: NoteKind }) {

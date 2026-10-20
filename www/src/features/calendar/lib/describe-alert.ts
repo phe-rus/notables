@@ -1,5 +1,5 @@
 import { ageOn, type DueAlert, localDay } from "@notables/core";
-import { locale, t } from "../../../i18n/i18n";
+import { locale, t } from "@/i18n/i18n";
 
 const timeFormat = () => new Intl.DateTimeFormat(locale(), { hour: "numeric", minute: "2-digit" });
 const dayFormat = () =>

@@ -7,7 +7,7 @@ import {
   rgb,
   StandardFonts,
 } from "pdf-lib";
-import { directionOf } from "../../model/media-kind";
+import { directionOf } from "@/features/books/model/media-kind";
 import { type BookMaterial, isDrawnBook, materialPages } from "../book-material";
 import type { Block, Inline } from "../document-blocks";
 import { inkToPng } from "../ink-image";

@@ -1,5 +1,5 @@
 import { describe, expect, it } from "bun:test";
-import { collectLocalMedia } from "../../src/lib/documents/collect-local-media";
+import { collectLocalMedia } from "@/lib/documents/collect-local-media";
 
 describe("collectLocalMedia", () => {
   it("finds photos, recordings and both files of a drawing", () => {

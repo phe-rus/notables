@@ -1,6 +1,6 @@
 import type { z } from "zod";
-import { t } from "../../../i18n/i18n";
-import { isTauri } from "../../../platform/runtime";
+import { t } from "@/i18n/i18n";
+import { isTauri } from "@/platform/runtime";
 import {
   type ListRequest,
   type SaveRequest,

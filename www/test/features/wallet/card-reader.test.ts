@@ -3,8 +3,8 @@ import {
   type CardReading,
   createCardStability,
   hasCardDetails,
-} from "../../../src/features/wallet/lib/card-reader";
-import { suggestCardFields } from "../../../src/features/wallet/lib/card-recognition";
+} from "@/features/wallet/lib/card-reader";
+import { suggestCardFields } from "@/features/wallet/lib/card-recognition";
 
 const reading = (text: string, confidence = 95): CardReading => ({
   text,
@@ -47,8 +47,8 @@ describe("automatic wallet capture", () => {
 });
 
 it("prefers a useful rotated reading over confident unrelated text", async () => {
-  const { cardReadingStrength } = await import("../../../src/features/wallet/lib/card-reader");
-  const { suggestCardFields } = await import("../../../src/features/wallet/lib/card-fields");
+  const { cardReadingStrength } = await import("@/features/wallet/lib/card-reader");
+  const { suggestCardFields } = await import("@/features/wallet/lib/card-fields");
   const reading = (text: string, confidence: number) => ({
     text,
     confidence,

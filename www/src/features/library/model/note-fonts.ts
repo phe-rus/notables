@@ -1,4 +1,4 @@
-import { t } from "../../../i18n/i18n";
+import { t } from "@/i18n/i18n";
 /** How a note's text is set: the app's type, a book serif, or a hand. */
 export type NoteFont = "default" | "serif" | "script" | "print";
 

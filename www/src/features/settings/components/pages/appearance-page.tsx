@@ -1,21 +1,16 @@
 import { LabeledContent, Section, SwatchPicker } from "@phe-rus/hino";
 import { accents } from "@phe-rus/hino/tokens";
-import { PickerInput } from "../../../../components/form/form-fields";
-import {
-  type LanguageChoice,
-  setLanguageChoice,
-  t,
-  useLanguageChoice,
-} from "../../../../i18n/i18n";
-import { languages } from "../../../../i18n/languages";
-import { isTauri } from "../../../../platform/runtime";
+import { PickerInput } from "@/components/form/form-fields";
 import {
   type Preferences,
   type TextSize,
   type ThemePreference,
   textSizes,
-} from "../../model/preferences";
-import { updatePreferences, usePreferences } from "../../store/preferences-store";
+} from "@/features/settings/model/preferences";
+import { updatePreferences, usePreferences } from "@/features/settings/store/preferences-store";
+import { type LanguageChoice, setLanguageChoice, t, useLanguageChoice } from "@/i18n/i18n";
+import { languages } from "@/i18n/languages";
+import { isTauri } from "@/platform/runtime";
 
 const set = (change: Partial<Preferences>) => updatePreferences((p) => ({ ...p, ...change }));
 

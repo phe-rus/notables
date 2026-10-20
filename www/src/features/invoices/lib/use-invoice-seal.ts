@@ -1,6 +1,6 @@
 import { contentHash, createSeal, type InvoiceDocument, issuerIdFor } from "@notables/core";
 import { useEffect, useState } from "react";
-import { getSigningKey } from "../../../platform/signing-key";
+import { getSigningKey } from "@/platform/signing-key";
 import { verifyUrl } from "./verify-url";
 
 /**

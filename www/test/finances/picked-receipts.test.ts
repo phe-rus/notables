@@ -1,5 +1,5 @@
 import { expect, test } from "bun:test";
-import { copyPickedReceipts } from "../../src/features/finances/lib/picked-receipts";
+import { copyPickedReceipts } from "@/features/finances/lib/picked-receipts";
 
 test("picker images remain readable after the temporary grant is released", async () => {
   let released = false;

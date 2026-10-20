@@ -1,7 +1,7 @@
 import { describe, expect, it } from "bun:test";
-import type { BookEntry } from "../../../src/features/books/store/book-store";
-import type { SeriesEntry } from "../../../src/features/books/store/series-store";
-import { binSeriesAndBooks } from "../../../src/features/trash/lib/bin-groups";
+import type { BookEntry } from "@/features/books/store/book-store";
+import type { SeriesEntry } from "@/features/books/store/series-store";
+import { binSeriesAndBooks } from "@/features/trash/lib/bin-groups";
 
 const book = (id: string, fields: Partial<BookEntry> = {}): BookEntry => ({
   id,

@@ -1,4 +1,4 @@
-import { publicUrl } from "../../../platform/public-url";
+import { publicUrl } from "@/platform/public-url";
 
 /**
  * The link inside a seal's QR code. The seal rides in the fragment, which

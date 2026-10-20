@@ -8,7 +8,7 @@ import {
   WarningIcon,
 } from "@phe-rus/hino";
 import type { ReactNode } from "react";
-import { t } from "../../../i18n/i18n";
+import { t } from "@/i18n/i18n";
 
 export const kindIcons: Record<CalendarEventKind, ReactNode> = {
   plan: <CalendarIcon size={14} />,

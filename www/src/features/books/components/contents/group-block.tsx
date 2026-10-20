@@ -9,10 +9,10 @@ import {
 import { Link } from "@tanstack/react-router";
 import { AnimatePresence, motion } from "motion/react";
 import { type ReactNode, useId, useState } from "react";
-import { t } from "../../../../i18n/i18n";
-import type { LibraryEntry } from "../../../library/store/library-store";
-import { PART_TITLE_MAX, renamePart } from "../../actions/parts";
-import type { BookEntry, Part } from "../../store/book-store";
+import { PART_TITLE_MAX, renamePart } from "@/features/books/actions/parts";
+import type { BookEntry, Part } from "@/features/books/store/book-store";
+import type { LibraryEntry } from "@/features/library/store/library-store";
+import { t } from "@/i18n/i18n";
 import { RowButton } from "./row-button";
 
 /**

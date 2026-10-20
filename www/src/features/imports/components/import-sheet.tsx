@@ -13,8 +13,8 @@ import {
 import { useNavigate } from "@tanstack/react-router";
 import { motion } from "motion/react";
 import { type DragEvent, type ReactNode, useRef, useState } from "react";
-import { locale, t } from "../../../i18n/i18n";
-import { kindLabel, partCountLabel } from "../../books/model/kind-labels";
+import { kindLabel, partCountLabel } from "@/features/books/model/kind-labels";
+import { locale, t } from "@/i18n/i18n";
 import {
   buildImportPlan,
   choosesDrawnKind,

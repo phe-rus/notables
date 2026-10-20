@@ -1,6 +1,6 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { WorkspaceScreen } from "../../features/library/components/workspace-screen";
-import { t } from "../../i18n/i18n";
+import { WorkspaceScreen } from "@/features/library/components/workspace-screen";
+import { t } from "@/i18n/i18n";
 
 export const Route = createFileRoute("/_app/")({
   component: NoNoteSelected,

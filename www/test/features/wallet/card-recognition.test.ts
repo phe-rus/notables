@@ -1,5 +1,5 @@
 import { describe, expect, it } from "bun:test";
-import { suggestCardFields } from "../../../src/features/wallet/lib/card-recognition";
+import { suggestCardFields } from "@/features/wallet/lib/card-recognition";
 
 describe("wallet recognition suggestions", () => {
   it("reads labeled membership and national identity numbers", () => {

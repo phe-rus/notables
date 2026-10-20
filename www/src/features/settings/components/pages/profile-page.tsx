@@ -1,7 +1,7 @@
 import { Section, TextField } from "@phe-rus/hino";
-import { t } from "../../../../i18n/i18n";
-import { setAuthorName, useAuthorName } from "../../../../platform/author-preferences";
-import { SpaceIdSection } from "../../../devices/components/space-id-section";
+import { SpaceIdSection } from "@/features/devices/components/space-id-section";
+import { t } from "@/i18n/i18n";
+import { setAuthorName, useAuthorName } from "@/platform/author-preferences";
 
 /** Your name, as it appears on what you write and share. */
 export function ProfilePage() {

@@ -1,5 +1,5 @@
 import { emptyParty, type InvoiceParty, type InvoiceStyle } from "@notables/core";
-import { syncedSetting } from "../../../platform/settings/synced-settings";
+import { syncedSetting } from "@/platform/settings/synced-settings";
 
 /**
  * What new documents start with: the issuer's own details, last currency,

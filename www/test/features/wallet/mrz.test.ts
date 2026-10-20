@@ -1,5 +1,5 @@
 import { describe, expect, it } from "bun:test";
-import { checkDigit, readMrz } from "../../../src/features/wallet/lib/mrz";
+import { checkDigit, readMrz } from "@/features/wallet/lib/mrz";
 
 // The specimen documents published in ICAO 9303.
 const passport = [

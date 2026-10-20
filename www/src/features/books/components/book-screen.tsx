@@ -1,9 +1,9 @@
 import { ChevronLeftIcon, IconButton, TrashIcon } from "@phe-rus/hino";
 import { Link, useNavigate } from "@tanstack/react-router";
 import { type ReactNode, useEffect, useMemo } from "react";
-import { t } from "../../../i18n/i18n";
-import { type LibraryEntry, useLibrary } from "../../library/store/library-store";
-import { moveBooksToBin } from "../../trash/lib/recycle-bin";
+import { type LibraryEntry, useLibrary } from "@/features/library/store/library-store";
+import { moveBooksToBin } from "@/features/trash/lib/recycle-bin";
+import { t } from "@/i18n/i18n";
 import { syncBookFormat } from "../actions/sync-book-format";
 import { type BookEntry, getBookStore, useBook } from "../store/book-store";
 import { BookCover } from "./book-cover";

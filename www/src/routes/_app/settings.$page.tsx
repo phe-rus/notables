@@ -1,7 +1,7 @@
 import { createFileRoute, redirect } from "@tanstack/react-router";
-import { setDrawerOpen } from "../../components/layout/drawer-store";
-import { isSettingsPageId } from "../../features/settings/components/settings-catalog";
-import { SettingsScreen } from "../../features/settings/components/settings-screen";
+import { setDrawerOpen } from "@/components/layout/drawer-store";
+import { isSettingsPageId } from "@/features/settings/components/settings-catalog";
+import { SettingsScreen } from "@/features/settings/components/settings-screen";
 
 export const Route = createFileRoute("/_app/settings/$page")({
   // An unknown page (an old link) lands on the Settings list.

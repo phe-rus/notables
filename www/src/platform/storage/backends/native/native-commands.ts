@@ -1,5 +1,5 @@
 import { convertFileSrc, invoke } from "@tauri-apps/api/core";
-import { devicePlatform } from "../../../device-platform";
+import { devicePlatform } from "@/platform/device-platform";
 
 /**
  * Typed calls into the Rust storage module (`src-tauri/src/storage`).

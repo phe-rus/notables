@@ -1,13 +1,13 @@
 import type { InvoiceDocument } from "@notables/core";
 import { toast } from "@phe-rus/hino";
 import { useMemo } from "react";
-import { t } from "../../../i18n/i18n";
-import { type BookEntry, getBookStore, useBooks } from "../../books/store/book-store";
-import { getInvoiceStore, useInvoices } from "../../invoices/store/invoice-store";
-import { getLibrary, type LibraryEntry, useLibrary } from "../../library/store/library-store";
-import { deleteNote } from "../../notes/actions/delete-note";
-import { moveAllToBin } from "../../trash/lib/recycle-bin";
-import { RETENTION_DAYS } from "../../trash/lib/retention";
+import { type BookEntry, getBookStore, useBooks } from "@/features/books/store/book-store";
+import { getInvoiceStore, useInvoices } from "@/features/invoices/store/invoice-store";
+import { getLibrary, type LibraryEntry, useLibrary } from "@/features/library/store/library-store";
+import { deleteNote } from "@/features/notes/actions/delete-note";
+import { moveAllToBin } from "@/features/trash/lib/recycle-bin";
+import { RETENTION_DAYS } from "@/features/trash/lib/retention";
+import { t } from "@/i18n/i18n";
 import { welcomeBook, welcomeNotes } from "../content/welcome-library";
 import { smallHours, welcomeArticle, welcomeInvoice } from "../content/welcome-shelf";
 

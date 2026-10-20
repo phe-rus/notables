@@ -27,6 +27,13 @@ Code is organised by feature: `www/src/features/<feature>/{components,lib,store,
 Shared app components are in `www/src/components`, platform glue in
 `www/src/platform`, translations in `www/src/i18n`.
 
+App imports crossing feature boundaries use `@/`; short relative imports stay
+inside their owning module. Feature contracts and component props live in an
+owned `types.ts`, using exported type aliases. Use Hino controls where available;
+hidden file inputs and specialised capture primitives are legitimate exceptions.
+Keep private helpers together when they serve one responsibility. Avoid global
+barrels and generic utility dumping grounds.
+
 ## House rules (from the owner)
 
 - Commit and push straight to `main`, with clear, professional messages.
@@ -114,6 +121,26 @@ Gotchas learned the hard way:
   launches exit silently (single instance); `pkill -f target/debug/notables`.
 
 ## Status (October 2026)
+
+- Pairing regression (20 Oct): reproduced on TECNO 0.2.12, which reports success
+  but lists no peer, including after restart. Regression tests also reproduce
+  historical removals blocking devices after changing spaces. Membership now
+  persists during authenticated pairing on both sides, separate from online
+  presence. Removal guards are scoped per space; explicit reapproval persists.
+  Android 17 LAN permission is requested from pairing, with reconnection after
+  grant. Existing loopback media service stays private. See
+  [the pairing checkpoint](docs/reviews/2026-10-20-pairing-membership.md).
+  Physical acceptance of this new build remains pending.
+
+- Maintainability cleanup (20 Oct): audit and staged plan are in
+  [docs/MAINTENANCE.md](docs/MAINTENANCE.md). Deep app imports now use `@/`.
+  Update policy, runtime store, hooks and Hino presentation are separate modules
+  under `features/updates`; contracts are in `model/types.ts`. Shared toolbar
+  buttons use Hino IconButton. Sharing announcements no longer prolong fast
+  mailbox polling, foreground events cannot overlap polls, and the runner owns
+  session cleanup. Drizzle, broader Hino adoption and Rust domain splits remain
+  queued. Release CI uses one vX.Y.Z tag for mobile and desktop packages; desktop
+  installers collect in one draft release. No desktop functional testing today.
 
 - Update awareness (20 Oct): packaged release apps check public release policy,
   warn before a seven day deadline, then replace the app with an update screen.
@@ -607,14 +634,18 @@ owner's choice: check locally before pushing, as above. Builds start only
 from a tag or by hand:
 
 ```sh
-git tag v0.2.0 && git push origin v0.2.0          # Google Play and TestFlight
-git tag android-v0.2.0 && git push origin android-v0.2.0   # Play only
-git tag ios-v0.2.0 && git push origin ios-v0.2.0           # TestFlight only
-gh workflow run ci.yml                            # the web checks, on demand
+git tag v0.2.13 && git push origin v0.2.13  # all platforms, one version
+gh workflow run release.yml -f platforms=desktop -f version=0.2.13
+gh workflow run ci.yml                    # web checks, on demand
 ```
 
 The tag gives the version; the run number gives the build number, so every
-upload is newer than the last.
+upload is newer than the last. Manual release runs require an explicit version
+and can select all, mobile, desktop, Android or iOS. Use only vX.Y.Z release tags;
+legacy platform tags are historical. Linux x64, Windows x64 and macOS arm64/x64
+installers collect in one draft GitHub release with checksums. These desktop
+builds still need functional acceptance and production signing/notarisation.
+APT distribution is a later signed Pherus repository, not merely hosted .deb files.
 
 Workflows (9 October): actions on Node 24 (checkout v7, setup-node v7,
 setup-java v6, upload-artifact v7), Linux jobs pinned to `ubuntu-24.04`
@@ -628,6 +659,15 @@ and France: "No" until the French declaration is filed. Never set
 TestFlight refuse the upload; each build asks in TestFlight instead.
 
 ## Next
+
+- Verify the new pairing build on iPhone, TECNO and ChromeOS before calling
+  connection recovery complete. The membership/removal regressions pass locally;
+  physical bidirectional sync and same-network continuation still need checking.
+
+- Continue the first unfinished stage in [docs/MAINTENANCE.md](docs/MAINTENANCE.md):
+  verify request counts on devices, introduce typed Drizzle D1 repositories,
+  then clean Wallet and Finances by domain. Keep the accepted local-first storage
+  and cryptographic formats. Desktop CI packaging is build-only for now.
 
 - Publish the update-aware native build after local verification, then test
   its store links and iOS receipt detection. Leave release policies disabled

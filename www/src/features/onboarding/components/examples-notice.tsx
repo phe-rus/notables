@@ -1,6 +1,6 @@
 import { Button, CloseIcon, confirmDialog, IconButton } from "@phe-rus/hino";
 import { useState } from "react";
-import { t } from "../../../i18n/i18n";
+import { t } from "@/i18n/i18n";
 import { removeExamples, useExampleCount } from "../lib/examples";
 
 /** Set once the person chooses to keep the examples, on this device. */

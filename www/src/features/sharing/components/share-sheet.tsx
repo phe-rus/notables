@@ -12,12 +12,12 @@ import {
   toast,
 } from "@phe-rus/hino";
 import { useEffect, useState } from "react";
-import { t } from "../../../i18n/i18n";
-import { useAuthorName } from "../../../platform/author-preferences";
-import { inBrowserSession } from "../../../platform/session/browser-session-store";
-import { phoneConnection } from "../../../platform/session/phone-connection";
-import { SealCode } from "../../invoices/components/seal-code";
-import type { LibraryEntry } from "../../library/store/library-store";
+import { SealCode } from "@/features/invoices/components/seal-code";
+import type { LibraryEntry } from "@/features/library/store/library-store";
+import { t } from "@/i18n/i18n";
+import { useAuthorName } from "@/platform/author-preferences";
+import { inBrowserSession } from "@/platform/session/browser-session-store";
+import { phoneConnection } from "@/platform/session/phone-connection";
 import { handOver } from "../lib/hand-over";
 import {
   invitePerson,

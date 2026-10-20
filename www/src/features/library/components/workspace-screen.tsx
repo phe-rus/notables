@@ -22,9 +22,9 @@ import { Sheet } from "@phe-rus/hino/sheet";
 import { type AccentId, accents } from "@phe-rus/hino/tokens";
 import { Link } from "@tanstack/react-router";
 import { useState } from "react";
-import { setDrawerOpen } from "../../../components/layout/drawer-store";
-import { t } from "../../../i18n/i18n";
-import { inBrowserSession } from "../../../platform/session/browser-session-store";
+import { setDrawerOpen } from "@/components/layout/drawer-store";
+import { t } from "@/i18n/i18n";
+import { inBrowserSession } from "@/platform/session/browser-session-store";
 import { deleteFolder } from "../lib/delete-folder";
 import { folderView } from "../model/library-views";
 import {

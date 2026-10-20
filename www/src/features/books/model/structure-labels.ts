@@ -1,4 +1,4 @@
-import { t } from "../../../i18n/i18n";
+import { t } from "@/i18n/i18n";
 import type { BookEntry } from "../store/book-store";
 import type { MediaKind } from "./media-kind";
 

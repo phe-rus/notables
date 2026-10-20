@@ -1,4 +1,4 @@
-import type { MediaKind } from "../../books/model/media-kind";
+import type { MediaKind } from "@/features/books/model/media-kind";
 import type { PlannedSeries } from "./import-plan";
 
 /** What an import needs to know about the library: its live series. */

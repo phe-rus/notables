@@ -1,11 +1,11 @@
 import { ChevronLeftIcon, ChevronRightIcon, cn, SidebarIcon } from "@phe-rus/hino";
 import { useRouter } from "@tanstack/react-router";
-import { AppMark } from "../../../components/brand/app-mark";
-import { ToolbarButton } from "../../../components/layout/toolbar-button";
-import { WindowControls } from "../../../components/window/window-controls";
-import { t } from "../../../i18n/i18n";
-import { windowChrome } from "../../../platform/window-chrome";
-import { toggleSidebarCollapsed } from "../../settings/store/preferences-store";
+import { AppMark } from "@/components/brand/app-mark";
+import { ToolbarButton } from "@/components/layout/toolbar-button";
+import { WindowControls } from "@/components/window/window-controls";
+import { toggleSidebarCollapsed } from "@/features/settings/store/preferences-store";
+import { t } from "@/i18n/i18n";
+import { windowChrome } from "@/platform/window-chrome";
 
 /** Window controls, then sidebar, back and forward buttons. */
 export function SidebarTopBar() {

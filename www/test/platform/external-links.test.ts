@@ -1,5 +1,5 @@
 import { expect, test } from "bun:test";
-import { externalDestination } from "../../src/platform/external-links";
+import { externalDestination } from "@/platform/external-links";
 
 test("native routing keeps internal links and hands external links to their handlers", () => {
   const origin = "http://tauri.localhost";

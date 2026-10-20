@@ -1,7 +1,7 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { InvoiceScreen } from "../../../features/invoices/components/invoice-screen";
-import { useInvoice } from "../../../features/invoices/store/invoice-store";
-import { useLibraryReady } from "../../../features/library/store/library-store";
+import { InvoiceScreen } from "@/features/invoices/components/invoice-screen";
+import { useInvoice } from "@/features/invoices/store/invoice-store";
+import { useLibraryReady } from "@/features/library/store/library-store";
 
 export const Route = createFileRoute("/_app/invoices/$invoiceId")({
   component: InvoiceRoute,

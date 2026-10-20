@@ -1,17 +1,14 @@
 import { describe, expect, it } from "bun:test";
-import { comicInfoHint, spineIsRtl } from "../../../src/features/imports/importers/kind-hints";
+import { comicInfoHint, spineIsRtl } from "@/features/imports/importers/kind-hints";
 import {
   buildImportPlan,
   type ContentHint,
   type ImportFile,
   withContentHints,
   withSeriesKind,
-} from "../../../src/features/imports/lib/import-plan";
-import {
-  type LibrarySnapshot,
-  seriesMatchKey,
-} from "../../../src/features/imports/lib/import-targets";
-import { partFolder } from "../../../src/features/imports/lib/part-names";
+} from "@/features/imports/lib/import-plan";
+import { type LibrarySnapshot, seriesMatchKey } from "@/features/imports/lib/import-targets";
+import { partFolder } from "@/features/imports/lib/part-names";
 
 const file = (path: string): ImportFile => ({
   path,

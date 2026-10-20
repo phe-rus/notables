@@ -10,8 +10,8 @@ import {
 } from "@phe-rus/hino";
 import { type RefObject, useCallback, useId, useRef, useState } from "react";
 import type * as Y from "yjs";
-import { getAuthorName } from "../../../platform/author-preferences";
-import type { LibraryEntry } from "../../library/store/library-store";
+import type { LibraryEntry } from "@/features/library/store/library-store";
+import { getAuthorName } from "@/platform/author-preferences";
 import { useNotePublication } from "../hooks/use-note-publication";
 
 /**

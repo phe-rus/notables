@@ -1,7 +1,7 @@
 import { invoke } from "@tauri-apps/api/core";
 import { useEffect, useState } from "react";
-import { locale } from "../../../i18n/i18n";
-import { isTauri } from "../../../platform/runtime";
+import { locale } from "@/i18n/i18n";
+import { isTauri } from "@/platform/runtime";
 
 /** A model pack's state on this device (spec 0001). */
 export type PackState =

@@ -1,9 +1,9 @@
 import { useEffect, useMemo, useState } from "react";
-import { inBrowserSession } from "../../../platform/session/browser-session-store";
-import { phoneConnection } from "../../../platform/session/phone-connection";
-import { activeMembers } from "../../sharing/lib/share-members";
-import { sessionFor, useShareSessionsVersion } from "../../sharing/lib/share-sessions";
-import { useShares } from "../../sharing/store/share-store";
+import { activeMembers } from "@/features/sharing/lib/share-members";
+import { sessionFor, useShareSessionsVersion } from "@/features/sharing/lib/share-sessions";
+import { useShares } from "@/features/sharing/store/share-store";
+import { inBrowserSession } from "@/platform/session/browser-session-store";
+import { phoneConnection } from "@/platform/session/phone-connection";
 import { gatherPeople, PeopleSnapshot, type Person, type ShareSnapshot } from "../model/people";
 import { markSeen } from "../store/last-seen-store";
 
