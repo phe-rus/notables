@@ -592,6 +592,7 @@ export const en = {
     whileClosed: "While Notables was closed",
   },
   calendar: {
+    calendars: "Calendars",
     allYears: "Years",
     related: "Related to",
     openWriting: "Open writing",

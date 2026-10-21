@@ -14,6 +14,7 @@ import {
 } from "@phe-rus/hino";
 import type { useNavigate } from "@tanstack/react-router";
 import { createElement } from "react";
+import { isGeneratedLedger } from "@/features/library/model/generated-entry";
 import { noteFontLabels, noteFonts } from "@/features/library/model/note-fonts";
 import { noteKindIcons } from "@/features/library/model/note-kind-icons";
 import { noteKindLabels } from "@/features/library/model/note-kind-labels";
@@ -177,6 +178,7 @@ export function noteMenu(
       label: t("common.delete"),
       icon: createElement(TrashIcon, { size: 18 }),
       destructive: true,
+      disabled: isGeneratedLedger(entry),
       onSelect: () => moveNotesToBin([entry]),
     },
   ];

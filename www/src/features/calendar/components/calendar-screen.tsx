@@ -11,13 +11,18 @@ import {
   weekday,
 } from "@notables/core";
 import {
+  CalendarIcon,
+  ChaptersIcon,
   ChevronLeftIcon,
   ChevronRightIcon,
   cn,
   IconButton,
+  LayoutIcon,
+  MoreIcon,
   openMenu,
   PlusIcon,
   SidebarIcon,
+  SparkleIcon,
   spring,
   useMediaQuery,
 } from "@phe-rus/hino";
@@ -25,6 +30,7 @@ import { Button } from "@phe-rus/hino/button";
 import { useNavigate } from "@tanstack/react-router";
 import { motion, useReducedMotion } from "motion/react";
 import { useCallback, useEffect, useMemo, useState } from "react";
+import { FloatingSearchToolbar } from "@/components/navigation/floating-search-toolbar";
 import { CollapsedSidebarControls } from "@/components/window/collapsed-sidebar-controls";
 import { useHolidays } from "@/features/calendar/lib/holidays";
 import { calendarDepth, outerCalendarView } from "@/features/calendar/model/calendar-views";
@@ -32,8 +38,11 @@ import type { CalendarScreenProps, CalendarView } from "@/features/calendar/mode
 import { WorkspaceBackLink } from "@/features/library/components/workspace-back-link";
 import { usePreferences } from "@/features/settings/store/preferences-store";
 import { locale, t } from "@/i18n/i18n";
+import { kindIcons } from "../lib/event-display";
 import { firstWeekday } from "../lib/month-grid";
 import { getCalendarStore, useCalendarEvents } from "../store/calendar-store";
+import { CalendarSearchResults } from "./calendar-search-results";
+import { CalendarSourcesSheet } from "./calendar-sources-sheet";
 import { CalendarYears } from "./calendar-years";
 import { CalendarZoomTitle } from "./calendar-zoom-title";
 import { byStart, DayAgenda } from "./day-agenda";
@@ -47,8 +56,6 @@ import { WeekStrip } from "./week-strip";
 import { YearView } from "./year-view";
 
 /** The Years view runs from here to a few years ahead of now. */
-const YEARS_FROM = 1990;
-const YEARS_AHEAD = 5;
 
 const clampDay = (day: Day): Day =>
   day < `${String(FIRST_YEAR).padStart(4, "0")}-01-01`
@@ -72,7 +79,21 @@ export function CalendarScreen({
   view: requestedView,
   onOpenSidebar,
 }: CalendarScreenProps) {
-  const events = useCalendarEvents();
+  const allEvents = useCalendarEvents();
+  const [query, setQuery] = useState("");
+  const [calendarsOpen, setCalendarsOpen] = useState(false);
+  const [calendarLayout, setCalendarLayout] = useState<"gallery" | "list">("gallery");
+  const events = useMemo(
+    () =>
+      allEvents.filter(
+        (event) =>
+          !query.trim() ||
+          `${event.title} ${event.notes} ${event.location ?? ""}`
+            .toLocaleLowerCase()
+            .includes(query.trim().toLocaleLowerCase()),
+      ),
+    [allEvents, query],
+  );
   const navigate = useNavigate();
   const { collapsed } = usePreferences().sidebar;
   const reducedMotion = useReducedMotion();
@@ -191,8 +212,8 @@ export function CalendarScreen({
     return () => window.removeEventListener("keydown", onKey);
   });
 
-  const pageStart = YEARS_FROM;
-  const pageEnd = Number(today.slice(0, 4)) + YEARS_AHEAD;
+  const pageStart = FIRST_YEAR;
+  const pageEnd = LAST_YEAR;
   const title =
     view === "years"
       ? t("calendar.allYears")
@@ -307,6 +328,38 @@ export function CalendarScreen({
                 </IconButton>
               </>
             )}
+            {view === "years" && (
+              <IconButton
+                size="icon-xs"
+                variant="ghost"
+                label={t("notes.more")}
+                onClick={(event) =>
+                  openMenu(
+                    event.currentTarget,
+                    [
+                      {
+                        label: t(
+                          calendarLayout === "gallery"
+                            ? "workspace.viewAsList"
+                            : "workspace.viewAsGallery",
+                        ),
+                        icon:
+                          calendarLayout === "gallery" ? (
+                            <ChaptersIcon size={18} />
+                          ) : (
+                            <LayoutIcon size={18} />
+                          ),
+                        onSelect: () =>
+                          setCalendarLayout((value) => (value === "gallery" ? "list" : "gallery")),
+                      },
+                    ],
+                    { edge: "trailing" },
+                  )
+                }
+              >
+                <MoreIcon size={18} />
+              </IconButton>
+            )}
             <HolidayButton />
             <IconButton
               size="icon-sm"
@@ -316,12 +369,17 @@ export function CalendarScreen({
                 openMenu(
                   event.currentTarget,
                   [
-                    { label: t("calendar.quickAdd"), onSelect: () => setTyping(true) },
+                    {
+                      label: t("calendar.quickAdd"),
+                      icon: <SparkleIcon size={18} />,
+                      onSelect: () => setTyping(true),
+                    },
                     "divider" as const,
                     ...(
                       ["plan", "reminder", "birthday", "anniversary", "deadline", "trip"] as const
                     ).map((kind) => ({
                       label: t(`calendar.newOf.${kind}`),
+                      icon: kindIcons[kind],
                       onSelect: () => add(kind),
                     })),
                   ],
@@ -365,11 +423,17 @@ export function CalendarScreen({
             "flex flex-col md:min-h-0 md:shrink md:grow",
             // On a phone the months and years fill the screen and scroll themselves;
             // a day's hours and its list scroll together.
-            scrollsItself ? "min-h-0 shrink grow" : "shrink-0",
+            scrollsItself || query.trim() ? "min-h-0 shrink grow" : "shrink-0",
           )}
         >
-          {view === "years" ? (
+          {query.trim() ? (
+            <CalendarSearchResults
+              events={events}
+              onOpenEvent={(event) => setTarget({ event, day: selected, isNew: false })}
+            />
+          ) : view === "years" ? (
             <CalendarYears
+              layout={calendarLayout}
               first={pageStart}
               last={pageEnd}
               current={Number(today.slice(0, 4))}
@@ -418,17 +482,53 @@ export function CalendarScreen({
             />
           )}
         </motion.div>
-        <aside
-          aria-label={t("calendar.day")}
-          className={cn(
-            "border-t border-separator/60 md:w-[340px] md:shrink-0 md:overflow-y-auto md:border-t-0 md:border-l",
-            scrollsItself && "hidden md:block",
-          )}
-        >
-          {agenda}
-        </aside>
+        {!query.trim() && (
+          <aside
+            aria-label={t("calendar.day")}
+            className={cn(
+              "border-t border-separator/60 md:w-[340px] md:shrink-0 md:overflow-y-auto md:border-t-0 md:border-l",
+              scrollsItself && "hidden md:block",
+            )}
+          >
+            {agenda}
+          </aside>
+        )}
       </div>
 
+      <FloatingSearchToolbar
+        leading={
+          view === "years" ? (
+            <IconButton
+              size="icon-lg"
+              variant="ghost"
+              className="glass"
+              label={t(
+                calendarLayout === "gallery" ? "workspace.viewAsList" : "workspace.viewAsGallery",
+              )}
+              onClick={() =>
+                setCalendarLayout((value) => (value === "gallery" ? "list" : "gallery"))
+              }
+            >
+              {calendarLayout === "gallery" ? <ChaptersIcon size={20} /> : <LayoutIcon size={20} />}
+            </IconButton>
+          ) : undefined
+        }
+        label={t("calendar.title")}
+        placeholder={t("common.search")}
+        value={query}
+        onChange={setQuery}
+        action={{
+          label: t("calendar.calendars"),
+          icon: <CalendarIcon size={21} />,
+          onPress: () => setCalendarsOpen(true),
+        }}
+      />
+      <CalendarSourcesSheet
+        open={calendarsOpen}
+        onClose={() => setCalendarsOpen(false)}
+        events={allEvents}
+        onOpenEvent={(event) => setTarget({ event, day: selected, isNew: false })}
+      />
       <EventSheet target={target} onClose={() => setTarget(null)} />
       <QuickAddSheet
         open={typing}

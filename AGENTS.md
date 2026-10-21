@@ -122,6 +122,18 @@ Gotchas learned the hard way:
 
 ## Status (October 2026)
 
+- Release scope, 21 October: desktop CI now builds Linux x64 and Windows x64
+  only; macOS setup is deferred. Android retains arm64/x86_64 for phones and
+  ChromeOS. Vite moves to 8.3.3 for three Dependabot advisories; the GTK3-bound
+  GLib alert remains open. See [security evidence](docs/reviews/2026-10-21-dependency-security.md).
+
+- 21 October controls checkpoint: Hino 0.1.9 is published and pinned. Folder
+  creation/search, Calendar sources/search/year layouts, finance header actions
+  and generated-ledger deletion protection are implemented but unreleased.
+  Settings shares the app ground. TECNO confirms 48-pixel tabs/search and
+  keyboard clearance. Read [the controls record](docs/reviews/2026-10-21-folder-and-calendar-controls.md)
+  before continuing physical checks.
+
 - 21 October motion and viewport refinement: Hino UI 0.1.7 is published and its
   docs deployed; Notables and Pluraliti pin it. The app shares a neutral ground
   with quiet accent reflections, visible scrollbars and bottom navigation
@@ -699,6 +711,10 @@ and France: "No" until the French declaration is filed. Never set
 TestFlight refuse the upload; each build asks in TestFlight instead.
 
 ## Next
+
+- Finish controls acceptance from the 21 October record, including the year
+  anchoring correction and iPhone behavior, then native Lock, widgets and system
+  entry points. Keep Wallet security separate from app/content Lock.
 
 - Verify the 21 October viewport and calendar refinements on iPhone, then
   continue native widgets. Keep physical iOS evidence separate from browser

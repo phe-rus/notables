@@ -17,7 +17,6 @@ export function ensureFinanceSheets(
       library.folders.set(FINANCE_FOLDER, {
         id: FINANCE_FOLDER,
         name: t("finances.folderName"),
-        color: "sage",
         createdAt: now,
         order: Math.max(-1, ...library.getFolders().map((item) => item.order)) + 1,
       });

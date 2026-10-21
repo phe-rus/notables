@@ -1,4 +1,4 @@
-import type { InvoiceDocument } from "@notables/core";
+import type { InvoiceDocument, InvoiceKind } from "@notables/core";
 
 export type FinanceTransaction = {
   id: string;
@@ -54,7 +54,11 @@ export type FinanceDraft = Omit<FinanceTransaction, "id" | "createdAt" | "update
   id?: string;
   amount: string;
 };
-export type FinanceLedgerProps = { documents: InvoiceDocument[] };
+export type FinanceLedgerProps = {
+  documents: InvoiceDocument[];
+  toolbarHost?: HTMLElement | null;
+  onCreateDocument?: (kind: InvoiceKind) => void;
+};
 export type ReceiptImageProps = { src: string };
 export type ReceiptTileProps = ReceiptImageProps & {
   onPreview: (src: string) => void;
@@ -117,4 +121,13 @@ export type ReceiptCaptureObserver = {
 export type ReceiptCaptureOperation<Frame> = {
   reader?: ReceiptTextReader<Frame>;
   frame?: Frame;
+};
+
+export type FinanceToolbarProps = {
+  onOpenLedger: () => void;
+  onScan: () => void;
+  onImportReceipt: () => void;
+  onImportMessage: () => void;
+  onNewTransaction: () => void;
+  onCreateDocument?: (kind: InvoiceKind) => void;
 };

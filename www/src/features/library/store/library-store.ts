@@ -6,6 +6,7 @@ import * as Y from "yjs";
 import { t } from "@/i18n/i18n";
 import { getDeviceId } from "@/platform/device-identity";
 import { getPersistence } from "@/platform/storage/document-storage";
+import { isGeneratedLedger } from "../model/generated-entry";
 import type { NoteFont } from "../model/note-fonts";
 import type { NotePreviewBlock } from "../model/note-preview";
 
@@ -184,6 +185,10 @@ export class Library {
 
   /** Removes the folder only; `deleteFolder` sends its notes to Recently Deleted first. */
   removeFolder(id: string) {
+    if (
+      [...this.entries.values()].some((entry) => entry.folderId === id && isGeneratedLedger(entry))
+    )
+      return;
     this.doc.transact(() => {
       this.removedFolders.set(id, true);
       this.folders.delete(id);
@@ -252,7 +257,7 @@ export class Library {
 
   update(id: string, patch: Partial<Omit<LibraryEntry, "id" | "origin" | "createdAt">>) {
     const current = this.get(id);
-    if (!current) return;
+    if (!current || (patch.trashedAt && isGeneratedLedger(current))) return;
     if (patch.trashedAt !== undefined) this.noteTrash.set(id, patch.trashedAt);
     if (this.#drafts.has(id)) {
       const next = { ...current, ...patch };
@@ -286,6 +291,7 @@ export class Library {
   }
 
   async remove(id: string) {
+    if (isGeneratedLedger(this.get(id))) return;
     this.#drafts.delete(id);
     this.doc.transact(() => {
       this.removedNotes.set(id, true);

@@ -15,6 +15,7 @@ import {
   openMenu,
   PenIcon,
   PhotoIcon,
+  PlusIcon,
   SearchField,
   SidebarIcon,
   spring,
@@ -31,6 +32,7 @@ import {
   useRef,
   useState,
 } from "react";
+import { FloatingSearchToolbar } from "@/components/navigation/floating-search-toolbar";
 import { CollapsedSidebarControls } from "@/components/window/collapsed-sidebar-controls";
 import { BookShelf, useShelfBooks } from "@/features/books/components/book-shelf";
 import { noteMenu } from "@/features/notes/actions/note-menu";
@@ -41,12 +43,14 @@ import type { ListPreferences } from "@/features/settings/model/preferences";
 import { updatePreferences, usePreferences } from "@/features/settings/store/preferences-store";
 import { t } from "@/i18n/i18n";
 import { bucket } from "../lib/date-format";
+import { openNoteCreation } from "../lib/note-creation-menu";
 import { useHoldToSelect } from "../lib/use-hold-to-select";
 import { type GroupId, groupOf, type View } from "../model/library-views";
 import { noteKindIcons } from "../model/note-kind-icons";
 import { noteKindLabels } from "../model/note-kind-labels";
 import { isListedNote, type LibraryEntry, useLibraryReady } from "../store/library-store";
 import { GroupSwitcher } from "./group-switcher";
+import { NewNoteButton } from "./new-note-button";
 import { NoteRow, type SwipeSide } from "./note-row";
 import { NotesSelectionBar } from "./notes-selection-bar";
 
@@ -81,7 +85,8 @@ export function NotesList({
   const navigate = useNavigate();
   const [query, setQuery] = useState("");
   const [attachmentsOnly, setAttachmentsOnly] = useState(false);
-  const deferredQuery = useDeferredValue(view.folderId ? "" : query.trim());
+  useEffect(() => setQuery(""), [view.id]);
+  const deferredQuery = useDeferredValue(query.trim());
   const notes = useSearchableNotes(Boolean(deferredQuery));
   // Manga and comics views also show the bound books of that kind.
   const shelf = useShelfBooks(view.id === "comic" ? "comic" : "manga");
@@ -253,9 +258,12 @@ export function NotesList({
               </Button>
             )}
             {!selecting && (
+              <NewNoteButton onCreate={onCreateNote} className="hidden md:inline-flex" />
+            )}
+            {!selecting && (
               <IconButton
                 size="icon-xs"
-                variant="default"
+                variant="ghost"
                 label={t("notes.more")}
                 onClick={(event) => {
                   const items: ContextMenuItem[] = [
@@ -348,13 +356,12 @@ export function NotesList({
           </div>
         </div>
         {groupOf(view.id) && <GroupSwitcher group={groupOf(view.id) as GroupId} active={view.id} />}
-        {!view.folderId && (
-          <SearchField
-            value={query}
-            placeholder={t("notes.searchIn", { place: view.title.toLowerCase() })}
-            onChange={(event) => setQuery(event.target.value)}
-          />
-        )}
+        <SearchField
+          className={view.folderId ? "hidden md:flex" : undefined}
+          value={query}
+          placeholder={t("notes.searchIn", { place: view.title.toLowerCase() })}
+          onChange={(event) => setQuery(event.target.value)}
+        />
         {!selecting && <ExamplesNotice />}
       </header>
 
@@ -453,6 +460,19 @@ export function NotesList({
           />
         )}
       </AnimatePresence>
+      {view.folderId && !selecting && !activeId && (
+        <FloatingSearchToolbar
+          label={view.title}
+          placeholder={t("notes.searchIn", { place: view.title })}
+          value={query}
+          onChange={setQuery}
+          action={{
+            label: t("nav.newNote"),
+            icon: <PlusIcon size={22} />,
+            onPress: (anchor) => openNoteCreation(anchor, onCreateNote),
+          }}
+        />
+      )}
     </section>
   );
 }

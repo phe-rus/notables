@@ -595,6 +595,7 @@ export const es: Messages = {
     whileClosed: "Mientras Notables estaba cerrado",
   },
   calendar: {
+    calendars: "Calendarios",
     allYears: "Años",
     related: "Relacionado con",
     openWriting: "Abrir escrito",

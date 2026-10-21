@@ -594,6 +594,7 @@ export const sw: Messages = {
     whileClosed: "Wakati Notables ilikuwa imefungwa",
   },
   calendar: {
+    calendars: "Kalenda",
     allYears: "Miaka",
     related: "Inahusiana na",
     openWriting: "Fungua maandishi",

@@ -40,10 +40,27 @@ test("yearly finance sheets converge across devices and preserve folder customis
   expect(first.getFolders().find((item) => item.id === FINANCE_FOLDER)?.name).toBe("My money");
   first.removeFolder(FINANCE_FOLDER);
   ensureFinanceSheets(first, rows, now);
-  expect(first.getFolders().some((item) => item.id === FINANCE_FOLDER)).toBe(false);
+  expect(first.getFolders().some((item) => item.id === FINANCE_FOLDER)).toBe(true);
 });
 test("sheet cells preserve exact amounts and transaction references", () => {
   expect(
     ledgerCells(rows, ["Date", "Type", "Description", "Reference", "Currency", "Amount"]),
   ).toMatchObject({ A2: "2025-12-31", D2: "QA-1", F2: "1250" });
+});
+
+test("generated ledger sheets resist trash and permanent deletion without affecting ordinary notes", async () => {
+  const library = new Library(createMemoryPersistence());
+  await library.loaded;
+  ensureFinanceSheets(library, rows, new Date(2026, 9, 21).getTime());
+  const note = library.create("note", FINANCE_FOLDER);
+  library.update("finance-ledger-2026", { trashedAt: Date.now() });
+  expect(library.get("finance-ledger-2026")?.trashedAt).toBeFalsy();
+  expect(library.noteTrash.has("finance-ledger-2026")).toBe(false);
+  await library.remove("finance-ledger-2026");
+  expect(library.get("finance-ledger-2026")?.financeYear).toBe(2026);
+  expect(library.removedNotes.has("finance-ledger-2026")).toBe(false);
+  library.update(note.id, { trashedAt: Date.now() });
+  expect(library.get(note.id)?.trashedAt).toBeTruthy();
+  await library.remove(note.id);
+  expect(library.get(note.id)).toBeUndefined();
 });

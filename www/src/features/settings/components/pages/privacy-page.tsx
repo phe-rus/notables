@@ -46,8 +46,9 @@ export function PrivacyPage() {
             </Link>
           </LabeledContent>
           <LabeledContent label={t("wallet.relockAfter")}>
-            <fieldset disabled={busy} className="min-w-0">
+            <fieldset disabled={busy} className="min-w-0 shrink-0">
               <Picker
+                className="h-8 whitespace-nowrap px-2.5 py-1 text-caption"
                 label={t("wallet.relockAfter")}
                 value={minutes}
                 options={[1, 5, 15, 30, 60, 120].map((value) => ({

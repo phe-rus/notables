@@ -90,3 +90,56 @@ Release run 39399850328 built Android, iOS, Linux, Windows and Apple Silicon Mac
 Intel Mac failed before packaging, so the installer collection job was skipped.
 
 Latest Wallet checkpoint: [native session ownership](reviews/2026-10-20-wallet-native-policy.md).
+
+## Owner's 21 October interface and native entry request
+
+Work in this order; currency/tax suggestions come after the interaction work.
+
+- [ ] Folder plus and icon-based note-type chooser; ghost More action.
+- [ ] Folder bottom search/action capsule; minimize/restore on Android and iOS.
+- [ ] Replace page slides with restrained transitions, retaining note-to-page matching.
+- [ ] Settings shares the app ground; compact Wallet privacy picker and normal word wrapping.
+- [ ] Years fills its scroll area, loads more years and offers gallery/list previews.
+- [ ] Calendar search and Calendars sheet with categories and event details.
+- [ ] Finances header scan/create actions, meaningful menu icons and current Hino accents.
+- [ ] Protect generated finance sheets from trash, bulk and permanent deletion.
+- [ ] Implement the separate optional app/content Lock; preserve mandatory Wallet authentication.
+- [ ] Android/iOS native entry: share and text capture, app shortcuts, multiple widgets,
+      Android Quick Settings tiles and supported Apple controls. Respect locked content.
+- [ ] Evaluate automatic currency and tax suggestions without silently assigning tax obligations.
+
+The owner explicitly chose protecting generated FINANCES ledger sheets from deletion.
+
+## Owner's release and interaction follow-up, 21 October
+
+Release the verified checkpoint as v0.2.15. Desktop packaging is limited to Linux
+and Windows 11; macOS is deferred. Android includes arm64 phones and x86_64
+ChromeOS; iOS continues through TestFlight. Keep desktop installers in one release.
+
+Before widgets and Lock:
+
+- [ ] Clear the three Vite/launch-editor advisories with Vite 8.3.3. Track the
+      GTK3-constrained GLib advisory separately with evidence rather than dismissing it.
+- [ ] Make Calendar exit to Workspace available at every zoom level; redesign its
+      Calendars sheet with compact hierarchy and useful details.
+- [ ] Reveal folders into their note lists with a shared source surface. Folder
+      actions should expand the existing card, preserving its width and identity.
+- [ ] Hino menus should grow from their trigger, with continuous geometry on close.
+      Keep light boundaries legible and dark boundaries quiet, using curved edge
+      highlights rather than prominent outlines. Respect Reduce Motion.
+- [ ] Fix the magnified search-icon flicker and make slow-scroll collapse/restore
+      continuous. Keep final content and folder creation clear of the bottom bars.
+- [ ] Expose three or four useful folder header actions without duplicating the
+      footer. In the editor retain only the note title, with compact icon actions;
+      correct the editing toolbar's position and expansion.
+- [ ] Improve workspace search density and response; show useful Personal summaries
+      for Calendar, Finances, Books and Circles. Give sidebar folders a tree hierarchy.
+- [ ] Consolidate Sidebar into Appearance and simplify Settings groups: writing,
+      listening and reminders together; AI writing help and widgets together.
+      Use sentence case, including Recently deleted.
+- [ ] Review spreadsheet editing as a usable product, including selection,
+      formatting, formulas, tables and keyboard/touch behavior. Avoid a cosmetic-only claim.
+
+Reference: Apple's Motion guidance and Meet Liquid Glass describe preserving
+source-to-destination continuity and morphing controls in place. Hino retains its
+own design language; do not substitute page fades or large slides for that behavior.

@@ -568,6 +568,7 @@ export const zh: Messages = {
     whileClosed: "Notables 关闭期间",
   },
   calendar: {
+    calendars: "日历",
     allYears: "年份",
     related: "关联内容",
     openWriting: "打开笔记",

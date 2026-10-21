@@ -1,9 +1,9 @@
 import {
   BookIcon,
   FolderIcon,
+  TabBar as HinoTabBar,
   InvoiceIcon,
   SettingsIcon,
-  TabBar as UltraPeachTabBar,
   WalletIcon,
 } from "@phe-rus/hino";
 import { Link, type LinkProps } from "@tanstack/react-router";
@@ -67,10 +67,11 @@ const tabs: AppTab[] = [
 /** Phones: Notables' main places on the tab bar. Hidden while a document is open. */
 export function TabBar({ active, className }: { active: TabId | null; className?: string }) {
   return (
-    <UltraPeachTabBar
+    <HinoTabBar
       // The wallet never reaches a browser (spec 0005, AC-28), so Books takes its place.
       tabs={tabs.filter((tab) => tab.id !== (inBrowserSession() ? "wallet" : "books"))}
       active={active}
+      minimizeBehavior="scroll"
       label={t("nav.main")}
       search={{ label: t("common.search"), onPress: openSearch }}
       renderLink={(tab, props) => <Link key={tab.id} {...tab.link} {...props} />}

@@ -26,6 +26,7 @@ import type { EditingFolder } from "@/features/library/model/workspace-types";
 import { t } from "@/i18n/i18n";
 import { inBrowserSession } from "@/platform/session/browser-session-store";
 import { deleteFolder } from "../lib/delete-folder";
+import { isGeneratedLedger } from "../model/generated-entry";
 import { folderView } from "../model/library-views";
 import {
   type Folder,
@@ -80,6 +81,7 @@ export function WorkspaceScreen() {
       label: t("common.delete"),
       icon: <TrashIcon size={18} />,
       destructive: true,
+      disabled: notes.some((entry) => entry.folderId === folder.id && isGeneratedLedger(entry)),
       onSelect: () => void remove(folder),
     },
   ];

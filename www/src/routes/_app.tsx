@@ -374,11 +374,11 @@ function WorkspaceShell() {
       </div>
 
       {/* On phones an open note's toolbar takes the bottom edge. */}
-      {(!isPhone || showTabBar) && (
+      {!viewport?.keyboardOpen && (!isPhone || showTabBar) && (
         <MiniPlayer className="fixed inset-x-3 bottom-[calc(max(14px,env(safe-area-inset-bottom))+58px)] z-30 md:right-6 md:bottom-6 md:left-auto md:w-[340px]" />
       )}
 
-      {isPhone && showTabBar && !viewport?.keyboardOpen && (
+      {isPhone && showTabBar && !folder && !inCalendar && !viewport?.keyboardOpen && (
         <TabBar
           className={drawerOpen ? "invisible" : undefined}
           active={

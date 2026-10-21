@@ -1,17 +1,18 @@
-import { CameraIcon, LayoutIcon, openMenu, PhotoIcon, PlusIcon } from "@phe-rus/hino";
+import { LayoutIcon } from "@phe-rus/hino";
 import { Button } from "@phe-rus/hino/button";
-import { IconButton } from "@phe-rus/hino/icon-button";
 import { useRef } from "react";
+import { createPortal } from "react-dom";
 import { DocumentScanner } from "@/features/capture/components/document-scanner";
 import { useFinanceLedger } from "@/features/finances/hooks/use-finance-ledger";
 import type { FinanceLedgerProps } from "@/features/finances/model/types";
 import { t } from "@/i18n/i18n";
+import { FinanceToolbar } from "./finance-toolbar";
 import { LedgerSheet } from "./ledger-sheet";
 import { ReceiptPreview } from "./receipt-preview";
 import { TransactionSheet } from "./transaction-sheet";
 
 /** One live ledger derived from documents and the person's confirmed transactions. */
-export function FinanceLedger({ documents }: FinanceLedgerProps) {
+export function FinanceLedger({ documents, toolbarHost, onCreateDocument }: FinanceLedgerProps) {
   const {
     rows,
     open,
@@ -39,8 +40,26 @@ export function FinanceLedger({ documents }: FinanceLedgerProps) {
     extract,
   } = useFinanceLedger(documents);
   const input = useRef<HTMLInputElement>(null);
+  const actions = (
+    <FinanceToolbar
+      onOpenLedger={() => setOpen(true)}
+      onScan={() => {
+        setFiles([]);
+        setScanning(true);
+      }}
+      onImportReceipt={() => input.current?.click()}
+      onImportMessage={() => start("sms")}
+      onNewTransaction={() => start("manual")}
+      onCreateDocument={onCreateDocument}
+    />
+  );
   return (
     <>
+      {toolbarHost ? (
+        createPortal(actions, toolbarHost)
+      ) : (
+        <div className="flex justify-end gap-1">{actions}</div>
+      )}
       <div className="mx-1.5 mb-3 flex items-center gap-2 rounded-3xl bg-paper px-3 py-2">
         <Button
           variant="ghost"
@@ -51,43 +70,6 @@ export function FinanceLedger({ documents }: FinanceLedgerProps) {
           <span>{t("finances.ledger")}</span>
           <span className="ms-auto text-caption text-label-secondary">{rows.length}</span>
         </Button>
-        <IconButton
-          label={t("finances.add")}
-          size="icon-xs"
-          onClick={(event) =>
-            openMenu(
-              event.currentTarget,
-              [
-                {
-                  label: t("finances.transaction"),
-                  icon: <PlusIcon size={18} />,
-                  onSelect: () => start("manual"),
-                },
-                {
-                  label: t("finances.scanReceipt"),
-                  icon: <CameraIcon size={18} />,
-                  onSelect: () => {
-                    setFiles([]);
-                    setScanning(true);
-                  },
-                },
-                {
-                  label: t("finances.importReceipt"),
-                  icon: <PhotoIcon size={18} />,
-                  onSelect: () => input.current?.click(),
-                },
-                {
-                  label: t("finances.importMessage"),
-                  icon: <LayoutIcon size={18} />,
-                  onSelect: () => start("sms"),
-                },
-              ],
-              { edge: "trailing" },
-            )
-          }
-        >
-          <PlusIcon size={17} />
-        </IconButton>
       </div>
       {busy && !draft && (
         <p role="status" className="px-5 pb-3 text-footnote text-label-secondary">

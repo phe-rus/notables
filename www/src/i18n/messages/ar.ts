@@ -609,6 +609,7 @@ export const ar: Messages = {
     whileClosed: "أثناء إغلاق Notables",
   },
   calendar: {
+    calendars: "التقويمات",
     allYears: "السنوات",
     related: "مرتبط بـ",
     openWriting: "فتح الملاحظة",

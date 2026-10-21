@@ -165,9 +165,28 @@ fn device_wallet_restarts_without_prompt_and_masks_previews() {
     assert!(!full.draft.fields.iter().any(|field| field.key == "cvv"));
     let page = wallet.list(query()).unwrap();
     assert_eq!(page.cards[0].last_four.as_deref(), Some("5678"));
-    let json = serde_json::to_string(&page).unwrap();
-    assert!(!json.contains("0012345678905678"));
-    assert!(!json.contains("987"));
+    let preview = serde_json::to_value(&page.cards[0]).unwrap();
+    let mut preview_keys: Vec<_> = preview
+        .as_object()
+        .unwrap()
+        .keys()
+        .map(String::as_str)
+        .collect();
+    preview_keys.sort_unstable();
+    assert_eq!(
+        preview_keys,
+        [
+            "appearance",
+            "displayName",
+            "id",
+            "issuer",
+            "kind",
+            "lastFour",
+            "revision",
+            "updatedAt",
+        ]
+    );
+    assert_eq!(preview["lastFour"], "5678");
     wallet.background();
     assert!(matches!(wallet.read(draft.id), Err(WalletError::Locked)));
     wallet.foreground();

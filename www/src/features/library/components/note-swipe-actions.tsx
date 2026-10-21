@@ -4,6 +4,7 @@ import { copyAppLink, togglePinned } from "@/features/notes/actions/note-menu";
 import type { SwipeAction } from "@/features/settings/model/preferences";
 import { moveNotesToBin } from "@/features/trash/lib/recycle-bin";
 import { t } from "@/i18n/i18n";
+import { isGeneratedLedger } from "../model/generated-entry";
 import type { LibraryEntry } from "../store/library-store";
 
 /** One button revealed by a swipe, as it looks and what it does. */
@@ -28,6 +29,7 @@ export function swipeButton(action: SwipeAction, entry: LibraryEntry): SwipeButt
         run: () => togglePinned([entry]),
       };
     case "delete":
+      if (isGeneratedLedger(entry)) return null;
       return {
         id: "delete",
         label: t("common.delete"),

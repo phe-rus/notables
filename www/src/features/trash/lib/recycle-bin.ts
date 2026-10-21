@@ -4,6 +4,7 @@ import { eraseBook, ownChapters } from "@/features/books/actions/erase-book";
 import { syncBookFormat } from "@/features/books/actions/sync-book-format";
 import { type BookEntry, getBookStore } from "@/features/books/store/book-store";
 import { getSeriesStore, type SeriesEntry } from "@/features/books/store/series-store";
+import { isGeneratedLedger } from "@/features/library/model/generated-entry";
 import { getLibrary, type LibraryEntry } from "@/features/library/store/library-store";
 import { deleteNote } from "@/features/notes/actions/delete-note";
 import { locale, t } from "@/i18n/i18n";
@@ -45,8 +46,9 @@ function countLabel(series: number, books: number): string {
 }
 
 export function moveNotesToBin(entries: LibraryEntry[]) {
+  entries = entries.filter((entry) => !isGeneratedLedger(entry));
   if (entries.length === 0) return;
-  const ids = entries.map((entry) => entry.id);
+  const ids = entries.filter((entry) => !isGeneratedLedger(entry)).map((entry) => entry.id);
   setNotesTrashed(ids, Date.now());
   // A book left with only recordings becomes an audiobook.
   for (const bookId of new Set(entries.map((entry) => entry.bookId).filter(Boolean))) {
@@ -73,7 +75,7 @@ export function moveBooksToBin(books: BookEntry[]) {
  * callers that explain it themselves. Returns what brings them back.
  */
 export function moveAllToBin(entries: LibraryEntry[], books: BookEntry[]): () => void {
-  const ids = entries.map((entry) => entry.id);
+  const ids = entries.filter((entry) => !isGeneratedLedger(entry)).map((entry) => entry.id);
   getLibrary().doc.transact(() => {
     const now = Date.now();
     setBooksTrashed(books, now);

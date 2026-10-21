@@ -32,6 +32,7 @@ import { t } from "@/i18n/i18n";
 import { shortcutLabel } from "@/lib/keyboard/shortcuts";
 import { formatAge } from "../lib/date-format";
 import { deleteFolder } from "../lib/delete-folder";
+import { isGeneratedLedger } from "../model/generated-entry";
 import type { SidebarItemId } from "../model/sidebar-items";
 import {
   type Folder,
@@ -249,6 +250,9 @@ export function Sidebar({
                       label: t("common.delete"),
                       icon: <TrashIcon size={17} />,
                       destructive: true,
+                      disabled: library.some(
+                        (entry) => entry.folderId === folder.id && isGeneratedLedger(entry),
+                      ),
                       onSelect: () => void removeFolder(folder),
                     },
                   ]}

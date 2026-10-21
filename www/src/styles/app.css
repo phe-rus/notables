@@ -275,7 +275,7 @@ html[data-window-frame="rounded"] body::after {
 @keyframes page-forward-enter {
   from {
     opacity: 0;
-    transform: translateX(7%);
+    transform: scale(0.995);
   }
   to {
     opacity: 1;
@@ -285,7 +285,7 @@ html[data-window-frame="rounded"] body::after {
 @keyframes page-back-enter {
   from {
     opacity: 0;
-    transform: translateX(-5%);
+    transform: scale(1.005);
   }
   to {
     opacity: 1;
@@ -375,4 +375,10 @@ html[data-window-frame="rounded"] body::after {
     animation-duration: 0s;
     animation-delay: 0s;
   }
+}
+
+/* Privacy labels wrap between words; compact controls keep their own trailing space. */
+[data-native-settings] .native-settings-detail span {
+  overflow-wrap: normal;
+  word-break: normal;
 }

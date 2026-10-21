@@ -1,4 +1,5 @@
 import { getBookStore } from "@/features/books/store/book-store";
+import { isGeneratedLedger } from "@/features/library/model/generated-entry";
 import { getLibrary } from "@/features/library/store/library-store";
 import { collectLocalMedia } from "@/lib/documents/collect-local-media";
 import { deleteMedia } from "@/platform/storage/media-store";
@@ -9,6 +10,7 @@ import { deleteNoteContent, loadNoteContent } from "@/platform/storage/note-cont
  * recordings and photos, and its place in any book.
  */
 export async function deleteNote(noteId: string): Promise<void> {
+  if (isGeneratedLedger(getLibrary().get(noteId))) return;
   const content = await loadNoteContent(noteId).catch(() => undefined);
   await Promise.all(collectLocalMedia(content).map((id) => deleteMedia(id).catch(() => {})));
   getBookStore().forgetNote(noteId);

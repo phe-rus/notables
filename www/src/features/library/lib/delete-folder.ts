@@ -1,4 +1,5 @@
 import { moveAllToBin } from "@/features/trash/lib/recycle-bin";
+import { isGeneratedLedger } from "../model/generated-entry";
 import { folderView } from "../model/library-views";
 import { type Folder, getLibrary } from "../store/library-store";
 
@@ -10,6 +11,12 @@ import { type Folder, getLibrary } from "../store/library-store";
  */
 export function deleteFolder(folder: Folder) {
   const library = getLibrary();
+  if (
+    [...library.entries.values()].some(
+      (entry) => entry.folderId === folder.id && isGeneratedLedger(entry),
+    )
+  )
+    return;
   const folders = library.getFolders();
   const fallback =
     folder.id === (folders.find((item) => item.id === "default-writings") ?? folders[0])?.id;

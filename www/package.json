@@ -23,7 +23,7 @@
     "@notables/core": "workspace:*",
     "@notables/pluraliti": "workspace:*",
     "@notables/sync": "workspace:*",
-    "@phe-rus/hino": "0.1.7",
+    "@phe-rus/hino": "0.1.9",
     "@tanstack/react-form": "1.33.5",
     "@tanstack/react-router": "1.170.41",
     "@tanstack/react-start": "1.168.60",
@@ -67,7 +67,7 @@
     "fast-xml-parser": "5.11.2",
     "tailwindcss": "4.3.3",
     "typescript": "catalog:",
-    "vite": "8.3.2",
+    "vite": "8.3.3",
     "wrangler": "4.146.0"
   }
 }

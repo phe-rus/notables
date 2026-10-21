@@ -31,10 +31,7 @@ export function SettingsScreen({
   const title = !wide && open ? settingsPages[open].title : t("settings.title");
   return (
     <SettingsToolbarContext value={toolbarHost}>
-      <div
-        data-native-settings={isTauri() ? "" : undefined}
-        className="flex min-h-0 grow flex-col bg-fill/45"
-      >
+      <div data-native-settings={isTauri() ? "" : undefined} className="flex min-h-0 grow flex-col">
         <header
           data-tauri-drag-region
           className="flex flex-col gap-2 px-4 pt-[max(12px,env(safe-area-inset-top))] pb-2"

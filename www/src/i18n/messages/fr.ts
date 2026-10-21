@@ -602,6 +602,7 @@ export const fr: Messages = {
     whileClosed: "Pendant que Notables était fermé",
   },
   calendar: {
+    calendars: "Calendriers",
     allYears: "Années",
     related: "Associé à",
     openWriting: "Ouvrir le texte",

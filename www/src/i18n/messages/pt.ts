@@ -593,6 +593,7 @@ export const pt: Messages = {
     whileClosed: "Enquanto o Notables estava fechado",
   },
   calendar: {
+    calendars: "Calendários",
     allYears: "Anos",
     related: "Relacionado com",
     openWriting: "Abrir escrita",

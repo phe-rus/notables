@@ -11,13 +11,12 @@ import {
   cn,
   confirmDialog,
   IconButton,
-  openMenu,
-  PlusIcon,
   SidebarIcon,
   spring,
   toast,
   useContextMenu,
 } from "@phe-rus/hino";
+import { Button } from "@phe-rus/hino/button";
 import { Link, useNavigate } from "@tanstack/react-router";
 import { AnimatePresence, motion } from "motion/react";
 import { useState } from "react";
@@ -50,6 +49,7 @@ export function InvoicesList({
   const navigate = useNavigate();
   const { collapsed } = usePreferences().sidebar;
   const [businessOpen, setBusinessOpen] = useState(false);
+  const [financeToolbarHost, setFinanceToolbarHost] = useState<HTMLDivElement | null>(null);
 
   const create = (kind: InvoiceKind) => {
     const invoice = getInvoiceStore().create(kind);
@@ -70,7 +70,7 @@ export function InvoicesList({
       >
         {collapsed && <CollapsedSidebarControls />}
         <div data-tauri-drag-region className="flex items-center justify-between">
-          <div className="flex items-center gap-1">
+          <div className="flex min-w-0 items-center gap-1">
             <IconButton
               size="icon-sm"
               variant="ghost"
@@ -80,9 +80,9 @@ export function InvoicesList({
             >
               <SidebarIcon size={20} />
             </IconButton>
-            <h1 className="text-title2 font-bold tracking-tight">{t("invoices.title")}</h1>
+            <h1 className="truncate text-title3 font-bold tracking-tight">{t("invoices.title")}</h1>
           </div>
-          <div className="flex items-center gap-1">
+          <div className="flex shrink-0 items-center gap-1">
             <IconButton
               size="icon-sm"
               variant="ghost"
@@ -91,23 +91,7 @@ export function InvoicesList({
             >
               <BusinessIcon size={20} />
             </IconButton>
-            <IconButton
-              size="icon-sm"
-              label={t("finances.newDocument")}
-              variant="link"
-              onClick={(event) => {
-                openMenu(
-                  event.currentTarget,
-                  (["invoice", "receipt", "quote"] as const).map((kind) => ({
-                    label: t(`finances.${kind}`),
-                    onSelect: () => create(kind),
-                  })),
-                  { edge: "trailing" },
-                );
-              }}
-            >
-              <PlusIcon size={20} strokeWidth={2} />
-            </IconButton>
+            <div ref={setFinanceToolbarHost} className="flex min-h-8 min-w-26 items-center gap-1" />
           </div>
         </div>
         <nav aria-label={t("finances.type")} className="flex flex-wrap gap-1.5">
@@ -115,20 +99,24 @@ export function InvoicesList({
             const selected = filter === kind;
             const count = kind === "all" ? all.length : all.filter((i) => i.kind === kind).length;
             return (
-              <button
+              <Button
+                variant="ghost"
+                size="xs"
                 key={kind}
                 type="button"
                 aria-pressed={selected}
                 onClick={() => setFilter(kind)}
                 className={cn(
                   "relative isolate flex max-w-full min-w-0 items-center gap-1.5 rounded-full px-3.5 py-1.5 text-footnote font-medium transition-colors",
-                  selected ? "text-on-inverse" : "bg-fill/70 text-label-secondary hover:text-label",
+                  selected
+                    ? "text-accent-text"
+                    : "bg-fill/70 text-label-secondary hover:text-label",
                 )}
               >
                 {selected && (
                   <motion.span
                     layoutId="invoice-filter"
-                    className="absolute inset-0 -z-10 rounded-full bg-inverse"
+                    className="absolute inset-0 -z-10 rounded-full bg-accent-soft"
                     transition={spring.snappy}
                   />
                 )}
@@ -138,14 +126,14 @@ export function InvoicesList({
                 >
                   {count}
                 </span>
-              </button>
+              </Button>
             );
           })}
         </nav>
       </header>
 
       <div className="scroll-surface flex min-h-0 grow flex-col px-2.5">
-        <FinanceLedger documents={all} />
+        <FinanceLedger documents={all} toolbarHost={financeToolbarHost} onCreateDocument={create} />
         {all.length > 0 && invoices.length === 0 && (
           <p className="px-6 pt-12 text-center text-subheadline text-label-secondary">
             No {filter === "all" ? "documents" : `${invoiceKindLabels[filter].toLowerCase()}s`} yet.

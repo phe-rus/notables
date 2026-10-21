@@ -11,6 +11,7 @@ import { motion } from "motion/react";
 import { noteFolderItems, togglePinned } from "@/features/notes/actions/note-menu";
 import { moveNotesToBin } from "@/features/trash/lib/recycle-bin";
 import { t } from "@/i18n/i18n";
+import { isGeneratedLedger } from "../model/generated-entry";
 import type { LibraryEntry } from "../store/library-store";
 
 /** What can be done to every chosen note at once, floating over the list. */
@@ -63,7 +64,7 @@ export function NotesSelectionBar({
           variant="ghost"
           size="icon"
           label={t("common.delete")}
-          disabled={none}
+          disabled={none || chosen.every(isGeneratedLedger)}
           className="text-danger"
           onClick={() => {
             moveNotesToBin(chosen);

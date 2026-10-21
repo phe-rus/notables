@@ -1,6 +1,6 @@
 import { cn } from "@phe-rus/hino";
 import { Button } from "@phe-rus/hino/button";
-import { useLayoutEffect, useRef, useState } from "react";
+import { useEffect, useLayoutEffect, useRef, useState } from "react";
 import type { CalendarYearsProps } from "@/features/calendar/model/types";
 import { CalendarYearPreview } from "./calendar-year-preview";
 
@@ -12,6 +12,7 @@ export function CalendarYears({
   today,
   weekStart,
   onYear,
+  layout = "gallery",
 }: CalendarYearsProps) {
   const grid = useRef<HTMLDivElement>(null);
   const center = Math.max(first, Math.min(last, selected));
@@ -26,22 +27,45 @@ export function CalendarYears({
   useLayoutEffect(() => {
     const element = grid.current;
     if (element && before.current !== null) {
-      element.scrollTop += element.scrollHeight - before.current;
+      const height = element.firstElementChild?.getBoundingClientRect().height ?? 0;
+      element.scrollTop += height - before.current;
       before.current = null;
     }
   }, [range.first]);
+  useEffect(() => {
+    const element = grid.current;
+    if (!element) return;
+    const fill = () => {
+      if (
+        !element.clientHeight ||
+        element.scrollHeight > element.clientHeight + 120 ||
+        before.current !== null ||
+        range.first <= first
+      )
+        return;
+      const columns = element.firstElementChild
+        ? getComputedStyle(element.firstElementChild).gridTemplateColumns.split(" ").length
+        : 2;
+      before.current = element.firstElementChild?.getBoundingClientRect().height ?? 0;
+      setRange((value) => ({ ...value, first: Math.max(first, value.first - columns) }));
+    };
+    fill();
+    const observer = new ResizeObserver(fill);
+    observer.observe(element);
+    return () => observer.disconnect();
+  }, [first, range.first, range.last, layout]);
   return (
     <div
       ref={grid}
       className="@container/years scroll-surface min-h-0 grow px-4 [overflow-anchor:none]"
       onScroll={() => {
         const element = grid.current;
-        if (!element) return;
+        if (!element || before.current !== null) return;
         const columns = element.firstElementChild
           ? getComputedStyle(element.firstElementChild).gridTemplateColumns.split(" ").length
           : 2;
         if (element.scrollTop < 120 && range.first > first && before.current === null) {
-          before.current = element.scrollHeight;
+          before.current = element.firstElementChild?.getBoundingClientRect().height ?? 0;
           setRange((value) => ({ ...value, first: Math.max(first, value.first - columns) }));
         } else if (
           element.scrollHeight - element.scrollTop - element.clientHeight < 240 &&
@@ -51,7 +75,13 @@ export function CalendarYears({
         }
       }}
     >
-      <div className="grid grid-cols-2 gap-x-5 gap-y-6 @min-[600px]/years:grid-cols-3 @min-[980px]/years:grid-cols-4">
+      <div
+        className={
+          layout === "list"
+            ? "mx-auto grid max-w-sm grid-cols-1 gap-6"
+            : "grid grid-cols-2 gap-x-5 gap-y-6 @min-[600px]/years:grid-cols-3 @min-[980px]/years:grid-cols-4"
+        }
+      >
         {Array.from(
           { length: range.last - range.first + 1 },
           (_, index) => range.first + index,
