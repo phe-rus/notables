@@ -12,7 +12,7 @@ export const CalendarYearPreview = memo(function CalendarYearPreview({
 }: CalendarYearPreviewProps) {
   const format = new Intl.DateTimeFormat(locale(), { month: "short", timeZone: "UTC" });
   return (
-    <svg data-brand aria-hidden="true" viewBox="0 0 300 328" className="block w-full">
+    <svg data-brand aria-hidden="true" viewBox="0 0 300 340" className="block w-full">
       {Array.from({ length: 12 }, (_, month) => {
         const x = (month % 3) * 104;
         const y = Math.floor(month / 3) * 84;
