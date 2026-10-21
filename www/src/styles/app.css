@@ -158,6 +158,23 @@ html[data-window-frame="rounded"] body::after {
     view-transition-name: notable-note;
   }
 
+  [data-folder-transition] {
+    view-transition-name: folder-surface;
+  }
+  ::view-transition-group(folder-surface) {
+    animation-duration: 380ms;
+    animation-timing-function: cubic-bezier(0.22, 1, 0.36, 1);
+    overflow: clip;
+    border-radius: var(--radius-3xl);
+  }
+  ::view-transition-old(folder-surface),
+  ::view-transition-new(folder-surface) {
+    height: 100%;
+    object-fit: cover;
+    object-position: top;
+    mix-blend-mode: normal;
+  }
+
   ::view-transition-group(notable-note) {
     animation-duration: 380ms;
     animation-timing-function: cubic-bezier(0.22, 1, 0.36, 1);
@@ -300,6 +317,8 @@ html[data-window-frame="rounded"] body::after {
 }
 :root:active-view-transition-type(note-open)::view-transition-old(app-content),
 :root:active-view-transition-type(note-close)::view-transition-old(app-content),
+:root:active-view-transition-type(folder-open)::view-transition-old(app-content),
+:root:active-view-transition-type(folder-close)::view-transition-old(app-content),
 :root:active-view-transition-type(calendar-in)::view-transition-old(app-content),
 :root:active-view-transition-type(calendar-out)::view-transition-old(app-content) {
   animation: none;
@@ -307,6 +326,8 @@ html[data-window-frame="rounded"] body::after {
 }
 :root:active-view-transition-type(note-open)::view-transition-new(app-content),
 :root:active-view-transition-type(note-close)::view-transition-new(app-content),
+:root:active-view-transition-type(folder-open)::view-transition-new(app-content),
+:root:active-view-transition-type(folder-close)::view-transition-new(app-content),
 :root:active-view-transition-type(calendar-in)::view-transition-new(app-content),
 :root:active-view-transition-type(calendar-out)::view-transition-new(app-content) {
   animation: none;

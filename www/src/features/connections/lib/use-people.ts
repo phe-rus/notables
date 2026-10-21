@@ -8,7 +8,7 @@ import { gatherPeople, PeopleSnapshot, type Person, type ShareSnapshot } from ".
 import { markSeen } from "../store/last-seen-store";
 
 /** Everyone this device shares with, live: re-renders as people come online or leave. */
-export function usePeople(): Person[] {
+export function usePeople(pollBrowser = true): Person[] {
   const browser = inBrowserSession();
   const [remote, setRemote] = useState<Person[]>([]);
   const shares = useShares();
@@ -26,7 +26,7 @@ export function usePeople(): Person[] {
   }, [shares, version]);
 
   useEffect(() => {
-    if (!browser) return;
+    if (!browser || !pollBrowser) return;
     let active = true;
     const refresh = async () => {
       try {
@@ -42,7 +42,7 @@ export function usePeople(): Person[] {
       active = false;
       clearInterval(timer);
     };
-  }, [browser]);
+  }, [browser, pollBrowser]);
   const visible = browser ? remote : people;
   // Whoever is here now was seen now; the list shows when the others last were.
   const online = visible.filter((person) => person.online).map((person) => person.key);

@@ -95,14 +95,15 @@ Latest Wallet checkpoint: [native session ownership](reviews/2026-10-20-wallet-n
 
 Work in this order; currency/tax suggestions come after the interaction work.
 
-- [ ] Folder plus and icon-based note-type chooser; ghost More action.
-- [ ] Folder bottom search/action capsule; minimize/restore on Android and iOS.
+- [x] Folder plus and icon-based note-type chooser; ghost More action.
+- [x] Folder bottom search/action capsule; Android minimize/restore verified.
+- [ ] Physical iPhone search/keyboard and motion acceptance.
 - [ ] Replace page slides with restrained transitions, retaining note-to-page matching.
-- [ ] Settings shares the app ground; compact Wallet privacy picker and normal word wrapping.
-- [ ] Years fills its scroll area, loads more years and offers gallery/list previews.
-- [ ] Calendar search and Calendars sheet with categories and event details.
-- [ ] Finances header scan/create actions, meaningful menu icons and current Hino accents.
-- [ ] Protect generated finance sheets from trash, bulk and permanent deletion.
+- [x] Settings shares the app ground; compact Wallet privacy picker and normal word wrapping.
+- [x] Years fills its scroll area, loads more years and offers gallery/list previews.
+- [x] Calendar search and Calendars sheet with categories and event details.
+- [x] Finances header scan/create actions, meaningful menu icons and current Hino accents.
+- [x] Protect generated finance sheets from trash, bulk and permanent deletion.
 - [ ] Implement the separate optional app/content Lock; preserve mandatory Wallet authentication.
 - [ ] Android/iOS native entry: share and text capture, app shortcuts, multiple widgets,
       Android Quick Settings tiles and supported Apple controls. Respect locked content.
@@ -118,23 +119,24 @@ ChromeOS; iOS continues through TestFlight. Keep desktop installers in one relea
 
 Before widgets and Lock:
 
-- [ ] Clear the three Vite/launch-editor advisories with Vite 8.3.3. Track the
-      GTK3-constrained GLib advisory separately with evidence rather than dismissing it.
-- [ ] Make Calendar exit to Workspace available at every zoom level; redesign its
+- [x] Patch Vite/launch-editor with Vite 8.3.3; patch the audit's Sharp advisory
+      with 0.35.5. The npm audit is clear.
+- [ ] Resolve the GTK3-constrained GLib advisory; evidence is recorded and the alert stays open.
+- [x] Make Calendar exit to Workspace available at every zoom level; redesign its
       Calendars sheet with compact hierarchy and useful details.
-- [ ] Reveal folders into their note lists with a shared source surface. Folder
+- [x] Reveal folders into their note lists with a shared source surface. Folder
       actions should expand the existing card, preserving its width and identity.
-- [ ] Hino menus should grow from their trigger, with continuous geometry on close.
+- [x] Hino anchored menus grow from their trigger, with continuous geometry on close.
       Keep light boundaries legible and dark boundaries quiet, using curved edge
       highlights rather than prominent outlines. Respect Reduce Motion.
-- [ ] Fix the magnified search-icon flicker and make slow-scroll collapse/restore
-      continuous. Keep final content and folder creation clear of the bottom bars.
+- [x] Fix the magnified search-icon flicker and make slow-scroll collapse/restore continuous.
+- [ ] Verify final content and folder creation clearance on iPhone.
 - [ ] Expose three or four useful folder header actions without duplicating the
       footer. In the editor retain only the note title, with compact icon actions;
       correct the editing toolbar's position and expansion.
 - [ ] Improve workspace search density and response; show useful Personal summaries
       for Calendar, Finances, Books and Circles. Give sidebar folders a tree hierarchy.
-- [ ] Consolidate Sidebar into Appearance and simplify Settings groups: writing,
+- [x] Consolidate native Sidebar into Appearance and simplify Settings groups: writing,
       listening and reminders together; AI writing help and widgets together.
       Use sentence case, including Recently deleted.
 - [ ] Review spreadsheet editing as a usable product, including selection,

@@ -3,8 +3,8 @@ import { navigationTransition } from "@/components/layout/navigation-transition"
 import { outerCalendarView } from "@/features/calendar/model/calendar-views";
 
 test("workspace and folders keep navigation direction without animating unchanged views", () => {
-  expect(navigationTransition("/", "/", undefined, "folder:one")).toBe("page-forward");
-  expect(navigationTransition("/", "/", "folder:one", "workspace")).toBe("page-back");
+  expect(navigationTransition("/", "/", undefined, "folder:one")).toBe("folder-open");
+  expect(navigationTransition("/", "/", "folder:one", "workspace")).toBe("folder-close");
   expect(navigationTransition("/", "/", "folder:one", "folder:two")).toBe("place-change");
   expect(navigationTransition("/", "/", "folder:one", "folder:one")).toBeNull();
 });

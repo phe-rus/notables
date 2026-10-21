@@ -10,6 +10,15 @@ version 8.3.3, with the lockfile regenerated. Validate the frozen install, both
 frontend builds, types, tests and Worker smoke before pushing. GitHub closes the
 alerts after scanning the updated default branch; do not claim closure beforehand.
 
+## Sharp follow-up
+
+The full npm audit also found [GHSA-wq5f-xc86-pv6w](https://github.com/advisories/GHSA-wq5f-xc86-pv6w)
+in Sharp 0.35.4, pinned by Miniflare beneath Wrangler and the Cloudflare Vite
+plugin. A root override selects the patched 0.35.5 without changing their other
+APIs. The regenerated lockfile and `bun audit --json` report no npm advisories.
+This correction follows v0.2.15. Remove the override when the parent toolchain
+resolves a patched release itself. Hino's separate npm audit reports no advisories.
+
 ## GLib
 
 Alert 1 is [RUSTSEC-2024-0429](https://rustsec.org/advisories/RUSTSEC-2024-0429.html).

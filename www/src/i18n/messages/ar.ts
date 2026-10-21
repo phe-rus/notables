@@ -437,6 +437,7 @@ export const ar: Messages = {
     swipeCopyLink: "نسخ رابط التطبيق",
     swipeNone: "بلا",
     privacy: "الخصوصية والأمان",
+    toolsAndAssistance: "الأدوات والمساعدة",
     ai: "مساعدة الكتابة بالذكاء الاصطناعي",
     title: "الإعدادات",
     appearance: "المظهر",

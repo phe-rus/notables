@@ -352,7 +352,7 @@ function WorkspaceShell() {
             detailOpen ? "flex" : "hidden md:flex",
           )}
         >
-          {/* Screens push in from the right on phones and settle into place on larger displays. */}
+          {/* Shared surfaces own navigation motion; the surrounding chrome stays live. */}
           <StudioHost>
             <TranscriptionProvider service={transcription}>
               <motion.div

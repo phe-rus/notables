@@ -26,6 +26,8 @@ import type { EditingFolder } from "@/features/library/model/workspace-types";
 import { t } from "@/i18n/i18n";
 import { inBrowserSession } from "@/platform/session/browser-session-store";
 import { deleteFolder } from "../lib/delete-folder";
+import { isTransitionFolder, prepareFolderTransition } from "../lib/folder-transition";
+import { usePersonalCounts } from "../lib/use-personal-counts";
 import { isGeneratedLedger } from "../model/generated-entry";
 import { folderView } from "../model/library-views";
 import {
@@ -40,6 +42,7 @@ import { FolderActions } from "./folder-actions";
 /** The workspace contains folders; each folder owns its note list. */
 export function WorkspaceScreen() {
   const folders = useFolders();
+  const personalCounts = usePersonalCounts();
   const notes = useLibrary().filter(isListedNote);
   const [editing, setEditing] = useState<EditingFolder | null>(null);
   const remove = async (folder: Folder) => {
@@ -121,11 +124,16 @@ export function WorkspaceScreen() {
               return (
                 <div
                   key={folder.id}
-                  className="flex items-center border-b border-separator/30 last:border-b-0"
+                  data-folder-transition={isTransitionFolder(folder.id) ? "" : undefined}
+                  className="flex flex-wrap items-center border-b border-separator/30 transition-colors last:border-b-0 [&:has([aria-expanded=true])]:bg-fill/30"
                 >
                   <Link
                     to="/"
                     search={{ view: `folder:${folder.id}` }}
+                    onClick={(event) => {
+                      const row = event.currentTarget.parentElement;
+                      if (row) prepareFolderTransition(folder.id, row);
+                    }}
                     className="flex min-h-12 min-w-0 grow items-center gap-2.5 px-3.5 py-1 text-label no-underline active:bg-fill"
                   >
                     <span data-accent={folder.color} className="flex shrink-0 text-accent-text">
@@ -183,6 +191,11 @@ export function WorkspaceScreen() {
                   >
                     <Icon size={18} className="text-accent-text" />
                     <span className="grow">{label}</span>
+                    {personalCounts[to] !== undefined && (
+                      <span className="text-caption tabular-nums text-label-secondary">
+                        {personalCounts[to]}
+                      </span>
+                    )}
                   </Link>
                 ))}
             </div>

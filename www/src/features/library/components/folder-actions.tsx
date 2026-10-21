@@ -1,40 +1,76 @@
-import { MoreIcon } from "@phe-rus/hino";
+import { MoreIcon, spring } from "@phe-rus/hino";
 import { IconButton } from "@phe-rus/hino/icon-button";
-import { useCallback, useRef, useState } from "react";
-import { CompactActionPopover } from "@/components/actions/compact-action-popover";
+import { AnimatePresence, motion, useReducedMotion } from "motion/react";
+import { type KeyboardEvent, useId, useRef, useState } from "react";
 import type { FolderActionsProps } from "@/features/library/model/workspace-types";
 import { t } from "@/i18n/i18n";
 
+/** Folder actions unfold within their row, keeping the source card's width. */
 export function FolderActions({ name, actions }: FolderActionsProps) {
-  const owner = useRef<HTMLSpanElement>(null);
-  const [anchor, setAnchor] = useState<HTMLElement | null>(null);
-  const close = useCallback(() => setAnchor(null), []);
+  const [open, setOpen] = useState(false);
+  const panelId = useId();
+  const trigger = useRef<HTMLButtonElement>(null);
+  const reducedMotion = useReducedMotion();
+  const close = () => {
+    setOpen(false);
+    trigger.current?.focus({ preventScroll: true });
+  };
+  const closeOnEscape = (event: KeyboardEvent<HTMLElement>) => {
+    if (event.key === "Escape" && !event.defaultPrevented) {
+      event.preventDefault();
+      close();
+    }
+  };
   return (
-    <span ref={owner} className="me-2 shrink-0">
+    <span className="contents">
       <IconButton
+        ref={trigger}
         size="icon-xs"
-        className="[@media(pointer:coarse)]:before:absolute [@media(pointer:coarse)]:before:-inset-1.5 [@media(pointer:coarse)]:before:content-['']"
+        className="me-2 [@media(pointer:coarse)]:before:absolute [@media(pointer:coarse)]:before:-inset-1.5 [@media(pointer:coarse)]:before:content-['']"
         variant="ghost"
         label={t("workspace.folderOptions", { name })}
-        aria-expanded={anchor !== null}
-        aria-haspopup="dialog"
-        onClick={(event) => {
-          const target = event.currentTarget;
-          setAnchor((current) => (current ? null : target));
-        }}
+        aria-expanded={open}
+        aria-controls={panelId}
+        onClick={() => setOpen((value) => !value)}
+        onKeyDown={closeOnEscape}
       >
         <MoreIcon size={18} />
       </IconButton>
-      {anchor && (
-        <CompactActionPopover
-          title={name}
-          hint={t("common.actionHint")}
-          actions={actions}
-          anchor={anchor}
-          owner={owner}
-          onClose={close}
-        />
-      )}
+      <AnimatePresence initial={false}>
+        {open && (
+          <motion.span
+            id={panelId}
+            className="block w-full overflow-hidden"
+            initial={{ height: 0, opacity: 0 }}
+            animate={{ height: "auto", opacity: 1 }}
+            exit={{ height: 0, opacity: 0 }}
+            transition={reducedMotion ? { duration: 0 } : spring.smooth}
+          >
+            <span
+              role="toolbar"
+              aria-label={t("workspace.folderOptions", { name })}
+              className="flex justify-end gap-2 px-3 pb-2"
+            >
+              {actions.map((action) => (
+                <IconButton
+                  key={action.label}
+                  label={action.label}
+                  size="icon-xs"
+                  variant={action.destructive ? "destructive" : "ghost"}
+                  disabled={action.disabled}
+                  onKeyDown={closeOnEscape}
+                  onClick={() => {
+                    close();
+                    action.onSelect();
+                  }}
+                >
+                  {action.icon}
+                </IconButton>
+              ))}
+            </span>
+          </motion.span>
+        )}
+      </AnimatePresence>
     </span>
   );
 }

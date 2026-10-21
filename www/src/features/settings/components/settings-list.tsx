@@ -3,6 +3,7 @@ import { Link } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 import { t } from "@/i18n/i18n";
 import { useAuthorName } from "@/platform/author-preferences";
+import { isTauri } from "@/platform/runtime";
 import { useSpace } from "@/platform/space/space-identity";
 import { useSpaceDevices } from "@/platform/space/use-space-devices";
 import { type SettingsPageId, settingsGroups, settingsPages } from "./settings-catalog";
@@ -23,6 +24,12 @@ export function SettingsList({ current }: { current: SettingsPageId | null }) {
   const [ready, setReady] = useState(false);
   useEffect(() => setReady(true), []);
   const shown = (id: SettingsPageId) => {
+    if (
+      ready &&
+      isTauri() &&
+      ["sidebar", "listening", "reminders", "haptics", "widgets"].includes(id)
+    )
+      return false;
     const check = settingsPages[id].available;
     return !check || (ready && check());
   };

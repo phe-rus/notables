@@ -40,6 +40,9 @@
       "perfect-freehand": "1.2.3"
     }
   },
+  "overrides": {
+    "sharp": "0.35.5"
+  },
   "scripts": {
     "dev": "turbo run dev",
     "android:chromeos": "bun scripts/android/chromeos.ts",

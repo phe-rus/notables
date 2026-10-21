@@ -75,8 +75,6 @@ import { editorLabels } from "../lib/editor-labels";
 import { NoteTagsSheet } from "./note-tags-sheet";
 
 const statusLabel = (status: SyncStatus) => t(`notes.status.${status}`);
-/** How far the page scrolls before the title has left the screen and moves into the bar. */
-const TITLE_SCROLLED_PX = 72;
 
 /*
  * The top bar answers to the width of the note's own pane, not the window:
@@ -160,7 +158,6 @@ function NoteEditorScreen({
   const articleRef = useRef<HTMLElement>(null);
   const readTrigger = useRef<HTMLButtonElement>(null);
   const publishTrigger = useRef<HTMLButtonElement>(null);
-  const [titleInBar, setTitleInBar] = useState(false);
   // On touch screens a note opens for reading, so scrolling never brings up
   // the keyboard; a tap on its text edits, and Done reads again. New notes
   // open ready to type.
@@ -308,10 +305,7 @@ function NoteEditorScreen({
         data-note-transition=""
         className="@container/note relative flex min-h-0 grow flex-col"
       >
-        <div
-          className="relative flex min-h-0 grow flex-col overflow-y-auto"
-          onScroll={(event) => setTitleInBar(event.currentTarget.scrollTop > TITLE_SCROLLED_PX)}
-        >
+        <div className="relative flex min-h-0 grow flex-col overflow-y-auto">
           <header className="glass-bar sticky top-0 z-20 flex box-content h-14 shrink-0 items-center justify-between gap-2 px-3 pt-[env(safe-area-inset-top)] @min-[600px]/note:px-5">
             {book ? (
               // A chapter leads back to its book, on every screen size.
@@ -329,17 +323,10 @@ function NoteEditorScreen({
                 viewTransition={{ types: ["note-close"] }}
                 onClick={() => rememberNoteTransition(entry.id)}
                 search={{ view: folder ? `folder:${folder.id}` : undefined }}
+                aria-label={t("common.back")}
                 className="flex min-h-11 shrink-0 items-center gap-0.5 px-1 text-body text-accent-text no-underline md:hidden"
               >
                 <ChevronLeftIcon size={22} strokeWidth={2.2} className="shrink-0" />
-                <span
-                  className={cn(
-                    "max-w-[40cqw] truncate transition-opacity duration-200",
-                    titleInBar && "@max-[860px]/note:sr-only",
-                  )}
-                >
-                  {folder?.name || t("nav.workspace")}
-                </span>
               </Link>
             )}
             <span className="min-w-0 flex-1 truncate text-center text-body font-semibold text-label">

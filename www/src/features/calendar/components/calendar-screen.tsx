@@ -265,7 +265,7 @@ export function CalendarScreen({
         {collapsed && <CollapsedSidebarControls />}
         <div data-tauri-drag-region className="flex items-center justify-between gap-2">
           <div className="flex min-w-0 items-center gap-1">
-            {(!phone || view === "years") && <WorkspaceBackLink />}
+            <WorkspaceBackLink />
             <IconButton
               size="icon-sm"
               variant="ghost"
@@ -277,7 +277,7 @@ export function CalendarScreen({
             </IconButton>
             <CalendarZoomTitle
               title={backToMonth ? monthTitle : (backTitle ?? title)}
-              back={backToMonth || backTitle !== null}
+              back={false}
               year={view === "year" ? scrolledYear : year}
               zoomOut={
                 outerCalendarView[view]

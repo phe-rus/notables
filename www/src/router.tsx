@@ -31,7 +31,8 @@ export function getRouter() {
           searchView(fromLocation?.search),
           searchView(toLocation.search),
         );
-        return type ? [type] : false;
+        // The live tab capsule owns place changes; a page snapshot would freeze its selection spring.
+        return type && type !== "place-change" ? [type] : false;
       },
     },
   });

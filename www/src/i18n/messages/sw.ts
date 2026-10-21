@@ -431,6 +431,7 @@ export const sw: Messages = {
     swipeCopyLink: "Nakili kiungo cha programu",
     swipeNone: "Hakuna",
     privacy: "Faragha na usalama",
+    toolsAndAssistance: "Zana na usaidizi",
     ai: "Msaada wa uandishi wa AI",
     title: "Mipangilio",
     appearance: "Mwonekano",

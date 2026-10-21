@@ -413,6 +413,7 @@ export const zh: Messages = {
     swipeCopyLink: "拷贝应用链接",
     swipeNone: "无",
     privacy: "隐私与安全",
+    toolsAndAssistance: "工具与辅助",
     ai: "AI 写作助手",
     title: "设置",
     appearance: "外观",

@@ -122,6 +122,15 @@ Gotchas learned the hard way:
 
 ## Status (October 2026)
 
+- v0.2.15 completed Linux, Windows, Android/ChromeOS and iOS builds; desktop
+  preview installers are published together. Following it, Hino 0.1.10 is
+  published and deployed, with source-anchored menu reveals and revised rims.
+  Folder reveals/actions, Calendar exit/sheet, native Settings consolidation,
+  sidebar disclosures and local Personal counts have TECNO evidence in
+  [the source reveal record](docs/reviews/2026-10-21-source-reveals.md).
+  The post-release Sharp patch clears the npm audit; GLib remains unresolved.
+  The follow-up release uses v0.2.16; check its CI and TestFlight processing.
+
 - Release scope, 21 October: desktop CI now builds Linux x64 and Windows x64
   only; macOS setup is deferred. Android retains arm64/x86_64 for phones and
   ChromeOS. Vite moves to 8.3.3 for three Dependabot advisories; the GTK3-bound
@@ -129,7 +138,7 @@ Gotchas learned the hard way:
 
 - 21 October controls checkpoint: Hino 0.1.9 is published and pinned. Folder
   creation/search, Calendar sources/search/year layouts, finance header actions
-  and generated-ledger deletion protection are implemented but unreleased.
+  and generated-ledger deletion protection shipped in v0.2.15.
   Settings shares the app ground. TECNO confirms 48-pixel tabs/search and
   keyboard clearance. Read [the controls record](docs/reviews/2026-10-21-folder-and-calendar-controls.md)
   before continuing physical checks.
@@ -712,9 +721,10 @@ TestFlight refuse the upload; each build asks in TestFlight instead.
 
 ## Next
 
-- Finish controls acceptance from the 21 October record, including the year
-  anchoring correction and iPhone behavior, then native Lock, widgets and system
-  entry points. Keep Wallet security separate from app/content Lock.
+- Continue from the source reveal record: editing dock, workspace search and
+  spreadsheet editing need work, then native widgets, system entry points and
+  app/content Lock. Verify iPhone behavior separately. Keep mandatory Wallet
+  security separate; the GTK3/GLib dependency issue remains open.
 
 - Verify the 21 October viewport and calendar refinements on iPhone, then
   continue native widgets. Keep physical iOS evidence separate from browser

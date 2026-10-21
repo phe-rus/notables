@@ -42,6 +42,7 @@ import {
   useLibrary,
 } from "../store/library-store";
 import { RECENT_WINDOW, useOpened } from "../store/recents-store";
+import { SidebarFolder } from "./sidebar-folder";
 import { SidebarProfileRow } from "./sidebar-profile-row";
 import { ActionRow, NavItem, SectionHeader } from "./sidebar-rows";
 import { SidebarTopBar } from "./sidebar-top-bar";
@@ -225,21 +226,13 @@ export function Sidebar({
               renaming?.id === folder.id ? (
                 <div key={folder.id}>{folderInput()}</div>
               ) : (
-                <NavItem
+                <SidebarFolder
                   key={folder.id}
-                  to="/"
-                  search={{ view: `folder:${folder.id}` }}
+                  folder={folder}
+                  entries={entries.filter((entry) => entry.folderId === folder.id)}
                   active={active === `folder:${folder.id}`}
-                  icon={
-                    <span data-accent={folder.color} className="text-accent-text">
-                      <FolderIcon size={17} />
-                    </span>
-                  }
-                  trailing={
-                    counts
-                      ? entries.filter((entry) => entry.folderId === folder.id).length
-                      : undefined
-                  }
+                  activeNoteId={activeNoteId}
+                  counts={counts}
                   menu={() => [
                     {
                       label: t("workspace.renameFolder"),
@@ -256,9 +249,7 @@ export function Sidebar({
                       onSelect: () => void removeFolder(folder),
                     },
                   ]}
-                >
-                  {folder.name}
-                </NavItem>
+                />
               ),
             )}
             {folders.length === 0 && (

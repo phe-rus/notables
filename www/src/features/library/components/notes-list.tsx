@@ -1,4 +1,4 @@
-import { NoteKind } from "@notables/core";
+import type { NoteKind } from "@notables/core";
 import {
   CalendarIcon,
   ChaptersIcon,
@@ -11,9 +11,7 @@ import {
   LayoutIcon,
   MoreIcon,
   NoteIcon,
-  openFollowUpMenu,
   openMenu,
-  PenIcon,
   PhotoIcon,
   PlusIcon,
   SearchField,
@@ -23,15 +21,7 @@ import {
 import { Button } from "@phe-rus/hino/button";
 import { Link, useNavigate } from "@tanstack/react-router";
 import { AnimatePresence, motion } from "motion/react";
-import {
-  createElement,
-  useCallback,
-  useDeferredValue,
-  useEffect,
-  useMemo,
-  useRef,
-  useState,
-} from "react";
+import { useCallback, useDeferredValue, useEffect, useMemo, useRef, useState } from "react";
 import { FloatingSearchToolbar } from "@/components/navigation/floating-search-toolbar";
 import { CollapsedSidebarControls } from "@/components/window/collapsed-sidebar-controls";
 import { BookShelf, useShelfBooks } from "@/features/books/components/book-shelf";
@@ -43,11 +33,10 @@ import type { ListPreferences } from "@/features/settings/model/preferences";
 import { updatePreferences, usePreferences } from "@/features/settings/store/preferences-store";
 import { t } from "@/i18n/i18n";
 import { bucket } from "../lib/date-format";
+import { rememberFolderTransition } from "../lib/folder-transition";
 import { openNoteCreation } from "../lib/note-creation-menu";
 import { useHoldToSelect } from "../lib/use-hold-to-select";
 import { type GroupId, groupOf, type View } from "../model/library-views";
-import { noteKindIcons } from "../model/note-kind-icons";
-import { noteKindLabels } from "../model/note-kind-labels";
 import { isListedNote, type LibraryEntry, useLibraryReady } from "../store/library-store";
 import { GroupSwitcher } from "./group-switcher";
 import { NewNoteButton } from "./new-note-button";
@@ -209,6 +198,7 @@ export function NotesList({
   return (
     <section
       aria-label={view.title}
+      data-folder-transition={view.folderId ? "" : undefined}
       className={cn(
         "relative flex min-h-0 w-full flex-col md:w-[330px] md:shrink-0 md:border-r md:border-separator/70",
         options.layout === "list" ? "bg-fill/45" : "bg-surface",
@@ -227,6 +217,9 @@ export function NotesList({
                 <Link
                   to="/"
                   search={{}}
+                  onClick={() => {
+                    if (view.folderId) rememberFolderTransition(view.folderId);
+                  }}
                   aria-label={t("nav.workspace")}
                   className="flex size-11 shrink-0 items-center justify-center rounded-full text-accent-text md:hidden"
                 >
@@ -261,62 +254,48 @@ export function NotesList({
               <NewNoteButton onCreate={onCreateNote} className="hidden md:inline-flex" />
             )}
             {!selecting && (
+              <>
+                <IconButton
+                  size="icon-xs"
+                  variant="ghost"
+                  label={t(
+                    options.layout === "gallery"
+                      ? "workspace.viewAsList"
+                      : "workspace.viewAsGallery",
+                  )}
+                  onClick={() =>
+                    updatePreferences((p) => ({
+                      ...p,
+                      list: {
+                        ...p.list,
+                        layout: options.layout === "gallery" ? "list" : "gallery",
+                      },
+                    }))
+                  }
+                >
+                  {options.layout === "gallery" ? (
+                    <ChaptersIcon size={18} />
+                  ) : (
+                    <LayoutIcon size={18} />
+                  )}
+                </IconButton>
+                <IconButton
+                  size="icon-xs"
+                  variant="ghost"
+                  label={t("notes.selectTitle")}
+                  onClick={() => select(new Set())}
+                >
+                  <ChecklistIcon size={18} />
+                </IconButton>
+              </>
+            )}
+            {!selecting && (
               <IconButton
                 size="icon-xs"
                 variant="ghost"
                 label={t("notes.more")}
                 onClick={(event) => {
                   const items: ContextMenuItem[] = [
-                    {
-                      icon:
-                        options.layout === "gallery" ? (
-                          <ChaptersIcon size={18} />
-                        ) : (
-                          <LayoutIcon size={18} />
-                        ),
-                      label: t(
-                        options.layout === "gallery"
-                          ? "workspace.viewAsList"
-                          : "workspace.viewAsGallery",
-                      ),
-                      onSelect: () =>
-                        updatePreferences((p) => ({
-                          ...p,
-                          list: {
-                            ...p.list,
-                            layout: options.layout === "gallery" ? "list" : "gallery",
-                          },
-                        })),
-                    },
-                    {
-                      label: t("nav.newNote"),
-                      icon: <PenIcon size={18} />,
-                      onSelect: () =>
-                        openFollowUpMenu([
-                          {
-                            label: t("common.back"),
-                            icon: <ChevronLeftIcon size={18} className="rtl:-scale-x-100" />,
-                            onSelect: () => openFollowUpMenu(items),
-                          },
-                          "divider",
-                          ...NoteKind.options.map((kind) => ({
-                            label: noteKindLabels[kind],
-                            icon: createElement(noteKindIcons[kind], { size: 18 }),
-                            onSelect: () => onCreateNote(kind),
-                          })),
-                          {
-                            label: t("spreadsheet.title"),
-                            icon: <LayoutIcon size={18} />,
-                            onSelect: () => onCreateNote("note", "spreadsheet"),
-                          },
-                        ]),
-                    },
-                    {
-                      label: t("notes.selectTitle"),
-                      icon: <ChecklistIcon size={18} />,
-                      onSelect: () => select(new Set()),
-                    },
-                    "divider",
                     ...(["edited", "created", "title"] as const).map((sort) => ({
                       icon: sort === "title" ? <NoteIcon size={18} /> : <ClockIcon size={18} />,
                       label: t(

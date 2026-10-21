@@ -13,8 +13,10 @@ const places = new Set([
 export function navigationTransition(from: string, to: string, fromView?: string, toView?: string) {
   if (from === "/" && to === "/") {
     if (fromView === toView) return null;
-    if (!fromView || fromView === "workspace") return "page-forward";
-    if (!toView || toView === "workspace") return "page-back";
+    if (!fromView || fromView === "workspace")
+      return toView?.startsWith("folder:") ? "folder-open" : "page-forward";
+    if (!toView || toView === "workspace")
+      return fromView.startsWith("folder:") ? "folder-close" : "page-back";
     return "place-change";
   }
   if (from === to) return null;

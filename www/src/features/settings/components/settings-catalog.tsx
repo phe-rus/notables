@@ -94,7 +94,13 @@ export const settingsPages: Record<SettingsPageId, SettingsPage> = {
       return t("settings.appearance");
     },
     icon: <BrushIcon size={17} />,
-    content: () => <AppearancePage />,
+    content: () => (
+      <>
+        <AppearancePage />
+        {isTauri() && <SidebarPage />}
+        {isTauri() && hapticsAvailable() && <HapticsSettingsSection />}
+      </>
+    ),
   }),
   notes: page({
     id: "notes",
@@ -102,7 +108,18 @@ export const settingsPages: Record<SettingsPageId, SettingsPage> = {
       return t("settings.writing");
     },
     icon: <NoteIcon size={17} />,
-    content: () => <NotesListPage />,
+    content: () => (
+      <>
+        <NotesListPage />
+        {isTauri() && (
+          <>
+            <ListeningSettingsSection />
+            <ModelPacksSection />
+            <ReminderSettingsSection />
+          </>
+        )}
+      </>
+    ),
   }),
   sidebar: page({
     id: "sidebar",
@@ -174,10 +191,15 @@ export const settingsPages: Record<SettingsPageId, SettingsPage> = {
   ai: page({
     id: "ai",
     get title() {
-      return t("settings.ai");
+      return t(isTauri() ? "settings.toolsAndAssistance" : "settings.ai");
     },
     icon: <SparkleIcon size={17} />,
-    content: () => <AiSettingsSection />,
+    content: () => (
+      <>
+        <AiSettingsSection />
+        {isTauri() && <WidgetsSettingsSection />}
+      </>
+    ),
     available: onDevice(),
   }),
   about: page({

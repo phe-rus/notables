@@ -441,6 +441,7 @@ export const fr: Messages = {
     swipeCopyLink: "Copier le lien de l’app",
     swipeNone: "Aucune",
     privacy: "Confidentialité et sécurité",
+    toolsAndAssistance: "Outils et assistance",
     ai: "Aide à l’écriture par IA",
     title: "Réglages",
     appearance: "Apparence",
