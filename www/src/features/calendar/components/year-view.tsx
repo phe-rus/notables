@@ -7,7 +7,8 @@ import {
   occurrencesBetween,
 } from "@notables/core";
 import { cn } from "@phe-rus/hino";
-import { useLayoutEffect, useMemo, useRef, useState } from "react";
+import { Button } from "@phe-rus/hino/button";
+import { useEffect, useLayoutEffect, useMemo, useRef, useState } from "react";
 import { locale } from "@/i18n/i18n";
 import { useHolidays } from "../lib/holidays";
 import { monthGrid, weekdayNames } from "../lib/month-grid";
@@ -18,7 +19,7 @@ const monthTitle = (year: number, month: number) =>
   );
 
 /** Years kept above and below the one in view; more join as the scroll nears an end. */
-const AROUND = 2;
+const AROUND = 1;
 const EDGE = 600;
 
 /**
@@ -41,16 +42,39 @@ export function YearView({
   events: CalendarEvent[];
   /** The year the scroll has reached, for the title. */
   onVisibleYear: (year: number) => void;
-  onMonth: (year: number, month: number) => void;
+  onMonth: (year: number, month: number, anchor: HTMLElement) => void;
 }) {
   const scroller = useRef<HTMLDivElement>(null);
   const [range, setRange] = useState(() => ({
-    first: Math.max(FIRST_YEAR, year - AROUND),
-    last: Math.min(LAST_YEAR, year + AROUND),
+    first: year,
+    last: year,
   }));
   // Height before years were added above, so the view doesn't jump.
   const before = useRef<number | null>(null);
   const shown = useRef(year);
+
+  // Build the chosen year first; prepare upward scrolling once the opening settles.
+  useEffect(() => {
+    const preparePrevious = () => {
+      const element = scroller.current;
+      const first = element?.querySelector<HTMLElement>("[data-year]");
+      if (
+        !element ||
+        Number(first?.dataset.year) !== year ||
+        year === FIRST_YEAR ||
+        before.current !== null
+      )
+        return;
+      before.current = element.scrollHeight;
+      setRange((current) => ({ ...current, first: year - 1 }));
+    };
+    if ("requestIdleCallback" in window) {
+      const id = window.requestIdleCallback(preparePrevious, { timeout: 1200 });
+      return () => window.cancelIdleCallback(id);
+    }
+    const id = setTimeout(preparePrevious, 400);
+    return () => clearTimeout(id);
+  }, [year]);
 
   // Start on the chosen year.
   useLayoutEffect(() => {
@@ -105,7 +129,7 @@ export function YearView({
     <div
       ref={scroller}
       onScroll={onScroll}
-      className="@container/year min-h-0 grow overflow-y-auto px-4 pb-28 [overflow-anchor:none] md:pb-8"
+      className="@container/year scroll-surface min-h-0 grow px-4 [overflow-anchor:none]"
     >
       {Array.from({ length: range.last - range.first + 1 }, (_, i) => range.first + i).map(
         (value) => (
@@ -113,19 +137,20 @@ export function YearView({
             <h2
               data-year={value}
               className={cn(
-                "border-b border-separator/60 pb-1 text-[30px] font-bold tracking-tight tabular-nums",
+                "pb-1 text-title font-bold tracking-tight tabular-nums",
                 value === thisYear && "text-accent-text",
               )}
             >
               {value}
             </h2>
-            <div className="grid grid-cols-2 gap-x-6 gap-y-5 @min-[600px]/year:grid-cols-3 @min-[880px]/year:grid-cols-4">
+            <div className="grid grid-cols-3 gap-x-3 gap-y-5 @min-[880px]/year:grid-cols-4">
               {Array.from({ length: 12 }, (_, month) => (
-                <button
+                <Button
+                  variant="ghost"
                   key={month}
                   type="button"
-                  onClick={() => onMonth(value, month)}
-                  className="flex flex-col gap-1.5 rounded-xl p-1 text-start transition-colors hover:bg-fill/40"
+                  onClick={(event) => onMonth(value, month, event.currentTarget)}
+                  className="h-auto flex flex-col gap-1.5 rounded-xl p-1 text-start [&>span]:w-full [&>span]:flex-col [&>span]:items-stretch transition-colors hover:bg-fill/40"
                 >
                   <span
                     className={cn(
@@ -136,7 +161,7 @@ export function YearView({
                   >
                     {monthTitle(value, month)}
                   </span>
-                  <span className="grid grid-cols-7 text-center text-[9px] font-semibold text-label-tertiary">
+                  <span className="grid grid-cols-7 text-center text-caption2 font-semibold text-label-tertiary">
                     {narrow.map((name, index) => (
                       <span key={index}>{name}</span>
                     ))}
@@ -154,7 +179,7 @@ export function YearView({
                           >
                             <span
                               className={cn(
-                                "flex size-[22px] items-center justify-center rounded-full",
+                                "flex size-full max-h-5 max-w-5 items-center justify-center rounded-full",
                                 day === today && "bg-accent font-semibold text-on-accent",
                                 closed && day !== today && "text-danger",
                               )}
@@ -168,7 +193,7 @@ export function YearView({
                         );
                       })}
                   </span>
-                </button>
+                </Button>
               ))}
             </div>
           </section>

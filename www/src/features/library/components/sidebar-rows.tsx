@@ -1,4 +1,5 @@
 import { ChevronRightIcon, type ContextMenuItem, cn, spring, useContextMenu } from "@phe-rus/hino";
+import { Button } from "@phe-rus/hino/button";
 import { Link, type LinkProps } from "@tanstack/react-router";
 import { motion } from "motion/react";
 import type { ReactNode } from "react";
@@ -13,7 +14,7 @@ export function SectionHeader({ title, action }: { title: string; action?: React
 }
 
 const rowClass =
-  "group relative isolate flex items-center gap-2.5 rounded-md px-2.5 py-[6px] text-subheadline text-label no-underline transition-colors duration-fast";
+  "group relative isolate flex items-center gap-2.5 rounded-lg px-2.5 py-[6px] text-subheadline text-label no-underline transition-colors duration-fast";
 
 export function ActionRow({
   icon,
@@ -27,13 +28,21 @@ export function ActionRow({
   children: ReactNode;
 }) {
   return (
-    <button type="button" onClick={onClick} className={cn(rowClass, "text-left hover:bg-fill/70")}>
+    <Button
+      variant="ghost"
+      type="button"
+      onClick={onClick}
+      className={cn(
+        rowClass,
+        "h-auto justify-start text-left font-normal hover:bg-fill/50 [&>span]:w-full [&>span]:justify-start [&>span]:gap-2.5",
+      )}
+    >
       <span className="flex text-label-secondary">{icon}</span>
       <span className="grow">{children}</span>
       <kbd className="font-sans text-caption text-label-tertiary opacity-0 transition-opacity group-hover:opacity-100">
         {shortcut}
       </kbd>
-    </button>
+    </Button>
   );
 }
 
@@ -53,12 +62,16 @@ export function DisclosureRow({
   children: ReactNode;
 }) {
   return (
-    <button
+    <Button
+      variant="ghost"
       type="button"
       aria-expanded={open}
       aria-controls={controls}
       onClick={onToggle}
-      className={cn(rowClass, "text-left hover:bg-fill/70")}
+      className={cn(
+        rowClass,
+        "h-auto justify-start text-left font-normal hover:bg-fill/50 [&>span]:w-full [&>span]:justify-start [&>span]:gap-2.5",
+      )}
     >
       <span className="flex text-label-secondary">{icon}</span>
       <span className="grow truncate">{children}</span>
@@ -69,7 +82,7 @@ export function DisclosureRow({
       >
         <ChevronRightIcon size={14} />
       </motion.span>
-    </button>
+    </Button>
   );
 }
 
@@ -108,7 +121,7 @@ export function NavItem({
         <motion.span
           layoutId="sidebar-selection"
           className={cn(
-            "absolute inset-0 -z-10 rounded-md",
+            "absolute inset-0 -z-10 rounded-lg",
             tone === "danger" ? "bg-danger/12" : "bg-accent-soft",
           )}
           transition={spring.snappy}

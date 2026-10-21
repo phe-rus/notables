@@ -19,6 +19,7 @@ import {
   SidebarIcon,
   spring,
 } from "@phe-rus/hino";
+import { Button } from "@phe-rus/hino/button";
 import { Link, useNavigate } from "@tanstack/react-router";
 import { AnimatePresence, motion } from "motion/react";
 import {
@@ -247,16 +248,9 @@ export function NotesList({
           </div>
           <div className="flex shrink-0 items-center gap-1">
             {selecting && (
-              <button
-                type="button"
-                onClick={() => (selecting ? stopSelecting() : select(new Set()))}
-                className={cn(
-                  "h-8 rounded-full px-3 text-subheadline text-accent-text transition-colors hover:bg-fill",
-                  selecting && "font-semibold",
-                )}
-              >
-                {selecting ? t("common.done") : t("notes.select")}
-              </button>
+              <Button size="xs" variant="ghost" onClick={stopSelecting}>
+                {t("common.done")}
+              </Button>
             )}
             {!selecting && (
               <IconButton
@@ -367,7 +361,7 @@ export function NotesList({
       <div
         ref={scroller}
         onScroll={() => swiped && setSwiped(null)}
-        className="flex min-h-0 flex-1 flex-col overflow-y-auto overscroll-y-contain px-4"
+        className="scroll-surface flex min-h-0 flex-1 flex-col px-4"
       >
         <BookShelf
           books={shelfBooks}
@@ -447,10 +441,7 @@ export function NotesList({
             </div>
           </div>
         ))}
-        <div
-          aria-hidden="true"
-          className="h-[calc(112px+env(safe-area-inset-bottom))] shrink-0 md:h-8"
-        />
+        <div aria-hidden="true" className="h-2 shrink-0" />
       </div>
       <AnimatePresence>
         {selecting && (
@@ -473,13 +464,9 @@ function EmptyList({ searching, onCreate }: { searching: boolean; onCreate: () =
         {searching ? t("notes.noMatches") : t("notes.empty")}
       </p>
       {!searching && (
-        <button
-          type="button"
-          onClick={onCreate}
-          className="rounded-full bg-accent px-4 py-2 text-subheadline font-semibold text-on-accent transition-transform active:scale-[0.97]"
-        >
+        <Button size="sm" onClick={onCreate}>
           {t("notes.writeSomething")}
-        </button>
+        </Button>
       )}
     </div>
   );

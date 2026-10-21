@@ -7,8 +7,6 @@ import {
   FolderIcon,
   IconButton,
   InvoiceIcon,
-  MoreIcon,
-  openMenu,
   PenIcon,
   PeopleIcon,
   PlusIcon,
@@ -19,10 +17,12 @@ import {
 } from "@phe-rus/hino";
 import { Button } from "@phe-rus/hino/button";
 import { Sheet } from "@phe-rus/hino/sheet";
-import { type AccentId, accents } from "@phe-rus/hino/tokens";
+import { TextField } from "@phe-rus/hino/text-field";
+import { accents } from "@phe-rus/hino/tokens";
 import { Link } from "@tanstack/react-router";
 import { useState } from "react";
 import { setDrawerOpen } from "@/components/layout/drawer-store";
+import type { EditingFolder } from "@/features/library/model/workspace-types";
 import { t } from "@/i18n/i18n";
 import { inBrowserSession } from "@/platform/session/browser-session-store";
 import { deleteFolder } from "../lib/delete-folder";
@@ -34,16 +34,13 @@ import {
   useFolders,
   useLibrary,
 } from "../store/library-store";
+import { FolderActions } from "./folder-actions";
 
 /** The workspace contains folders; each folder owns its note list. */
 export function WorkspaceScreen() {
   const folders = useFolders();
   const notes = useLibrary().filter(isListedNote);
-  const [editing, setEditing] = useState<{
-    id: string | null;
-    name: string;
-    color?: AccentId;
-  } | null>(null);
+  const [editing, setEditing] = useState<EditingFolder | null>(null);
   const remove = async (folder: Folder) => {
     if (
       await confirmDialog({
@@ -87,7 +84,7 @@ export function WorkspaceScreen() {
     },
   ];
   return (
-    <section className="flex min-h-0 grow flex-col bg-background">
+    <section className="flex min-h-0 grow flex-col">
       <header
         data-tauri-drag-region
         className="flex items-center gap-3 px-5 pt-[max(16px,env(safe-area-inset-top))] pb-5"
@@ -111,9 +108,9 @@ export function WorkspaceScreen() {
           <PlusIcon size={23} />
         </IconButton>
       </header>
-      <div className="@container/workspace grow overflow-y-auto px-5 pb-32">
+      <div className="@container/workspace scroll-surface grow px-5">
         <div className="mx-auto flex max-w-[clamp(28rem,72cqi,42rem)] flex-col gap-5">
-          <div className="overflow-hidden rounded-3xl border border-separator/50 bg-paper">
+          <div className="overflow-hidden rounded-3xl bg-paper">
             {folders.map((folder, index) => {
               const fallback =
                 folder.id ===
@@ -122,7 +119,7 @@ export function WorkspaceScreen() {
               return (
                 <div
                   key={folder.id}
-                  className="flex items-center border-b border-separator/50 last:border-b-0"
+                  className="flex items-center border-b border-separator/30 last:border-b-0"
                 >
                   <Link
                     to="/"
@@ -144,36 +141,26 @@ export function WorkspaceScreen() {
                       {entries.length}
                     </span>
                   </Link>
-                  <IconButton
-                    size="icon-sm"
-                    variant="ghost"
-                    label={t("workspace.folderOptions", { name: folder.name })}
-                    className="me-2 shrink-0"
-                    onClick={(event) =>
-                      openMenu(event.currentTarget, menu(folder, index), { edge: "trailing" })
-                    }
-                  >
-                    <MoreIcon size={20} />
-                  </IconButton>
+                  <FolderActions name={folder.name} actions={menu(folder, index)} />
                 </div>
               );
             })}
             {folders.length === 0 && (
-              <button
-                type="button"
+              <Button
+                variant="ghost"
                 className="flex min-h-11 w-full items-center gap-2.5 px-3.5 text-subheadline text-accent-text active:bg-fill"
                 onClick={() => setEditing({ id: null, name: "" })}
               >
                 <PlusIcon size={18} />
                 {t("workspace.newFolder")}
-              </button>
+              </Button>
             )}
           </div>
           <section className="flex flex-col gap-2">
             <h2 className="px-1 text-footnote font-semibold text-label-secondary">
               {t("nav.artifacts")}
             </h2>
-            <div className="overflow-hidden rounded-3xl border border-separator/50 bg-paper">
+            <div className="overflow-hidden rounded-3xl bg-paper">
               {(
                 [
                   { to: "/books", label: t("nav.books"), Icon: BookIcon },
@@ -190,7 +177,7 @@ export function WorkspaceScreen() {
                     key={to}
                     to={to}
                     search={{}}
-                    className="flex min-h-11 items-center gap-2.5 border-b border-separator/50 px-3.5 text-subheadline text-label no-underline last:border-b-0 active:bg-fill"
+                    className="flex min-h-11 items-center gap-2.5 border-b border-separator/30 px-3.5 text-subheadline text-label no-underline last:border-b-0 active:bg-fill"
                   >
                     <Icon size={18} className="text-accent-text" />
                     <span className="grow">{label}</span>
@@ -229,12 +216,12 @@ export function WorkspaceScreen() {
             <h2 className="text-title3 font-semibold">
               {editing.id ? t("workspace.renameFolder") : t("workspace.newFolder")}
             </h2>
-            <input
-              aria-label={t("workspace.folderName")}
+            <TextField
+              label={t("workspace.folderName")}
               maxLength={120}
               value={editing.name}
               onChange={(event) => setEditing({ ...editing, name: event.target.value })}
-              className="rounded-xl control-field px-3 py-3 text-body"
+              className="h-9 text-subheadline"
             />
             <SwatchPicker
               label={t("setup.accentColour")}
@@ -248,10 +235,10 @@ export function WorkspaceScreen() {
               }))}
             />
             <div className="flex justify-end gap-2">
-              <Button variant="ghost" onClick={() => setEditing(null)}>
+              <Button size="xs" variant="ghost" onClick={() => setEditing(null)}>
                 {t("common.cancel")}
               </Button>
-              <Button type="submit" disabled={!editing.name.trim()}>
+              <Button size="xs" type="submit" disabled={!editing.name.trim()}>
                 {t("common.save")}
               </Button>
             </div>

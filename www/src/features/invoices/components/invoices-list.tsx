@@ -144,7 +144,7 @@ export function InvoicesList({
         </nav>
       </header>
 
-      <div className="flex grow flex-col overflow-y-auto px-2.5 pb-28 md:pb-8">
+      <div className="scroll-surface flex min-h-0 grow flex-col px-2.5">
         <FinanceLedger documents={all} />
         {all.length > 0 && invoices.length === 0 && (
           <p className="px-6 pt-12 text-center text-subheadline text-label-secondary">

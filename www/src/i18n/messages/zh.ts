@@ -223,6 +223,7 @@ export const zh: Messages = {
     },
   },
   common: {
+    actionHint: "选择操作。将指针移到图标上可查看名称。",
     hour: "时",
     minute: "分",
     amPm: "上午或下午",
@@ -567,6 +568,7 @@ export const zh: Messages = {
     whileClosed: "Notables 关闭期间",
   },
   calendar: {
+    allYears: "年份",
     related: "关联内容",
     openWriting: "打开笔记",
     openInvoice: "打开发票",

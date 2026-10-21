@@ -14,44 +14,38 @@ import {
   ChevronLeftIcon,
   ChevronRightIcon,
   cn,
-  GlobeIcon,
   IconButton,
   openMenu,
   PlusIcon,
-  Popover,
   SidebarIcon,
   spring,
-  Toggle,
-  useDismiss,
   useMediaQuery,
 } from "@phe-rus/hino";
+import { Button } from "@phe-rus/hino/button";
 import { useNavigate } from "@tanstack/react-router";
-import { motion } from "motion/react";
-import { useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState } from "react";
-import { Field, PickerInput } from "@/components/form/form-fields";
+import { motion, useReducedMotion } from "motion/react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import { CollapsedSidebarControls } from "@/components/window/collapsed-sidebar-controls";
+import { useHolidays } from "@/features/calendar/lib/holidays";
+import { calendarDepth, outerCalendarView } from "@/features/calendar/model/calendar-views";
+import type { CalendarScreenProps, CalendarView } from "@/features/calendar/model/types";
 import { WorkspaceBackLink } from "@/features/library/components/workspace-back-link";
 import { usePreferences } from "@/features/settings/store/preferences-store";
 import { locale, t } from "@/i18n/i18n";
-import {
-  holidayCountries,
-  setHolidaySettings,
-  useHolidaySettings,
-  useHolidays,
-} from "../lib/holidays";
 import { firstWeekday } from "../lib/month-grid";
 import { getCalendarStore, useCalendarEvents } from "../store/calendar-store";
+import { CalendarYears } from "./calendar-years";
+import { CalendarZoomTitle } from "./calendar-zoom-title";
 import { byStart, DayAgenda } from "./day-agenda";
 import type { EventTarget } from "./event-form";
 import { EventSheet } from "./event-sheet";
+import { HolidayButton } from "./holiday-button";
 import { MonthView } from "./month-view";
 import { QuickAddSheet } from "./quick-add-sheet";
 import { TimeGrid } from "./time-grid";
 import { WeekStrip } from "./week-strip";
 import { YearView } from "./year-view";
 
-export type CalendarView = "day" | "week" | "month" | "year" | "years";
-export const calendarViews: readonly CalendarView[] = ["day", "week", "month", "year", "years"];
 /** The Years view runs from here to a few years ahead of now. */
 const YEARS_FROM = 1990;
 const YEARS_AHEAD = 5;
@@ -77,14 +71,12 @@ export function CalendarScreen({
   day: requestedDay,
   view: requestedView,
   onOpenSidebar,
-}: {
-  day?: Day;
-  view?: CalendarView;
-  onOpenSidebar: () => void;
-}) {
+}: CalendarScreenProps) {
   const events = useCalendarEvents();
   const navigate = useNavigate();
   const { collapsed } = usePreferences().sidebar;
+  const reducedMotion = useReducedMotion();
+  const nativeTransitions = typeof document !== "undefined" && "startViewTransition" in document;
   const phone = useMediaQuery("(max-width: 639px)");
   const [today, setToday] = useState(localDay);
   const selected = requestedDay ?? today;
@@ -101,9 +93,23 @@ export function CalendarScreen({
     return () => window.clearInterval(timer);
   }, []);
 
-  const depth: Record<CalendarView, number> = { years: 0, year: 1, month: 2, week: 3, day: 4 };
-  const zoomTo = (day: Day, next: CalendarView) => {
-    setZoom(depth[next] > depth[view] ? "in" : depth[next] < depth[view] ? "out" : null);
+  const zoomTo = (day: Day, next: CalendarView, anchor?: HTMLElement) => {
+    const region = document.querySelector<HTMLElement>("[data-calendar-surface]");
+    const bounds = region?.getBoundingClientRect();
+    const target = anchor?.getBoundingClientRect();
+    document.documentElement.style.setProperty(
+      "--calendar-origin",
+      bounds && target
+        ? `${Math.max(0, Math.min(100, ((target.left + target.width / 2 - bounds.left) / bounds.width) * 100))}% ${Math.max(0, Math.min(100, ((target.top + target.height / 2 - bounds.top) / bounds.height) * 100))}%`
+        : "50% 35%",
+    );
+    setZoom(
+      calendarDepth[next] > calendarDepth[view]
+        ? "in"
+        : calendarDepth[next] < calendarDepth[view]
+          ? "out"
+          : null,
+    );
     setJumps((count) => count + 1);
     go(day, next);
   };
@@ -113,6 +119,14 @@ export function CalendarScreen({
       void navigate({
         to: "/calendar",
         search: { day: day === today ? undefined : clampDay(day), view: nextView },
+        viewTransition:
+          nextView === view
+            ? false
+            : {
+                types: [
+                  calendarDepth[nextView] > calendarDepth[view] ? "calendar-in" : "calendar-out",
+                ],
+              },
       }),
     [navigate, today, view],
   );
@@ -181,7 +195,7 @@ export function CalendarScreen({
   const pageEnd = Number(today.slice(0, 4)) + YEARS_AHEAD;
   const title =
     view === "years"
-      ? `${pageStart}\u2013${pageEnd}`
+      ? t("calendar.allYears")
       : view === "year"
         ? String(scrolledYear)
         : view === "day"
@@ -196,21 +210,19 @@ export function CalendarScreen({
   // where you are: a day goes back to its month, a month to its year.
   const backToMonth = phone && (view === "day" || view === "week");
   const scrollsItself = phone && (view === "month" || view === "year" || view === "years");
-  const backTitle = backToMonth ? null : phone && view === "month" ? String(scrolledYear) : null;
+  const backTitle = backToMonth
+    ? null
+    : phone && view === "month"
+      ? String(scrolledYear)
+      : phone && view === "year"
+        ? t("calendar.allYears")
+        : null;
   const monthTitle = format({
     month: "long",
     ...(year === Number(today.slice(0, 4)) ? {} : { year: "numeric" }),
   }).format(asDate(selected));
 
   // Apple's way through time: the title zooms out a level, a tap zooms back in.
-  const outer: Record<CalendarView, CalendarView | null> = {
-    day: "month",
-    week: "month",
-    month: "year",
-    year: "years",
-    years: null,
-  };
-
   const agenda = (
     <DayAgenda
       day={selected}
@@ -232,7 +244,7 @@ export function CalendarScreen({
         {collapsed && <CollapsedSidebarControls />}
         <div data-tauri-drag-region className="flex items-center justify-between gap-2">
           <div className="flex min-w-0 items-center gap-1">
-            <WorkspaceBackLink />
+            {(!phone || view === "years") && <WorkspaceBackLink />}
             <IconButton
               size="icon-sm"
               variant="ghost"
@@ -242,18 +254,18 @@ export function CalendarScreen({
             >
               <SidebarIcon size={20} />
             </IconButton>
-            <ZoomTitle
+            <CalendarZoomTitle
               title={backToMonth ? monthTitle : (backTitle ?? title)}
               back={backToMonth || backTitle !== null}
               year={view === "year" ? scrolledYear : year}
               zoomOut={
-                outer[view]
+                outerCalendarView[view]
                   ? () =>
                       zoomTo(
                         view === "year" || view === "month"
                           ? dayInMonth(scrolledYear, scrolledMonth, 1)
                           : selected,
-                        outer[view] as CalendarView,
+                        outerCalendarView[view] as CalendarView,
                       )
                   : null
               }
@@ -261,8 +273,9 @@ export function CalendarScreen({
             />
           </div>
           <div className="flex shrink-0 items-center gap-1">
-            <button
-              type="button"
+            <Button
+              size="sm"
+              variant="ghost"
               onClick={() => zoomTo(today, view === "day" || view === "week" ? view : "month")}
               disabled={
                 selected === today && (view === "month" || view === "day" || view === "week")
@@ -271,7 +284,7 @@ export function CalendarScreen({
               className="rounded-full px-3 py-1.5 text-subheadline font-medium text-accent-text transition-colors hover:bg-fill/60 disabled:text-label-tertiary disabled:hover:bg-transparent"
             >
               {t("calendar.today")}
-            </button>
+            </Button>
             {view !== "years" && (
               <>
                 <IconButton
@@ -339,8 +352,13 @@ export function CalendarScreen({
         )}
       >
         <motion.div
+          data-calendar-surface
           key={`${view}:${view === "day" || view === "week" ? weekFirst : jumps}`}
-          initial={{ opacity: 0, scale: zoom === "in" ? 0.94 : zoom === "out" ? 1.06 : 1 }}
+          initial={
+            reducedMotion || nativeTransitions
+              ? false
+              : { opacity: 0, scale: zoom === "in" ? 0.97 : zoom === "out" ? 1.03 : 1 }
+          }
           animate={{ opacity: 1, scale: 1 }}
           transition={spring.smooth}
           className={cn(
@@ -351,12 +369,16 @@ export function CalendarScreen({
           )}
         >
           {view === "years" ? (
-            <YearsView
+            <CalendarYears
               first={pageStart}
               last={pageEnd}
               current={Number(today.slice(0, 4))}
+              today={today}
+              weekStart={weekStart}
               selected={year}
-              onYear={(next) => zoomTo(dayInMonth(next, month, Number(selected.slice(8))), "year")}
+              onYear={(next, anchor) =>
+                zoomTo(dayInMonth(next, month, Number(selected.slice(8))), "year", anchor)
+              }
             />
           ) : view === "year" ? (
             <YearView
@@ -365,7 +387,7 @@ export function CalendarScreen({
               weekStart={weekStart}
               events={events}
               onVisibleYear={setScrolledYear}
-              onMonth={(y, m) => zoomTo(dayInMonth(y, m, 1), "month")}
+              onMonth={(y, m, anchor) => zoomTo(dayInMonth(y, m, 1), "month", anchor)}
             />
           ) : view === "month" ? (
             <MonthView
@@ -375,8 +397,8 @@ export function CalendarScreen({
               selected={selected}
               weekStart={weekStart}
               events={events}
-              onDay={(day) => go(day)}
-              onZoomIn={(day) => zoomTo(day, "day")}
+              onDay={(day, anchor) => (phone ? zoomTo(day, "day", anchor) : go(day))}
+              onZoomIn={(day, anchor) => zoomTo(day, "day", anchor)}
               onVisibleMonth={onVisibleMonth}
             />
           ) : (
@@ -414,181 +436,6 @@ export function CalendarScreen({
         onClose={() => setTyping(false)}
         onAdded={(day) => zoomTo(day, view === "year" || view === "years" ? "month" : view)}
       />
-    </div>
-  );
-}
-
-/**
- * The title zooms out a level when tapped: a day to its month, a month to
- * its year, a year to all the years. At the top it takes a typed year.
- */
-function ZoomTitle({
-  title,
-  back = false,
-  year,
-  zoomOut,
-  onYear,
-}: {
-  title: string;
-  /** Shown as the way back out ("‹ October"), as on a phone's day. */
-  back?: boolean;
-  year: number;
-  zoomOut: (() => void) | null;
-  onYear: (year: number) => void;
-}) {
-  const [editing, setEditing] = useState(false);
-  const [text, setText] = useState(String(year));
-  if (editing) {
-    return (
-      <input
-        // biome-ignore lint/a11y/noAutofocus: opened to type a year
-        autoFocus
-        aria-label={t("calendar.jumpTo")}
-        inputMode="numeric"
-        value={text}
-        onChange={(event) => setText(event.target.value.replace(/\D/g, "").slice(0, 4))}
-        onBlur={() => setEditing(false)}
-        onKeyDown={(event) => {
-          if (event.key === "Escape") setEditing(false);
-          if (event.key === "Enter") {
-            const next = Number(text);
-            if (next >= FIRST_YEAR && next <= LAST_YEAR) onYear(next);
-            setEditing(false);
-          }
-        }}
-        className="w-[7ch] rounded-lg control-field px-2 py-0.5 text-title2 font-bold tabular-nums"
-      />
-    );
-  }
-  return (
-    <button
-      type="button"
-      data-tooltip={zoomOut ? undefined : t("calendar.jumpTo")}
-      onClick={() => {
-        if (zoomOut) zoomOut();
-        else {
-          setText(String(year));
-          setEditing(true);
-        }
-      }}
-      className={cn(
-        "min-w-0 rounded-lg px-1.5 text-start transition-colors hover:bg-fill/60 active:bg-fill",
-        back
-          ? "flex min-h-11 items-center gap-0.5 text-body text-accent-text"
-          : "text-title2 font-bold tracking-tight",
-      )}
-    >
-      {back && (
-        <ChevronLeftIcon size={22} strokeWidth={2.2} className="shrink-0 rtl:-scale-x-100" />
-      )}
-      <span className="block truncate">{title}</span>
-    </button>
-  );
-}
-
-/** A page of years, the way out to any century; a year zooms into it. */
-function YearsView({
-  first,
-  last,
-  current,
-  selected,
-  onYear,
-}: {
-  first: number;
-  last: number;
-  current: number;
-  selected: number;
-  onYear: (year: number) => void;
-}) {
-  const grid = useRef<HTMLDivElement>(null);
-  // Open on the year you came from, wherever it sits in the list.
-  useLayoutEffect(() => {
-    grid.current?.querySelector(`[data-year="${selected}"]`)?.scrollIntoView({ block: "center" });
-  }, []);
-  return (
-    <div ref={grid} className="@container/years min-h-0 grow overflow-y-auto px-4 pb-28 md:pb-8">
-      <div className="grid grid-cols-3 gap-2 @min-[480px]/years:grid-cols-4 @min-[760px]/years:grid-cols-5">
-        {Array.from({ length: last - first + 1 }, (_, i) => first + i).map((value) => (
-          <button
-            key={value}
-            type="button"
-            data-year={value}
-            onClick={() => onYear(value)}
-            className={cn(
-              "flex h-16 items-center justify-center rounded-3xl text-title3 font-semibold tabular-nums transition-colors",
-              value === current
-                ? "bg-accent text-on-accent"
-                : value === selected
-                  ? "bg-inverse text-on-inverse"
-                  : "bg-fill/50 hover:bg-fill",
-            )}
-          >
-            {value}
-          </button>
-        ))}
-      </div>
-    </div>
-  );
-}
-
-/** Which country's holidays show, picked from every country the rules know. */
-function HolidayButton() {
-  const settings = useHolidaySettings();
-  const [open, setOpen] = useState(false);
-  const [countries, setCountries] = useState<{ value: string; label: string }[]>([]);
-  const root = useRef<HTMLDivElement>(null);
-  const close = useCallback(() => setOpen(false), []);
-  useDismiss(root, open, close);
-  useEffect(() => {
-    if (open && countries.length === 0) {
-      void holidayCountries(document.documentElement.lang || "en").then(setCountries);
-    }
-  }, [open, countries.length]);
-  return (
-    <div ref={root} className="relative">
-      <IconButton
-        size="icon-sm"
-        label={t("calendar.holidays")}
-        variant={settings.country ? "link" : "ghost"}
-        aria-expanded={open}
-        onClick={() => setOpen((value) => !value)}
-      >
-        <GlobeIcon size={18} />
-      </IconButton>
-      <Popover
-        open={open}
-        role="dialog"
-        aria-label={t("calendar.holidays")}
-        origin="top-right"
-        className="top-[calc(100%+8px)] end-0 flex w-[300px] max-w-[calc(100vw-32px)] flex-col gap-3 p-4"
-      >
-        <Field label={t("calendar.holidayCountry")}>
-          <PickerInput
-            label={t("calendar.holidayCountry")}
-            value={settings.country ?? "none"}
-            searchable
-            onChange={(country) =>
-              setHolidaySettings({ country: country === "none" ? null : country })
-            }
-            options={[
-              { value: "none", label: t("calendar.noHolidays") },
-              ...(countries.length > 0
-                ? countries
-                : settings.country
-                  ? [{ value: settings.country, label: settings.country }]
-                  : []),
-            ]}
-          />
-        </Field>
-        <div className="flex items-center justify-between gap-3">
-          <span className="text-subheadline">{t("calendar.observances")}</span>
-          <Toggle
-            label={t("calendar.observances")}
-            checked={settings.observances}
-            onChange={(observances) => setHolidaySettings({ observances })}
-          />
-        </div>
-      </Popover>
     </div>
   );
 }

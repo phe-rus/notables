@@ -122,6 +122,15 @@ Gotchas learned the hard way:
 
 ## Status (October 2026)
 
+- 21 October motion and viewport refinement: Hino UI 0.1.7 is published and its
+  docs deployed; Notables and Pluraliti pin it. The app shares a neutral ground
+  with quiet accent reflections, visible scrollbars and bottom navigation
+  clearance. The drawer stays mounted, navigation has directional transitions,
+  and calendar zoom owns a separate capture region. Years shows miniature
+  calendars; the detailed year uses three months across on phones. Folder actions
+  use a compact icon popup with xs controls. Native iOS acceptance and widgets
+  remain pending. The owner requested v0.2.14 after local verification. See [the refinement record](docs/reviews/2026-10-21-motion-and-viewport.md).
+
 - 20 October maintenance: Hino UI 0.1.6 is published, its docs are deployed,
   and Notables/Pluraliti pin the same version. The web includes the Hino/form
   checkpoint; later native changes need the next build. Wallet forms, scanner,
@@ -691,13 +700,16 @@ TestFlight refuse the upload; each build asks in TestFlight instead.
 
 ## Next
 
-- Verify the new pairing build on iPhone, TECNO and ChromeOS before calling
-  connection recovery complete. The membership/removal regressions pass locally;
-  physical bidirectional sync and same-network continuation still need checking.
+- Verify the 21 October viewport and calendar refinements on iPhone, then
+  continue native widgets. Keep physical iOS evidence separate from browser
+  and Android checks; do not claim measured animation frame rates without profiling.
+- Version 0.2.13 passed three-device note changes and deletion checks. Fresh
+  ChromeOS approval in both directions and offline native LAN discovery remain.
 
 - Continue the first unfinished stage in [docs/MAINTENANCE.md](docs/MAINTENANCE.md):
-  verify request counts on devices, introduce typed Drizzle D1 repositories,
-  then clean Wallet and Finances by domain. Keep the accepted local-first storage
+  verify request counts on devices and native Wallet/Finances acceptance, then
+  continue Books, notes and the remaining calendar controls. Drizzle repositories
+  and the Wallet/Finances ownership checkpoints are complete. Keep the accepted local-first storage
   and cryptographic formats. Desktop CI packaging is build-only for now.
 
 - Publish the update-aware native build after local verification, then test

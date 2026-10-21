@@ -144,7 +144,7 @@ export function WalletScreen() {
             )}
           </div>
         </header>
-        <div className="grow overflow-y-auto px-4 pt-3 pb-32 sm:px-8 md:pb-10">
+        <div className="scroll-surface min-h-0 grow px-4 pt-3 sm:px-8">
           <div className="relative mx-auto flex max-w-[1000px] flex-col gap-6">
             {!isTauri() ? (
               <div className="mx-auto max-w-[480px] py-16 text-center">

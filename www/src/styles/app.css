@@ -231,3 +231,148 @@ html[data-window-frame="rounded"] body::after {
 [data-native-settings] .settings-name > div > div:focus-within {
   outline-offset: 0.125rem;
 }
+
+/* One content rectangle moves; the window chrome and sidebar stay stable. */
+[data-navigation-surface] {
+  view-transition-name: app-content;
+  --scroll-clearance: 1rem;
+}
+@media (max-width: 767px) {
+  [data-bottom-navigation] {
+    --scroll-clearance: calc(7rem + env(safe-area-inset-bottom));
+  }
+}
+::view-transition-group(app-content) {
+  animation-duration: var(--duration-normal);
+  animation-timing-function: var(--ease-standard);
+}
+::view-transition-old(root),
+::view-transition-new(root) {
+  animation: none;
+}
+::view-transition-old(app-content) {
+  animation: content-leave var(--duration-fast) var(--ease-standard) both;
+}
+::view-transition-new(app-content) {
+  animation: content-enter var(--duration-normal) var(--ease-standard) both;
+}
+@keyframes content-enter {
+  from {
+    opacity: 0;
+    transform: translateY(6px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+@keyframes content-leave {
+  to {
+    opacity: 0;
+    transform: translateY(-3px);
+  }
+}
+@keyframes page-forward-enter {
+  from {
+    opacity: 0;
+    transform: translateX(7%);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+@keyframes page-back-enter {
+  from {
+    opacity: 0;
+    transform: translateX(-5%);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+:root:active-view-transition-type(page-forward)::view-transition-new(app-content) {
+  animation-name: page-forward-enter;
+}
+:root:active-view-transition-type(page-back)::view-transition-new(app-content) {
+  animation-name: page-back-enter;
+}
+:root:active-view-transition-type(note-open)::view-transition-old(app-content),
+:root:active-view-transition-type(note-close)::view-transition-old(app-content),
+:root:active-view-transition-type(calendar-in)::view-transition-old(app-content),
+:root:active-view-transition-type(calendar-out)::view-transition-old(app-content) {
+  animation: none;
+  opacity: 0;
+}
+:root:active-view-transition-type(note-open)::view-transition-new(app-content),
+:root:active-view-transition-type(note-close)::view-transition-new(app-content),
+:root:active-view-transition-type(calendar-in)::view-transition-new(app-content),
+:root:active-view-transition-type(calendar-out)::view-transition-new(app-content) {
+  animation: none;
+}
+[data-calendar-surface] {
+  view-transition-name: calendar-content;
+}
+::view-transition-group(calendar-content) {
+  animation-duration: var(--duration-normal);
+}
+::view-transition-old(calendar-content),
+::view-transition-new(calendar-content) {
+  transform-origin: var(--calendar-origin, 50% 35%);
+  animation-duration: var(--duration-normal);
+  animation-timing-function: var(--ease-standard);
+  mix-blend-mode: normal;
+}
+@keyframes calendar-enter {
+  from {
+    opacity: 0;
+    transform: scale(0.92);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+@keyframes calendar-leave {
+  to {
+    opacity: 0;
+    transform: scale(1.08);
+  }
+}
+@keyframes calendar-out-enter {
+  from {
+    opacity: 0;
+    transform: scale(1.06);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+@keyframes calendar-out-leave {
+  to {
+    opacity: 0;
+    transform: scale(0.94);
+  }
+}
+:root:active-view-transition-type(calendar-in)::view-transition-new(calendar-content) {
+  animation-name: calendar-enter;
+}
+:root:active-view-transition-type(calendar-in)::view-transition-old(calendar-content) {
+  animation-name: calendar-leave;
+}
+:root:active-view-transition-type(calendar-out)::view-transition-new(calendar-content) {
+  animation-name: calendar-out-enter;
+}
+:root:active-view-transition-type(calendar-out)::view-transition-old(calendar-content) {
+  animation-name: calendar-out-leave;
+}
+@media (prefers-reduced-motion: reduce) {
+  ::view-transition-group(*),
+  ::view-transition-old(*),
+  ::view-transition-new(*) {
+    animation-duration: 0s;
+    animation-delay: 0s;
+  }
+}

@@ -1,6 +1,6 @@
 import type { NoteKind } from "@notables/core";
 import { TranscriptionProvider } from "@notables/pluraliti";
-import { cn, spring, useMediaQuery } from "@phe-rus/hino";
+import { cn, spring, useMediaQuery, useVisualViewport } from "@phe-rus/hino";
 import {
   createFileRoute,
   Outlet,
@@ -10,6 +10,7 @@ import {
 } from "@tanstack/react-router";
 import { AnimatePresence, motion, useReducedMotion } from "motion/react";
 import { useCallback, useEffect, useMemo, useState } from "react";
+import { t } from "@/i18n/i18n";
 import { setDrawerOpen, useDrawerOpen } from "../components/layout/drawer-store";
 import { ResizeHandle } from "../components/layout/resize-handle";
 import { TabBar } from "../components/layout/tab-bar";
@@ -25,7 +26,6 @@ import { InvoicesList } from "../features/invoices/components/invoices-list";
 import { Sidebar, type SidebarLocation } from "../features/library/components/library-sidebar";
 import { NotesList } from "../features/library/components/notes-list";
 import { indexNoteMedia } from "../features/library/lib/index-note-media";
-import { isTransitionNote } from "../features/library/lib/note-transition";
 import { folderView, getView, groupOf } from "../features/library/model/library-views";
 import { getLibrary, useFolders, useLibraryReady } from "../features/library/store/library-store";
 import { MiniPlayer } from "../features/listening/components/mini-player";
@@ -52,8 +52,6 @@ import { startSpace } from "../platform/space/space-identity";
 import { startSpaceRemoval } from "../platform/space/space-removal";
 import { startSpaceSync, stopSpaceSync } from "../platform/space/space-sync";
 
-/** iOS sheet motion: quick to start, long gentle settle. */
-const drawerEase = [0.32, 0.72, 0, 1] as const;
 export const Route = createFileRoute("/_app")({
   // Private notes live on the device, so the app shell renders client-side.
   ssr: false,
@@ -107,11 +105,9 @@ function WorkspaceShell() {
   const showTabBar = !(note || book || invoice);
   const isPhone = useMediaQuery("(max-width: 767px)");
   const reducedMotion = useReducedMotion();
-  const sharedNoteTransition =
-    isPhone &&
-    isTransitionNote(noteId ?? "") &&
-    typeof document !== "undefined" &&
-    "startViewTransition" in document;
+  const viewport = useVisualViewport();
+  const rtl = typeof document !== "undefined" && document.documentElement.dir === "rtl";
+  const nativeTransitions = typeof document !== "undefined" && "startViewTransition" in document;
   const isDesktop = useMediaQuery("(min-width: 1024px)");
   const drawerOpen = useDrawerOpen();
   const transcription = useMemo(createNativeTranscription, []);
@@ -237,7 +233,10 @@ function WorkspaceShell() {
   const sidebarProps = { active: location, activeNoteId: noteId, onNewNote: createNote };
 
   return (
-    <div className="flex h-dvh overflow-hidden bg-sidebar">
+    <div
+      className="fixed inset-x-0 top-0 flex h-dvh overflow-hidden bg-sidebar"
+      style={viewport ? { top: viewport.top, height: viewport.height } : undefined}
+    >
       <AppearanceSync />
       {/* Reminders, sharing and widgets run on the phone, never in a browser it serves. */}
       {libraryReady && !browser && <ReminderRunner />}
@@ -283,24 +282,29 @@ function WorkspaceShell() {
         >
           <motion.button
             type="button"
-            aria-label="Close library"
+            aria-label={t("common.close")}
             className="absolute inset-0 bg-black/35 will-change-[opacity]"
             initial={false}
             animate={{ opacity: drawerOpen ? 1 : 0 }}
-            transition={{ duration: 0.3, ease: drawerEase }}
+            transition={reducedMotion ? { duration: 0 } : { duration: 0.22 }}
             onClick={() => setDrawerOpen(false)}
           />
           <motion.div
-            className="relative flex w-[min(86vw,340px)] bg-sidebar shadow-[0_20px_60px_rgba(0,0,0,0.25)] will-change-transform"
+            className="relative flex w-[min(86vw,340px)] bg-sidebar will-change-transform [contain:layout_paint]"
             initial={false}
-            animate={{ x: drawerOpen ? 0 : "-105%" }}
-            // A timed curve runs on the compositor, so a busy main thread can't stall the slide.
-            transition={{ duration: 0.34, ease: drawerEase }}
+            animate={{
+              x: drawerOpen ? 0 : rtl ? "105%" : "-105%",
+            }}
+            transition={reducedMotion ? { duration: 0 } : spring.smooth}
             drag="x"
             dragConstraints={{ left: 0, right: 0 }}
             dragElastic={{ left: 0.5, right: 0.04 }}
             onDragEnd={(_, info) => {
-              if (info.offset.x < -80 || info.velocity.x < -500) setDrawerOpen(false);
+              if (
+                (rtl ? info.offset.x > 80 : info.offset.x < -80) ||
+                (rtl ? info.velocity.x > 500 : info.velocity.x < -500)
+              )
+                setDrawerOpen(false);
             }}
           >
             <Sidebar {...sidebarProps} className="w-full pt-[env(safe-area-inset-top)]" />
@@ -309,8 +313,10 @@ function WorkspaceShell() {
       )}
 
       <div
+        data-navigation-surface
+        data-bottom-navigation={(isPhone && showTabBar && !viewport?.keyboardOpen) || undefined}
         className={cn(
-          "flex min-w-0 grow overflow-hidden bg-background lg:my-2 lg:mr-2 lg:rounded-3xl lg:border lg:border-separator/70 lg:shadow-[0_1px_2px_rgba(0,0,0,0.04),0_8px_28px_rgba(0,0,0,0.05)]",
+          "app-ground flex min-w-0 grow overflow-hidden lg:my-2 lg:mr-2 lg:rounded-3xl lg:border lg:border-separator/30",
           // With the sidebar tucked away, the card sits evenly inside the window.
           collapsed && "lg:ml-2",
         )}
@@ -341,7 +347,8 @@ function WorkspaceShell() {
 
         <main
           className={cn(
-            "relative min-w-0 grow flex-col bg-paper",
+            "relative min-h-0 min-w-0 grow flex-col",
+            !fullPage && "bg-paper",
             detailOpen ? "flex" : "hidden md:flex",
           )}
         >
@@ -350,31 +357,12 @@ function WorkspaceShell() {
             <TranscriptionProvider service={transcription}>
               <motion.div
                 key={
-                  noteId ??
-                  bookId ??
-                  invoiceId ??
-                  (inSettings
-                    ? "settings"
-                    : inTrash
-                      ? "trash"
-                      : inCalendar
-                        ? "calendar"
-                        : inConnections
-                          ? "connections"
-                          : inInvoices
-                            ? "invoices"
-                            : inBooks
-                              ? "books"
-                              : "notes")
+                  nativeTransitions
+                    ? "navigation"
+                    : `${pathname}:${pathname === "/" ? (viewId ?? "workspace") : ""}`
                 }
                 className="flex min-h-0 grow flex-col"
-                initial={
-                  reducedMotion || sharedNoteTransition
-                    ? false
-                    : isPhone
-                      ? { x: 48, opacity: 1 }
-                      : { y: 8, opacity: 0 }
-                }
+                initial={reducedMotion || nativeTransitions ? false : { y: 6, opacity: 0 }}
                 animate={{ x: 0, y: 0, opacity: 1 }}
                 transition={spring.smooth}
               >
@@ -390,7 +378,7 @@ function WorkspaceShell() {
         <MiniPlayer className="fixed inset-x-3 bottom-[calc(max(14px,env(safe-area-inset-bottom))+58px)] z-30 md:right-6 md:bottom-6 md:left-auto md:w-[340px]" />
       )}
 
-      {isPhone && showTabBar && (
+      {isPhone && showTabBar && !viewport?.keyboardOpen && (
         <TabBar
           className={drawerOpen ? "invisible" : undefined}
           active={

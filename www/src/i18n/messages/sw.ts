@@ -238,6 +238,7 @@ export const sw: Messages = {
     },
   },
   common: {
+    actionHint: "Chagua kitendo. Elekeza kwenye ikoni kuona jina lake.",
     hour: "Saa",
     minute: "Dakika",
     amPm: "Asubuhi au jioni",
@@ -593,6 +594,7 @@ export const sw: Messages = {
     whileClosed: "Wakati Notables ilikuwa imefungwa",
   },
   calendar: {
+    allYears: "Miaka",
     related: "Inahusiana na",
     openWriting: "Fungua maandishi",
     openInvoice: "Fungua ankara",

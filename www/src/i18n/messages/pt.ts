@@ -241,6 +241,7 @@ export const pt: Messages = {
     },
   },
   common: {
+    actionHint: "Escolha uma ação. Passe sobre um ícone para ver o nome.",
     hour: "Hora",
     minute: "Minuto",
     amPm: "Manhã ou tarde",
@@ -592,6 +593,7 @@ export const pt: Messages = {
     whileClosed: "Enquanto o Notables estava fechado",
   },
   calendar: {
+    allYears: "Anos",
     related: "Relacionado com",
     openWriting: "Abrir escrita",
     openInvoice: "Abrir fatura",

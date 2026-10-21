@@ -16,8 +16,11 @@ import {
   StoryIcon,
   TrashIcon,
 } from "@phe-rus/hino";
+import { Button } from "@phe-rus/hino/button";
+import { TextField } from "@phe-rus/hino/text-field";
 import { useNavigate } from "@tanstack/react-router";
-import { type ReactNode, useEffect, useRef, useState } from "react";
+import { LayoutGroup } from "motion/react";
+import { type ReactNode, useEffect, useId, useRef, useState } from "react";
 import { setDrawerOpen } from "@/components/layout/drawer-store";
 import { useTrashedBooks } from "@/features/books/store/book-store";
 import { useSeries } from "@/features/books/store/series-store";
@@ -73,6 +76,7 @@ export function Sidebar({
   className?: string;
   style?: React.CSSProperties;
 }) {
+  const selectionId = useId();
   const navigate = useNavigate();
   const folders = useFolders();
   const library = useLibrary();
@@ -129,182 +133,191 @@ export function Sidebar({
         saveFolder();
       }}
     >
-      <input
-        ref={folderName}
-        aria-label={t("workspace.folderName")}
-        maxLength={120}
-        value={renaming?.name ?? ""}
-        onChange={(event) =>
-          setRenaming((current) => current && { ...current, name: event.target.value })
-        }
-        onKeyDown={(event) => {
-          if (event.key === "Escape") setRenaming(null);
-        }}
-        className="min-w-0 flex-1 rounded-lg control-field px-2 py-1.5 text-subheadline"
-      />
-      <button
+      <div className="min-w-0 flex-1">
+        <TextField
+          label={t("workspace.folderName")}
+          ref={folderName}
+          aria-label={t("workspace.folderName")}
+          maxLength={120}
+          value={renaming?.name ?? ""}
+          onChange={(event) =>
+            setRenaming((current) => current && { ...current, name: event.target.value })
+          }
+          onKeyDown={(event) => {
+            if (event.key === "Escape") setRenaming(null);
+          }}
+          className="h-8 text-subheadline"
+        />
+      </div>
+      <Button
+        variant="ghost"
+        size="xs"
         type="submit"
         disabled={!renaming?.name.trim()}
         className="px-1 text-footnote font-semibold text-accent-text"
       >
         {t("common.done")}
-      </button>
-      <button
+      </Button>
+      <Button
+        variant="ghost"
+        size="xs"
         type="button"
         className="px-1 text-caption text-label-secondary"
         onClick={() => setRenaming(null)}
       >
         {t("common.cancel")}
-      </button>
+      </Button>
     </form>
   );
   return (
-    <nav
-      aria-label={t("nav.main")}
-      style={style}
-      className={cn("flex shrink-0 flex-col overflow-hidden px-2.5", className)}
-    >
-      <SidebarTopBar />
-      <div className="flex flex-col gap-px pb-4">
-        <ActionRow
-          icon={<PenIcon size={17} />}
-          shortcut={shortcutLabel("N")}
-          onClick={() => {
-            onNewNote();
-            setDrawerOpen(false);
-          }}
-        >
-          {t("nav.newNote")}
-        </ActionRow>
-        <ActionRow
-          icon={<SearchIcon size={17} />}
-          shortcut={shortcutLabel("K")}
-          onClick={openSearch}
-        >
-          {t("common.search")}
-        </ActionRow>
-      </div>
-      <div className="no-scrollbar -mx-2.5 flex grow flex-col gap-5 overflow-y-auto px-2.5 pb-4">
-        <section className="flex flex-col gap-px">
-          <SectionHeader
-            title={t("nav.workspace")}
-            action={
-              <IconButton
-                size="icon-sm"
-                variant="ghost"
-                label={t("workspace.newFolder")}
-                onClick={() => setRenaming({ id: null, name: "" })}
-              >
-                <PlusIcon size={16} />
-              </IconButton>
-            }
-          />
-          <NavItem
-            to="/"
-            search={{}}
-            active={active === "workspace"}
-            icon={<FolderIcon size={17} />}
+    <LayoutGroup id={selectionId}>
+      <nav
+        aria-label={t("nav.main")}
+        style={style}
+        className={cn("flex shrink-0 flex-col overflow-hidden px-2.5", className)}
+      >
+        <SidebarTopBar />
+        <div className="flex flex-col gap-px pb-4">
+          <ActionRow
+            icon={<PenIcon size={17} />}
+            shortcut={shortcutLabel("N")}
+            onClick={() => {
+              onNewNote();
+              setDrawerOpen(false);
+            }}
           >
-            {t("workspace.allFolders")}
-          </NavItem>
-          {renaming?.id === null && folderInput()}
-          {folders.map((folder) =>
-            renaming?.id === folder.id ? (
-              <div key={folder.id}>{folderInput()}</div>
-            ) : (
-              <NavItem
-                key={folder.id}
-                to="/"
-                search={{ view: `folder:${folder.id}` }}
-                active={active === `folder:${folder.id}`}
-                icon={
-                  <span data-accent={folder.color} className="text-accent-text">
-                    <FolderIcon size={17} />
-                  </span>
-                }
-                trailing={
-                  counts
-                    ? entries.filter((entry) => entry.folderId === folder.id).length
-                    : undefined
-                }
-                menu={() => [
-                  {
-                    label: t("workspace.renameFolder"),
-                    icon: <PenIcon size={17} />,
-                    onSelect: () => setRenaming({ id: folder.id, name: folder.name }),
-                  },
-                  {
-                    label: t("common.delete"),
-                    icon: <TrashIcon size={17} />,
-                    destructive: true,
-                    onSelect: () => void removeFolder(folder),
-                  },
-                ]}
-              >
-                {folder.name}
-              </NavItem>
-            ),
-          )}
-          {folders.length === 0 && (
+            {t("nav.newNote")}
+          </ActionRow>
+          <ActionRow
+            icon={<SearchIcon size={17} />}
+            shortcut={shortcutLabel("K")}
+            onClick={openSearch}
+          >
+            {t("common.search")}
+          </ActionRow>
+        </div>
+        <div className="no-scrollbar -mx-2.5 flex grow flex-col gap-5 overflow-y-auto px-2.5 pb-4">
+          <section className="flex flex-col gap-px">
+            <SectionHeader
+              title={t("nav.workspace")}
+              action={
+                <IconButton
+                  size="icon-sm"
+                  variant="ghost"
+                  label={t("workspace.newFolder")}
+                  onClick={() => setRenaming({ id: null, name: "" })}
+                >
+                  <PlusIcon size={16} />
+                </IconButton>
+              }
+            />
             <NavItem
               to="/"
-              search={{ view: "all" }}
-              active={active === "all"}
-              icon={<NoteIcon size={17} />}
-              trailing={counts ? entries.length : undefined}
+              search={{}}
+              active={active === "workspace"}
+              icon={<FolderIcon size={17} />}
             >
-              {t("workspace.writings")}
+              {t("workspace.allFolders")}
             </NavItem>
+            {renaming?.id === null && folderInput()}
+            {folders.map((folder) =>
+              renaming?.id === folder.id ? (
+                <div key={folder.id}>{folderInput()}</div>
+              ) : (
+                <NavItem
+                  key={folder.id}
+                  to="/"
+                  search={{ view: `folder:${folder.id}` }}
+                  active={active === `folder:${folder.id}`}
+                  icon={
+                    <span data-accent={folder.color} className="text-accent-text">
+                      <FolderIcon size={17} />
+                    </span>
+                  }
+                  trailing={
+                    counts
+                      ? entries.filter((entry) => entry.folderId === folder.id).length
+                      : undefined
+                  }
+                  menu={() => [
+                    {
+                      label: t("workspace.renameFolder"),
+                      icon: <PenIcon size={17} />,
+                      onSelect: () => setRenaming({ id: folder.id, name: folder.name }),
+                    },
+                    {
+                      label: t("common.delete"),
+                      icon: <TrashIcon size={17} />,
+                      destructive: true,
+                      onSelect: () => void removeFolder(folder),
+                    },
+                  ]}
+                >
+                  {folder.name}
+                </NavItem>
+              ),
+            )}
+            {folders.length === 0 && (
+              <NavItem
+                to="/"
+                search={{ view: "all" }}
+                active={active === "all"}
+                icon={<NoteIcon size={17} />}
+                trailing={counts ? entries.length : undefined}
+              >
+                {t("workspace.writings")}
+              </NavItem>
+            )}
+            <NavItem
+              to="/trash"
+              tone="danger"
+              active={active === "trash"}
+              icon={<TrashIcon size={17} />}
+              trailing={counts ? binCount : undefined}
+            >
+              {t("nav.recentlyDeleted")}
+            </NavItem>
+          </section>
+          {pinned.length > 0 && (
+            <section className="flex flex-col">
+              <SectionHeader title={t("nav.pinned")} />
+              {pinned.map((entry) => (
+                <NavItem
+                  key={entry.id}
+                  to="/notes/$noteId"
+                  params={{ noteId: entry.id }}
+                  search={(s) => s}
+                  active={entry.id === activeNoteId}
+                  icon={<PinIcon size={15} />}
+                  menu={() => noteMenu(entry, navigate)}
+                >
+                  {entry.title || t("notes.newNote")}
+                </NavItem>
+              ))}
+            </section>
           )}
-          <NavItem
-            to="/trash"
-            tone="danger"
-            active={active === "trash"}
-            icon={<TrashIcon size={17} />}
-            trailing={counts ? binCount : undefined}
-          >
-            {t("nav.recentlyDeleted")}
-          </NavItem>
-        </section>
-        {pinned.length > 0 && (
-          <section className="flex flex-col">
-            <SectionHeader title={t("nav.pinned")} />
-            {pinned.map((entry) => (
-              <NavItem
-                key={entry.id}
-                to="/notes/$noteId"
-                params={{ noteId: entry.id }}
-                search={(s) => s}
-                active={entry.id === activeNoteId}
-                icon={<PinIcon size={15} />}
-                menu={() => noteMenu(entry, navigate)}
-              >
-                {entry.title || t("notes.newNote")}
-              </NavItem>
-            ))}
-          </section>
-        )}
-        {recents.length > 0 && (
-          <section className="flex flex-col">
-            <SectionHeader title={t("nav.recents")} />
-            {recents.map((entry) => (
-              <NavItem
-                key={entry.id}
-                to="/notes/$noteId"
-                params={{ noteId: entry.id }}
-                search={(s) => s}
-                active={entry.id === activeNoteId}
-                icon={<RecentIcon size={15} />}
-                menu={() => noteMenu(entry, navigate)}
-                trailing={formatAge(opened[entry.id] ?? entry.updatedAt)}
-              >
-                {entry.title || t("notes.newNote")}
-              </NavItem>
-            ))}
-          </section>
-        )}
-      </div>
-      <SidebarProfileRow active={active === "settings"} />
-    </nav>
+          {recents.length > 0 && (
+            <section className="flex flex-col">
+              <SectionHeader title={t("nav.recents")} />
+              {recents.map((entry) => (
+                <NavItem
+                  key={entry.id}
+                  to="/notes/$noteId"
+                  params={{ noteId: entry.id }}
+                  search={(s) => s}
+                  active={entry.id === activeNoteId}
+                  icon={<RecentIcon size={15} />}
+                  menu={() => noteMenu(entry, navigate)}
+                  trailing={formatAge(opened[entry.id] ?? entry.updatedAt)}
+                >
+                  {entry.title || t("notes.newNote")}
+                </NavItem>
+              ))}
+            </section>
+          )}
+        </div>
+        <SidebarProfileRow active={active === "settings"} />
+      </nav>
+    </LayoutGroup>
   );
 }

@@ -72,15 +72,15 @@ export function SettingsScreen({
               className={
                 wide
                   ? "w-[320px] shrink-0 overflow-y-auto border-e border-separator/60 px-4 pt-3 pb-10"
-                  : "grow overflow-y-auto px-4 pt-3 pb-32"
+                  : "scroll-surface min-h-0 grow px-4 pt-3"
               }
             >
               <SettingsList current={wide ? open : null} />
             </div>
           )}
           {open && (
-            <div className="grow overflow-y-auto">
-              <div className="native-settings-detail mx-auto flex w-full max-w-[640px] flex-col gap-5 px-4 pt-3 pb-32 sm:px-5 md:pb-24">
+            <div className="scroll-surface min-h-0 grow">
+              <div className="native-settings-detail mx-auto flex w-full max-w-[640px] flex-col gap-5 px-4 pt-3 sm:px-5 md:pb-24">
                 {wide && (
                   <div className="flex items-center justify-between gap-3">
                     <h2 className="px-1 text-title3 font-semibold">{settingsPages[open].title}</h2>

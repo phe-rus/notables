@@ -11,16 +11,11 @@ import {
   repeatLabels,
 } from "@notables/core";
 import { Button, CloseIcon, IconButton, openMenu, Toggle, toast } from "@phe-rus/hino";
+import { TextEditor } from "@phe-rus/hino/text-editor";
+import { TextField } from "@phe-rus/hino/text-field";
 import { Link } from "@tanstack/react-router";
 import { useState } from "react";
-import {
-  DateField,
-  Field,
-  PickerInput,
-  TextArea,
-  TextInput,
-  TimeField,
-} from "@/components/form/form-fields";
+import { DateField, Field, PickerInput, TimeField } from "@/components/form/form-fields";
 import { locale, t } from "@/i18n/i18n";
 import { permissionState, requestPermission } from "@/platform/permissions";
 import { alertLabel, allDayAlerts, timedAlerts } from "../lib/alert-choices";
@@ -151,7 +146,7 @@ export function EventForm({
       </header>
 
       <form
-        className="flex grow flex-col gap-4 overflow-y-auto px-5 pt-1 pb-5"
+        className="flex min-h-0 grow flex-col gap-4 overflow-y-auto px-5 pt-1 pb-5"
         onSubmit={(e) => {
           e.preventDefault();
           void save();
@@ -168,13 +163,14 @@ export function EventForm({
           >
             {kindIcons[event.kind]}
           </span>
-          <TextInput
+          <TextField
+            label={t("notes.title")}
             autoFocus={target.isNew && layout === "sheet"}
             aria-label={t("notes.title")}
             value={event.title}
             placeholder={t(`calendar.placeholder.${event.kind}`)}
             onChange={(e) => set({ title: e.target.value })}
-            className="py-2.5 text-body font-semibold"
+            className="h-9 text-subheadline"
           />
         </div>
 
@@ -260,13 +256,14 @@ export function EventForm({
         )}
 
         {(event.kind === "plan" || event.kind === "trip") && (
-          <Field label={t("calendar.location")}>
-            <TextInput
+          <div>
+            <TextField
+              label={t("calendar.location")}
               value={event.location ?? ""}
               placeholder={t("calendar.locationPlaceholder")}
               onChange={(e) => set({ location: e.target.value })}
             />
-          </Field>
+          </div>
         )}
 
         <div className="grid grid-cols-2 gap-2.5">
@@ -357,7 +354,7 @@ export function EventForm({
         )}
 
         <Field label={t("calendar.notes")}>
-          <TextArea
+          <TextEditor
             rows={3}
             value={event.notes}
             placeholder={
@@ -370,19 +367,15 @@ export function EventForm({
 
       <footer className="flex items-center gap-2 border-t border-separator/60 px-5 py-4 pb-[max(16px,env(safe-area-inset-bottom))]">
         {!target.isNew && (
-          <button
-            type="button"
-            onClick={(e) => remove(e.currentTarget)}
-            className="text-subheadline font-medium text-danger"
-          >
+          <Button size="sm" variant="destructive" onClick={(e) => remove(e.currentTarget)}>
             {t("common.delete")}
-          </button>
+          </Button>
         )}
         <span className="grow" />
-        <Button variant="secondary" onClick={onClose}>
+        <Button size="sm" variant="secondary" onClick={onClose}>
           {t("common.cancel")}
         </Button>
-        <Button variant="default" type="submit" form={formId}>
+        <Button size="sm" variant="default" type="submit" form={formId}>
           {target.isNew ? t("common.add") : t("common.save")}
         </Button>
       </footer>
@@ -476,8 +469,9 @@ function BirthDate({
             )}
           />
         </Field>
-        <Field label={t("calendar.birthYear")}>
-          <TextInput
+        <div>
+          <TextField
+            label={t("calendar.birthYear")}
             inputMode="numeric"
             disabled={!known}
             value={known ? yearText : ""}
@@ -489,7 +483,7 @@ function BirthDate({
               if (text.length === 4 && next >= 1 && next <= LAST_YEAR) write(next, month, day);
             }}
           />
-        </Field>
+        </div>
       </div>
       <div className="flex items-center justify-between rounded-xl bg-fill/50 px-3.5 py-2.5">
         <span className="text-subheadline">{t("calendar.yearUnknown")}</span>

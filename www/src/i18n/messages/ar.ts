@@ -231,6 +231,7 @@ export const ar: Messages = {
     },
   },
   common: {
+    actionHint: "اختر إجراءً. مرّر المؤشر فوق الرمز لرؤية اسمه.",
     hour: "الساعة",
     minute: "الدقيقة",
     amPm: "صباحًا أو مساءً",
@@ -608,6 +609,7 @@ export const ar: Messages = {
     whileClosed: "أثناء إغلاق Notables",
   },
   calendar: {
+    allYears: "السنوات",
     related: "مرتبط بـ",
     openWriting: "فتح الملاحظة",
     openInvoice: "فتح الفاتورة",

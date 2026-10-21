@@ -57,9 +57,9 @@ export function MonthView({
   selected: Day;
   weekStart: number;
   events: CalendarEvent[];
-  onDay: (day: Day) => void;
+  onDay: (day: Day, anchor: HTMLElement) => void;
   /** Double-click: into that day's hours. */
-  onZoomIn: (day: Day) => void;
+  onZoomIn: (day: Day, anchor: HTMLElement) => void;
   /** The month the scroll has reached, for the title. */
   onVisibleMonth: (year: number, month: number) => void;
 }) {
@@ -145,7 +145,7 @@ export function MonthView({
       <div
         ref={scroller}
         onScroll={onScroll}
-        className="min-h-0 grow overflow-y-auto px-2 [overflow-anchor:none] max-md:pb-[calc(env(safe-area-inset-bottom)+96px)] md:px-4 md:pb-4"
+        className="scroll-surface min-h-0 grow px-2 [overflow-anchor:none] md:px-4"
       >
         {Array.from({ length: range.last - range.first + 1 }, (_, i) => range.first + i).map(
           (index) => {
@@ -181,8 +181,8 @@ export function MonthView({
                           isSelected={day === selected}
                           events={byDay.get(day) ?? []}
                           holidays={holidays.get(day) ?? []}
-                          onSelect={() => onDay(day)}
-                          onZoomIn={() => onZoomIn(day)}
+                          onSelect={(anchor) => onDay(day, anchor)}
+                          onZoomIn={(anchor) => onZoomIn(day, anchor)}
                         />
                       ) : (
                         <span key={day} />
@@ -215,8 +215,8 @@ function DayCell({
   isSelected: boolean;
   events: CalendarEvent[];
   holidays: Holiday[];
-  onSelect: () => void;
-  onZoomIn: () => void;
+  onSelect: (anchor: HTMLElement) => void;
+  onZoomIn: (anchor: HTMLElement) => void;
 }) {
   const date = Number(day.slice(8));
   const closed = holidays.some((holiday) => holiday.closed);
@@ -224,8 +224,8 @@ function DayCell({
   return (
     <button
       type="button"
-      onClick={onSelect}
-      onDoubleClick={onZoomIn}
+      onClick={(event) => onSelect(event.currentTarget)}
+      onDoubleClick={(event) => onZoomIn(event.currentTarget)}
       aria-pressed={isSelected}
       aria-label={`${day}${events.length ? `, ${t("calendar.eventsCount", { count: events.length })}` : ""}`}
       className={cn(

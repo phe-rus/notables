@@ -60,7 +60,12 @@ in [the 20 October audit](reviews/2026-10-20-maintainability-audit.md).
       duplicate detection and yearly FINANCES sheets.
 - [ ] Books list, shelves, imports and reader controls.
 - [ ] Notes editor and capture toolbar, using Hino and owned props types.
-- [ ] Calendar views, event form and gesture ownership.
+- [x] Publish/deploy Hino 0.1.7; adopt shared viewport sizing, scroll clearance,
+      neutral materials, compact folder actions and directional navigation.
+- [x] Separate calendar navigation contracts and Years/title/holiday components;
+      add miniature year calendars, focal zoom and Hino event text controls.
+- [ ] Complete remaining calendar controls and gesture ownership; verify the
+      viewport/calendar changes on physical iOS before release.
 - [x] Separate setup pages, adopt Hino fields/choices and refine spacing and motion.
 - [ ] Remaining settings controls and translation gaps.
 - [ ] Rust wallet/model modules, command payloads and separate test modules.

@@ -96,6 +96,8 @@ export default defineConfig({
     // Tauri mobile dev connects to the host machine over the network.
     host: process.env.TAURI_DEV_HOST || false,
     strictPort: true,
+    // Rust and generated mobile projects have their own build watchers.
+    watch: { ignored: ["**/src-tauri/**"] },
   },
   plugins: [
     walletOcrAssets(tauri),

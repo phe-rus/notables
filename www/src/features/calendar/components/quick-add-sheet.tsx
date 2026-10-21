@@ -1,5 +1,6 @@
 import type { Day } from "@notables/core";
 import { Button, CloseIcon, IconButton, Sheet, SparkleIcon, toast } from "@phe-rus/hino";
+import { TextField } from "@phe-rus/hino/text-field";
 import { useState } from "react";
 import { t } from "@/i18n/i18n";
 import { describeDay, formatClock } from "../lib/describe-alert";
@@ -59,23 +60,25 @@ function QuickAddForm({
 
   return (
     <form
-      className="flex flex-col gap-4 p-5 pb-[max(20px,env(safe-area-inset-bottom))]"
+      className="flex min-h-0 flex-col gap-4 overflow-y-auto p-5 pb-[max(20px,env(safe-area-inset-bottom))]"
       onSubmit={(event) => {
         event.preventDefault();
         add();
       }}
     >
       <div className="flex items-center gap-2">
-        <SparkleIcon size={18} className="shrink-0 text-accent-text" />
-        <input
-          // biome-ignore lint/a11y/noAutofocus: the sheet opens to type
-          autoFocus
-          value={text}
-          onChange={(event) => setText(event.target.value)}
-          placeholder={t("calendar.quickAddPlaceholder")}
-          aria-label={t("calendar.quickAdd")}
-          className="min-w-0 grow bg-transparent text-[18px] font-semibold outline-none placeholder:text-label-tertiary"
-        />
+        <div className="min-w-0 grow">
+          <TextField
+            label={t("calendar.quickAdd")}
+            icon={<SparkleIcon size={18} />}
+            autoFocus
+            value={text}
+            onChange={(event) => setText(event.target.value)}
+            placeholder={t("calendar.quickAddPlaceholder")}
+            aria-label={t("calendar.quickAdd")}
+            className="h-9 text-subheadline"
+          />
+        </div>
         <IconButton size="icon-sm" variant="ghost" label={t("common.close")} onClick={onClose}>
           <CloseIcon size={18} />
         </IconButton>

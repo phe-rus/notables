@@ -240,6 +240,7 @@ export const en = {
     },
   },
   common: {
+    actionHint: "Choose an action. Point to an icon to see its name.",
     hour: "Hour",
     minute: "Minute",
     amPm: "AM or PM",
@@ -591,6 +592,7 @@ export const en = {
     whileClosed: "While Notables was closed",
   },
   calendar: {
+    allYears: "Years",
     related: "Related to",
     openWriting: "Open writing",
     openInvoice: "Open invoice",
