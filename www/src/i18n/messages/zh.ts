@@ -745,6 +745,20 @@ export const zh: Messages = {
     placeSystem: "系统设置",
   },
   books: {
+    reader: {
+      contents: "目录",
+      goToPage: "跳转到页码",
+      go: "前往",
+      position: "第 {page} 页，共 {total} 页",
+      pageRange: "请选择 1 至 {total} 页。",
+      cover: "封面",
+      titlePage: "扉页",
+      highlights: "标记",
+      stopHighlighting: "停止标记",
+      close: "关闭图书",
+    },
+    chapterWaiting: "此章节正在等待内容同步。",
+    chapterNumber: "第 {number} 章",
     selectTitle: "选择图书",
     selectedCount: {
       other: "已选择 {count} 项",

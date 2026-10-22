@@ -782,6 +782,20 @@ export const sw: Messages = {
     placeSystem: "mipangilio ya mfumo wako",
   },
   books: {
+    reader: {
+      contents: "Yaliyomo",
+      goToPage: "Nenda kwenye ukurasa",
+      go: "Nenda",
+      position: "Ukurasa {page} kati ya {total}",
+      pageRange: "Chagua ukurasa kati ya 1 na {total}.",
+      cover: "Jalada",
+      titlePage: "Ukurasa wa kichwa",
+      highlights: "Maangazio",
+      stopHighlighting: "Acha kuangazia",
+      close: "Funga kitabu",
+    },
+    chapterWaiting: "Sura hii inasubiri maudhui yake yasawazishwe.",
+    chapterNumber: "Sura ya {number}",
     selectTitle: "Chagua vitabu",
     selectedCount: {
       one: "Kimechaguliwa {count}",

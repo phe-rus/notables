@@ -192,6 +192,7 @@ export function useBookPages(
 
   return {
     sections,
+    measured: sections.length > 0 && sections.every((_, index) => counts[index] !== undefined),
     total,
     starts,
     locate,

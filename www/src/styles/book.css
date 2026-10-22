@@ -3,14 +3,12 @@
 /* In the components layer: above the base reset, below utilities, so a class can still adjust it. */
 @layer components {
   .book-desk {
-    background:
-      radial-gradient(120% 80% at 50% 40%, transparent 55%, rgb(60 40 10 / 0.08)),
-      var(--color-sidebar);
+    background: color-mix(in oklab, var(--color-accent) 2%, var(--color-background));
   }
 
   .book-paper {
-    background-color: #fffdf8;
-    color: #24221f;
+    background-color: var(--color-paper);
+    color: var(--color-label);
   }
 
   /* Gutter shading: pages curve into the spine. */
@@ -32,9 +30,15 @@
     background-size: 22px 22px;
   }
 
-  @media (prefers-color-scheme: dark) {
-    .book-paper {
-      background-color: #f4efe4;
+  @media (max-width: 599px) {
+    .book-desk {
+      background: var(--color-paper);
+    }
+
+    .book-paper.is-left,
+    .book-paper.is-right {
+      border-radius: 0;
+      box-shadow: none;
     }
   }
 
@@ -44,7 +48,7 @@
     font-family: var(--font-serif);
     font-size: 17px;
     line-height: 1.6;
-    color: #24221f;
+    color: var(--color-label);
     hyphens: auto;
     text-align: justify;
   }

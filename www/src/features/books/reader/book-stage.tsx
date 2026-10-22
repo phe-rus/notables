@@ -1,5 +1,12 @@
 import { cn, spring } from "@phe-rus/hino";
-import { animate, type MotionValue, motion, useMotionValue, useTransform } from "motion/react";
+import {
+  animate,
+  type MotionValue,
+  motion,
+  useMotionValue,
+  useReducedMotion,
+  useTransform,
+} from "motion/react";
 import { type ReactNode, useCallback, useEffect, useRef, useState } from "react";
 import type { PageGeometry } from "./page-geometry";
 
@@ -22,6 +29,7 @@ export interface BookStageProps {
   renderFace: (index: number, side: Side) => ReactNode;
   /** False while highlighting: pointers select text instead of turning pages. */
   interactive?: boolean;
+  onToggleControls?: () => void;
 }
 
 /** How far a drag must travel (of a page width) to complete a turn. */
@@ -52,8 +60,10 @@ export function BookStage({
   onPositionChange,
   renderFace,
   interactive = true,
+  onToggleControls,
 }: BookStageProps) {
   const { spread, pageWidth, pageHeight } = geometry;
+  const reducedMotion = useReducedMotion();
   const angle = useMotionValue(0);
   const [turning, setTurning] = useState<Direction | null>(null);
   const busy = useRef(false);
@@ -70,7 +80,11 @@ export function BookStage({
   const finish = useCallback(
     (direction: Direction, complete: boolean, velocity = 0) => {
       const target = complete ? 180 : 0;
-      animate(angle, target, { ...spring.smooth, velocity: velocity * 180 }).then(() => {
+      animate(
+        angle,
+        target,
+        reducedMotion ? { duration: 0 } : { ...spring.smooth, velocity: velocity * 180 },
+      ).then(() => {
         if (complete) {
           const step = stepFor(spread) * (direction === "forward" ? 1 : -1);
           onPositionChange(position + step);
@@ -80,7 +94,7 @@ export function BookStage({
         busy.current = false;
       });
     },
-    [angle, onPositionChange, position, spread],
+    [angle, onPositionChange, position, reducedMotion, spread],
   );
 
   const turn = useCallback(
@@ -95,6 +109,13 @@ export function BookStage({
 
   useEffect(() => {
     const onKey = (event: KeyboardEvent) => {
+      if (event.defaultPrevented || event.altKey || event.ctrlKey || event.metaKey) return;
+      if (document.querySelector('[role="dialog"], [role="menu"]')) return;
+      if (
+        event.target instanceof HTMLElement &&
+        event.target.closest('input, textarea, select, button, a, [contenteditable="true"]')
+      )
+        return;
       if (event.key === "ArrowRight" || event.key === " " || event.key === "PageDown") {
         event.preventDefault();
         turn("forward");
@@ -109,6 +130,11 @@ export function BookStage({
 
   const onPointerDown = (event: React.PointerEvent) => {
     if (busy.current) return;
+    if (
+      event.target instanceof HTMLElement &&
+      event.target.closest("a, button, input, textarea, select")
+    )
+      return;
     const now = performance.now();
     drag.current = { x: event.clientX, t: now, lastX: event.clientX, lastT: now, moved: false };
     (event.currentTarget as HTMLElement).setPointerCapture(event.pointerId);
@@ -142,10 +168,11 @@ export function BookStage({
     if (!state) return;
 
     if (!state.moved) {
-      // A tap: right side turns forward, left side turns back.
+      // Center taps reveal controls; page edges retain direct page turns.
       const rect = stage.current?.getBoundingClientRect();
       const ratio = rect ? (event.clientX - rect.left) / rect.width : 1;
-      turn(ratio > 0.4 ? "forward" : "backward");
+      if (onToggleControls && ratio >= 0.3 && ratio <= 0.7) onToggleControls();
+      else turn(ratio > 0.5 ? "forward" : "backward");
       return;
     }
     if (!state.direction) return;

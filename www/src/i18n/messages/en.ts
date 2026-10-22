@@ -774,6 +774,20 @@ export const en = {
     placeSystem: "your system settings",
   },
   books: {
+    reader: {
+      contents: "Contents",
+      goToPage: "Go to page",
+      go: "Go",
+      position: "Page {page} of {total}",
+      pageRange: "Choose a page from 1 to {total}.",
+      cover: "Cover",
+      titlePage: "Title page",
+      highlights: "Highlights",
+      stopHighlighting: "Stop highlighting",
+      close: "Close book",
+    },
+    chapterWaiting: "This chapter is waiting for its content to sync.",
+    chapterNumber: "Chapter {number}",
     selectTitle: "Select Books",
     selectedCount: {
       one: "{count} Selected",

@@ -122,6 +122,13 @@ Gotchas learned the hard way:
 
 ## Status (October 2026)
 
+- Books, 22 October, in progress: received chapter text now renders from the synced
+  document without opening its note editor, with late-arrival updates. Contents
+  adds chapter/page navigation; reader controls and appearance are being refined.
+  See [the reader checkpoint](docs/reviews/2026-10-22-books-reader.md). Full checks and TECNO reading/navigation checks pass;
+  the phone geometry and iPhone checks remain separate. Books ships in v0.2.19.
+  v0.2.18 ships the preceding controls checkpoint; its web deployment is 2608a476-63e8-4202-aa0c-017c64b91ffb.
+
 - 22 October follow-up: Hino 0.1.13 is public and its docs are deployed. Folder
   and editor header menus replace their action group while expanding. Settings
   rows wrap controls before squeezing labels, native selectors are compact,

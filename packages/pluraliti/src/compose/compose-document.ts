@@ -1,7 +1,7 @@
 import { $generateNodesFromDOM } from "@lexical/html";
 import { $convertFromMarkdownString } from "@lexical/markdown";
 import { $createHeadingNode } from "@lexical/rich-text";
-import { createBinding, type Provider, syncLexicalUpdateToYjs } from "@lexical/yjs";
+import { createBinding, syncLexicalUpdateToYjs } from "@lexical/yjs";
 import {
   $createParagraphNode,
   $createTextNode,
@@ -13,28 +13,10 @@ import {
   type SerializedEditorState,
 } from "lexical";
 import type * as Y from "yjs";
+import { offlineProvider } from "../collaboration/offline-provider";
 import { editorTheme } from "../editor/editor-theme";
 import { editorNodes } from "../nodes/node-registry";
 import { markdownTransformers } from "../plugins/markdown/markdown-transformers";
-
-/** A provider that is never connected: composing happens on this device only. */
-function offlineProvider(): Provider {
-  const awareness = {
-    getLocalState: () => null,
-    getStates: () => new Map(),
-    off: () => {},
-    on: () => {},
-    setLocalState: () => {},
-    setLocalStateField: () => {},
-  };
-  return {
-    awareness,
-    connect: () => {},
-    disconnect: () => {},
-    off: () => {},
-    on: () => {},
-  } as unknown as Provider;
-}
 
 /**
  * Writes into an empty note document without an editor on screen, exactly

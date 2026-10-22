@@ -10,6 +10,7 @@ export {
   composeDocumentFromHtml,
   composeDocumentFromMarkdown,
 } from "./compose/compose-document";
+export { readDocument } from "./compose/read-document";
 export { editorTheme } from "./editor/editor-theme";
 export { NotesEditor, type NotesEditorProps } from "./editor/notes-editor";
 export { NotesEditorContent, type NotesEditorContentProps } from "./editor/notes-editor-content";

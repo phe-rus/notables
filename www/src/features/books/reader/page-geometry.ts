@@ -18,13 +18,14 @@ const PHONE_PAGE_RATIO = 1.75;
 const MAX_PAGE_WIDTH = 560;
 
 export function measurePage(stageWidth: number, stageHeight: number): PageGeometry {
+  const compact = stageWidth < 600;
   const spread = stageWidth >= 900 && stageWidth > stageHeight * 1.15;
-  const availableWidth = spread ? (stageWidth - 64) / 2 : stageWidth - 24;
+  const availableWidth = compact ? stageWidth : spread ? (stageWidth - 64) / 2 : stageWidth - 24;
   // Phones read one tall page at a time; spreads keep classic book proportions.
   const ratio = spread ? PAGE_RATIO : PHONE_PAGE_RATIO;
   let pageWidth = Math.min(availableWidth, MAX_PAGE_WIDTH);
-  let pageHeight = pageWidth * ratio;
-  const maxHeight = stageHeight - 24;
+  let pageHeight = compact ? stageHeight : pageWidth * ratio;
+  const maxHeight = stageHeight - (compact ? 0 : 24);
   if (pageHeight > maxHeight) {
     pageHeight = maxHeight;
     pageWidth = Math.min(pageWidth, pageHeight / (spread ? PAGE_RATIO : 1.2));

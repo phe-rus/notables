@@ -775,6 +775,20 @@ export const pt: Messages = {
     placeSystem: "as definições do sistema",
   },
   books: {
+    reader: {
+      contents: "Conteúdo",
+      goToPage: "Ir para a página",
+      go: "Ir",
+      position: "Página {page} de {total}",
+      pageRange: "Escolha uma página de 1 a {total}.",
+      cover: "Capa",
+      titlePage: "Página de título",
+      highlights: "Destaques",
+      stopHighlighting: "Parar de destacar",
+      close: "Fechar o livro",
+    },
+    chapterWaiting: "Este capítulo aguarda a sincronização do conteúdo.",
+    chapterNumber: "Capítulo {number}",
     selectTitle: "Selecionar livros",
     selectedCount: {
       one: "{count} selecionado",

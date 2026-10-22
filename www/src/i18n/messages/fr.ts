@@ -790,6 +790,20 @@ export const fr: Messages = {
     placeSystem: "les réglages de votre système",
   },
   books: {
+    reader: {
+      contents: "Sommaire",
+      goToPage: "Aller à la page",
+      go: "Aller",
+      position: "Page {page} sur {total}",
+      pageRange: "Choisissez une page entre 1 et {total}.",
+      cover: "Couverture",
+      titlePage: "Page de titre",
+      highlights: "Surlignages",
+      stopHighlighting: "Arrêter le surlignage",
+      close: "Fermer le livre",
+    },
+    chapterWaiting: "Ce chapitre attend la synchronisation de son contenu.",
+    chapterNumber: "Chapitre {number}",
     selectTitle: "Sélectionner des livres",
     selectedCount: {
       one: "{count} sélectionné",

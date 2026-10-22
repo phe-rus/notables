@@ -60,17 +60,25 @@ export function watchOpenDocuments(watcher: OpenWatcher): () => void {
 }
 
 /** Opens a document for syncing, without it counting as open on this device. */
-export async function openQuietly(name: string): Promise<{ doc: Y.Doc; release(): void }> {
+export async function openQuietly(
+  name: string,
+  storage: Persistence = getPersistence(),
+): Promise<{ doc: Y.Doc; release(): void }> {
   const doc = new Y.Doc();
   quiet.add(doc);
-  const binding = await getPersistence().bind(name, doc);
-  return {
-    doc,
-    release() {
-      binding.destroy();
-      doc.destroy();
-    },
-  };
+  try {
+    const binding = await storage.bind(name, doc);
+    return {
+      doc,
+      release() {
+        binding.destroy();
+        doc.destroy();
+      },
+    };
+  } catch (error) {
+    doc.destroy();
+    throw error;
+  }
 }
 
 function watchOpened(inner: Persistence): Persistence {

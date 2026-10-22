@@ -1,6 +1,15 @@
-import { ChaptersIcon, CloseIcon, cn, HeadphonesIcon, HighlighterIcon, toast } from "@phe-rus/hino";
+import {
+  ChaptersIcon,
+  CloseIcon,
+  HeadphonesIcon,
+  HighlighterIcon,
+  spring,
+  toast,
+} from "@phe-rus/hino";
+import { Button, buttonStyle } from "@phe-rus/hino/button";
+import { IconButton } from "@phe-rus/hino/icon-button";
 import { Link } from "@tanstack/react-router";
-import { AnimatePresence, motion } from "motion/react";
+import { AnimatePresence, motion, useReducedMotion } from "motion/react";
 import {
   type CSSProperties,
   useCallback,
@@ -24,12 +33,14 @@ import {
   rangesForLine,
 } from "@/features/listening/lib/reading-highlight";
 import { useNarration } from "@/features/listening/lib/use-narration";
+import { t } from "@/i18n/i18n";
 import { HighlightPalette } from "../highlights/components/highlight-palette";
 import { HighlightsPanel } from "../highlights/components/highlights-panel";
 import { highlightsSupported, rangesFor } from "../highlights/lib/paint-highlights";
 import { usePaintedHighlights } from "../highlights/lib/use-painted-highlights";
 import { type HighlightEntry, useHighlights } from "../highlights/store/highlight-store";
 import type { BookEntry } from "../store/book-store";
+import { BookContents } from "./book-contents";
 import { BookFlow } from "./book-flow";
 import { BookPage } from "./book-page";
 import { BookStage, CLOSED_SPREAD, FRONT_COVER } from "./book-stage";
@@ -52,18 +63,25 @@ const fromSpread = (left: number) => (left === CLOSED_SPREAD ? FRONT_COVER : lef
  */
 function positionLabel(page: number, total: number, spread: boolean): string {
   const printed = total - 1;
-  if (page === FRONT_COVER) return "Cover";
+  if (page === FRONT_COVER) return t("books.reader.cover");
   if (spread) {
     const left = toSpread(page);
-    if (left < 1) return "Title page";
+    if (left < 1) return t("books.reader.titlePage");
     const right = Math.min(left + 1, printed);
-    return right > left ? `Pages ${left}–${right} of ${printed}` : `Page ${left} of ${printed}`;
+    return t("books.reader.position", {
+      page: right > left ? `${left}–${right}` : left,
+      total: printed,
+    });
   }
-  return page < 1 ? "Title page" : `Page ${page} of ${printed}`;
+  return page < 1
+    ? t("books.reader.titlePage")
+    : t("books.reader.position", { page, total: printed });
 }
 
 export function BookReader({ book }: { book: BookEntry }) {
   const chapters = useBookContent(book);
+  const reducedMotion = useReducedMotion();
+  const [controlsVisible, setControlsVisible] = useState(true);
   const stage = useRef<HTMLDivElement>(null);
   const [geometry, setGeometry] = useState<PageGeometry | null>(null);
   const [page, setPage] = useReadingPosition(book.id, FRONT_COVER);
@@ -71,6 +89,8 @@ export function BookReader({ book }: { book: BookEntry }) {
   const highlights = useHighlights(book.id);
   const [highlighting, setHighlighting] = useState(false);
   const [listOpen, setListOpen] = useState(false);
+  const [contentsOpen, setContentsOpen] = useState(false);
+  const [chapterTarget, setChapterTarget] = useState<string | null>(null);
   usePaintedHighlights(root, highlights);
   // Read aloud speaks the book's own language, else the app's.
   const lang = book.language || document.documentElement.lang || navigator.language || "en";
@@ -91,8 +111,23 @@ export function BookReader({ book }: { book: BookEntry }) {
   const { total, locate, starts, setFocus } = pages;
 
   useEffect(() => {
-    if (total > 0 && page > total - 1) setPage(total - 1);
-  }, [page, setPage, total]);
+    if (
+      pages.measured &&
+      chapters?.every((chapter) => chapter.document) &&
+      total > 0 &&
+      page > total - 1
+    )
+      setPage(total - 1);
+  }, [chapters, page, pages.measured, setPage, total]);
+
+  useEffect(() => {
+    if (!chapterTarget) return;
+    const section = pages.sectionOfChapter(chapterTarget);
+    if (section < 0) return;
+    setPage(starts[section] ?? 0);
+    setFocus(section);
+    if (pages.measured) setChapterTarget(null);
+  }, [chapterTarget, pages.measured, pages.sectionOfChapter, setFocus, setPage, starts]);
 
   // Count the section being read first, and keep it in the measurer.
   useEffect(() => setFocus(locate(Math.max(0, page)).section), [locate, page, setFocus]);
@@ -108,7 +143,10 @@ export function BookReader({ book }: { book: BookEntry }) {
   }, [chapters, geometry, locate, pages.flowFor, pages.sections]);
 
   const onPositionChange = useCallback(
-    (position: number) => setPage(geometry?.spread ? fromSpread(position) : position),
+    (position: number) => {
+      setChapterTarget(null);
+      setPage(geometry?.spread ? fromSpread(position) : position);
+    },
     [geometry?.spread, setPage],
   );
 
@@ -208,17 +246,26 @@ export function BookReader({ book }: { book: BookEntry }) {
 
   return (
     <div ref={root} className="book-desk fixed inset-0 flex flex-col">
-      <header className="glass-bar flex box-content h-14 shrink-0 items-center justify-between gap-3 px-3 pt-[env(safe-area-inset-top)]">
+      <motion.header
+        initial={false}
+        animate={{ opacity: controlsVisible ? 1 : 0 }}
+        transition={{ duration: reducedMotion ? 0 : 0.18 }}
+        onFocusCapture={() => setControlsVisible(true)}
+        style={{ pointerEvents: controlsVisible ? "auto" : "none" }}
+        className="flex box-content h-14 shrink-0 items-center justify-between gap-2 px-3 pt-[env(safe-area-inset-top)]"
+      >
         <Link
           to="/books/$bookId"
           params={{ bookId: book.id }}
-          aria-label="Close book"
-          title="Close book"
-          className="group flex size-[34px] items-center justify-center rounded-full text-label transition-colors hover:bg-fill"
+          aria-label={t("books.reader.close")}
+          title={t("books.reader.close")}
+          className={buttonStyle({ size: "icon-sm", variant: "ghost" })}
         >
           <CloseIcon size={20} />
         </Link>
-        <p className="truncate font-serif text-body font-semibold">{book.title || "Untitled"}</p>
+        <p className="truncate font-serif text-body font-semibold">
+          {book.title || t("common.untitled")}
+        </p>
         <div className="flex shrink-0 items-center justify-end gap-1">
           <p
             className="hidden w-28 text-right text-footnote text-label-secondary tabular-nums sm:block"
@@ -226,53 +273,42 @@ export function BookReader({ book }: { book: BookEntry }) {
           >
             {total ? label : ""}
           </p>
-          <button
-            type="button"
+          <IconButton
+            size="icon-sm"
+            variant="ghost"
+            label={t("notes.readAloud")}
             aria-pressed={narration.state !== null}
-            aria-label="Read aloud"
-            data-tooltip="Read aloud"
             onClick={() => (narration.state ? narration.close() : listen())}
-            className={cn(
-              "flex size-[34px] items-center justify-center rounded-full transition-colors",
-              narration.state ? "bg-accent text-on-accent" : "text-label hover:bg-fill",
-            )}
+            className={narration.state ? "bg-accent-soft text-accent-text" : undefined}
           >
             <HeadphonesIcon size={19} />
-          </button>
+          </IconButton>
           {highlightsSupported() && (
-            <button
-              type="button"
+            <IconButton
+              size="icon-sm"
+              variant="ghost"
               aria-pressed={highlighting}
-              aria-label={highlighting ? "Stop highlighting" : "Highlight"}
-              data-tooltip={highlighting ? "Stop highlighting" : "Highlight"}
+              label={highlighting ? t("books.reader.stopHighlighting") : t("editor.highlight")}
               onClick={() => {
                 setHighlighting((on) => !on);
+                setControlsVisible(true);
                 window.getSelection()?.removeAllRanges();
               }}
-              className={cn(
-                "flex size-[34px] items-center justify-center rounded-full transition-colors",
-                highlighting ? "bg-accent text-on-accent" : "text-label hover:bg-fill",
-              )}
+              className={highlighting ? "bg-accent-soft text-accent-text" : undefined}
             >
               <HighlighterIcon size={19} />
-            </button>
+            </IconButton>
           )}
-          <button
-            type="button"
-            aria-label="Highlights"
-            data-tooltip="Highlights"
-            onClick={() => setListOpen(true)}
-            className="relative flex size-[34px] items-center justify-center rounded-full text-label transition-colors hover:bg-fill"
+          <IconButton
+            size="icon-sm"
+            variant="ghost"
+            label={t("books.reader.contents")}
+            onClick={() => setContentsOpen(true)}
           >
             <ChaptersIcon size={19} />
-            {highlights.length > 0 && (
-              <span className="absolute top-0.5 right-0.5 flex min-w-4 items-center justify-center rounded-full bg-accent px-1 text-[10px] leading-4 font-bold text-on-accent">
-                {highlights.length}
-              </span>
-            )}
-          </button>
+          </IconButton>
         </div>
-      </header>
+      </motion.header>
 
       <div
         ref={stage}
@@ -284,9 +320,9 @@ export function BookReader({ book }: { book: BookEntry }) {
             {pages.measurer}
             {flow && total > 0 && (
               <motion.div
-                initial={{ opacity: 0, scale: 0.96, y: 12 }}
-                animate={{ opacity: 1, scale: 1, y: 0 }}
-                transition={{ type: "spring", stiffness: 200, damping: 26 }}
+                initial={{ opacity: 0, scale: reducedMotion ? 1 : 0.985 }}
+                animate={{ opacity: 1, scale: 1 }}
+                transition={reducedMotion ? { duration: 0 } : spring.smooth}
               >
                 <BookStage
                   geometry={geometry}
@@ -294,6 +330,7 @@ export function BookReader({ book }: { book: BookEntry }) {
                   position={geometry.spread ? toSpread(page) : page}
                   onPositionChange={onPositionChange}
                   interactive={!highlighting}
+                  onToggleControls={() => setControlsVisible((visible) => !visible)}
                   renderFace={(index, side) => (
                     <BookPage
                       index={index}
@@ -311,6 +348,20 @@ export function BookReader({ book }: { book: BookEntry }) {
         )}
       </div>
 
+      <BookContents
+        open={contentsOpen}
+        onClose={() => setContentsOpen(false)}
+        chapters={chapters ?? []}
+        currentChapter={pages.sections[locate(Math.max(0, page)).section]?.chapters[0]?.noteId}
+        page={page}
+        total={total}
+        onChapter={setChapterTarget}
+        onPage={(next) => {
+          setChapterTarget(null);
+          setPage(next);
+        }}
+        onHighlights={() => setListOpen(true)}
+      />
       <HighlightPalette root={stage} bookId={book.id} entries={highlights} enabled={highlighting} />
       <HighlightsPanel
         open={listOpen}
@@ -335,9 +386,16 @@ export function BookReader({ book }: { book: BookEntry }) {
         )}
       </AnimatePresence>
 
-      <footer className="flex shrink-0 flex-col items-stretch px-6 pt-2 pb-[max(14px,env(safe-area-inset-bottom))]">
+      <motion.footer
+        initial={false}
+        animate={{ opacity: controlsVisible ? 1 : 0 }}
+        transition={{ duration: reducedMotion ? 0 : 0.18 }}
+        onFocusCapture={() => setControlsVisible(true)}
+        style={{ pointerEvents: controlsVisible ? "auto" : "none" }}
+        className="flex shrink-0 flex-col items-stretch px-6 pt-2 pb-[max(14px,env(safe-area-inset-bottom))]"
+      >
         <label className="sr-only" htmlFor="book-progress">
-          Jump to page
+          {t("books.reader.goToPage")}
         </label>
         <input
           id="book-progress"
@@ -355,10 +413,15 @@ export function BookReader({ book }: { book: BookEntry }) {
           }
         />
         {/* Wide windows show the position in the top bar instead. */}
-        <p className="text-center text-caption text-label-secondary tabular-nums sm:hidden">
-          {total ? label : ""}
-        </p>
-      </footer>
+        <Button
+          variant="ghost"
+          size="xs"
+          className="self-center text-label-secondary tabular-nums"
+          onClick={() => setContentsOpen(true)}
+        >
+          {total ? label : t("books.reader.contents")}
+        </Button>
+      </motion.footer>
     </div>
   );
 }

@@ -1,5 +1,6 @@
 import { DocumentView } from "@notables/pluraliti";
 import { type CSSProperties, memo } from "react";
+import { t } from "@/i18n/i18n";
 import { stripLeadingTitle } from "@/lib/documents/strip-leading-title";
 import type { BookEntry } from "../store/book-store";
 import type { PageGeometry } from "./page-geometry";
@@ -41,7 +42,7 @@ export const BookFlow = memo(function BookFlow({
     >
       {titlePage && (
         <section className="book-title-page">
-          <h1>{book.title || "Untitled"}</h1>
+          <h1>{book.title || t("common.untitled")}</h1>
           {book.subtitle && <p className="book-subtitle">{book.subtitle}</p>}
           {book.author && <p className="book-author">{book.author}</p>}
         </section>
@@ -53,12 +54,14 @@ export const BookFlow = memo(function BookFlow({
           </section>
         ),
         <section key={chapter.noteId} className="book-chapter" data-chapter={chapter.noteId}>
-          <p className="book-chapter-number">Chapter {first + index + 1}</p>
+          <p className="book-chapter-number">
+            {t("books.chapterNumber", { number: first + index + 1 })}
+          </p>
           <h2 className="book-chapter-title">{chapter.title}</h2>
           {chapter.document ? (
             <DocumentView document={stripLeadingTitle(chapter.document, chapter.title)} />
           ) : (
-            <p className="book-missing">Open this note once on this device to include it.</p>
+            <p className="book-missing">{t("books.chapterWaiting")}</p>
           )}
         </section>,
       ])}

@@ -181,3 +181,9 @@ Owner preferences: Apple Books is the interaction/design reference, implemented
 through Hino, with premium organization, transitions and full-screen reading.
 Do not replace data correctness with visual placeholders or infer that every
 catalog result can be downloaded.
+
+Books checkpoint v0.2.19: synced chapter hydration, live arrivals, Contents,
+page entry, quiet persistence and the first adaptive reading/control pass are
+implemented. Verification and remaining work are in
+[the reader checkpoint](reviews/2026-10-22-books-reader.md).
+Next: read-aloud continuity before the remaining Books design/features.

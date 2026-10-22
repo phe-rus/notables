@@ -814,6 +814,20 @@ export const ar: Messages = {
     placeSystem: "إعدادات نظامك",
   },
   books: {
+    reader: {
+      contents: "المحتويات",
+      goToPage: "الانتقال إلى صفحة",
+      go: "انتقال",
+      position: "الصفحة {page} من {total}",
+      pageRange: "اختر صفحة من 1 إلى {total}.",
+      cover: "الغلاف",
+      titlePage: "صفحة العنوان",
+      highlights: "التمييزات",
+      stopHighlighting: "إيقاف التمييز",
+      close: "إغلاق الكتاب",
+    },
+    chapterWaiting: "هذا الفصل ينتظر مزامنة محتواه.",
+    chapterNumber: "الفصل {number}",
     selectTitle: "تحديد الكتب",
     selectedCount: {
       zero: "لم يُحدَّد شيء",
