@@ -10,15 +10,7 @@ import { Button, buttonStyle } from "@phe-rus/hino/button";
 import { IconButton } from "@phe-rus/hino/icon-button";
 import { Link } from "@tanstack/react-router";
 import { AnimatePresence, motion, useReducedMotion } from "motion/react";
-import {
-  type CSSProperties,
-  useCallback,
-  useEffect,
-  useLayoutEffect,
-  useMemo,
-  useRef,
-  useState,
-} from "react";
+import { useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState } from "react";
 import { flushSync } from "react-dom";
 import { createRoot } from "react-dom/client";
 import { NarrationBar } from "@/features/listening/components/narration-bar";
@@ -90,6 +82,7 @@ export function BookReader({ book }: { book: BookEntry }) {
   const [highlighting, setHighlighting] = useState(false);
   const [listOpen, setListOpen] = useState(false);
   const [contentsOpen, setContentsOpen] = useState(false);
+  const contentsAnchor = useRef<HTMLDivElement>(null);
   const [chapterTarget, setChapterTarget] = useState<string | null>(null);
   usePaintedHighlights(root, highlights);
   // Read aloud speaks the book's own language, else the app's.
@@ -299,14 +292,40 @@ export function BookReader({ book }: { book: BookEntry }) {
               <HighlighterIcon size={19} />
             </IconButton>
           )}
-          <IconButton
-            size="icon-sm"
-            variant="ghost"
-            label={t("books.reader.contents")}
-            onClick={() => setContentsOpen(true)}
-          >
-            <ChaptersIcon size={19} />
-          </IconButton>
+          <div ref={contentsAnchor} className="relative">
+            <IconButton
+              size="icon-sm"
+              variant="ghost"
+              label={t("books.reader.contents")}
+              aria-expanded={contentsOpen}
+              onClick={() => setContentsOpen((shown) => !shown)}
+            >
+              <ChaptersIcon size={19} />
+            </IconButton>
+            <BookContents
+              open={contentsOpen}
+              anchor={contentsAnchor}
+              onClose={() => setContentsOpen(false)}
+              chapters={chapters ?? []}
+              chapterPages={Object.fromEntries(
+                (chapters ?? []).map((chapter) => [
+                  chapter.noteId,
+                  starts[pages.sectionOfChapter(chapter.noteId)] ?? 0,
+                ]),
+              )}
+              currentChapter={
+                pages.sections[locate(Math.max(0, page)).section]?.chapters[0]?.noteId
+              }
+              page={page}
+              total={total}
+              onChapter={setChapterTarget}
+              onPage={(next) => {
+                setChapterTarget(null);
+                setPage(next);
+              }}
+              onHighlights={() => setListOpen(true)}
+            />
+          </div>
         </div>
       </motion.header>
 
@@ -348,20 +367,6 @@ export function BookReader({ book }: { book: BookEntry }) {
         )}
       </div>
 
-      <BookContents
-        open={contentsOpen}
-        onClose={() => setContentsOpen(false)}
-        chapters={chapters ?? []}
-        currentChapter={pages.sections[locate(Math.max(0, page)).section]?.chapters[0]?.noteId}
-        page={page}
-        total={total}
-        onChapter={setChapterTarget}
-        onPage={(next) => {
-          setChapterTarget(null);
-          setPage(next);
-        }}
-        onHighlights={() => setListOpen(true)}
-      />
       <HighlightPalette root={stage} bookId={book.id} entries={highlights} enabled={highlighting} />
       <HighlightsPanel
         open={listOpen}
@@ -394,25 +399,6 @@ export function BookReader({ book }: { book: BookEntry }) {
         style={{ pointerEvents: controlsVisible ? "auto" : "none" }}
         className="flex shrink-0 flex-col items-stretch px-6 pt-2 pb-[max(14px,env(safe-area-inset-bottom))]"
       >
-        <label className="sr-only" htmlFor="book-progress">
-          {t("books.reader.goToPage")}
-        </label>
-        <input
-          id="book-progress"
-          type="range"
-          min={FRONT_COVER}
-          max={Math.max(FRONT_COVER, total - 1)}
-          value={page}
-          onChange={(event) => setPage(Number(event.target.value))}
-          className="book-scrubber w-full"
-          style={
-            {
-              "--progress":
-                total > 1 ? ((page - FRONT_COVER) / (total - 1 - FRONT_COVER)) * 100 : 0,
-            } as CSSProperties
-          }
-        />
-        {/* Wide windows show the position in the top bar instead. */}
         <Button
           variant="ghost"
           size="xs"

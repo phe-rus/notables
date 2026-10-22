@@ -60,3 +60,19 @@ an app-owned session; read-aloud currently belongs to its reader hook and stops
 on unmount. Playback continuity needs its own regression and device verification.
 Large imports need profiling before compression changes. Archive discovery must
 separate metadata, previews, unrestricted files and protected loans.
+
+## Owner correction, v0.2.20
+
+The owner rejected the full Contents sheet, permanent seek bar, oversized surface
+and rigid framed page turn. Contents now uses a compact Hino Popover anchored to
+its button, with a bounded, independently scrollable chapter list, trailing page
+numbers and optional page entry. No input is mounted when it opens. The seek bar
+is removed. Single-page turns are clipped to their reading surface and omit the
+floating leaf shadow. This removes frame artifacts; it does not implement a
+physical page curl. That remains the first animation task, alongside visual and
+physical verification of the new popup.
+
+The pinned iOS 26 Apple guide is
+https://support.apple.com/guide/iphone/read-books-iphc1af7c57/26/ios/26.
+Its reading-screen illustration places the Menu button at bottom right. Further
+reader organization should follow that reference rather than expand toolbar chrome.

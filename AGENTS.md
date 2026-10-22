@@ -122,6 +122,12 @@ Gotchas learned the hard way:
 
 ## Status (October 2026)
 
+- v0.2.20, Books owner correction: compact anchored Contents popup, independently
+  scrolling chapters with page numbers, optional page entry, no permanent seek bar,
+  and no floating shadow outside a single-page turn. Physical popup verification
+  and a real page curl remain pending. Prioritize these before the remaining Books
+  features. See [the reader checkpoint](docs/reviews/2026-10-22-books-reader.md).
+
 - Books, 22 October, in progress: received chapter text now renders from the synced
   document without opening its note editor, with late-arrival updates. Contents
   adds chapter/page navigation; reader controls and appearance are being refined.

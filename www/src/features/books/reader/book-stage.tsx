@@ -129,7 +129,7 @@ export function BookStage({
   }, [turn]);
 
   const onPointerDown = (event: React.PointerEvent) => {
-    if (busy.current) return;
+    if (busy.current || document.querySelector('[role="dialog"], [role="menu"]')) return;
     if (
       event.target instanceof HTMLElement &&
       event.target.closest("a, button, input, textarea, select")
@@ -195,7 +195,11 @@ export function BookStage({
       ref={stage}
       role="application"
       aria-label="Book. Use the arrow keys or swipe to turn pages."
-      className={cn("relative", interactive ? "touch-none select-none" : "select-text")}
+      className={cn(
+        "relative",
+        !spread && "overflow-hidden",
+        interactive ? "touch-none select-none" : "select-text",
+      )}
       style={{ width, height: pageHeight, perspective: pageWidth * 3.2 }}
       onPointerDown={interactive ? onPointerDown : undefined}
       onPointerMove={interactive ? onPointerMove : undefined}
@@ -296,6 +300,7 @@ function SingleLayers({ geometry, position, turning, angle, renderFace }: LayerP
       {turning && (
         <Leaf
           angle={leafAngle}
+          castShadow={false}
           origin="left"
           direction="forward"
           style={{ left: 0, width: pageWidth, height: pageHeight }}
@@ -338,6 +343,7 @@ function Slot({
  */
 function Leaf({
   angle,
+  castShadow = true,
   origin,
   direction,
   style,
@@ -345,6 +351,7 @@ function Leaf({
   back,
 }: {
   angle: MotionValue<number>;
+  castShadow?: boolean;
   origin: Side;
   direction: Direction;
   style: React.CSSProperties;
@@ -368,7 +375,7 @@ function Leaf({
         rotateY,
         transformOrigin: `${origin} center`,
         transformStyle: "preserve-3d",
-        boxShadow: shadow,
+        boxShadow: castShadow ? shadow : undefined,
       }}
     >
       <div className="absolute inset-0 [backface-visibility:hidden]">

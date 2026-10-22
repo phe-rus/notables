@@ -1,3 +1,4 @@
+import type { RefObject } from "react";
 import type { Part } from "../store/book-store";
 
 export type BookChapter = {
@@ -11,9 +12,11 @@ export type BookChapter = {
 
 export type BookContentsProps = {
   open: boolean;
+  anchor: RefObject<HTMLElement | null>;
   onClose: () => void;
   chapters: BookChapter[];
   currentChapter?: string;
+  chapterPages: Record<string, number>;
   page: number;
   total: number;
   onChapter: (noteId: string) => void;
