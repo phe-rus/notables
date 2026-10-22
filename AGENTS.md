@@ -122,6 +122,12 @@ Gotchas learned the hard way:
 
 ## Status (October 2026)
 
+- 22 October editor correction: the title leads beside Back. The keyboard
+  inset observes the editor pane after the app shell resizes, preventing a
+  stale keyboard offset from lifting the tools twice. v0.2.16 completed all
+  four target builds. Physical keyboard evidence and release follow-up are in
+  [the editor record](docs/reviews/2026-10-22-editor-keyboard.md).
+
 - v0.2.15 completed Linux, Windows, Android/ChromeOS and iOS builds; desktop
   preview installers are published together. Following it, Hino 0.1.10 is
   published and deployed, with source-anchored menu reveals and revised rims.
@@ -129,7 +135,7 @@ Gotchas learned the hard way:
   sidebar disclosures and local Personal counts have TECNO evidence in
   [the source reveal record](docs/reviews/2026-10-21-source-reveals.md).
   The post-release Sharp patch clears the npm audit; GLib remains unresolved.
-  The follow-up release uses v0.2.16; check its CI and TestFlight processing.
+  v0.2.16 CI passed; TestFlight processing and physical iPhone checks remain.
 
 - Release scope, 21 October: desktop CI now builds Linux x64 and Windows x64
   only; macOS setup is deferred. Android retains arm64/x86_64 for phones and
@@ -720,6 +726,11 @@ and France: "No" until the French declaration is filed. Never set
 TestFlight refuse the upload; each build asks in TestFlight instead.
 
 ## Next
+
+- Continue the 22 October toolbar expansion request: hide sibling icon actions
+  while the button stretches into its menu, reverse on close; compact folder
+  actions, rotating Calendar date previews, and responsive Settings controls.
+  Verify the editor keyboard fix on iPhone after the next TestFlight build.
 
 - Continue from the source reveal record: editing dock, workspace search and
   spreadsheet editing need work, then native widgets, system entry points and

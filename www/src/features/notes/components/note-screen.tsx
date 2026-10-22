@@ -181,8 +181,7 @@ function NoteEditorScreen({
   const storePhoto = useCallback(async (file: File) => localMediaSrc(await saveMedia(file)), []);
   // The floating formatting tools sit above the keyboard; typing stays above them.
   const tools = useRef<HTMLElement>(null);
-  const pane = useRef<HTMLDivElement>(null);
-  const keyboardInset = useKeyboardInset(pane);
+  const { inset: keyboardInset, paneRef } = useKeyboardInset();
   const toolsTop = useCallback(() => {
     const rect = tools.current?.getBoundingClientRect();
     return rect && rect.height > 0 ? rect.top : Number.POSITIVE_INFINITY;
@@ -301,7 +300,7 @@ function NoteEditorScreen({
       {fresh && !spreadsheet && <FocusWhenLoaded loaded={status !== "loading"} />}
       <KeepCaretVisiblePlugin coveredFrom={toolsTop} />
       <div
-        ref={pane}
+        ref={paneRef}
         data-note-transition=""
         className="@container/note relative flex min-h-0 grow flex-col"
       >
@@ -329,7 +328,7 @@ function NoteEditorScreen({
                 <ChevronLeftIcon size={22} strokeWidth={2.2} className="shrink-0" />
               </Link>
             )}
-            <span className="min-w-0 flex-1 truncate text-center text-body font-semibold text-label">
+            <span className="min-w-0 flex-1 truncate text-start text-body font-semibold text-label">
               {entry.title || t("notes.newNote")}
             </span>
             {!spreadsheet && (
