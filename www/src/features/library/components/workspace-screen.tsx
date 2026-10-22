@@ -22,6 +22,7 @@ import { accents } from "@phe-rus/hino/tokens";
 import { Link } from "@tanstack/react-router";
 import { useState } from "react";
 import { setDrawerOpen } from "@/components/layout/drawer-store";
+import { CalendarDatePreview } from "@/features/calendar/components/calendar-date-preview";
 import type { EditingFolder } from "@/features/library/model/workspace-types";
 import { t } from "@/i18n/i18n";
 import { inBrowserSession } from "@/platform/session/browser-session-store";
@@ -115,7 +116,7 @@ export function WorkspaceScreen() {
       </header>
       <div className="@container/workspace scroll-surface grow px-5">
         <div className="mx-auto flex max-w-[clamp(28rem,72cqi,42rem)] flex-col gap-5">
-          <div className="overflow-hidden rounded-3xl bg-paper">
+          <div className="card-surface overflow-hidden rounded-3xl">
             {folders.map((folder, index) => {
               const fallback =
                 folder.id ===
@@ -170,7 +171,7 @@ export function WorkspaceScreen() {
             <h2 className="px-1 text-footnote font-semibold text-label-secondary">
               {t("nav.artifacts")}
             </h2>
-            <div className="overflow-hidden rounded-3xl bg-paper">
+            <div className="card-surface overflow-hidden rounded-3xl">
               {(
                 [
                   { to: "/books", label: t("nav.books"), Icon: BookIcon },
@@ -191,10 +192,14 @@ export function WorkspaceScreen() {
                   >
                     <Icon size={18} className="text-accent-text" />
                     <span className="grow">{label}</span>
-                    {personalCounts[to] !== undefined && (
-                      <span className="text-caption tabular-nums text-label-secondary">
-                        {personalCounts[to]}
-                      </span>
+                    {to === "/calendar" ? (
+                      <CalendarDatePreview />
+                    ) : (
+                      personalCounts[to] !== undefined && (
+                        <span className="text-caption tabular-nums text-label-secondary">
+                          {personalCounts[to]}
+                        </span>
+                      )
                     )}
                   </Link>
                 ))}

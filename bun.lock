@@ -42,7 +42,7 @@
         "@lexical/utils": "catalog:",
         "@lexical/yjs": "catalog:",
         "@notables/core": "workspace:*",
-        "@phe-rus/hino": "0.1.10",
+        "@phe-rus/hino": "0.1.13",
         "lexical": "catalog:",
         "motion": "catalog:",
         "perfect-freehand": "catalog:",
@@ -90,7 +90,7 @@
         "@notables/core": "workspace:*",
         "@notables/pluraliti": "workspace:*",
         "@notables/sync": "workspace:*",
-        "@phe-rus/hino": "0.1.10",
+        "@phe-rus/hino": "0.1.13",
         "@tanstack/react-form": "1.33.5",
         "@tanstack/react-router": "1.170.41",
         "@tanstack/react-start": "1.168.60",
@@ -487,7 +487,7 @@
 
     "@pdf-lib/upng": ["@pdf-lib/upng@1.0.1", "", { "dependencies": { "pako": "^1.0.10" } }, "sha512-dQK2FUMQtowVP00mtIksrlZhdFXQZPC+taih1q4CvPZ5vqdxR/LKBaFg0oAfzd1GlHZXXSPdQfzQnt+ViGvEIQ=="],
 
-    "@phe-rus/hino": ["@phe-rus/hino@0.1.10", "", { "dependencies": { "@hugeicons/core-free-icons": "4.3.5", "@hugeicons/react": "1.1.10", "clsx": "^2.1.1", "motion": "13.5.0", "tailwind-merge": "^3.7.0", "tw-animate-css": "^1.4.0" }, "peerDependencies": { "react": "^19.3.0", "react-dom": "^19.3.0", "tailwindcss": "^4.3.3" } }, "sha512-WuV1jCFKPlKU1O4f/b/3aQCX0rfyfgFPksWW/pbNfauFUY+8xF4YxXkx2IW9I5V7uZf4d4SQRk+tXBXgSWrFog=="],
+    "@phe-rus/hino": ["@phe-rus/hino@0.1.13", "", { "dependencies": { "@hugeicons/core-free-icons": "4.3.5", "@hugeicons/react": "1.1.10", "clsx": "^2.1.1", "motion": "13.5.0", "tailwind-merge": "^3.7.0", "tw-animate-css": "^1.4.0" }, "peerDependencies": { "react": "^19.3.0", "react-dom": "^19.3.0", "tailwindcss": "^4.3.3" } }, "sha512-9RjbuekFM3GQZlAprr7T9gYOFkWLRII2v+ghcZyCF0ymhExw1OQOgmknurRFEl6/M6vnyHvKuE2YgEfLMf/0gQ=="],
 
     "@poppinss/colors": ["@poppinss/colors@4.1.6", "", { "dependencies": { "kleur": "^4.1.5" } }, "sha512-H9xkIdFswbS8n1d6vmRd8+c10t2Qe+rZITbbDHHkQixH5+2x1FDGmi/0K+WgWiqQFKPSlIYB7jlH6Kpfn6Fleg=="],
 

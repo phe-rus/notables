@@ -326,7 +326,10 @@ export function NotesList({
                       onSelect: () => setAttachmentsOnly(!attachmentsOnly),
                     },
                   ];
-                  openMenu(event.currentTarget, items, { edge: "trailing" });
+                  openMenu(event.currentTarget, items, {
+                    edge: "trailing",
+                    toolbar: event.currentTarget.parentElement ?? undefined,
+                  });
                 }}
               >
                 <MoreIcon size={18} />

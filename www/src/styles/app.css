@@ -210,7 +210,10 @@ html[data-window-frame="rounded"] body::after {
 :where([data-native-settings]) .native-settings-detail > section > div {
   border: 0;
   border-radius: var(--radius-xl);
-  background: var(--color-background);
+  background: var(--color-paper);
+  box-shadow:
+    inset 0 0.5px 0 var(--color-glass-highlight),
+    inset 0 0 0 0.5px var(--color-glass-rim);
 }
 [data-native-settings] .native-settings-detail > section > h2,
 [data-native-settings] .native-settings-detail > section > p {
@@ -402,4 +405,10 @@ html[data-window-frame="rounded"] body::after {
 [data-native-settings] .native-settings-detail span {
   overflow-wrap: normal;
   word-break: normal;
+}
+
+/* Compact selectors keep their labels legible and grow with Dynamic Type. */
+[data-native-settings] .native-settings-detail [role="combobox"] {
+  height: auto;
+  @apply min-h-8 px-2.5 py-1 text-caption;
 }

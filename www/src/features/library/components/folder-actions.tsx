@@ -49,13 +49,14 @@ export function FolderActions({ name, actions }: FolderActionsProps) {
             <span
               role="toolbar"
               aria-label={t("workspace.folderOptions", { name })}
-              className="flex justify-end gap-2 px-3 pb-2"
+              className="flex justify-end gap-4 px-3 pb-1.5"
             >
               {actions.map((action) => (
                 <IconButton
                   key={action.label}
                   label={action.label}
                   size="icon-xs"
+                  className="size-7! [&_svg]:size-4 [@media(pointer:coarse)]:before:absolute [@media(pointer:coarse)]:before:-inset-2 [@media(pointer:coarse)]:before:content-['']"
                   variant={action.destructive ? "destructive" : "ghost"}
                   disabled={action.disabled}
                   onKeyDown={closeOnEscape}

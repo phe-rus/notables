@@ -452,7 +452,10 @@ function NoteEditorScreen({
                 variant="default"
                 label={t("notes.more")}
                 onClick={(event) => {
-                  openMenu(event.currentTarget, moreItems(), { edge: "trailing" });
+                  openMenu(event.currentTarget, moreItems(), {
+                    edge: "trailing",
+                    toolbar: event.currentTarget.parentElement ?? undefined,
+                  });
                 }}
               >
                 <MoreIcon size={18} />

@@ -248,7 +248,8 @@ export function BlockToolbar({
       onPointerDownCapture={(event) => {
         if (!(event.target as HTMLElement).closest("input")) {
           remember();
-          if (event.pointerType === "mouse") event.preventDefault();
+          // Toolbar presses retain the caret and keyboard on touch as well as mouse.
+          event.preventDefault();
         }
       }}
     >

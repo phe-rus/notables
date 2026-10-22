@@ -145,3 +145,39 @@ Before widgets and Lock:
 Reference: Apple's Motion guidance and Meet Liquid Glass describe preserving
 source-to-destination continuity and morphing controls in place. Hino retains its
 own design language; do not substitute page fades or large slides for that behavior.
+
+## 22 October follow-up
+
+- [x] Lead with the note title beside Back and correct the mounted pane's keyboard measurement.
+- [x] Publish Hino 0.1.13; adopt toolbar-owned menu expansion in folder/editor headers.
+- [x] Compact folder reveal actions and native Settings selectors; allow controls to wrap below labels.
+- [x] Replace Calendar's stored-event count with recurring upcoming date previews.
+- [x] Share neutral card surfaces with quiet light/dark inset edges.
+- [ ] Verify these controls and keyboard behavior on a physical iPhone after TestFlight updates.
+
+Evidence and release boundaries: [toolbar record](reviews/2026-10-22-toolbar-and-date-previews.md).
+
+## Books, requested 22 October
+
+Research Apple Books before changing the reading interface. Sources and design
+inferences are in [the Books research](reviews/2026-10-22-books-research.md).
+
+- [ ] Fix received chapters showing "Open this note once on this device to include it."
+      despite the chapter list having synced. Readers must hydrate chapter text
+      without opening individual note editors and update when content arrives.
+- [ ] Add direct page/chapter navigation, in-book search and explicit bookmarks.
+- [ ] Improve Continue reading and preserve a stable reading locator across layout changes.
+- [ ] Keep playback running when leaving the reader, with a clear mini-player;
+      distinguish leaving the full-screen player from stopping playback.
+- [ ] Give Books an immersive, responsive reading surface, coherent opening/return
+      motion, contextual controls, themes, sharing, orientation lock and Line Guide.
+- [ ] Make Import easy to find with an import icon; profile large-book parsing,
+      persistence and image sizes before changing compression or storage.
+- [ ] Add Internet Archive discovery, preview and import of available unrestricted
+      files. Keep catalog metadata, preview, ordinary downloads and protected loans
+      distinct. Follow provider identification, rate limits and access requirements.
+
+Owner preferences: Apple Books is the interaction/design reference, implemented
+through Hino, with premium organization, transitions and full-screen reading.
+Do not replace data correctness with visual placeholders or infer that every
+catalog result can be downloaded.

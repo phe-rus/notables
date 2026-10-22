@@ -122,6 +122,15 @@ Gotchas learned the hard way:
 
 ## Status (October 2026)
 
+- 22 October follow-up: Hino 0.1.13 is public and its docs are deployed. Folder
+  and editor header menus replace their action group while expanding. Settings
+  rows wrap controls before squeezing labels, native selectors are compact,
+  cards use neutral grounds and inset edges, folder actions are smaller, and
+  Calendar previews upcoming dates instead of the stored-event count.
+  See [the toolbar record](docs/reviews/2026-10-22-toolbar-and-date-previews.md).
+  v0.2.17 carries the editor keyboard/title correction; physical iPhone checks
+  remain pending. The follow-up release is v0.2.18.
+
 - 22 October editor correction: the title leads beside Back. The keyboard
   inset observes the editor pane after the app shell resizes, preventing a
   stale keyboard offset from lifting the tools twice. v0.2.16 completed all
@@ -727,10 +736,18 @@ TestFlight refuse the upload; each build asks in TestFlight instead.
 
 ## Next
 
-- Continue the 22 October toolbar expansion request: hide sibling icon actions
-  while the button stretches into its menu, reverse on close; compact folder
-  actions, rotating Calendar date previews, and responsive Settings controls.
-  Verify the editor keyboard fix on iPhone after the next TestFlight build.
+- Books is the next owner priority, 22 October: received chapters show
+  "Open this note once on this device to include it." Fix chapter content
+  hydration, then page/chapter jump, playback continuity and import usability.
+  Read [the current Books research](docs/reviews/2026-10-22-books-research.md)
+  before the immersive reader redesign, bookmarks/search/sharing/rotation lock,
+  Line Guide, Continue reading and Internet Archive discovery. Full queue is
+  in docs/MAINTENANCE.md. No Books code has changed in this checkpoint.
+
+- Verify the 22 October editor dock, header menu expansion, Calendar previews
+  and Settings wrapping on the iPhone after its TestFlight update. Header menus
+  use the new toolbar ownership; the rich editor formatting popover still has
+  its own presentation. Keep these surfaces distinct in future motion work.
 
 - Continue from the source reveal record: editing dock, workspace search and
   spreadsheet editing need work, then native widgets, system entry points and

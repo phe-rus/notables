@@ -29,3 +29,5 @@ export type CalendarSourcesSheetProps = {
 };
 
 export type CalendarSearchResultsProps = Pick<CalendarSourcesSheetProps, "events" | "onOpenEvent">;
+
+export type CalendarDatePreview = { day: Day; events: CalendarEvent[] };
